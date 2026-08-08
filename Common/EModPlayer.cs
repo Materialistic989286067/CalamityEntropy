@@ -51,6 +51,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -3136,16 +3137,6 @@ namespace CalamityEntropy.Common
             {
                 ExtraStealth = 0;
             }
-            if (!Main.dedServ && hasAcc(ShadowMantle.ID) && Player.whoAmI == Main.myPlayer && CalamityKeybinds.SpectralVeilHotKey.JustPressed)
-            {
-                if (Player.Calamity().rogueStealth > 0 && !Player.HasCooldown(ShadowDashCD.ID))
-                {
-                    Player.AddCooldown(ShadowDashCD.ID, ShadowMantle.CooldownTicks);
-                    immune = 16;
-                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, (Main.MouseWorld - Player.Center).normalize() * 800, ModContent.ProjectileType<ShadowMantleSlash>(), (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(((int)(1 + ShadowMantle.BaseDamage * Player.Calamity().rogueStealth)).ApplyAccArmorDamageBonus(Player)), 0, Player.whoAmI);
-                    Player.Calamity().rogueStealth = 0;
-                }
-            }
             if (ilVortexType == -1)
                 ilVortexType = ModContent.ProjectileType<IlmeranVortex>();
             if (ilmeranAsylum && Main.myPlayer == Player.whoAmI)
@@ -3573,71 +3564,7 @@ namespace CalamityEntropy.Common
                 solidTop = null;
                 tilePlatform = null;
             }
-            if (reincarnationBadge)
-            {
-                if (!Player.HasBuff<NOU>() && Player.ownedProjectileCounts[ModContent.ProjectileType<RbCircle>()] < 1)
-                {
-                    if (Main.myPlayer == Player.whoAmI)
-                    {
-                        Projectile.NewProjectile(Player.GetSource_FromAI(), Player.Center, Vector2.Zero, ModContent.ProjectileType<RbCircle>(), 0, 0, Player.whoAmI);
-                    }
-                }
-                if (!Main.dedServ && CalamityKeybinds.AscendantInsigniaHotKey.JustPressed || (rBadgeActive && (Player.controlJump || rBadgeCharge <= 0)))
-                {
-                    rBadgeActive = !rBadgeActive;
-                    if (rBadgeActive)
-                    {
-                        Player.mount.Dismount(Player);
-                        SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/AscendantActivate"), Player.Center);
-                    }
-                    else
-                    {
-                        SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/AscendantOff"), Player.Center);
-                        Player.velocity *= 0.2f;
-                    }
-                    if (Main.netMode == NetmodeID.MultiplayerClient)
-                    {
-                        ModPacket pack = Mod.GetPacket();
-                        pack.Write((byte)CEMessageType.PlayerSetRB);
-                        pack.Write(Player.whoAmI);
-                        pack.Write(rBadgeActive);
-                        pack.Send();
-                    }
-                }
-                if (Player.controlMount)
-                {
-                    if (rBadgeActive)
-                    {
-                        rBadgeActive = false;
-                        SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/AscendantOff"), Player.Center);
-                        Player.velocity *= 0.2f;
-                        if (Main.netMode == NetmodeID.MultiplayerClient)
-                        {
-                            ModPacket pack = Mod.GetPacket();
-                            pack.Write((byte)CEMessageType.PlayerSetRB);
-                            pack.Write(Player.whoAmI);
-                            pack.Write(rBadgeActive);
-                            pack.Send();
-                        }
-                    }
-                }
-                if (rBadgeActive)
-                {
-                    rBadgeCharge -= 0.025f;
-                }
-                else
-                {
-                    rBadgeCharge += 0.01f;
-                    if (rBadgeCharge > 12)
-                    {
-                        rBadgeCharge = 12;
-                    }
-                }
-            }
-            else
-            {
-                rBadgeActive = false;
-            }
+            
             if (HeatEffectTime > 0) HeatEffectTime--;
             if (AWraith || HeatEffectTime > 0)
             {
@@ -3989,6 +3916,87 @@ namespace CalamityEntropy.Common
         public float RogueStealthRegenMult = 1;
         public int WindPressureTime = 0;
         public int baitHeldType = -1;
+        public override void ProcessTriggers(TriggersSet triggersSet)
+        {
+            if (Player.dead)
+                return;
+            if (reincarnationBadge)
+            {
+                if (!Player.HasBuff<NOU>() && Player.ownedProjectileCounts[ModContent.ProjectileType<RbCircle>()] < 1)
+                {
+                    if (Main.myPlayer == Player.whoAmI)
+                    {
+                        Projectile.NewProjectile(Player.GetSource_FromAI(), Player.Center, Vector2.Zero, ModContent.ProjectileType<RbCircle>(), 0, 0, Player.whoAmI);
+                    }
+                }
+                if (!Main.dedServ && Player.Calamity().FindAccessory<ReincarnationBadge>().GetDynamicModHotkey().JustPressed || (rBadgeActive && (Player.controlJump || rBadgeCharge <= 0)))
+                {
+                    rBadgeActive = !rBadgeActive;
+                    if (rBadgeActive)
+                    {
+                        Player.mount.Dismount(Player);
+                        SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/AscendantActivate"), Player.Center);
+                    }
+                    else
+                    {
+                        SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/AscendantOff"), Player.Center);
+                        Player.velocity *= 0.2f;
+                    }
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                    {
+                        ModPacket pack = Mod.GetPacket();
+                        pack.Write((byte)CEMessageType.PlayerSetRB);
+                        pack.Write(Player.whoAmI);
+                        pack.Write(rBadgeActive);
+                        pack.Send();
+                    }
+                }
+                if (Player.controlMount)
+                {
+                    if (rBadgeActive)
+                    {
+                        rBadgeActive = false;
+                        SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/AscendantOff"), Player.Center);
+                        Player.velocity *= 0.2f;
+                        if (Main.netMode == NetmodeID.MultiplayerClient)
+                        {
+                            ModPacket pack = Mod.GetPacket();
+                            pack.Write((byte)CEMessageType.PlayerSetRB);
+                            pack.Write(Player.whoAmI);
+                            pack.Write(rBadgeActive);
+                            pack.Send();
+                        }
+                    }
+                }
+                if (rBadgeActive)
+                {
+                    rBadgeCharge -= 0.025f;
+                }
+                else
+                {
+                    rBadgeCharge += 0.01f;
+                    if (rBadgeCharge > 12)
+                    {
+                        rBadgeCharge = 12;
+                    }
+                }
+            }
+            else
+            {
+                rBadgeActive = false;
+            }
+
+            if (!Main.dedServ && hasAcc(ShadowMantle.ID) && Player.whoAmI == Main.myPlayer && Player.Calamity().FindAccessory<ShadowMantle>().JustPressedKeybind())
+            {
+                if (Player.Calamity().rogueStealth > 0 && !Player.HasCooldown(ShadowDashCD.ID))
+                {
+                    Player.AddCooldown(ShadowDashCD.ID, ShadowMantle.CooldownTicks);
+                    immune = 16;
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, (Main.MouseWorld - Player.Center).normalize() * 800, ModContent.ProjectileType<ShadowMantleSlash>(), (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(((int)(1 + ShadowMantle.BaseDamage * Player.Calamity().rogueStealth)).ApplyAccArmorDamageBonus(Player)), 0, Player.whoAmI);
+                    Player.Calamity().rogueStealth = 0;
+                }
+            }
+        }
         public override void PostUpdateEquips()
         {
             if (!Player.HeldItem.IsAir && Player.HeldItem.ModItem != null)

@@ -132,25 +132,28 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
         }
         public override void ActiveEffect(float damageMul)
         {
-            if (!Main.dedServ)
+            if (IsActive)
             {
-                ScreenShaker.AddShakeWithRangeFade(new ScreenShaker.NoDirQuickShake(32), Main.LocalPlayer.Distance(Projectile.Center), 1800);
-                for (int i = 0; i < 32; i++)
-                    GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.1f, 1) * 26, false, 18, 0.06f * Main.rand.NextFloat(0.3f, 1f), Color.LightSkyBlue, new Vector2(0.32f, 1f)));
-                if (Main.myPlayer == Projectile.owner)
+                IsActive = false;
+                if (!Main.dedServ)
                 {
-                    CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromThis(), Projectile.GetOwner(), Projectile.Center, Projectile.damage * 5, 180, Projectile.DamageType);
-                    for (int i = 0; i < 5; i++)
+                    ScreenShaker.AddShakeWithRangeFade(new ScreenShaker.NoDirQuickShake(32), Main.LocalPlayer.Distance(Projectile.Center), 1800);
+                    for (int i = 0; i < 32; i++)
+                        GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.1f, 1) * 26, false, 18, 0.06f * Main.rand.NextFloat(0.3f, 1f), Color.LightSkyBlue, new Vector2(0.32f, 1f)));
+                    if (Main.myPlayer == Projectile.owner)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(24, 32), ModContent.ProjectileType<FrostboundSpirit>(), (int)(Projectile.damage * damageMul), 6, Projectile.owner, 0, Main.rand.Next(0, 30));
+                        CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromThis(), Projectile.GetOwner(), Projectile.Center, Projectile.damage * 5, 180, Projectile.DamageType);
+                        for (int i = 0; i < 5; i++)
+                        {
+                            Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(24, 32), ModContent.ProjectileType<FrostboundSpirit>(), (int)(Projectile.damage * damageMul), 6, Projectile.owner, 0, Main.rand.Next(0, 30));
+                        }
                     }
+                    CEUtils.PlaySound("CryogenHit" + Main.rand.Next(1, 4), 1, Projectile.Center);
+                    CEUtils.PlaySound("soulScreem", 0.6f, Projectile.Center);
+                    CEUtils.PlaySound("explosion1", 1, Projectile.Center);
                 }
-                CEUtils.PlaySound("CryogenHit" + Main.rand.Next(1, 4), 1, Projectile.Center);
-                CEUtils.PlaySound("soulScreem", 0.6f, Projectile.Center);
-                CEUtils.PlaySound("explosion1", 1, Projectile.Center);
+                Projectile.Kill();
             }
-            if (Projectile.active)
-                    Projectile.Kill();
         }
         public float activeEffectAlpha = 0;
         public float shake2 = 0;
@@ -210,6 +213,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             if (IsActive)
             {
                 SetActive();
+                IsActive = false;
                 CEUtils.SyncProj(Projectile.whoAmI);
             }
             float scale = 4;

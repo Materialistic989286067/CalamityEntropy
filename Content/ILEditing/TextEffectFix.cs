@@ -1,7 +1,8 @@
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Common;
 using CalamityEntropy.Core.ChatTags;
 using CalamityMod;
 using CalamityMod.ChatTags;
+using CalamityMod.Items.Accessories.Wings;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Rarities;
 using CalamityMod.Utilities.Daybreak.Buffers;
@@ -9,6 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Terraria;
@@ -36,9 +38,11 @@ namespace CalamityEntropy.Content.ILEditing
                 EModHooks.Add(mtd, hookBurnishedAuric);
                 mtd = typeof(ExoticRainbow.CustomTextSnippet).GetMethod("UniqueDraw", BindingFlags.Instance | BindingFlags.Public);
                 EModHooks.Add(mtd, hookExoticRainbow);
-
+                mtd = typeof(TiredTailTextEffects).GetMethod("UniqueDraw", BindingFlags.Instance | BindingFlags.Public);
+                EModHooks.Add(mtd, hookTiredTail);
                 mtd = typeof(DivineSwine).GetMethod("Draw_BestiaryPortrait", BindingFlags.Instance | BindingFlags.Public);
                 EModHooks.Add(mtd, hookDivineSwinePortrait);
+                
             }
         }
         public static void hookDivineSwinePortrait(Action<DivineSwine, SpriteBatch> orig, DivineSwine self, SpriteBatch spriteBatch)
@@ -81,6 +85,7 @@ namespace CalamityEntropy.Content.ILEditing
         public delegate bool DoGDelegate(DoGTextSnippet self, bool justCheckingString, out Vector2 size, SpriteBatch spriteBatch, Vector2 position, Color color, float scale);
         public delegate bool BADelegate(BurnishedAuric.CustomTextSnippet self, bool justCheckingString, out Vector2 size, SpriteBatch spriteBatch, Vector2 position, Color color, float scale);
         public delegate bool ERDelegate(ExoticRainbow.CustomTextSnippet self, bool justCheckingString, out Vector2 size, SpriteBatch spriteBatch, Vector2 position, Color color, float scale);
+        public delegate bool TTDelegate(TiredTailTextEffects self, bool justCheckingString, out Vector2 size, SpriteBatch spriteBatch, Vector2 position, Color color, float scale);
 
 
         public static bool hookDoG(DoGDelegate orig, DoGTextSnippet self, bool justCheckingString, out Vector2 size, SpriteBatch spriteBatch, Vector2 position, Color color, float scale)
@@ -111,6 +116,16 @@ namespace CalamityEntropy.Content.ILEditing
             var ins = new ExoticRainbowSnippetFix(tx);
             ins.IsExpert = self.IsExpert;
             return ins.UniqueDraw(justCheckingString, out size, spriteBatch, position, color, scale);
+        }
+
+        public static bool hookTiredTail(TTDelegate orig, TiredTailTextEffects self, bool justCheckingString, out Vector2 size, SpriteBatch spriteBatch, Vector2 position, Color color, float scale)
+        {
+            if (!Active()) return orig.Invoke(self, justCheckingString, out size, spriteBatch, position, color, scale);
+            var fds = self.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance)[0].GetValue(self);
+            string tx = "[Can't get the text]";
+            if (fds is string text)
+                tx = text;
+            return new TiredTailEffectFix(tx).UniqueDraw(justCheckingString, out size, spriteBatch, position, color, scale);
         }
     }
 
@@ -292,6 +307,74 @@ namespace CalamityEntropy.Content.ILEditing
                 Draw1(Vector2.Zero, Color.White);
 
                 Main.spriteBatch.UseSampleState_UI(Main.DefaultSamplerState);
+            }
+            return true;
+        }
+        public override float GetStringLength(DynamicSpriteFont font)
+        {
+            float size = font.MeasureString(text).X;
+            return size * Scale;
+        }
+    }
+    public sealed class TiredTailEffectFix(string text) : TextSnippet
+    {
+        public static float expansionFactor => TiredTailTextEffects.expansionFactor;
+        public static int displayTimer => TiredTailTextEffects.displayTimer;
+        public override bool UniqueDraw(bool justCheckingString, out Vector2 size, SpriteBatch spriteBatch, Vector2 position = new Vector2(), Color color = new Color(), float scale = 1)
+        {
+            if (color == default || color == Main.MouseTextColorReal)
+            {
+                color = Colors.AlphaDarken(HotPink.TextColor);
+            }
+            var textarray = text.ToArray();
+            for (var i = 0; i < textarray.Length; i++)
+            {
+                if (expansionFactor - 10 > i)
+                {
+                    textarray[i] = (i == 0 ? 'ɔ' : '»');
+                }
+            }
+            var textToDraw = new string(textarray);
+
+            size = FontAssets.MouseText.Value.MeasureString(textToDraw) * scale;
+
+            if (!justCheckingString && (color.R != 0 || color.G != 0 || color.B != 0))
+            {
+                Main.spriteBatch.UseSampleState_UI(SamplerState.PointClamp);
+                void Draw(Vector2 offset, Color mul)
+                {
+                    var pos = position;
+                    string txt = "";
+                    var max = FontAssets.MouseText.Value.MeasureString(text) * Math.Min(1f, expansionFactor);
+
+                    foreach (var item in textarray)
+                    {
+                        pos = position;
+                        pos.X += Math.Min(FontAssets.MouseText.Value.MeasureString(txt).X, max.X + 9999);
+                        float sin = (MathF.Sin(pos.X * 0.02f + Main.GlobalTimeWrappedHourly * -1.5f) + 1) * 0.5f;
+                        float sin2 = (MathF.Sin(pos.X * 0.02f + Main.GlobalTimeWrappedHourly * -0.9f) + 1) * 0.5f;
+                        float sin3 = MathF.Sin(pos.X * 0.02f + Main.GlobalTimeWrappedHourly * -1.5f + MathHelper.PiOver2);
+                        var c = new Color(171, 153, 204);
+                        if (txt.Length == 0 || txt.Length == text.Length - 1)
+                            c = Color.Cyan;
+                        else if (txt.Length % 4 == 3)
+                        {
+                            c = Color.HotPink;
+                        }
+                        c = Color.Lerp(Colors.AlphaDarken(new Color(0, 255, 200)), c, MathHelper.Clamp(expansionFactor - 2, 0, 1));
+                        float posMult = Math.Max(MathHelper.Clamp((expansionFactor - 10) * 0.5f, 0, 3), MathHelper.Clamp((expansionFactor - 2) * 0.5f, 0, 1));
+                        var origin = FontAssets.MouseText.Value.MeasureString(item.ToString()) * 0.5f;
+                        ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, item.ToString(), origin + pos + new Vector2(0, item == 'ɔ' ? -1 : 0) + new Vector2((-2f + 4 * sin2) * posMult, (-2 + sin * 4) * posMult) + offset, c.Mult(mul), sin3 * posMult * 0.1f, origin, new Vector2(scale));
+                        txt += item;
+                    }
+                }
+
+                foreach (var item in ChatManager.ShadowDirections)
+                {
+                    Draw(item * 2, Color.Black);
+                }
+                Draw(Vector2.Zero, Color.White);
+                Main.spriteBatch.UseSampleState_UI(SamplerState.AnisotropicClamp);
             }
             return true;
         }

@@ -3615,7 +3615,7 @@ Items: {
 
 	AzafureTacticalRadio: {
 		DisplayName: 阿萨福勒战术电台
-		Tooltip: 部署一台导弹发射井，锁定最近的目标并超其发射导弹
+		Tooltip: 部署一台导弹发射井，锁定最近的目标并朝其发射导弹
 	}
 
 	SentryRemover: {

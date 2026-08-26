@@ -2,14 +2,15 @@
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityMod;
 using CalamityMod.Dusts;
 using CalamityMod.Items;
 using CalamityMod.Items.Materials;
-using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
@@ -139,7 +140,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                 {
                     ScreenShaker.AddShakeWithRangeFade(new ScreenShaker.NoDirQuickShake(32), Main.LocalPlayer.Distance(Projectile.Center), 1800);
                     for (int i = 0; i < 32; i++)
-                        GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.1f, 1) * 26, false, 18, 0.06f * Main.rand.NextFloat(0.3f, 1f), Color.LightSkyBlue, new Vector2(0.32f, 1f)));
+                        PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.1f, 1) * 26, Color.LightSkyBlue, 0.06f * Main.rand.NextFloat(0.3f, 1f)).Configure(false, 18, new Vector2(0.32f, 1f));
                     if (Main.myPlayer == Projectile.owner)
                     {
                         CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromThis(), Projectile.GetOwner(), Projectile.Center, Projectile.damage * 5, 180, Projectile.DamageType);
@@ -200,9 +201,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
         {
             CEUtils.PlaySound("CryogenHit" + Main.rand.Next(1, 4), 1, Projectile.Center);
             for (int i = 0; i < 32; i++)
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.3f, 1) * 24, false, 16, 0.08f * Main.rand.NextFloat(0.6f, 1f), Color.LightSkyBlue, new Vector2(0.2f, 1f)));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.3f, 1) * 24, Color.LightSkyBlue, 0.08f * Main.rand.NextFloat(0.6f, 1f)).Configure(false, 16, new Vector2(0.2f, 1f));
             for (int i = 0; i < 4; i++)
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center, (i * MathHelper.PiOver2).ToRotationVector2() * 30, false, 20, 0.12f, Color.LightSkyBlue, new Vector2(0.16f, 1f)));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center, (i * MathHelper.PiOver2).ToRotationVector2() * 30, Color.LightSkyBlue, 0.12f).Configure(false, 20, new Vector2(0.16f, 1f));
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
@@ -217,9 +218,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                 CEUtils.SyncProj(Projectile.whoAmI);
             }
             float scale = 4;
-            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.LightSkyBlue * 1.14f, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24));
-            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.LightSkyBlue * 1.12f, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.032f, 18));
-            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.LightSkyBlue * 1.12f, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.024f, 15));
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.LightSkyBlue * 1.14f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.LightSkyBlue * 1.12f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.032f, 18);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.LightSkyBlue * 1.12f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.024f, 15);
         }
     }
     public class FrostboundSpirit : ModProjectile

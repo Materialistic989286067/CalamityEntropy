@@ -1,8 +1,8 @@
-﻿using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Content.Particles;
 using CalamityMod;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -165,7 +165,7 @@ namespace CalamityEntropy.Content.Projectiles
         public bool spawnShard = true;
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, new Color(60, 255, 255), "CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, 0.64f, 14));
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(60, 255, 255), 0.01f).Configure("CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, 0.64f, 14);
             CEUtils.PlaySound("slice", Projectile.Calamity().stealthStrike ? 1.2f : 1f, target.Center);
             if (spawnShard)
             {
@@ -182,15 +182,15 @@ namespace CalamityEntropy.Content.Projectiles
                 {
                     for (int i = 0; i < 16; i++)
                     {
-                        EParticle.spawnNew(new EGlowOrb(), Projectile
-                            .Center, CEUtils.randomPointInCircle(16), Color.SkyBlue, 0.32f, 1, true, BlendState.Additive, 0, 18);
+                        //EGlowOrb Additive走Configure
+                        PRTLoader.NewParticle<PRT_EGlowOrb>(Projectile.Center, CEUtils.randomPointInCircle(16), Color.SkyBlue, 0.32f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 18);
                     }
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<WaterBulletSpawner>(), (int)(Projectile.damage * 0.3f), Projectile.knockBack / 3, Projectile.owner, target.whoAmI);
                 }
             }
             for (int i = 0; i < 16; i++)
             {
-                EParticle.spawnNew(new EGlowOrb(), Projectile.Center + Projectile.velocity.normalize(), CEUtils.randomPointInCircle(2) + Projectile.velocity * 0.7f * Main.rand.NextFloat(0.2f, 1), Color.SkyBlue, 0.2f, 1, true, BlendState.Additive, 0, 14);
+                PRTLoader.NewParticle<PRT_EGlowOrb>(Projectile.Center + Projectile.velocity.normalize(), CEUtils.randomPointInCircle(2) + Projectile.velocity * 0.7f * Main.rand.NextFloat(0.2f, 1), Color.SkyBlue, 0.2f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 14);
             }
         }
         public override void OnKill(int timeLeft)
@@ -342,7 +342,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             NoChaseTime = 8;
-            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, new Color(60, 255, 255), "CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, 0.55f, 14));
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(60, 255, 255), 0.01f).Configure("CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, 0.55f, 14);
         }
         public override bool? CanHitNPC(NPC target)
         {

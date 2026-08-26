@@ -1,5 +1,6 @@
-﻿using CalamityMod;
-using CalamityMod.Particles;
+﻿using CalamityEntropy.Content.Particles.CalamityPorts;
+using CalamityMod;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -39,10 +40,8 @@ namespace CalamityEntropy.Content.Projectiles
             if (!sd && Projectile.owner == Main.myPlayer)
             {
                 sd = true;
-                Particle pulse = new CustomSpark(Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 16, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 22, 0.07f, Color.MediumTurquoise, new Vector2(1f, 1.7f), shrinkSpeed: -0.2f);
-                GeneralParticleHandler.SpawnParticle(pulse);
-                Particle pulse2 = new CustomSpark(Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 24, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 18, 0.05f, Color.DeepSkyBlue, new Vector2(1f, 1.7f), shrinkSpeed: -0.23f);
-                GeneralParticleHandler.SpawnParticle(pulse2);
+                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 16, Color.MediumTurquoise, 0.07f).Configure("CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 22, new Vector2(1f, 1.7f), shrinkSpeed: -0.2f);
+                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 24, Color.DeepSkyBlue, 0.05f).Configure("CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 18, new Vector2(1f, 1.7f), shrinkSpeed: -0.23f);
             }
             Projectile.ai[0]++;
             if (Projectile.ai[0] > 5)

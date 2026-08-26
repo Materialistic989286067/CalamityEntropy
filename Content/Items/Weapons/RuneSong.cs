@@ -1,11 +1,12 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityMod;
 using CalamityMod.Dusts;
 using CalamityMod.Items;
-using CalamityMod.Particles;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.IO;
@@ -114,7 +115,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 }
                 if (Projectile.ai[0] < 1.56f)
                     for (int i = 0; i < 3; i++)
-                        EParticle.spawnNew(new RuneParticle(), Projectile.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(40, Length * scaleE), CEUtils.randomPointInCircle(2), Color.LightBlue, 1f, 1, true, BlendState.Additive, 0, 38);
+                        PRTLoader.NewParticle<PRT_RuneParticle>(Projectile.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(40, Length * scaleE), CEUtils.randomPointInCircle(2), Color.LightBlue, 1f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 38);
             }
             if(flag == 4)
             {
@@ -156,7 +157,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 }
                 if (Projectile.ai[0] < 2.6f)
                     for(int i = 0; i < 3; i++)
-                        EParticle.spawnNew(new RuneParticle(), Projectile.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(40, Length * scaleE), CEUtils.randomPointInCircle(2), Color.LightBlue, 1f, 1, true, BlendState.Additive, 0, 38);
+                        PRTLoader.NewParticle<PRT_RuneParticle>(Projectile.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(40, Length * scaleE), CEUtils.randomPointInCircle(2), Color.LightBlue, 1f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 38);
             }
             if (sAlpha < 0.02f)
                 sAlpha = 0;
@@ -177,7 +178,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 
                         for (int i = 0; i < 128; i++)
                         {
-                            EParticle.spawnNew(new RuneParticle(), Projectile.Center + CEUtils.randomPointInCircle(12) + Projectile.velocity.normalize() * 160, Projectile.velocity.normalize() * Main.rand.NextFloat(4, 80), Color.Aqua, Main.rand.NextFloat(0.8f, 1.4f), 1, true, BlendState.Additive, 0, 42);
+                            PRTLoader.NewParticle<PRT_RuneParticle>(Projectile.Center + CEUtils.randomPointInCircle(12) + Projectile.velocity.normalize() * 160, Projectile.velocity.normalize() * Main.rand.NextFloat(4, 80), Color.Aqua, Main.rand.NextFloat(0.8f, 1.4f)).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 42);
                         }
                         if(Main.myPlayer == Projectile.owner)
                         {
@@ -313,8 +314,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 Color sparkColor2 = Color.DarkBlue;
 
                 float velc = 1f;
-                LineParticle spark = new LineParticle(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f) + Projectile.velocity * 1.2f, sparkVelocity2 * velc, false, (int)(sparkLifetime2 * 1), sparkScale2 * 1, Main.rand.NextBool() ? Color.Aqua : Color.LightBlue);
-                GeneralParticleHandler.SpawnParticle(spark);
+                PRTLoader.NewParticle<PRT_LineCal>(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f) + Projectile.velocity * 1.2f, sparkVelocity2 * velc, Main.rand.NextBool() ? Color.Aqua : Color.LightBlue, sparkScale2 * 1).Configure(false, (int)(sparkLifetime2 * 1));
 
             }
             for (int i = 0; i < 29; i++)

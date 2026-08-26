@@ -2,14 +2,15 @@
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityMod;
 using CalamityMod.Dusts;
 using CalamityMod.Items;
 using CalamityMod.Items.Materials;
-using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
@@ -177,11 +178,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             for(int i = 0; i < 2; i++)
             {
                 float scale = 0.05f + 0.02f * i;
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(pos, Vector2.Zero, Color.Lerp(Color.Silver, new Color(225, 225, 225), (i / 2f)), "CalamityEntropy/Assets/Extra/HollowCircleSoftEdge", Vector2.One, CEUtils.randomRot(), scale * 0.2f, scale, 12 + i * 4));
+                PRTLoader.NewParticle<PRT_CustomPulse>(pos, Vector2.Zero, Color.Lerp(Color.Silver, new Color(225, 225, 225), (i / 2f)), scale * 0.2f).Configure("CalamityEntropy/Assets/Extra/HollowCircleSoftEdge", Vector2.One, CEUtils.randomRot(), scale * 0.2f, scale, 12 + i * 4);
             }
 
             for (int i = 0; i < 6; i++)
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 1, false, 12, 0.04f * Main.rand.NextFloat(0.65f, 1f), new Color(200, 200, 200), new Vector2(2f, 0.6f), true));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 1, new Color(200, 200, 200), 0.04f * Main.rand.NextFloat(0.65f, 1f)).Configure(false, 12, new Vector2(2f, 0.6f), true);
         }
         public override void OnKill(int timeLeft)
         {

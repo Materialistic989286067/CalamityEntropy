@@ -1,7 +1,8 @@
-﻿using CalamityEntropy.Common;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityMod;
-using CalamityMod.Particles;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -158,11 +159,12 @@ namespace CalamityEntropy.Content.Projectiles.Chainsaw
                 float scale = Main.rand.NextFloat(0.4f, 2.6f);
                 if (Main.rand.NextBool())
                 {
-                    GeneralParticleHandler.SpawnParticle(new LineParticle(pos, vel, false, Main.rand.Next(3, 9), scale, color));
+                    //LineCal/SparkCal是CalamityPorts,Configure(false,lifetime)对齐Calamity原构造
+                    PRTLoader.NewParticle<PRT_LineCal>(pos, vel, color, scale).Configure(false, Main.rand.Next(3, 9));
                 }
                 else
                 {
-                    GeneralParticleHandler.SpawnParticle(new SparkParticle(pos, vel, false, Main.rand.Next(3, 9), scale, color));
+                    PRTLoader.NewParticle<PRT_SparkCal>(pos, vel, color, scale).Configure(false, Main.rand.Next(3, 9));
                 }
             }
         }

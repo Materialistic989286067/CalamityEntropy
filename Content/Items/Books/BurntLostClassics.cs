@@ -1,6 +1,7 @@
 ﻿using CalamityEntropy.Content.Particles;
 using CalamityMod;
 using CalamityMod.Items.Materials;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
@@ -107,10 +108,16 @@ namespace CalamityEntropy.Content.Items.Books
             base.AI();
             Time++;
             Player player = Main.player[base.Projectile.owner];
+
+            //每帧5颗尾烟,位置沿速度随机分布;timeleftmax/Lifetime跟旧Smoke初始化器一致
             for (float i = 0; i <= 1; i += 0.2f)
             {
-                EParticle.NewParticle(new Smoke() { timeleftmax = 26, Lifetime = 26 }, Projectile.Center + Projectile.velocity * Main.rand.NextFloat(), CEUtils.randomPointInCircle(0.5f), Color.OrangeRed, Main.rand.NextFloat(0.02f, 0.04f), 0.5f, true, BlendState.Additive, CEUtils.randomRot());
+                var p = PRTLoader.NewParticle<PRT_Smoke>(Projectile.Center + Projectile.velocity * Main.rand.NextFloat(), CEUtils.randomPointInCircle(0.5f), Color.OrangeRed, Main.rand.NextFloat(0.02f, 0.04f));
+                p.timeleftmax = 26;
+                p.Lifetime = 26;
+                p.Configure(0.5f, true, PRTDrawModeEnum.AdditiveBlend, CEUtils.randomRot(), 26);
             }
+
             Lighting.AddLight(Projectile.Center, 0.25f, 0f, 0f);
             Projectile.rotation += 0.5f * (float)Projectile.direction;
             Projectile.velocity.Y += float.Min(0.6f, Time * 0.004f);

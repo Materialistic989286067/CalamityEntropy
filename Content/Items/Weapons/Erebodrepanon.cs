@@ -7,6 +7,7 @@ using CalamityEntropy.Content.Tiles;
 using CalamityMod;
 using CalamityMod.Items;
 using CalamityMod.Items.Weapons.Melee;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -193,13 +194,17 @@ namespace CalamityEntropy.Content.Items.Weapons
             }
             target.AddBuff<LifeOppress>(5 * 60);
             CEUtils.PlaySound("WScytheHit", Main.rand.NextFloat(1.4f, 1.7f), target.Center);
-            EParticle.spawnNew(new ShineParticle(), target.Center, Vector2.Zero, Color.Blue, 1.8f, 1, true, BlendState.Additive, 0, 10);
-            EParticle.spawnNew(new ShineParticle(), target.Center, Vector2.Zero, Color.White, 1.2f, 1, true, BlendState.Additive, 0, 12);
-            EParticle.spawnNew(new ShineParticle(), target.Center, Vector2.Zero, Color.White, 1.2f, 1, true, BlendState.Additive, 0, 12);
+            PRTLoader.NewParticle<PRT_ShineParticle>(target.Center, Vector2.Zero, Color.Blue, 1.8f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
+            PRTLoader.NewParticle<PRT_ShineParticle>(target.Center, Vector2.Zero, Color.White, 1.2f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 12);
+            PRTLoader.NewParticle<PRT_ShineParticle>(target.Center, Vector2.Zero, Color.White, 1.2f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 12);
             for (int i = 0; i < 18; i++)
             {
-                EParticle.NewParticle(new StarTrailParticle() { fadeOut = 6 }, target.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(12, 44), Main.rand.NextBool() ? new Color(160, 160, 255) : new Color(255, 160, 80), Main.rand.NextFloat(1.6f, 2f), 1, true, BlendState.Additive, 0, 12);
-                EParticle.NewParticle(new StarTrailParticle() { fadeOut = 16 }, target.Center, Projectile.velocity.RotatedByRandom(0.5f).normalize() * Main.rand.NextFloat(12, 64), Main.rand.NextBool() ? new Color(160, 160, 255) : new Color(255, 160, 80), Main.rand.NextFloat(1.6f, 2f), 1, true, BlendState.Additive, 0, 24);
+                var p1 = PRTLoader.NewParticle<PRT_StarTrailParticle>(target.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(12, 44), Main.rand.NextBool() ? new Color(160, 160, 255) : new Color(255, 160, 80), Main.rand.NextFloat(1.6f, 2f));
+                p1.fadeOut = 6;
+                p1.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 12);
+                var p2 = PRTLoader.NewParticle<PRT_StarTrailParticle>(target.Center, Projectile.velocity.RotatedByRandom(0.5f).normalize() * Main.rand.NextFloat(12, 64), Main.rand.NextBool() ? new Color(160, 160, 255) : new Color(255, 160, 80), Main.rand.NextFloat(1.6f, 2f));
+                p2.fadeOut = 16;
+                p2.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 24);
             }
         }
         public override bool PreDraw(ref Color lightColor)
@@ -251,7 +256,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             return Projectile.ai[1] > 0;
         }
-        List<StarTrailParticle> trails = new List<StarTrailParticle>();
+        List<PRT_StarTrailParticle> trails = new List<PRT_StarTrailParticle>();
         public float tRot = 0f;
         public float tDist = 1f;
         public override void AI()
@@ -265,9 +270,9 @@ namespace CalamityEntropy.Content.Items.Weapons
             {
                 for(int i = 0; i < 4; i++)
                 {
-                    var t = new StarTrailParticle();
+                    var t = PRTLoader.NewParticle<PRT_StarTrailParticle>(Projectile.Center + (i * MathHelper.PiOver2).ToRotationVector2() * 600, Vector2.Zero, new Color(80, 80, 255), 2.5f);
                     t.maxLength = 14;
-                    EParticle.spawnNew(t, Projectile.Center + (i * MathHelper.PiOver2).ToRotationVector2() * 600, Vector2.Zero, new Color(80, 80, 255), 2.5f, 1, true, BlendState.Additive, 0, 12);
+                    t.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 12);
                     trails.Add(t);
                 }
             }
@@ -277,7 +282,9 @@ namespace CalamityEntropy.Content.Items.Weapons
                 CEUtils.PlaySound("bne_hit", 1, Projectile.Center);
                 for (int i = 0; i < 24; i++)
                 {
-                    EParticle.NewParticle(new StarTrailParticle() { fadeOut = 16 }, Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(10, 44), Main.rand.NextBool() ? new Color(160, 160, 255) : new Color(255, 160, 80), Main.rand.NextFloat(1.6f, 2f), 1, true, BlendState.Additive, 0, 28);
+                    var p = PRTLoader.NewParticle<PRT_StarTrailParticle>(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(10, 44), Main.rand.NextBool() ? new Color(160, 160, 255) : new Color(255, 160, 80), Main.rand.NextFloat(1.6f, 2f));
+                    p.fadeOut = 16;
+                    p.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 28);
                 }
             }
             if (Projectile.ai[0] > 40)

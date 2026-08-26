@@ -1,6 +1,7 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Armor.Azafure;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityMod;
@@ -8,7 +9,7 @@ using CalamityMod.Items;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Particles;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
@@ -106,7 +107,9 @@ namespace CalamityEntropy.Content.Items.Weapons
                                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), topPos, Vector2.Zero, ModContent.ProjectileType<TeslaLightningRed>(), Projectile.damage, 0, Projectile.owner, npc.Center.X, npc.Center.Y).ToProj().DamageType = Projectile.DamageType; ;
                                 for (int i = 0; i < 8; i++)
                                 {
-                                    GeneralParticleHandler.SpawnParticle(new AltSparkParticle(npc.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(16, 24), false, Main.rand.Next(6, 10), Main.rand.NextFloat(0.9f, 2), new Color(240, 240, 255)));
+                                    //VFX接线从自研EParticle换InnoVault PRT,调用形状尽量跟旧的一样
+                                    //EParticle.spawnNew→PRTLoader.NewParticle,spawn点和数值迁移纪律:一个不改
+                                    PRTLoader.NewParticle<PRT_AltSpark>(npc.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(16, 24), new Color(240, 240, 255), Main.rand.NextFloat(0.9f, 2)).Configure(false, Main.rand.Next(6, 10));
                                 }
                                 npc.AddBuff<MechanicalTrauma>(360);
                                 if (Main.zenithWorld)

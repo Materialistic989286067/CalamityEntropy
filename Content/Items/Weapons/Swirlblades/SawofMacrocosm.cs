@@ -2,6 +2,7 @@ using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityMod;
@@ -10,9 +11,9 @@ using CalamityMod.Dusts;
 using CalamityMod.Items;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Particles;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
@@ -97,13 +98,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             if (BladeScale >= 0.2f)
             {
                 float particleRot = CEUtils.randomRot();
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center + particleRot.ToRotationVector2() * Radius * BladeScale * Projectile.scale, particleRot.ToRotationVector2().RotatedBy(-1.86f) * Main.rand.NextFloat(12, 18), false, Main.rand.Next(12, 16), Main.rand.NextFloat(0.6f, 1f) * 0.06f * BladeScale * Projectile.scale, (Main.rand.NextBool() ? Color.MediumPurple : new Color(80, 80, 255)) * BladeScale, new Vector2(0.22f, 1f), false, false));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center + particleRot.ToRotationVector2() * Radius * BladeScale * Projectile.scale, particleRot.ToRotationVector2().RotatedBy(-1.86f) * Main.rand.NextFloat(12, 18), (Main.rand.NextBool() ? Color.MediumPurple : new Color(80, 80, 255)) * BladeScale, Main.rand.NextFloat(0.6f, 1f) * 0.06f * BladeScale * Projectile.scale).Configure(false, Main.rand.Next(12, 16), new Vector2(0.22f, 1f), false, false);
             }
             CEUtils.AddLight(Projectile.Center, new Color(255, 100, 255));
 
             if (Main.GameUpdateCount % 4 == 0 && BladeScale > 0.4f)
             {
-                EParticle.spawnNew(new ShineParticle(), Projectile.Center + CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 0.9f) * Radius * Projectile.scale * BladeScale, Projectile.velocity, new Color(230, 230, 255), Projectile.scale * BladeScale * Main.rand.NextFloat(0.6f, 1f), 1, true, BlendState.Additive, 0, 10);
+                PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center + CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 0.9f) * Radius * Projectile.scale * BladeScale, Projectile.velocity, new Color(230, 230, 255), Projectile.scale * BladeScale * Main.rand.NextFloat(0.6f, 1f)).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
             }
         }
         public override void FlyBack()
@@ -117,16 +118,14 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                     return;
                 }
                 CEUtils.PlaySound("DoGLaserWallBigAttack", 1.2f, Projectile.Center);
-                CalamityMod.Particles.Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Purple, new Vector2(2f, 2f), 0, 0.1f, 0.85f, 46);
-                GeneralParticleHandler.SpawnParticle(pulse);
-                CalamityMod.Particles.Particle explosion2 = new DetailedExplosion(Projectile.Center, Vector2.Zero, Color.Purple, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, (Projectile.Calamity().stealthStrike ? 2.2f : 1) * 0.65f, 30);
-                GeneralParticleHandler.SpawnParticle(explosion2);
+                PRTLoader.NewParticle<PRT_DirectionalPulseRing>(Projectile.Center, Vector2.Zero, Color.Purple, 0.1f).Configure(new Vector2(2f, 2f), 0, 0.85f, 46);
+                PRTLoader.NewParticle<PRT_DetailedExplosionCal>(Projectile.Center, Vector2.Zero, Color.Purple, 0f).Configure(Vector2.One, Main.rand.NextFloat(-5, 5), (Projectile.Calamity().stealthStrike ? 2.2f : 1) * 0.65f, 30);
 
                 float scale = 7f;
                 for (float i = 1; i >= 0.2f; i -= 0.2f)
                 {
-                    GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 160), new Color(170, 160, 255), i) * i, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f * i * (Radius / 180f), scale * 0.07f * i * (Radius / 180f), 12 + (int)(i * 8)));
-                    GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 180), new Color(170, 160, 255), i) * i, "CalamityMod/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f * i * (Radius / 180f), scale * 0.0625f * i * (Radius / 180f), 12 + (int)(i * 8)));
+                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 160), new Color(170, 160, 255), i) * i, 0.005f * i * (Radius / 180f)).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f * i * (Radius / 180f), scale * 0.07f * i * (Radius / 180f), 12 + (int)(i * 8));
+                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 180), new Color(170, 160, 255), i) * i, 0.0046f * i * (Radius / 180f)).Configure("CalamityMod/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f * i * (Radius / 180f), scale * 0.0625f * i * (Radius / 180f), 12 + (int)(i * 8));
                 }
                 if (Main.myPlayer == Projectile.owner)
                 {
@@ -236,7 +235,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             CEUtils.PlaySound("DoGLaserWallSpawn", Main.rand.NextFloat(1f, 1.25f), Projectile.Center, volume: 1f);
             CEUtils.PlaySound("SCSlash", Main.rand.NextFloat(0.75f, 1f), Projectile.Center);
             for (int i = 0; i < 12; i++)
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center, (i / 12f * MathHelper.TwoPi).ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, false, 11, Radius / 2400f * Main.rand.NextFloat(0.65f, 1f), Main.rand.NextBool() ? Color.Aqua : Color.SkyBlue, new Vector2(2.4f, 0.6f), true));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center, (i / 12f * MathHelper.TwoPi).ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, Main.rand.NextBool() ? Color.Aqua : Color.SkyBlue, Radius / 2400f * Main.rand.NextFloat(0.65f, 1f)).Configure(false, 11, new Vector2(2.4f, 0.6f), true);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -250,7 +249,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             CEUtils.PlaySound("slice", Main.rand.NextFloat(1f, 1.3f), target.Center, volume: 1f);
 
             for (int i = 0; i < 12; i++)
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(target.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, false, 11, 0.04f * Main.rand.NextFloat(0.65f, 1f), Main.rand.NextBool() ? Color.MediumPurple : Color.LightBlue, new Vector2(2.4f, 0.6f), true));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(target.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, Main.rand.NextBool() ? Color.MediumPurple : Color.LightBlue, 0.04f * Main.rand.NextFloat(0.65f, 1f)).Configure(false, 11, new Vector2(2.4f, 0.6f), true);
         }
     }
     public class SawofMacrocosmSplit : BaseSwirlblade
@@ -293,13 +292,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             if (BladeScale >= 0.2f)
             {
                 float particleRot = CEUtils.randomRot();
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center + particleRot.ToRotationVector2() * Radius, particleRot.ToRotationVector2().RotatedBy(-1.86f) * Main.rand.NextFloat(12, 18), false, Main.rand.Next(12, 16), Main.rand.NextFloat(0.6f, 1f) * 0.06f, (Main.rand.NextBool() ? Color.MediumPurple : new Color(80, 80, 255)) * BladeScale, new Vector2(0.22f, 1f), false, false));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center + particleRot.ToRotationVector2() * Radius, particleRot.ToRotationVector2().RotatedBy(-1.86f) * Main.rand.NextFloat(12, 18), (Main.rand.NextBool() ? Color.MediumPurple : new Color(80, 80, 255)) * BladeScale, Main.rand.NextFloat(0.6f, 1f) * 0.06f).Configure(false, Main.rand.Next(12, 16), new Vector2(0.22f, 1f), false, false);
             }
             CEUtils.AddLight(Projectile.Center, new Color(255, 100, 255));
 
             if (Main.GameUpdateCount % 4 == 0 && BladeScale > 0.4f)
             {
-                EParticle.spawnNew(new ShineParticle(), Projectile.Center + CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 0.9f) * Radius * Projectile.scale * BladeScale, Projectile.velocity, new Color(230, 230, 255), Projectile.scale * BladeScale * Main.rand.NextFloat(0.6f, 1f), 1, true, BlendState.Additive, 0, 3);
+                PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center + CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 0.9f) * Radius * Projectile.scale * BladeScale, Projectile.velocity, new Color(230, 230, 255), Projectile.scale * BladeScale * Main.rand.NextFloat(0.6f, 1f)).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 3);
             }
         }
         public override bool PreDraw(ref Color lightColor)
@@ -387,7 +386,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         {
             CEUtils.PlaySound("SCSlash", Main.rand.NextFloat(1.2f, 1.5f), Projectile.Center);
             for (int i = 0; i < 12; i++)
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center, (i / 12f * MathHelper.TwoPi).ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, false, 11, Radius / 2400f * Main.rand.NextFloat(0.65f, 1f), Main.rand.NextBool() ? Color.Aqua : Color.SkyBlue, new Vector2(2.4f, 0.6f), true));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center, (i / 12f * MathHelper.TwoPi).ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, Main.rand.NextBool() ? Color.Aqua : Color.SkyBlue, Radius / 2400f * Main.rand.NextFloat(0.65f, 1f)).Configure(false, 11, new Vector2(2.4f, 0.6f), true);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -401,7 +400,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             CEUtils.PlaySound("slice", Main.rand.NextFloat(1f, 1.3f), target.Center, volume: 1f);
 
             for (int i = 0; i < 12; i++)
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(target.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 4, false, 11, 0.028f * Main.rand.NextFloat(0.65f, 1f), Main.rand.NextBool() ? Color.MediumPurple : Color.LightBlue, new Vector2(2f, 0.4f), true));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(target.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 4, Main.rand.NextBool() ? Color.MediumPurple : Color.LightBlue, 0.028f * Main.rand.NextFloat(0.65f, 1f)).Configure(false, 11, new Vector2(2f, 0.4f), true);
         }
     }
     public class MacrocosmVoidBolt : EBookBaseProjectile
@@ -467,8 +466,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 float Radius = 180;
                 for (float i = 1; i >= 0.2f; i -= 0.2f)
                 {
-                    GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 160), new Color(170, 160, 255), i) * i, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f * i * (Radius / 180f), scale * 0.07f * i * (Radius / 180f), 9 + (int)(i * 8)));
-                    GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 180), new Color(170, 100, 255), i) * i, "CalamityMod/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f * i * (Radius / 180f), scale * 0.05f * i * (Radius / 180f), 9 + (int)(i * 8)));
+                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 160), new Color(170, 160, 255), i) * i, 0.005f * i * (Radius / 180f)).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f * i * (Radius / 180f), scale * 0.07f * i * (Radius / 180f), 9 + (int)(i * 8));
+                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 180), new Color(170, 100, 255), i) * i, 0.0046f * i * (Radius / 180f)).Configure("CalamityMod/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f * i * (Radius / 180f), scale * 0.05f * i * (Radius / 180f), 9 + (int)(i * 8));
                 }
                 CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromThis(), Projectile.GetOwner(), Projectile.Center, Projectile.damage, scale * 54 * (Radius / 180f), Projectile.DamageType);
             }
@@ -614,8 +613,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 for (int i = 0; i < 6; i++)
                 {
                     float rot = 2;
-                    GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center + Projectile.velocity.normalize() * Radius * Projectile.scale, Projectile.velocity.normalize().RotatedBy(rot).RotatedByRandom(0.3f) * Main.rand.NextFloat(4, 16), false, 16, Projectile.scale * 0.04f, Color.LightBlue, new Vector2(0.3f, 1), false, false));
-                    GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center + Projectile.velocity.normalize() * Radius * Projectile.scale, Projectile.velocity.normalize().RotatedBy(-rot).RotatedByRandom(0.3f) * Main.rand.NextFloat(4, 16), false, 16, Projectile.scale * 0.04f, Color.LightBlue, new Vector2(0.3f, 1), false, false));
+                    PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center + Projectile.velocity.normalize() * Radius * Projectile.scale, Projectile.velocity.normalize().RotatedBy(rot).RotatedByRandom(0.3f) * Main.rand.NextFloat(4, 16), Color.LightBlue, Projectile.scale * 0.04f).Configure(false, 16, new Vector2(0.3f, 1), false, false);
+                    PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center + Projectile.velocity.normalize() * Radius * Projectile.scale, Projectile.velocity.normalize().RotatedBy(-rot).RotatedByRandom(0.3f) * Main.rand.NextFloat(4, 16), Color.LightBlue, Projectile.scale * 0.04f).Configure(false, 16, new Vector2(0.3f, 1), false, false);
                 }
             }
             target.AddBuff<GodSlayerInferno>(300);
@@ -624,17 +623,15 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 target.velocity *= 0.6f;
             }
             for (int i = 0; i < 12; i++)
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(target.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, false, 11, 0.04f * Main.rand.NextFloat(0.65f, 1f), Main.rand.NextBool() ? Color.MediumPurple : Color.LightBlue, new Vector2(2.4f, 0.6f), true));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(target.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, Main.rand.NextBool() ? Color.MediumPurple : Color.LightBlue, 0.04f * Main.rand.NextFloat(0.65f, 1f)).Configure(false, 11, new Vector2(2.4f, 0.6f), true);
             SoundEngine.PlaySound(new("CalamityMod/Sounds/NPCKilled/DevourerSegmentBreak1") { Volume = 0.6f, PitchRange = (0.4f, 0.7f) });
-            CalamityMod.Particles.Particle pulse = new DirectionalPulseRing(target.Center, Vector2.Zero, Color.Purple, new Vector2(2f, 2f), 0, 0.1f, 1.2f, 46);
-            GeneralParticleHandler.SpawnParticle(pulse);
-            CalamityMod.Particles.Particle explosion2 = new DetailedExplosion(target.Center, Vector2.Zero, Color.Purple, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, 1.6f * 0.65f, 40);
-            GeneralParticleHandler.SpawnParticle(explosion2);
+            PRTLoader.NewParticle<PRT_DirectionalPulseRing>(target.Center, Vector2.Zero, Color.Purple, 0.1f).Configure(new Vector2(2f, 2f), 0, 1.2f, 46);
+            PRTLoader.NewParticle<PRT_DetailedExplosionCal>(target.Center, Vector2.Zero, Color.Purple, 0f).Configure(Vector2.One, Main.rand.NextFloat(-5, 5), 1.6f * 0.65f, 40);
             float scale = 4f;
             for (float i = 1; i >= 0.2f; i -= 0.2f)
             {
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(target.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 160), new Color(170, 160, 255), i) * i, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f * i * (Radius / 180f), scale * 0.07f * i * (Radius / 180f), 16 + (int)(i * 20)));
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(target.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 180), new Color(170, 160, 255), i) * i, "CalamityMod/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f * i * (Radius / 180f), scale * 0.0625f * i * (Radius / 180f), 16 + (int)(i * 20)));
+                PRTLoader.NewParticle<PRT_CustomPulse>(target.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 160), new Color(170, 160, 255), i) * i, 0.005f * i * (Radius / 180f)).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f * i * (Radius / 180f), scale * 0.07f * i * (Radius / 180f), 16 + (int)(i * 20));
+                PRTLoader.NewParticle<PRT_CustomPulse>(target.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 180), new Color(170, 160, 255), i) * i, 0.0046f * i * (Radius / 180f)).Configure("CalamityMod/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f * i * (Radius / 180f), scale * 0.0625f * i * (Radius / 180f), 16 + (int)(i * 20));
             }
             for (int i = 0; i < 32; i++)
             {

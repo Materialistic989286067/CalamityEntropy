@@ -1,6 +1,7 @@
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityMod;
@@ -8,7 +9,7 @@ using CalamityMod.Dusts;
 using CalamityMod.Items;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Particles;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.IO;
@@ -166,7 +167,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             if(BladeScale >= 0.2f)
             {
                 float particleRot = CEUtils.randomRot();
-                GeneralParticleHandler.SpawnParticle(new AltLineParticle(Projectile.Center + particleRot.ToRotationVector2() * Radius * BladeScale * Projectile.scale, particleRot.ToRotationVector2().RotatedBy(-1.86f) * Main.rand.NextFloat(12, 18), false, Main.rand.Next(12, 16), Main.rand.NextFloat(0.6f, 1f) * 2.2f * BladeScale * Projectile.scale, (Main.rand.NextBool() ? Color.Black : Color.LightGreen) * BladeScale));
+                PRTLoader.NewParticle<PRT_AltLineCal>(Projectile.Center + particleRot.ToRotationVector2() * Radius * BladeScale * Projectile.scale, particleRot.ToRotationVector2().RotatedBy(-1.86f) * Main.rand.NextFloat(12, 18), (Main.rand.NextBool() ? Color.Black : Color.LightGreen) * BladeScale, Main.rand.NextFloat(0.6f, 1f) * 2.2f * BladeScale * Projectile.scale).Configure(false, Main.rand.Next(12, 16));
             }
             NPC stickNpc = null;
             if(Stick >= 0)
@@ -202,7 +203,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         {
             CEUtils.PlaySound("SCSlash", Main.rand.NextFloat(0.9f, 1.2f), Projectile.Center);
             for (int i = 0; i < 10; i++)
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center, (i / 10f * MathHelper.TwoPi).ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, false, 11, Radius / 2400f * Main.rand.NextFloat(0.65f, 1f), (Main.rand.NextBool() ? Color.LightGreen : Color.SeaGreen) * 0.8f, new Vector2(2.4f, 0.6f), true));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center, (i / 10f * MathHelper.TwoPi).ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, (Main.rand.NextBool() ? Color.LightGreen : Color.SeaGreen) * 0.8f, Radius / 2400f * Main.rand.NextFloat(0.65f, 1f)).Configure(false, 11, new Vector2(2.4f, 0.6f), true);
         }
         public override void OnRetract()
         {
@@ -228,14 +229,24 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             CEUtils.PlaySound("VividClarityBeamAppear", Main.rand.NextFloat(1.2f, 1.5f), target.Center, volume: 0.5f);
 
             for (int i = 0; i < 12; i++)
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(target.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, false, 11, 0.04f * Main.rand.NextFloat(0.65f, 1f), Main.rand.NextBool() ? Color.LightGreen : Color.LightSeaGreen, new Vector2(2.4f, 0.6f), true));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(target.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, Main.rand.NextBool() ? Color.LightGreen : Color.LightSeaGreen, 0.04f * Main.rand.NextFloat(0.65f, 1f)).Configure(false, 11, new Vector2(2.4f, 0.6f), true);
 
             float lrot = (Projectile.Center - target.Center).ToRotation() + (Main.rand.NextBool() ? 1 : -1) * 1.2f + Main.rand.NextFloat(-0.1f, 0.1f);
             for(int i = 0; i < 3; i++)
             {
-                EParticle.spawnNew(new AbyssalLine() { xadd = 2.4f, lx = 1.8f, endColor = Color.Black, spawnColor = Color.Black }, Projectile.Center + (target.Center - Projectile.Center).normalize() * 66, Vector2.Zero, Color.Black, 1, 1, true, BlendState.NonPremultiplied, lrot, 30);
+                var line = PRTLoader.NewParticle<PRT_AbyssalLine>(Projectile.Center + (target.Center - Projectile.Center).normalize() * 66, Vector2.Zero, Color.Black, 1);
+                line.xadd = 2.4f;
+                line.lx = 1.8f;
+                line.endColor = Color.Black;
+                line.spawnColor = Color.Black;
+                line.Configure(1, true, PRTDrawModeEnum.NonPremultiplied, lrot, 30);
             }
-            EParticle.spawnNew(new AbyssalLine() { xadd = 2f, lx = 1.5f, endColor = Color.LightGreen * 1.2f, spawnColor = Color.LightGreen * 1.2f}, Projectile.Center + (target.Center - Projectile.Center).normalize() * 66, Vector2.Zero, Color.LightGreen, 1, 1, true, BlendState.Additive, lrot, 30);
+            var line2 = PRTLoader.NewParticle<PRT_AbyssalLine>(Projectile.Center + (target.Center - Projectile.Center).normalize() * 66, Vector2.Zero, Color.LightGreen, 1);
+            line2.xadd = 2f;
+            line2.lx = 1.5f;
+            line2.endColor = Color.LightGreen * 1.2f;
+            line2.spawnColor = Color.LightGreen * 1.2f;
+            line2.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, lrot, 30);
         }
     }
     public class ExergySwirlbladeSaw : ModProjectile
@@ -322,8 +333,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 for (int i = 0; i < 6; i++)
                 {
                     float rot = 2;
-                    GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center + Projectile.velocity.normalize() * Radius * Projectile.scale, Projectile.velocity.normalize().RotatedBy(rot).RotatedByRandom(0.3f) * Main.rand.NextFloat(4, 16) * Projectile.scale, false, 16, Projectile.scale * 0.04f, Color.LightGreen, new Vector2(0.3f, 1), false, false));
-                    GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center + Projectile.velocity.normalize() * Radius * Projectile.scale, Projectile.velocity.normalize().RotatedBy(-rot).RotatedByRandom(0.3f) * Main.rand.NextFloat(4, 16) * Projectile.scale, false, 16, Projectile.scale * 0.04f, Color.LightGreen, new Vector2(0.3f, 1), false, false));
+                    PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center + Projectile.velocity.normalize() * Radius * Projectile.scale, Projectile.velocity.normalize().RotatedBy(rot).RotatedByRandom(0.3f) * Main.rand.NextFloat(4, 16) * Projectile.scale, Color.LightGreen, Projectile.scale * 0.04f).Configure(false, 16, new Vector2(0.3f, 1), false, false);
+                    PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center + Projectile.velocity.normalize() * Radius * Projectile.scale, Projectile.velocity.normalize().RotatedBy(-rot).RotatedByRandom(0.3f) * Main.rand.NextFloat(4, 16) * Projectile.scale, Color.LightGreen, Projectile.scale * 0.04f).Configure(false, 16, new Vector2(0.3f, 1), false, false);
                 }
             }
             for(int ii = 0; ii < 2; ii++)
@@ -331,9 +342,19 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 float lrot = (Projectile.Center - target.Center).ToRotation() + (Main.rand.NextBool() ? 1 : -1) * 1.2f + Main.rand.NextFloat(-0.1f, 0.1f);
                 for (int i = 0; i < 3; i++)
                 {
-                    EParticle.spawnNew(new AbyssalLine() { xadd = 1.4f, lx = 1.4f, endColor = Color.Black, spawnColor = Color.Black }, target.Center, Vector2.Zero, Color.Black, 1, 1, true, BlendState.NonPremultiplied, lrot, 30);
+                    var line = PRTLoader.NewParticle<PRT_AbyssalLine>(target.Center, Vector2.Zero, Color.Black, 1);
+                    line.xadd = 1.4f;
+                    line.lx = 1.4f;
+                    line.endColor = Color.Black;
+                    line.spawnColor = Color.Black;
+                    line.Configure(1, true, PRTDrawModeEnum.NonPremultiplied, lrot, 30);
                 }
-                EParticle.spawnNew(new AbyssalLine() { xadd = 1.2f, lx = 1.1f, endColor = Color.LightGreen * 1.2f, spawnColor = Color.LightGreen * 1.2f }, target.Center, Vector2.Zero, Color.LightGreen, 1, 1, true, BlendState.Additive, lrot, 30);
+                var line2 = PRTLoader.NewParticle<PRT_AbyssalLine>(target.Center, Vector2.Zero, Color.LightGreen, 1);
+                line2.xadd = 1.2f;
+                line2.lx = 1.1f;
+                line2.endColor = Color.LightGreen * 1.2f;
+                line2.spawnColor = Color.LightGreen * 1.2f;
+                line2.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, lrot, 30);
 
             }
             CEUtils.PlaySound("slice", Main.rand.NextFloat(1, 1.4f), target.Center, 8, 0.6f);
@@ -348,8 +369,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 dust.fadeIn = 2f;
             }
             scale = 1.6f;
-            EParticle.spawnNew(new ShineParticle(), target.Center, Vector2.Zero, Color.LightSeaGreen * 0.8f, scale * 1f * Projectile.scale, 1, true, BlendState.Additive, 0, 7);
-            EParticle.spawnNew(new ShineParticle(), target.Center, Vector2.Zero, Color.White * 0.8f, scale * 0.5f * Projectile.scale, 1, true, BlendState.Additive, 0, 7);
+            PRTLoader.NewParticle<PRT_ShineParticle>(target.Center, Vector2.Zero, Color.LightSeaGreen * 0.8f, scale * 1f * Projectile.scale).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 7);
+            PRTLoader.NewParticle<PRT_ShineParticle>(target.Center, Vector2.Zero, Color.White * 0.8f, scale * 0.5f * Projectile.scale).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 7);
         }
 
         public float BladeScale => 1;

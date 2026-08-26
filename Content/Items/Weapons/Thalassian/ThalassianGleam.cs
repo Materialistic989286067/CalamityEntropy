@@ -1,6 +1,7 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Donator.RocketLauncher;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
@@ -10,7 +11,7 @@ using CalamityMod;
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items;
-using CalamityMod.Particles;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -299,7 +300,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Thalassian
                 }
                 for(int i = 0; i < 4; i++)
                 {
-                    GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Projectile.GetOwner().velocity, new Color(180, 255, 255), "CalamityEntropy/Assets/Extra/Star2", Vector2.One, CEUtils.randomRot(), 0.01f, 0.8f * scale, 16));
+                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Projectile.GetOwner().velocity, new Color(180, 255, 255), 0.01f).Configure("CalamityEntropy/Assets/Extra/Star2", Vector2.One, CEUtils.randomRot(), 0.01f, 0.8f * scale, 16);
                 }
             }
             Projectile.Center = opos;
@@ -511,7 +512,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Thalassian
                     dust.fadeIn = 2f;
                 }
                 for(int i = 0; i < 3; i++)
-                    GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, new Color(180, 255, 255), "CalamityEntropy/Assets/Extra/Star2", Vector2.One, CEUtils.randomRot(), 0.01f, 0.8f * scale, 12));
+                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(180, 255, 255), 0.01f).Configure("CalamityEntropy/Assets/Extra/Star2", Vector2.One, CEUtils.randomRot(), 0.01f, 0.8f * scale, 12);
             }
         }
         public static void DrawTrail(List<CEUtils.VertexPointSets> sets)

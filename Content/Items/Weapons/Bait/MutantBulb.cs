@@ -1,12 +1,13 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityMod;
 using CalamityMod.Dusts;
 using CalamityMod.Items;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
-using CalamityMod.Particles;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -275,7 +276,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             CEUtils.PlaySound("VoidBomb", 1.4f, target.Center);
             for(int i = 0; i < 8; i++)
             {
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(CEUtils.randomPoint(target.getRect()), Projectile.velocity.normalize().RotatedByRandom(0.2f) * Main.rand.NextFloat(6, 18), true, 20, Main.rand.NextFloat(0.02f, 0.03f), Color.LightGreen, new Vector2(0.2f, 1), false, false));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(CEUtils.randomPoint(target.getRect()), Projectile.velocity.normalize().RotatedByRandom(0.2f) * Main.rand.NextFloat(6, 18), Color.LightGreen, Main.rand.NextFloat(0.02f, 0.03f)).Configure(true, 20, new Vector2(0.2f, 1), false, false);
             }
         }
         public override bool PreDraw(ref Color lightColor)

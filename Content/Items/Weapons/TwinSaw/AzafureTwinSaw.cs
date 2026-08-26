@@ -2,13 +2,14 @@ using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Items.Weapons.Swirlblades;
 using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
 using CalamityMod;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items;
 using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Particles;
 using CalamityMod.Rarities;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -198,7 +199,7 @@ namespace CalamityEntropy.Content.Items.Weapons.TwinSaw
                         Vector2 vel = Projectile.rotation.ToRotationVector2().RotatedBy(MathHelper.PiOver2 * dir).RotatedByRandom(1.4f) * Main.rand.NextFloat(28, 32);
                         Color color = Main.rand.NextBool() ? Color.Orange : Color.Firebrick;
                         float scale = Main.rand.NextFloat(1.8f, 2.4f);
-                        GeneralParticleHandler.SpawnParticle(new LineParticle(pos, vel, true, Main.rand.Next(8, 12), scale, color));
+                        PRTLoader.NewParticle<PRT_LineCal>(pos, vel, color, scale).Configure(true, Main.rand.Next(8, 12));
                     }
                 }
                 if (Projectile.localAI[0] >= 6)
@@ -317,11 +318,11 @@ namespace CalamityEntropy.Content.Items.Weapons.TwinSaw
                 float scale = Main.rand.NextFloat(0.4f, 2.6f);
                 if (Main.rand.NextBool())
                 {
-                    GeneralParticleHandler.SpawnParticle(new LineParticle(pos, vel, false, Main.rand.Next(3, 9), scale, color));
+                    PRTLoader.NewParticle<PRT_LineCal>(pos, vel, color, scale).Configure(false, Main.rand.Next(3, 9));
                 }
                 else
                 {
-                    GeneralParticleHandler.SpawnParticle(new SparkParticle(pos, vel, false, Main.rand.Next(3, 9), scale, color));
+                    PRTLoader.NewParticle<PRT_SparkCal>(pos, vel, color, scale).Configure(false, Main.rand.Next(3, 9));
                 }
             }
         }
@@ -352,11 +353,11 @@ namespace CalamityEntropy.Content.Items.Weapons.TwinSaw
                     float scale = Main.rand.NextFloat(1.8f, 2.6f);
                     if (Main.rand.NextBool())
                     {
-                        GeneralParticleHandler.SpawnParticle(new LineParticle(pos, vel, false, Main.rand.Next(3, 6), scale, color));
+                        PRTLoader.NewParticle<PRT_LineCal>(pos, vel, color, scale).Configure(false, Main.rand.Next(3, 6));
                     }
                     else
                     {
-                        GeneralParticleHandler.SpawnParticle(new SparkParticle(pos, vel, false, Main.rand.Next(3, 6), scale, color));
+                        PRTLoader.NewParticle<PRT_SparkCal>(pos, vel, color, scale).Configure(false, Main.rand.Next(3, 6));
                     }
                 }
             }
@@ -370,11 +371,11 @@ namespace CalamityEntropy.Content.Items.Weapons.TwinSaw
                     float scale = Main.rand.NextFloat(0.4f, 2.8f);
                     if (Main.rand.NextBool())
                     {
-                        GeneralParticleHandler.SpawnParticle(new LineParticle(pos, vel, false, Main.rand.Next(5, 11), scale, color));
+                        PRTLoader.NewParticle<PRT_LineCal>(pos, vel, color, scale).Configure(false, Main.rand.Next(5, 11));
                     }
                     else
                     {
-                        GeneralParticleHandler.SpawnParticle(new SparkParticle(pos, vel, false, Main.rand.Next(5, 11), scale, color));
+                        PRTLoader.NewParticle<PRT_SparkCal>(pos, vel, color, scale).Configure(false, Main.rand.Next(5, 11));
                     }
                 }
             }
@@ -382,23 +383,23 @@ namespace CalamityEntropy.Content.Items.Weapons.TwinSaw
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff<MechanicalTrauma>(160);
-            EParticle.spawnNew(new ShineParticle(), Projectile.Center, Vector2.Zero, new Color(255, 200, 30), 0.3f, 1, true, BlendState.Additive, 0, 8);
-            EParticle.spawnNew(new ShineParticle(), Projectile.Center, Vector2.Zero, new Color(255, 255, 255), 0.18f, 1, true, BlendState.Additive, 0, 8);
-            for (int i = 0; i < 4; i++)
-            {
-                Vector2 pos = Projectile.Center;
-                Vector2 vel = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(16, 46);
-                Color color = Main.rand.NextBool() ? Color.Orange : Color.Firebrick;
-                float scale = Main.rand.NextFloat(1.8f, 2.6f);
-                if (Main.rand.NextBool())
+            PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, new Color(255, 200, 30), 0.3f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 8);
+            PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, new Color(255, 255, 255), 0.18f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 8);
+                for (int i = 0; i < 4; i++)
                 {
-                    GeneralParticleHandler.SpawnParticle(new LineParticle(pos, vel, false, Main.rand.Next(3, 6), scale, color));
+                    Vector2 pos = Projectile.Center;
+                    Vector2 vel = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(16, 46);
+                    Color color = Main.rand.NextBool() ? Color.Orange : Color.Firebrick;
+                    float scale = Main.rand.NextFloat(1.8f, 2.6f);
+                    if (Main.rand.NextBool())
+                    {
+                        PRTLoader.NewParticle<PRT_LineCal>(pos, vel, color, scale).Configure(false, Main.rand.Next(3, 6));
+                    }
+                    else
+                    {
+                        PRTLoader.NewParticle<PRT_SparkCal>(pos, vel, color, scale).Configure(false, Main.rand.Next(3, 6));
+                    }
                 }
-                else
-                {
-                    GeneralParticleHandler.SpawnParticle(new SparkParticle(pos, vel, false, Main.rand.Next(3, 6), scale, color));
-                }
-            }
             SoundStyle burn = new("CalamityMod/Sounds/Item/WeldingBurn");
             SoundEngine.PlaySound(burn with { Volume = 0.4f, Pitch = 0.55f }, target.Center);
         }

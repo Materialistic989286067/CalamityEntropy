@@ -1,11 +1,11 @@
 ﻿using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityMod;
 using CalamityMod.Items;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.Other;
-using CalamityMod.Particles;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -120,7 +120,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             if (Projectile.localAI[1] <= 0)
             {
                 Projectile.localAI[1] = 4 * Projectile.MaxUpdates;
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.Pink * 1.1f, "CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 0.4f, 20));
+                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Pink * 1.1f, 0.01f).Configure("CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 0.4f, 20);
                 SoundEngine.PlaySound(SoundID.Item56 with { Volume = 1.5f }, Projectile.Center);
                 SoundEngine.PlaySound(SoundID.Item58 with { Volume = 1f, Pitch = Main.rand.NextFloat(-0.4f, 0.4f) }, Projectile.Center);
             }
@@ -231,12 +231,12 @@ namespace CalamityEntropy.Content.Items.Weapons
             }
             int plt = Projectile.Calamity().stealthStrike ? 15 : 12;
             Vector2 v = Vector2.UnitX;
-            GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center, v, false, plt, 0.04f * scale, Color.DeepPink, new Vector2(8, 4), true, false));
-            GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center, v, false, plt, 0.03f * scale, Color.White, new Vector2(8, 4), true, false));
+            PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center, v, Color.DeepPink, 0.04f * scale).Configure(false, plt, new Vector2(8, 4), true, false);
+            PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center, v, Color.White, 0.03f * scale).Configure(false, plt, new Vector2(8, 4), true, false);
 
             v = Vector2.UnitY;
-            GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center, v, false, plt, 0.04f * scale, Color.DeepPink, new Vector2(8, 4), true, false));
-            GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center, v, false, plt, 0.03f * scale, Color.White, new Vector2(8, 4), true, false));
+            PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center, v, Color.DeepPink, 0.04f * scale).Configure(false, plt, new Vector2(8, 4), true, false);
+            PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center, v, Color.White, 0.03f * scale).Configure(false, plt, new Vector2(8, 4), true, false);
             if (Main.myPlayer == Projectile.owner)
                 CEUtils.SyncProj(Projectile.whoAmI);
         }
@@ -262,8 +262,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             if (Hitted)
                 return;
             CEUtils.PlaySound("HIT", 1.8f, Projectile.Center);
-            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.Pink * 1.25f, "CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 0.4f, 20));
-            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.Pink * 1.25f, "CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 1.4f, 20));
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Pink * 1.25f, 0.01f).Configure("CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 0.4f, 20);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Pink * 1.25f, 0.01f).Configure("CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 1.4f, 20);
             SoundEngine.PlaySound(SoundID.Item56 with { Volume = 1.5f }, Projectile.Center);
             Hitted = true;
             List<NPC> targetNearby = CEUtils.FindSomeNearEnemies(Projectile.Center, 24, 900);

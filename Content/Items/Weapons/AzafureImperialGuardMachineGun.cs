@@ -7,8 +7,8 @@ using CalamityMod;
 using CalamityMod.Items;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Particles;
 using CalamityMod.Rarities;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -184,7 +184,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + new Vector2(16, -14 * dir).RotatedBy(Projectile.rotation), Projectile.velocity.RotatedByRandom(Main.rand.NextFloat(0, player.AzafureEnhance() ? 0.3f : 0.6f)) * Main.rand.NextFloat(1.2f, 1.42f) * (player.AzafureEnhance() ? 1.4f : 1), ModContent.ProjectileType<ImperialGuardShot>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
                             }
                         }
-                        EParticle.spawnNew(new ShellParticle(), Projectile.Center + new Vector2(12, 4 * dir).RotatedBy(Projectile.rotation), Projectile.velocity.RotatedBy(dir * -2.2f) * 0.7f + CEUtils.randomPointInCircle(5), Color.White, 1, 1, false, BlendState.AlphaBlend, CEUtils.randomRot());
+                        PRTLoader.NewParticle<PRT_ShellParticle>(Projectile.Center + new Vector2(12, 4 * dir).RotatedBy(Projectile.rotation), Projectile.velocity.RotatedBy(dir * -2.2f) * 0.7f + CEUtils.randomPointInCircle(5), Color.White, 1).Configure(1, false, PRTDrawModeEnum.AlphaBlend, CEUtils.randomRot());
                     }
                 }
             }
@@ -217,7 +217,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
         }
-        public TrailParticle trail = null;
+        public PRT_TrailParticle trail = null;
 
         public override void AI()
         {
@@ -225,11 +225,12 @@ namespace CalamityEntropy.Content.Items.Weapons
             Projectile.rotation = Projectile.velocity.ToRotation();
             if (trail == null)
             {
-                trail = new TrailParticle();
+                //maxLength/Lifetime/ShouldDraw Configure前先赋,对齐旧TrailParticle字段
+                trail = PRTLoader.NewParticle<PRT_TrailParticle>(Projectile.Center, Vector2.Zero, Color.Orange, 0.8f);
                 trail.maxLength = 18;
-                trail.TimeLeftMax = 12;
+                trail.Lifetime = 12;
                 trail.ShouldDraw = false;
-                EParticle.spawnNew(trail, Projectile.Center, Vector2.Zero, Color.Orange, 0.8f, 1f, true, BlendState.Additive);
+                trail.Configure(1f, true, PRTDrawModeEnum.AdditiveBlend);
             }
             if (Projectile.timeLeft < 20)
                 Projectile.Opacity -= 1 / 20f;
@@ -240,7 +241,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-            trail?.Draw();
+            trail?.DrawTrail(Main.spriteBatch);
             Texture2D tex = CEUtils.getExtraTex("Diamond");
             float scale = 0.06f * Projectile.scale;
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, Color.Orange * Projectile.Opacity, Projectile.rotation, tex.Size().Half(), new Vector2(2, 1) * scale, SpriteEffects.None, 0);
@@ -257,8 +258,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             if (timeLeft > 6)
             {
-                EParticle.spawnNew(new ShineParticle(), Projectile.Center, Vector2.Zero, Color.Orange, 0.4f, 1, true, BlendState.Additive, 0, 8);
-                EParticle.spawnNew(new ShineParticle(), Projectile.Center, Vector2.Zero, Color.White, 0.3f, 1, true, BlendState.Additive, 0, 8);
+                PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.Orange, 0.4f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 8);
+                PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.White, 0.3f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 8);
                 CEUtils.PlaySound("beast_lavaball_rise1", Main.rand.NextFloat(2.4f, 2.8f), Projectile.Center, 36, 0.4f);
             }
         }

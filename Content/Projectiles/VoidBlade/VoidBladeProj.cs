@@ -1,8 +1,9 @@
-﻿using CalamityEntropy.Common;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityMod;
 using CalamityMod.Dusts;
-using CalamityMod.Particles;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
@@ -173,17 +174,21 @@ namespace CalamityEntropy.Content.Projectiles.VoidBlade
             for (int i = 0; i < 18; i++)
             {
                 Color clr = Projectile.ai[1] >= 7 ? new Color(177, 164, 218) : new Color(186, 80, 212);
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(CEUtils.randomPoint(target.Hitbox), Projectile.velocity.normalize().RotatedByRandom(0.02f) * Main.rand.NextFloat(6, 56), false, 16, Main.rand.NextFloat(0.3f, 1) * 0.08f, clr, new Vector2(0.26f, 1), false, false));
+                //GlowSparkCal Configure(gravity,lifetime,squash,quickShrink,glow)对齐Calamity构造
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(CEUtils.randomPoint(target.Hitbox), Projectile.velocity.normalize().RotatedByRandom(0.02f) * Main.rand.NextFloat(6, 56), clr, Main.rand.NextFloat(0.3f, 1) * 0.08f).Configure(false, 16, new Vector2(0.26f, 1), false, false);
                 if (Main.rand.NextBool(4))
                 {
-                    EParticle.NewParticle(new ShadeDashParticle() { c1 = clr, c2 = clr * 4, TL = 14 }, CEUtils.randomPoint(target.Hitbox),
-                        Projectile.velocity.normalize().RotatedByRandom(0.3f) * Main.rand.NextFloat(16, 46), Color.White, 1, 1, true, BlendState.NonPremultiplied, 0, 9);
+                    var sd = PRTLoader.NewParticle<PRT_ShadeDashParticle>(CEUtils.randomPoint(target.Hitbox), Projectile.velocity.normalize().RotatedByRandom(0.3f) * Main.rand.NextFloat(16, 46), Color.White);
+                    sd.c1 = clr;
+                    sd.c2 = clr * 4;
+                    sd.TL = 14;
+                    sd.Configure(1, true, PRTDrawModeEnum.NonPremultiplied, 0, 9);
                 }
             }
 
             for (int i = 0; i < 9; i++)
             {
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(target.Center, Projectile.velocity.normalize().RotatedByRandom(0.6f) * Main.rand.NextFloat(0.6f, 1) * 8, false, 11, 0.05f * Main.rand.NextFloat(0.65f, 1f), Main.rand.NextBool() ? Color.MediumPurple : Color.LightBlue, new Vector2(4f, 0.5f), true));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(target.Center, Projectile.velocity.normalize().RotatedByRandom(0.6f) * Main.rand.NextFloat(0.6f, 1) * 8, Main.rand.NextBool() ? Color.MediumPurple : Color.LightBlue, 0.05f * Main.rand.NextFloat(0.65f, 1f)).Configure(false, 11, new Vector2(4f, 0.5f), true);
             }
             for (int i = 0; i < 32; i++)
             {

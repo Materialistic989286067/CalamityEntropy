@@ -1,8 +1,9 @@
 ﻿using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityMod;
 using CalamityMod.Dusts;
 using CalamityMod.Items;
-using CalamityMod.Particles;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -186,7 +187,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             int dust_splash = 0;
             while (dust_splash < 18)
             {
-                GeneralParticleHandler.SpawnParticle(new PointParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(15), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Projectile.ai[0] == 1 ? 1.2f : 0.6f, Projectile.ai[0] == 1 ? Color.GreenYellow : new Color(128, 110, 50), false, true));
+                PRTLoader.NewParticle<PRT_PointCal>(Projectile.Center, new Vector2(Main.rand.NextFloat(15), 0).RotatedByRandom(MathHelper.TwoPi), Projectile.ai[0] == 1 ? Color.GreenYellow : new Color(128, 110, 50), Projectile.ai[0] == 1 ? 1.2f : 0.6f).Configure(false, 10, false);
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Copper, 0f, 0f, 0, default, 0.5f);
                 dust_splash += 1;
             }
@@ -276,7 +277,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                     {
                         Vector2 velj = CEUtils.CalculateSourceVel(Projectile.Center, acornPos, int.Clamp((int)((Projectile.Distance(acornPos) / 20f) / Projectile.scale), 3, 60), 1f * Projectile.scale);
                         Projectile.velocity = velj;
-                        GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.SandyBrown, "CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 0.36f, 13));
+                        PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.SandyBrown, 0.01f).Configure("CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 0.36f, 13);
                         SoundEngine.PlaySound(SoundID.Item56 with { Volume = 1f, Pitch = Main.rand.NextFloat(-0.4f, 0.4f) }, Projectile.Center);
                     }
                     if(Jump-- <= 0)
@@ -392,7 +393,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                             if (Math.Abs(Projectile.velocity.Y) <= 0.01f)
                             {
                                 Projectile.velocity = (target.Center - Projectile.Center).normalize() * 30 * Projectile.scale;
-                                GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.SandyBrown, "CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 0.36f, 13));
+                                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.SandyBrown, 0.01f).Configure("CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 0.36f, 13);
                                 SoundEngine.PlaySound(SoundID.Item56 with { Volume = 1f, Pitch = Main.rand.NextFloat(-0.4f, 0.4f) }, Projectile.Center);
                             }
                         }
@@ -405,7 +406,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                                 {
                                     Projectile.velocity.Y = -18 * Projectile.scale;
 
-                                    GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.SandyBrown, "CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 0.36f, 13));
+                                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.SandyBrown, 0.01f).Configure("CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 0.36f, 13);
                                     SoundEngine.PlaySound(SoundID.Item56 with { Volume = 1f, Pitch = Main.rand.NextFloat(-0.4f, 0.4f) }, Projectile.Center);
                                 }
                             }
@@ -513,7 +514,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             int dust_splash = 0;
             while (dust_splash < 6)
             {
-                GeneralParticleHandler.SpawnParticle(new PointParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(15), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Projectile.ai[0] == 1 ? 1.2f : 0.6f, Projectile.ai[0] == 1 ? Color.Gray : Color.DarkGray, false, true));
+                PRTLoader.NewParticle<PRT_PointCal>(Projectile.Center, new Vector2(Main.rand.NextFloat(15), 0).RotatedByRandom(MathHelper.TwoPi), Projectile.ai[0] == 1 ? Color.Gray : Color.DarkGray, Projectile.ai[0] == 1 ? 1.2f : 0.6f).Configure(false, 10, false);
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Copper, 0f, 0f, 0, default, 0.5f);
                 dust_splash += 1;
             }

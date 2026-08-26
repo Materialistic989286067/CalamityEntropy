@@ -1,8 +1,9 @@
 ﻿using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityMod;
 using CalamityMod.Items;
-using CalamityMod.Particles;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -167,7 +168,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             for(int i = 0; i < 2; i++)
             {
                 float scale = 0.05f + 0.02f * i;
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(pos, Vector2.Zero, Color.Lerp(Color.SandyBrown, new Color(230, 198, 104), (i / 2f)), "CalamityMod/Particles/FlameExplosion2", Vector2.One, CEUtils.randomRot(), scale * 0.2f, scale, 12 + i * 4));
+                PRTLoader.NewParticle<PRT_CustomPulse>(pos, Vector2.Zero, Color.Lerp(Color.SandyBrown, new Color(230, 198, 104), (i / 2f)), scale * 0.2f).Configure("CalamityMod/Particles/FlameExplosion2", Vector2.One, CEUtils.randomRot(), scale * 0.2f, scale, 12 + i * 4);
             }
         }
         public override void OnKill(int timeLeft)
@@ -253,7 +254,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                     CEUtils.PlaySound("DnBite", 1, Projectile.Center);
                     for(int i = 0; i < 14; i++)
                     {
-                        GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(CEUtils.randomPoint(player.MinionAttackTargetNPC.ToNPC().getRect()), Projectile.velocity.normalize().RotatedByRandom(0.4f) * Main.rand.NextFloat(9, 18), true, 24, Main.rand.NextFloat(1.2f, 1.6f) * 0.04f, Color.SandyBrown * 1.2f, new Vector2(0.2f, 1f)));
+                        PRTLoader.NewParticle<PRT_GlowSparkCal>(CEUtils.randomPoint(player.MinionAttackTargetNPC.ToNPC().getRect()), Projectile.velocity.normalize().RotatedByRandom(0.4f) * Main.rand.NextFloat(9, 18), Color.SandyBrown * 1.2f, Main.rand.NextFloat(1.2f, 1.6f) * 0.04f).Configure(true, 24, new Vector2(0.2f, 1f));
                     }
                     foreach(Projectile p in Main.ActiveProjectiles)
                     {

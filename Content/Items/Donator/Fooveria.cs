@@ -1,11 +1,12 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityMod;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items;
 using CalamityMod.Items.LoreItems;
-using CalamityMod.Particles;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
@@ -216,8 +217,7 @@ namespace CalamityEntropy.Content.Items.Donator
             Color impactColor = Color.LightBlue;
             float impactParticleScale = Main.rand.NextFloat(1.4f, 1.6f);
 
-            SparkleParticle impactParticle = new SparkleParticle(target.Center + Main.rand.NextVector2Circular(target.width * 0.75f, target.height * 0.75f), Vector2.Zero, impactColor, Color.SkyBlue, impactParticleScale, 8, 0, 2.5f);
-            GeneralParticleHandler.SpawnParticle(impactParticle);
+            PRTLoader.NewParticle<PRT_SparkleCal>(target.Center + Main.rand.NextVector2Circular(target.width * 0.75f, target.height * 0.75f), Vector2.Zero, impactColor, impactParticleScale).Configure(Color.SkyBlue, 8, 0, 2.5f);
 
             float sparkCount = 16 + Fooveria.GetLevel() / 2;
             for (int i = 0; i < sparkCount; i++)
@@ -230,13 +230,11 @@ namespace CalamityEntropy.Content.Items.Donator
                 Color sparkColor2 = Color.Lerp(Color.LightSkyBlue, Color.AliceBlue, p);
                 if (Main.rand.NextBool())
                 {
-                    AltSparkParticle spark = new AltSparkParticle(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f), sparkVelocity2 * (1f), false, (int)(sparkLifetime2 * (1.2f)), sparkScale2 * (1.4f), sparkColor2);
-                    GeneralParticleHandler.SpawnParticle(spark);
+                    PRTLoader.NewParticle<PRT_AltSpark>(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f), sparkVelocity2 * (1f), sparkColor2, sparkScale2 * (1.4f)).Configure(false, (int)(sparkLifetime2 * (1.2f)));
                 }
                 else
                 {
-                    LineParticle spark = new LineParticle(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f), sparkVelocity2, false, (int)(sparkLifetime2), sparkScale2 * (Projectile.frame == 7 ? 1.4f : 1f), Main.rand.NextBool() ? Color.LightBlue : Color.SkyBlue);
-                    GeneralParticleHandler.SpawnParticle(spark);
+                    PRTLoader.NewParticle<PRT_LineCal>(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f), sparkVelocity2, Main.rand.NextBool() ? Color.LightBlue : Color.SkyBlue, sparkScale2 * (Projectile.frame == 7 ? 1.4f : 1f)).Configure(false, (int)(sparkLifetime2));
                 }
             }
             if (Projectile.ai[2] > 0)
@@ -361,15 +359,13 @@ namespace CalamityEntropy.Content.Items.Donator
             Vector2 pos = Projectile.Center + Projectile.rotation.ToRotationVector2() * 116 * scale * Projectile.scale * rScale;
             if (Main.rand.NextBool())
             {
-                AltLineParticle spark = new AltLineParticle(pos, sparkVelocity2 * (1f), false, (int)(sparkLifetime2 * (1.2f)), sparkScale2 * (1.4f), sparkColor2);
-                GeneralParticleHandler.SpawnParticle(spark);
+                PRTLoader.NewParticle<PRT_AltLineCal>(pos, sparkVelocity2 * (1f), sparkColor2, sparkScale2 * (1.4f)).Configure(false, (int)(sparkLifetime2 * (1.2f)));
             }
             else
             {
-                LineParticle spark = new LineParticle(pos, sparkVelocity2, false, (int)(sparkLifetime2), sparkScale2 * (Projectile.frame == 7 ? 1.4f : 1f), Main.rand.NextBool() ? Color.LightBlue : Color.SkyBlue);
-                GeneralParticleHandler.SpawnParticle(spark);
+                PRTLoader.NewParticle<PRT_LineCal>(pos, sparkVelocity2, Main.rand.NextBool() ? Color.LightBlue : Color.SkyBlue, sparkScale2 * (Projectile.frame == 7 ? 1.4f : 1f)).Configure(false, (int)(sparkLifetime2));
             }
-            EParticle.spawnNew(new Snowflake(), Projectile.Center + Projectile.rotation.ToRotationVector2() * 100 * scale * Projectile.scale * rScale * Main.rand.NextFloat(Main.rand.NextFloat(0.25f, 1f), 1f), sparkVelocity2 * 0.2f, Color.White, Main.rand.NextFloat(0.16f, 0.36f) * scale * Projectile.scale, 1, true, BlendState.Additive, CEUtils.randomRot(), 8);
+            PRTLoader.NewParticle<PRT_Snowflake>(Projectile.Center + Projectile.rotation.ToRotationVector2() * 100 * scale * Projectile.scale * rScale * Main.rand.NextFloat(Main.rand.NextFloat(0.25f, 1f), 1f), sparkVelocity2 * 0.2f, Color.White, Main.rand.NextFloat(0.16f, 0.36f) * scale * Projectile.scale).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, CEUtils.randomRot(), 8);
             lPos = vpos;
         }
         public override bool PreDraw(ref Color lightColor)
@@ -490,8 +486,8 @@ namespace CalamityEntropy.Content.Items.Donator
             CEUtils.PlaySound("CryogenHit" + Main.rand.Next(1, 4), 1, Projectile.Center);
 
             float scale = 60 / 40f;
-            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.LightBlue, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 16));
-            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.LightBlue, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 13));
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.LightBlue, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 16);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.LightBlue, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 13);
 
         }
         public override void SetDefaults()

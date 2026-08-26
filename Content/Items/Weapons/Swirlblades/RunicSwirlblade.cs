@@ -2,6 +2,7 @@ using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityMod;
@@ -9,7 +10,7 @@ using CalamityMod.Dusts;
 using CalamityMod.Items;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Particles;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -90,7 +91,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             if (BladeScale >= 0.2f)
             {
                 float particleRot = CEUtils.randomRot();
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center + particleRot.ToRotationVector2() * Radius * BladeScale * Projectile.scale, particleRot.ToRotationVector2().RotatedBy(-1.86f) * Main.rand.NextFloat(12, 18), false, Main.rand.Next(12, 16), Main.rand.NextFloat(0.6f, 1f) * 0.04f * BladeScale * Projectile.scale, (Main.rand.NextBool() ? new Color(200, 220, 255) : Color.LightBlue) * BladeScale, new Vector2(0.18f, 1f), false, false));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center + particleRot.ToRotationVector2() * Radius * BladeScale * Projectile.scale, particleRot.ToRotationVector2().RotatedBy(-1.86f) * Main.rand.NextFloat(12, 18), (Main.rand.NextBool() ? new Color(200, 220, 255) : Color.LightBlue) * BladeScale, Main.rand.NextFloat(0.6f, 1f) * 0.04f * BladeScale * Projectile.scale).Configure(false, Main.rand.Next(12, 16), new Vector2(0.18f, 1f), false, false);
             }
             if (Projectile.Calamity().stealthStrike)
             {
@@ -186,7 +187,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             CEUtils.PlaySound("soulshine", Main.rand.NextFloat(0.6f, 0.8f), Projectile.Center);
             CEUtils.PlaySound("SCSlash", Main.rand.NextFloat(0.75f, 1f), Projectile.Center);
             for (int i = 0; i < 12; i++)
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center, (i / 12f * MathHelper.TwoPi).ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, false, 11, Radius / 2400f * Main.rand.NextFloat(0.65f, 1f), Main.rand.NextBool() ? new Color(200, 220, 255) : Color.LightBlue, new Vector2(2.4f, 0.6f), true));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center, (i / 12f * MathHelper.TwoPi).ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, Main.rand.NextBool() ? new Color(200, 220, 255) : Color.LightBlue, Radius / 2400f * Main.rand.NextFloat(0.65f, 1f)).Configure(false, 11, new Vector2(2.4f, 0.6f), true);
             int type = ModContent.ProjectileType<RunicSwirlbladeBullet>();
             if (Main.myPlayer == Projectile.owner)
             {
@@ -227,7 +228,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             CEUtils.PlaySound("VividClarityBeamAppear", Main.rand.NextFloat(1.6f, 1.9f), target.Center, volume: 1f);
 
             for (int i = 0; i < 12; i++)
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(target.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, false, 13, 0.06f * Main.rand.NextFloat(0.65f, 1f), Main.rand.NextBool() ? new Color(200, 220, 255) : Color.LightBlue, new Vector2(2.4f, 0.6f), true));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(target.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, Main.rand.NextBool() ? new Color(200, 220, 255) : Color.LightBlue, 0.06f * Main.rand.NextFloat(0.65f, 1f)).Configure(false, 13, new Vector2(2.4f, 0.6f), true);
         }
     }
     public class RunicSwirlbladeBullet : ModProjectile
@@ -322,7 +323,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 Projectile.rotation = adv.ToRotation();
                 Projectile.position += adv;
                 if(Main.rand.NextBool(3))
-                    EParticle.spawnNew(new RuneParticle(), Projectile.Center, Vector2.Zero, new Color(200, 230, 255), Main.rand.NextFloat(0.4f, 0.6f) * Projectile.scale, 1, true, BlendState.Additive, 0, 46);
+                    PRTLoader.NewParticle<PRT_RuneParticle>(Projectile.Center, Vector2.Zero, new Color(200, 230, 255), Main.rand.NextFloat(0.4f, 0.6f) * Projectile.scale).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 46);
             }
 
             oldPos.Add(Projectile.Center);

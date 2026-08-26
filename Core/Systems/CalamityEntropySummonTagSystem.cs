@@ -1,12 +1,15 @@
+using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Items.Weapons;
+using CalamityEntropy.Content.Items.Weapons.Whips;
 using CalamityMod.DataStructures;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Items.Weapons.Whips;
+using System;
 using System.Collections.Generic;
 using Terraria.ModLoader;
-using System;
-using CalamityEntropy.Content.Items.Weapons.Whips;
-using CalamityEntropy.Content.Buffs;
 
 namespace CalamityEntropy.Core.Systems
 {

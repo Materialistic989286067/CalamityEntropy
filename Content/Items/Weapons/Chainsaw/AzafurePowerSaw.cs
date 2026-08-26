@@ -2,9 +2,10 @@
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Items.Weapons.TwinSaw;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
 using CalamityMod;
-using CalamityMod.Particles;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -200,11 +201,12 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
                 float scale = Main.rand.NextFloat(0.4f, 2.6f);
                 if (Main.rand.NextBool())
                 {
-                    GeneralParticleHandler.SpawnParticle(new LineParticle(pos, vel, false, Main.rand.Next(3, 9), scale, color));
+                    //带Cal后缀是CalamityPorts,Configure签名对齐Calamity原构造不是统一五参
+                    PRTLoader.NewParticle<PRT_LineCal>(pos, vel, color, scale).Configure(false, Main.rand.Next(3, 9));
                 }
                 else
                 {
-                    GeneralParticleHandler.SpawnParticle(new SparkParticle(pos, vel, false, Main.rand.Next(3, 9), scale, color));
+                    PRTLoader.NewParticle<PRT_SparkCal>(pos, vel, color, scale).Configure(false, Main.rand.Next(3, 9));
                 }
             }
         }

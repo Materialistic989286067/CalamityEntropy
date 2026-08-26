@@ -6,8 +6,8 @@ using CalamityMod;
 using CalamityMod.Dusts;
 using CalamityMod.Items;
 using CalamityMod.Items.Materials;
-using CalamityMod.Particles;
 using CalamityMod.Projectiles.Rogue;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -179,8 +179,18 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                     Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.MagicMirror, Main.rand.NextFloat(-6, 6), Main.rand.NextFloat(-6, 6), 0, new Color(200, 160, 255), Main.rand.NextFloat(1.4f, 1.6f));
                 }
                 float r = CEUtils.randomRot();
-                EParticle.NewParticle(new AbyssalLine() { lx = 3f, xadd = 0.9f, spawnColor = Color.LightBlue, endColor = Color.Purple }, Projectile.Center, Vector2.Zero, Color.White, 1, 1, true, BlendState.Additive, r);
-                EParticle.NewParticle(new AbyssalLine() { lx = 3f, xadd = 0.9f, spawnColor = Color.LightBlue, endColor = Color.Purple }, Projectile.Center, Vector2.Zero, Color.White, 1, 1, true, BlendState.Additive, r + MathHelper.PiOver2);
+                var p1 = PRTLoader.NewParticle<PRT_AbyssalLine>(Projectile.Center, Vector2.Zero, Color.White, 1);
+                p1.lx = 3f;
+                p1.xadd = 0.9f;
+                p1.spawnColor = Color.LightBlue;
+                p1.endColor = Color.Purple;
+                p1.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, r);
+                var p2 = PRTLoader.NewParticle<PRT_AbyssalLine>(Projectile.Center, Vector2.Zero, Color.White, 1);
+                p2.lx = 3f;
+                p2.xadd = 0.9f;
+                p2.spawnColor = Color.LightBlue;
+                p2.endColor = Color.Purple;
+                p2.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, r + MathHelper.PiOver2);
             }
         }
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)

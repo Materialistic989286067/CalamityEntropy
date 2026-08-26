@@ -1,14 +1,14 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityMod;
 using CalamityMod.Dusts;
-using CalamityMod.Enums;
 using CalamityMod.Items;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Particles;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -269,7 +269,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             RevelationExplode.ExpParticle(Projectile.Center, 300, 1);
             for (int i = 0; i < 32; i++)
             {
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(24, 80), false, 36, Projectile.scale * 0.08f, Color.LightGreen, new Vector2(0.22f, 1), false, false));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(24, 80), Color.LightGreen, Projectile.scale * 0.08f).Configure(false, 36, new Vector2(0.22f, 1), false, false);
             }
             CEUtils.PlaySound("DoGLaserWallBigAttack", Main.rand.NextFloat(1.6f, 2f), Projectile.Center);
             CEUtils.PlaySound("explosionbig", Main.rand.NextFloat(1, 1.2f), Projectile.Center);
@@ -502,12 +502,12 @@ namespace CalamityEntropy.Content.Items.Weapons
             Color color1 = Color.LightGreen * alpha;
             Color color2 = Color.Black * alpha;
             float ExplosionRadius = Radius;
-            GeneralParticleHandler.SpawnParticle(new DetailedExplosion(pos, Vector2.Zero, color1, Vector2.One, Main.rand.NextFloat(-5f, 5f), 0f, ExplosionRadius * 0.0065f + 0.1f, Main.rand.Next(15, 22)), pixelate: false, GeneralDrawLayer.AfterEverything);
-            GeneralParticleHandler.SpawnParticle(new DetailedExplosion(pos, Vector2.Zero, Color.Black * alpha, Vector2.One, Main.rand.NextFloat(-5f, 5f), 0f, ExplosionRadius * 0.0045f + 0.1f, Main.rand.Next(15, 22), UseAdditiveBlend: false));
-            GeneralParticleHandler.SpawnParticle(new DetailedExplosion(pos, Vector2.Zero, Color.Black * alpha, Vector2.One, Main.rand.NextFloat(-5f, 5f), 0f, ExplosionRadius * 0.003f + 0.1f, Main.rand.Next(15, 22), UseAdditiveBlend: false));
+            PRTLoader.NewParticle<PRT_DetailedExplosionCal>(pos, Vector2.Zero, color1, 0f).Configure(Vector2.One, Main.rand.NextFloat(-5f, 5f), ExplosionRadius * 0.0065f + 0.1f, Main.rand.Next(15, 22), true, renderLayer: PRTRenderLayer.AfterPlayers);
+            PRTLoader.NewParticle<PRT_DetailedExplosionCal>(pos, Vector2.Zero, Color.Black * alpha, 0f).Configure(Vector2.One, Main.rand.NextFloat(-5f, 5f), ExplosionRadius * 0.0045f + 0.1f, Main.rand.Next(15, 22), useAdditiveBlend: false);
+            PRTLoader.NewParticle<PRT_DetailedExplosionCal>(pos, Vector2.Zero, Color.Black * alpha, 0f).Configure(Vector2.One, Main.rand.NextFloat(-5f, 5f), ExplosionRadius * 0.003f + 0.1f, Main.rand.Next(15, 22), useAdditiveBlend: false);
             for (int i = 0; i < 4; i++)
             {
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(pos, Vector2.Zero, color1, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, ExplosionRadius * 0.005f + 0.05f, 25), pixelate: false, GeneralDrawLayer.AfterEverything);
+                PRTLoader.NewParticle<PRT_CustomPulse>(pos, Vector2.Zero, color1, 0f).Configure("CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, ExplosionRadius * 0.005f + 0.05f, 25, renderLayer: PRTRenderLayer.AfterPlayers);
             }
 
             float num = ExplosionRadius * 0.1f + 10f;

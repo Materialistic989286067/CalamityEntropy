@@ -1,7 +1,6 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Particles;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;

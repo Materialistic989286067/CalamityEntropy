@@ -1,12 +1,13 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityMod;
 using CalamityMod.Dusts;
 using CalamityMod.Items;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
-using CalamityMod.Particles;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -196,7 +197,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             {
                 float r = CEUtils.randomRot();
                 float scale = 0.8f + 0.3f * i;
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(pos, Vector2.Zero, Color.Lerp(Color.YellowGreen, Color.Silver, (i / 5f)), "CalamityEntropy/Assets/Extra/StarTexture", Vector2.One, r, scale * 0.2f, scale, 12 + i * 2, true, 1));
+                PRTLoader.NewParticle<PRT_CustomPulse>(pos, Vector2.Zero, Color.Lerp(Color.YellowGreen, Color.Silver, (i / 5f)), scale * 0.2f).Configure("CalamityEntropy/Assets/Extra/StarTexture", Vector2.One, r, scale * 0.2f, scale, 12 + i * 2, PRTDrawModeEnum.AdditiveBlend, 1);
             }
         }
         public override void OnKill(int timeLeft)

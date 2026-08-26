@@ -3,13 +3,14 @@ using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityMod;
 using CalamityMod.Dusts;
 using CalamityMod.Items;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
-using CalamityMod.Particles;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Graphics.PackedVector;
 using ReLogic.Content;
@@ -157,17 +158,15 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                 {
                     float r = 0;
                     float scale = 0.4f + 0.7f * i;
-                    GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 60, 255), new Color(160, 160, 255), (i / 5f)), "CalamityEntropy/Assets/Extra/ShatteredExplosion", Vector2.One, r, scale * 0.005f, scale * 0.06f, 12 + i * 2, true, 1));
+                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 60, 255), new Color(160, 160, 255), (i / 5f)), scale * 0.005f).Configure("CalamityEntropy/Assets/Extra/ShatteredExplosion", Vector2.One, r, scale * 0.005f, scale * 0.06f, 12 + i * 2, PRTDrawModeEnum.AdditiveBlend, 1);
                 }
                 for (int i = 0; i < 40; i++)
                 {
-                    var p = new Particles.Particle();
-                    p.position = Projectile.Center;
-                    p.alpha = Main.rand.NextFloat(0.8f, 1.2f);
+                    //PRT_Void字段直赋对齐旧VoidParticles,Opacity/vd spawn后赋
+                    var p = PRTLoader.NewParticle<PRT_Void>(Projectile.Center, CEUtils.randomPointInCircle(14), Color.White, 1f);
+                    p.Opacity = Main.rand.NextFloat(0.8f, 1.2f);
                     p.shape = 4;
                     p.vd = 0.92f;
-                    p.velocity = CEUtils.randomPointInCircle(14);
-                    VoidParticles.particles.Add(p);
                 }
             }
         }
@@ -213,7 +212,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             {
                 float r = 0;
                 float scale = 0.4f + 0.7f * i;
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 60, 255), new Color(160, 160, 255), (i / 5f)), "CalamityEntropy/Assets/Extra/ShatteredExplosion", Vector2.One, r, scale * 0.005f, scale * 0.06f, 12 + i * 2, true, 1));
+                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 60, 255), new Color(160, 160, 255), (i / 5f)), scale * 0.005f).Configure("CalamityEntropy/Assets/Extra/ShatteredExplosion", Vector2.One, r, scale * 0.005f, scale * 0.06f, 12 + i * 2, PRTDrawModeEnum.AdditiveBlend, 1);
             }
             CEUtils.SyncProj(Projectile.whoAmI);
         }
@@ -362,7 +361,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             CEUtils.PlaySound("DnBite", 1.2f, Projectile.Center, 12, 0.36f);
             for (int i = 0; i < 12; i++)
             {
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(CEUtils.randomPoint(target.getRect()), Projectile.velocity.normalize().RotatedByRandom(0.4f) * Main.rand.NextFloat(26, 32), true, 24, Main.rand.NextFloat(1.2f, 1.6f) * 0.04f, Color.LightBlue, new Vector2(0.2f, 1f)));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(CEUtils.randomPoint(target.getRect()), Projectile.velocity.normalize().RotatedByRandom(0.4f) * Main.rand.NextFloat(26, 32), Color.LightBlue, Main.rand.NextFloat(1.2f, 1.6f) * 0.04f).Configure(true, 24, new Vector2(0.2f, 1f));
             }
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

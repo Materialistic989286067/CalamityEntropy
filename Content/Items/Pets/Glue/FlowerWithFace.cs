@@ -1,9 +1,10 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs.Pets;
 using CalamityEntropy.Content.Items.Donator;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles.Pets.Desert;
 using CalamityMod;
-using CalamityMod.Particles;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
@@ -252,12 +253,12 @@ namespace CalamityEntropy.Content.Items.Pets.Glue
                         for (int i = 0; i < 9; i++)
                             CombatText.NewText(JaronaTarget.ToNPC().getRect(), Color.Gold, 999, true);
                         CEUtils.PlaySound("HIT", 1, Projectile.Center);
-                        GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center + Projectile.velocity.normalize() * 10, Projectile.velocity.normalize() * 4, Color.Gold, "CalamityMod/Particles/SoftRoundExplosion", new Vector2(0.3f, 1f), Projectile.velocity.ToRotation(), 0.05f, 0.16f, 24), true);
-                        GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center + Projectile.velocity.normalize() * 15, Projectile.velocity.normalize() * 7, Color.Gold, "CalamityMod/Particles/SoftRoundExplosion", new Vector2(0.2f, 1f), Projectile.velocity.ToRotation(), 0.05f, 0.2f, 24), true);
-                        GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center + Projectile.velocity.normalize() * 20, Projectile.velocity.normalize() * 10, Color.Gold, "CalamityMod/Particles/SoftRoundExplosion", new Vector2(0.15f, 1f), Projectile.velocity.ToRotation(), 0.05f, 0.24f, 24), true);
+                        PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center + Projectile.velocity.normalize() * 10, Projectile.velocity.normalize() * 4, Color.Gold, 0.05f).Configure("CalamityMod/Particles/SoftRoundExplosion", new Vector2(0.3f, 1f), Projectile.velocity.ToRotation(), 0.05f, 0.16f, 24);
+                        PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center + Projectile.velocity.normalize() * 15, Projectile.velocity.normalize() * 7, Color.Gold, 0.05f).Configure("CalamityMod/Particles/SoftRoundExplosion", new Vector2(0.2f, 1f), Projectile.velocity.ToRotation(), 0.05f, 0.2f, 24);
+                        PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center + Projectile.velocity.normalize() * 20, Projectile.velocity.normalize() * 10, Color.Gold, 0.05f).Configure("CalamityMod/Particles/SoftRoundExplosion", new Vector2(0.15f, 1f), Projectile.velocity.ToRotation(), 0.05f, 0.24f, 24);
                         for(int i = 0; i < 32; i++)
                         {
-                            GeneralParticleHandler.SpawnParticle(new AltLineParticle(Projectile.Center + Projectile.velocity, -Projectile.velocity.RotatedByRandom(1.9f) * Main.rand.NextFloat(0.4f, 1f), false, Main.rand.Next(26, 32), Main.rand.NextFloat(1.5f, 2f), new Color(255, 235, 175)));
+                            PRTLoader.NewParticle<PRT_AltLineCal>(Projectile.Center + Projectile.velocity, -Projectile.velocity.RotatedByRandom(1.9f) * Main.rand.NextFloat(0.4f, 1f), new Color(255, 235, 175), Main.rand.NextFloat(1.5f, 2f)).Configure(false, Main.rand.Next(26, 32));
                         }
                         Projectile.velocity *= -1;
                         JaronaTarget = -1;

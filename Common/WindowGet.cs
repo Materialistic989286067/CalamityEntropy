@@ -1,6 +1,4 @@
-﻿using CalamityEntropy.Common;
-using CalamityEntropy.Content.Items;
-using CalamityEntropy.Content.Items.Donator;
+﻿using CalamityEntropy.Content.Items.Donator;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +10,7 @@ using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityEntropy.Content.Items
+namespace CalamityEntropy.Common
 {
     public class ChargingYuzu : ModItem
     {
@@ -156,24 +154,24 @@ namespace CalamityEntropy.Common
         public static class WindowGet
         {
             [DllImport("user32.dll")]
-            private static extern bool EnumWindows(EnumWindowsProc enumProc, IntPtr lParam);
+            private static extern bool EnumWindows(EnumWindowsProc enumProc, nint lParam);
 
             [DllImport("user32.dll")]
-            private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+            private static extern int GetWindowText(nint hWnd, StringBuilder lpString, int nMaxCount);
 
             [DllImport("user32.dll")]
-            private static extern int GetWindowTextLength(IntPtr hWnd);
+            private static extern int GetWindowTextLength(nint hWnd);
 
             [DllImport("user32.dll")]
-            private static extern bool IsWindowVisible(IntPtr hWnd);
+            private static extern bool IsWindowVisible(nint hWnd);
 
             [DllImport("user32.dll")]
-            private static extern IntPtr GetShellWindow();
+            private static extern nint GetShellWindow();
 
             [DllImport("user32.dll")]
-            private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+            private static extern uint GetWindowThreadProcessId(nint hWnd, out uint processId);
 
-            private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+            private delegate bool EnumWindowsProc(nint hWnd, nint lParam);
 
             public static List<WindowInfo> GetAllVisibleWindows()
             {
@@ -182,9 +180,9 @@ namespace CalamityEntropy.Common
                     return new List<WindowInfo>();
                 }
                 List<WindowInfo> windows = new List<WindowInfo>();
-                IntPtr shellWindow = GetShellWindow();
+                nint shellWindow = GetShellWindow();
 
-                EnumWindows((IntPtr hWnd, IntPtr lParam) =>
+                EnumWindows((hWnd, lParam) =>
                 {
                     // 跳过不可见窗口和Shell窗口
                     if (hWnd == shellWindow) return true;
@@ -230,7 +228,7 @@ namespace CalamityEntropy.Common
                     }
 
                     return true;
-                }, IntPtr.Zero);
+                }, nint.Zero);
 
                 return windows;
             }
@@ -239,12 +237,12 @@ namespace CalamityEntropy.Common
             /// 获取前台活动窗口
             /// </summary>
             [DllImport("user32.dll")]
-            private static extern IntPtr GetForegroundWindow();
+            private static extern nint GetForegroundWindow();
 
             public static WindowInfo GetActiveWindow()
             {
-                IntPtr hWnd = GetForegroundWindow();
-                if (hWnd == IntPtr.Zero) return null;
+                nint hWnd = GetForegroundWindow();
+                if (hWnd == nint.Zero) return null;
 
                 int length = GetWindowTextLength(hWnd);
                 if (length == 0) return null;
@@ -283,7 +281,7 @@ namespace CalamityEntropy.Common
 
         public class WindowInfo
         {
-            public IntPtr Handle { get; set; }
+            public nint Handle { get; set; }
             public string Title { get; set; }
             public string ProcessName { get; set; }
             public int ProcessId { get; set; }

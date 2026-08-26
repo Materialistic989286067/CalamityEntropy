@@ -1,10 +1,11 @@
 ﻿using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityMod;
 using CalamityMod.Dusts;
 using CalamityMod.Items;
 using CalamityMod.NPCs.AquaticScourge;
-using CalamityMod.Particles;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -177,7 +178,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             for (int i = 0; i < 3; i++)
             {
                 float scale = 0.6f + 0.4f * i;
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(pos, Vector2.Zero, Color.Lerp(Color.Orange, new Color(230, 198, 104), (i / 2f)), "CalamityEntropy/Assets/Extra/StarTexture", Vector2.One, r, scale, 0, 12 + i * 2, true, 1, false));
+                PRTLoader.NewParticle<PRT_CustomPulse>(pos, Vector2.Zero, Color.Lerp(Color.Orange, new Color(230, 198, 104), (i / 2f)), scale).Configure("CalamityEntropy/Assets/Extra/StarTexture", Vector2.One, r, scale, 0, 12 + i * 2, PRTDrawModeEnum.AdditiveBlend, 1, false);
             }
         }
         public override void OnKill(int timeLeft)

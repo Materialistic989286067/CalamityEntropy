@@ -1,11 +1,12 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles.LuminarisShoots;
 using CalamityEntropy.Content.Rarities;
 using CalamityMod;
 using CalamityMod.Items;
-using CalamityMod.Particles;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Graphics.PackedVector;
 using ReLogic.Content;
@@ -159,7 +160,7 @@ namespace CalamityEntropy.Content.Items.Donator.Jy
             CEUtils.PlaySound("VividClarityBeamAppear", Main.rand.NextFloat(1f, 1.3f), target.Center, volume: 0.6f);
 
             for (int i = 0; i < 8; i++)
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, false, 9, 0.04f * Main.rand.NextFloat(0.65f, 1f), Main.rand.NextBool() ? Color.LightGreen : Color.LightGray, new Vector2(2.4f, 0.6f), true));
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, Main.rand.NextBool() ? Color.LightGreen : Color.LightGray, 0.04f * Main.rand.NextFloat(0.65f, 1f)).Configure(false, 9, new Vector2(2.4f, 0.6f), true);
         }
         public int LEVEL = Silentpeak.Level();
         public NPC target = null;
@@ -175,7 +176,7 @@ namespace CalamityEntropy.Content.Items.Donator.Jy
             if (Projectile.localAI[0] == 0)
             {
                 for (int i = 0; i < 16; i++)
-                    EParticle.spawnNew(new GlowLightParticle(), Projectile.Center, CEUtils.randomPointInCircle(9), Color.Gray, Main.rand.NextFloat(0.6f, 1f), 1, true, BlendState.Additive, 0, 22);
+                    PRTLoader.NewParticle<PRT_GlowLightParticle>(Projectile.Center, CEUtils.randomPointInCircle(9), Color.Gray, Main.rand.NextFloat(0.6f, 1f)).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 22);
             }
             if (Projectile.localAI[0]++ < 3)
             {
@@ -325,7 +326,7 @@ namespace CalamityEntropy.Content.Items.Donator.Jy
                 {
                     for(int i = 0; i < 3; i++)
                     {
-                        GeneralParticleHandler.SpawnParticle(new CritSpark(Projectile.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(30, -30) * Projectile.scale, vc * Main.rand.NextFloat(-0.2f, -0.05f) * float.Min(1, vc.Length() * 0.14f), Color.LightGreen * float.Min(1, vc.Length() * 0.14f), Color.Green, Main.rand.NextFloat(0.4f, 1.2f) * float.Min(1, vc.Length() * 0.14f), 16, 1, 1, 0.01f));
+                        PRTLoader.NewParticle<PRT_CritSparkCal>(Projectile.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(30, -30) * Projectile.scale, vc * Main.rand.NextFloat(-0.2f, -0.05f) * float.Min(1, vc.Length() * 0.14f), Color.LightGreen * float.Min(1, vc.Length() * 0.14f), Main.rand.NextFloat(0.4f, 1.2f) * float.Min(1, vc.Length() * 0.14f)).Configure(Color.Green, 16, 1, 1, 0.01f);
                     }
                 }
             }

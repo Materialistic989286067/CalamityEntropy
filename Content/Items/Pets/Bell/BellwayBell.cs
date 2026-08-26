@@ -1,7 +1,8 @@
 ﻿using CalamityEntropy.Content.Buffs.Pets;
 using CalamityEntropy.Content.Items.Donator;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles.Pets.Desert;
-using CalamityMod.Particles;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
@@ -122,7 +123,7 @@ namespace CalamityEntropy.Content.Items.Pets.Bell
                             Projectile.velocity *= 0.2f;
                             Projectile.velocity.Y = -12;
                             SoundEngine.PlaySound(SoundID.Item128, Projectile.Center);
-                            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.Gold, "CalamityMod/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f, 0.05f, 18));
+                            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Gold, 0.0046f).Configure("CalamityMod/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f, 0.05f, 18);
                         }
                     }
                 }
@@ -137,7 +138,7 @@ namespace CalamityEntropy.Content.Items.Pets.Bell
                     Projectile.velocity *= 0;
                     Flying = true;
                     SoundEngine.PlaySound(SoundID.Item128, Projectile.Center);
-                    GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.Gold, "CalamityMod/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f, 0.05f, 18));
+                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Gold, 0.0046f).Configure("CalamityMod/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f, 0.05f, 18);
                     return;
                 }
                 Projectile.velocity *= 0.98f;

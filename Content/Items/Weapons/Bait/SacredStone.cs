@@ -2,13 +2,14 @@
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityMod;
 using CalamityMod.Dusts;
 using CalamityMod.Items;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
-using CalamityMod.Particles;
 using CalamityMod.Rarities;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -205,8 +206,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             {
                 float r = 0;
                 float scale = 0.6f + 1.2f * i;
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(pos, Vector2.Zero, Color.Lerp(Color.White, Color.Orange, (i / 3f)), "CalamityEntropy/Assets/Extra/StarTexture", new Vector2(0.3f, 1f), r, scale * 0.2f, scale, 12 + i * 2, true, 1));
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(pos, Vector2.Zero, Color.Lerp(Color.White, Color.Orange, (i / 3f)), "CalamityEntropy/Assets/Extra/StarTexture", new Vector2(1f, 0.3f), r, scale * 0.2f, scale, 12 + i * 2, true, 1));
+                PRTLoader.NewParticle<PRT_CustomPulse>(pos, Vector2.Zero, Color.Lerp(Color.White, Color.Orange, (i / 3f)), scale * 0.2f).Configure("CalamityEntropy/Assets/Extra/StarTexture", new Vector2(0.3f, 1f), r, scale * 0.2f, scale, 12 + i * 2, PRTDrawModeEnum.AdditiveBlend, 1);
+                PRTLoader.NewParticle<PRT_CustomPulse>(pos, Vector2.Zero, Color.Lerp(Color.White, Color.Orange, (i / 3f)), scale * 0.2f).Configure("CalamityEntropy/Assets/Extra/StarTexture", new Vector2(1f, 0.3f), r, scale * 0.2f, scale, 12 + i * 2, PRTDrawModeEnum.AdditiveBlend, 1);
             }
         }
         public override void OnKill(int timeLeft)
@@ -336,8 +337,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                 dust.color = Main.rand.NextBool() ? Color.Orange : Color.OrangeRed;
                 dust.fadeIn = 2f;
             }
-            EParticle.spawnNew(new ShineParticle(), Projectile.Center, Vector2.Zero, Color.Orange, 0.32f, 1, true, BlendState.Additive, 0, 10);
-            EParticle.spawnNew(new ShineParticle(), Projectile.Center, Vector2.Zero, Color.White, 0.18f, 1, true, BlendState.Additive, 0, 10);
+            PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.Orange, 0.32f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
+            PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.White, 0.18f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
 
         }
         public override void OnKill(int timeLeft)

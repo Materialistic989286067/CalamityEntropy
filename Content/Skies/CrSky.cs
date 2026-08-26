@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Common;
-using CalamityEntropy.Content.NPCs.AbyssalWraith;
 using CalamityMod;
 using CalamityMod.Graphics.Primitives;
 using Microsoft.Xna.Framework.Graphics;

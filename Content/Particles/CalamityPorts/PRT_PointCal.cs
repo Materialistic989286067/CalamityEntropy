@@ -11,14 +11,16 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         public Color InitialColor;
         public bool AffectedByGravity;
         public bool UseAdditive = true;
+        public bool AffectedByLight;
 
         //@CalamityMod/Particles/PointParticle,HasAsset认不出@,PreDraw里拿真图
         public override string Texture => CEUtils.WhiteTexPath;
 
-        public PRT_PointCal Configure(bool affectedByGravity, int lifetime, bool additiveBlend = true)
+        public PRT_PointCal Configure(bool affectedByGravity, int lifetime, bool additiveBlend = true, bool affectedByLight = false)
         {
             AffectedByGravity = affectedByGravity;
             UseAdditive = additiveBlend;
+            AffectedByLight = affectedByLight;
             InitialColor = Color;
             PRTDrawMode = additiveBlend ? PRTDrawModeEnum.AdditiveBlend : PRTDrawModeEnum.AlphaBlend;
             if (lifetime > 0)
@@ -38,6 +40,9 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         {
             Scale *= 0.95f;
             Color = Color.Lerp(InitialColor, Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D));   //Pow(Completion,3)跟LineCal同曲线
+            //受光照:原版每帧Lerp重算后再乘环境光,不会跨帧累积
+            if (AffectedByLight)
+                Color = Lighting.GetColor((Position / 16).ToPoint()).MultiplyRGBA(Color);
             Velocity *= 0.95f;
             if (Velocity.Length() < 12f && AffectedByGravity)
             {

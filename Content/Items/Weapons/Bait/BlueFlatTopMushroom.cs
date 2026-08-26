@@ -1,4 +1,4 @@
-﻿using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityMod;
@@ -180,7 +180,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             int dust_splash = 0;
             while (dust_splash < 18)
             {
-                PRTLoader.NewParticle<PRT_PointCal>(Projectile.Center, new Vector2(Main.rand.NextFloat(15), 0).RotatedByRandom(MathHelper.TwoPi), Projectile.ai[0] == 1 ? Color.Blue : new Color(100, 110, 255), Projectile.ai[0] == 1 ? 1.2f : 0.6f).Configure(false, 10, false);
+                PRTLoader.NewParticle<PRT_PointCal>(Projectile.Center, new Vector2(Main.rand.NextFloat(15), 0).RotatedByRandom(MathHelper.TwoPi), Projectile.ai[0] == 1 ? Color.Blue : new Color(100, 110, 255), Projectile.ai[0] == 1 ? 1.2f : 0.6f).Configure(false, 10, false, true);
                 dust_splash += 1;
             }
         }

@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace CalamityEntropy.Content.Projectiles
         public List<Vector2> oldPos = new List<Vector2>();
         public override void SetDefaults()
         {
-            Projectile.DamageType = CEUtils.RogueDC;
+            Projectile.DamageType = DamageClass.Magic;
             Projectile.width = 64;
             Projectile.height = 64;
             Projectile.hostile = false;
@@ -64,7 +65,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public static void DrawEnergyBall(Vector2 pos, float size, float alpha)
         {
-            Texture2D tex = CEUtils.getExtraTex("a_circle");
+            Texture2D tex = CEExtraAssets.a_circle;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(100, 100, 160) * alpha, 0, tex.Size() * 0.5f, size * 0.24f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(30, 30, 80) * alpha, 0, tex.Size() * 0.5f, size * 0.4f, SpriteEffects.None, 0);
@@ -74,8 +75,8 @@ namespace CalamityEntropy.Content.Projectiles
         public override void OnKill(int timeLeft)
         {
             ScreenShaker.AddShakeWithRangeFade(new ScreenShaker.ScreenShake(Vector2.Zero, 64), Projectile.Center);
-            //AdditiveBlend走Configure分桶,旧GeneralParticleHandler Before层那套
-            PRTLoader.NewParticle<PRT_HeavenfallStar3>(Projectile.GetOwner().Center, Vector2.Zero, new Color(100, 100, 255), 12).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0);  //AdditiveBlend走Configure分桶,旧GeneralParticleHandler Before层那套
+            //AdditiveBlend走Configure分桶,旧版粒子系统 Before层那套
+            PRTLoader.NewParticle<PRT_HeavenfallStar3>(Projectile.GetOwner().Center, Vector2.Zero, new Color(100, 100, 255), 12).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0);  //AdditiveBlend走Configure分桶,旧版粒子系统 Before层那套
         }
     }
 

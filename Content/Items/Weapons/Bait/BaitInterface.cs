@@ -1,4 +1,3 @@
-using CalamityMod;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.IO;
@@ -71,12 +70,12 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                 return;
             }
 
-            Projectile.velocity = new Vector2(16, 0).RotatedBy((player.Calamity().mouseWorld - player.MountedCenter).ToRotation());
+            Projectile.velocity = new Vector2(16, 0).RotatedBy((player.Entropy().MouseWorld - player.MountedCenter).ToRotation());
             int dir = Projectile.velocity.X > 0 ? 1 : -1;
             Projectile.rotation = Projectile.velocity.ToRotation();
             Projectile.timeLeft = 4;
             Projectile.Center = player.MountedCenter + new Vector2(dir * -4, 0).RotatedBy(player.fullRotation);
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             float hr = 2.4f;
             float charge = float.Clamp(player.Entropy().BaitCharge, 0, 1);
             if(throwAnm > 0)

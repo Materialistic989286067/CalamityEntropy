@@ -1,6 +1,6 @@
-﻿using CalamityEntropy.Utilities;
-using CalamityMod;
-using CalamityMod.Graphics.Primitives;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Utilities;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -37,7 +37,7 @@ namespace CalamityEntropy.Content.Projectiles.SpiritFountainShoots
         {
             if (Projectile.ai[2] == 0)
             {
-                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/MagnaCannonChargeFull") { Pitch = 2 }, Projectile.Center);
+                SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/BaitReady") { Pitch = 2 }, Projectile.Center);
                 lasers = new();
                 Projectile.ai[2]++;
                 for (int zz = 0; zz < 8; zz++)
@@ -62,7 +62,7 @@ namespace CalamityEntropy.Content.Projectiles.SpiritFountainShoots
         public Color PrimitiveColorFunction(float completionRatio, Vector2 vertex)
         {
             float colorInterpolant = (float)Math.Sin(Projectile.identity / 3f + completionRatio * 20f + Main.GlobalTimeWrappedHourly * 1.1f) * 0.5f + 0.5f;
-            Color color = CalamityUtils.MulticolorLerp(colorInterpolant, new Color(Main.rand.Next(20, 100), 204, 250), new Color(Main.rand.Next(20, 100), 204, 250));
+            Color color = CEUtils.MulticolorLerp(colorInterpolant, new Color(Main.rand.Next(20, 100), 204, 250), new Color(Main.rand.Next(20, 100), 204, 250));
 
             return color;
         }
@@ -72,20 +72,20 @@ namespace CalamityEntropy.Content.Projectiles.SpiritFountainShoots
             {
                 return false;
             }
-            Texture2D lm = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Glow2").Value;
+            Texture2D lm = CEExtraAssets.Glow2;
             float lw = 0.7f * ((36f - Projectile.ai[0]) / 36f);
             Color color = Color.White;
             if (Projectile.ai[2] == 1)
             {
                 color = Color.Red;
             }
-            GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].UseImage1("Images/Misc/Perlin");
-            GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].Apply();
+            GameShaders.Misc["CalamityEntropy:HeavenlyGaleLightningArc"].UseImage1("Images/Misc/Perlin");
+            GameShaders.Misc["CalamityEntropy:HeavenlyGaleLightningArc"].Apply();
             for (int i = 0; i < lasers.Count; i++)
             {
                 var points = lasers[i];
-                PrimitiveRenderer.RenderTrail(points, new PrimitiveSettings(PrimitiveWidthFunction, PrimitiveColorFunction, (_, _) => Projectile.Size * 0.2f * lw, false,
-                    shader: GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]), 10);
+                CEPrimitiveRenderer.RenderTrail(points, new CEPrimitiveSettings(PrimitiveWidthFunction, PrimitiveColorFunction, (_, _) => Projectile.Size * 0.2f * lw, false,
+                    shader: GameShaders.Misc["CalamityEntropy:HeavenlyGaleLightningArc"]), 10);
             }
 
             return false;

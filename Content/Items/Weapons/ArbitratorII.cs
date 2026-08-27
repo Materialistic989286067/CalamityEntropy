@@ -1,8 +1,5 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Rogue;
+using CalamityEntropy.Core.Weapons;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -10,8 +7,11 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
-    public class ArbitratorII : RogueWeapon
+    public class ArbitratorII : ModItem, ICEChargeWeapon
     {
+        // 周期就绪 8 秒；原潜伏乘数 伤害0.75/弹速1.5/击退3 并入释放乘数
+        public CEChargeProfile ChargeProfile => CEChargeProfile.Periodic(8f, 0.75f, 1.5f, 3f);
+
         public override void SetDefaults()
         {
             Item.width = 62;
@@ -26,28 +26,21 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.UseSound = null;
             Item.autoReuse = true;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<ArbitratorIIThrow>();
             Item.shootSpeed = 50f;
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Ranged;
         }
-
-
-
-        public override float StealthDamageMultiplier => 0.75f;
-        public override float StealthVelocityMultiplier => 1.5f;
-        public override float StealthKnockbackMultiplier => 3f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.Calamity().StealthStrikeAvailable())
+            if (CEChargeWeapon.TryConsume(player, Item))
             {
                 int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
-                if (p.WithinBounds(Main.maxProjectiles))
+                if (p >= 0 && p < Main.maxProjectiles)
                 {
-                    Main.projectile[p].Calamity().stealthStrike = true;
-                    p.ToProj().netUpdate = true;
+                    CEChargeWeapon.Empower(p);
                 }
                 return false;
             }
@@ -55,9 +48,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ModContent.ItemType<ScoriaBar>(), 6)
-                .AddIngredient(ModContent.ItemType<SolarVeil>(), 4)
-                .AddIngredient(ModContent.ItemType<PlagueCellCanister>(), 1)
+            CreateRecipe().AddIngredient(ItemID.HallowedBar, 6)
+                .AddIngredient(ItemID.Ectoplasm, 4)
+                .AddIngredient(ItemID.Nanites, 1)
                 .AddTile(TileID.MythrilAnvil).Register();
         }
     }

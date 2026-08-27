@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -20,7 +19,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 4f;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ModContent.RarityType<Lunarblight>();
             Item.shoot = ProjectileID.WoodenArrowFriendly;
             Item.UseSound = SoundID.DD2_SkyDragonsFuryShot;

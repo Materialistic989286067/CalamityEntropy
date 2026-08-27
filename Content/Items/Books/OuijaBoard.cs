@@ -1,8 +1,9 @@
 ﻿using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -20,7 +21,9 @@ namespace CalamityEntropy.Content.Items.Books
         }
         public override int HeldProjectileType => ModContent.ProjectileType<OuijaBoardHeld>();
         public override int SlotCount => 1;
-        public override Texture2D BookMarkTexture => ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/EntropyBookUI/OB").Value;
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/OB")]
+        internal static Asset<Texture2D> BookMarkSlotTex;
+        public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
 
 
         public override void AddRecipes()
@@ -51,7 +54,7 @@ namespace CalamityEntropy.Content.Items.Books
         public override void AI()
         {
             base.AI();
-            Projectile.GetOwner().Calamity().mouseWorldListener = true;
+            Projectile.GetOwner().Entropy().MouseWorldListener = true;
         }
         public override void playPageSound()
         {
@@ -91,9 +94,9 @@ namespace CalamityEntropy.Content.Items.Books
             {
                 if (FacingTime-- > 0)
                 {
-                    if (CEUtils.getDistance(Projectile.Center, Projectile.GetOwner().Calamity().mouseWorld) < 42)
+                    if (CEUtils.getDistance(Projectile.Center, Projectile.GetOwner().Entropy().MouseWorld) < 42)
                         FacingTime = 0;
-                    float rott = (Projectile.GetOwner().Calamity().mouseWorld - Projectile.Center).ToRotation();
+                    float rott = (Projectile.GetOwner().Entropy().MouseWorld - Projectile.Center).ToRotation();
                     Projectile.velocity = CEUtils.RotateTowardsAngle(Projectile.velocity.ToRotation(), rott, 0.06f, true).ToRotationVector2() * Projectile.velocity.Length();
                     Projectile.velocity = CEUtils.RotateTowardsAngle(Projectile.velocity.ToRotation(), rott, 0.08f, false).ToRotationVector2() * Projectile.velocity.Length();
                 }

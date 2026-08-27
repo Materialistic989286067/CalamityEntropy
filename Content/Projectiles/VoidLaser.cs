@@ -1,6 +1,8 @@
-﻿using CalamityEntropy.Common;
-using CalamityMod;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -40,6 +42,8 @@ namespace CalamityEntropy.Content.Projectiles
         public int dmgLength = 0;
         public List<int> nlist = new List<int>();
         public bool nst = true;
+        // 持续屏震：存活期间每帧刷新幅度，死亡后自然衰减
+        private ScreenShaker.ScreenShake shake = null;
         public override void AI()
         {
             if (nst)
@@ -56,7 +60,14 @@ namespace CalamityEntropy.Content.Projectiles
 
                 }
             }
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = Utils.Remap(Main.LocalPlayer.Distance(Projectile.Center), 1800f, 1000f, 0f, 1.5f);
+            if (!Main.dedServ)
+            {
+                float shakeAmp = Utils.Remap(Main.LocalPlayer.Distance(Projectile.Center), 1800f, 1000f, 0f, 1.5f);
+                if (shake == null || !shake.active)
+                    shake = ScreenShaker.AddShake(Vector2.Zero, shakeAmp);
+                else
+                    shake.amplitude = shakeAmp;
+            }
             Projectile.Center = ((int)(Projectile.ai[2])).ToProj_Identity().Center + ((int)(Projectile.ai[2])).ToProj_Identity().rotation.ToRotationVector2() * 60;
             Projectile.rotation = ((int)(Projectile.ai[2])).ToProj_Identity().rotation;
             Projectile.velocity = Vector2.Zero;
@@ -133,7 +144,7 @@ namespace CalamityEntropy.Content.Projectiles
                     break;
                 }
             }
-            Texture2D tl = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/cllight").Value;
+            Texture2D tl = CEExtraAssets.cllight;
 
             SpriteBatch sb = Main.spriteBatch;
             sb.End();
@@ -159,7 +170,7 @@ namespace CalamityEntropy.Content.Projectiles
             }
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-            Texture2D lend = CEUtils.getExtraTex("vlend");
+            Texture2D lend = CEExtraAssets.vlend;
             sb.Draw(lend, Projectile.Center + Projectile.rotation.ToRotationVector2() * (dmgLength - 16) - Main.screenPosition, CEUtils.GetCutTexRect(lend, 4, (int)(counter * 0.5f) % 4), Color.White, Projectile.rotation + (float)Math.PI / 2f, new Vector2(64, 52) / 2, Projectile.scale * 2, SpriteEffects.None, 0);
 
             return false;

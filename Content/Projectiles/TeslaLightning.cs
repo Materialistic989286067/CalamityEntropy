@@ -1,6 +1,7 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Utilities;
-using CalamityMod.Buffs.StatDebuffs;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -68,7 +69,7 @@ namespace CalamityEntropy.Content.Projectiles
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tx = CEUtils.getExtraTex("MegaStreakBacking2");
+            Texture2D tx = CEExtraAssets.MegaStreakBacking2;
             if (points == null)
             {
                 return false;
@@ -191,7 +192,7 @@ namespace CalamityEntropy.Content.Projectiles
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tx = CEUtils.getExtraTex("MegaStreakBacking2");
+            Texture2D tx = CEExtraAssets.MegaStreakBacking2;
             if (points == null)
             {
                 return false;

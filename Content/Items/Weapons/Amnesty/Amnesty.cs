@@ -1,10 +1,7 @@
-﻿using CalamityEntropy.Content.Particles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Rarities;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -33,8 +30,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Amnesty
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 0;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<CosmicPurple>();
+            Item.value = Item.buyPrice(2, 0);
+            Item.rare = ModContent.RarityType<AbyssalBlue>();
             Item.shoot = ModContent.ProjectileType<AmnestyHeld>();
             Item.shootSpeed = 16f;
             Item.mana = 4;
@@ -59,10 +56,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Amnesty
         {
             CreateRecipe()
                 .AddIngredient<Depletion.Depletion>()
-                .AddIngredient<HyperdeathRiftScepter>()
-                .AddIngredient<AscendantSpiritEssence>(2)
-                .AddIngredient<CosmiliteBar>(8)
-                .AddTile<CosmicAnvil>()
+                .AddIngredient(ItemID.LastPrism)
+                .AddIngredient<WraithSoulEssence>(10)
+                .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
     }
@@ -213,7 +209,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Amnesty
                 SetPoint(4, 3, rot, rot.ToRotationVector2() * -19 * scale);
                 CEUtils.DrawLines(points, new Color(200, 200, 255), 2f * active, 0);
             }
-            Texture2D t = CEUtils.getExtraTex("Triangle");
+            Texture2D t = CEExtraAssets.Triangle;
             points.Clear();
             for (int i = 0; i <= 6; i++)
             {
@@ -352,7 +348,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Amnesty
         }
         public static void DrawEnergyBall(Vector2 pos, float size, float alpha)
         {
-            Texture2D tex = CEUtils.getExtraTex("a_circle");
+            Texture2D tex = CEExtraAssets.a_circle;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(200, 200, 255) * alpha, 0, tex.Size() * 0.5f, size * 0.24f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(55, 55, 255) * alpha, 0, tex.Size() * 0.5f, size * 0.4f, SpriteEffects.None, 0);

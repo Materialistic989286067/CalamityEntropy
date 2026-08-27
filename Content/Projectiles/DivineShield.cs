@@ -1,15 +1,21 @@
-﻿using CalamityEntropy.Common;
-using CalamityMod.Projectiles.Boss;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Projectiles
 {
     public class DivineShield : ModProjectile
     {
+        //护盾本体贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/DivineShield")]
+        internal static Asset<Texture2D> ShieldTex;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
@@ -57,7 +63,8 @@ namespace CalamityEntropy.Content.Projectiles
                         p.rotation += 3.1415f;
                         p.owner = Projectile.owner;
                         p.damage *= 16;
-                        if (p.type == ModContent.ProjectileType<AresGaussNukeProjectile>())
+                        // 原灾厄 Ares 核弹特判；核弹已改为奖券惩罚火箭（AtlasNuc），仅对天价伤害的惩罚弹降低反弹倍率
+                        if (p.type == ProjectileID.RocketSkeleton && p.damage >= 99999)
                         {
                             p.damage /= 8;
                         }
@@ -144,12 +151,12 @@ namespace CalamityEntropy.Content.Projectiles
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/lightball").Value;
+            Texture2D tx = CEExtraAssets.lightball;
             Main.spriteBatch.Draw(tx, Projectile.Center - Main.screenPosition, null, new Color(229, 299, 147) * alpha * 0.5f, Projectile.rotation, new Vector2(tx.Width, tx.Height) / 2, 1.4f + addLs, SpriteEffects.None, 0);
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-            tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/DivineShield").Value;
+            tx = ShieldTex.Value;
             Main.spriteBatch.Draw(tx, Projectile.Center - Main.screenPosition, new Rectangle(48 * frame, 0, 48, 48), Color.White, Projectile.rotation, new Vector2(tx.Height, tx.Height) / 2, 2, SpriteEffects.None, 0);
 
             return false;

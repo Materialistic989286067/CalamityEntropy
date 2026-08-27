@@ -11,7 +11,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         public Color InitialColor;
         public bool AffectedByGravity;
 
-        //@CalamityMod/Particles/DrainLine → PRTSharedAssets,Texture认不了@
+        //Assets/Particles/DrainLine → PRTSharedAssets,Texture指白图占位
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_AltLineCal Configure(bool affectedByGravity, int lifetime)

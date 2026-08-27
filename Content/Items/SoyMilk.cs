@@ -1,5 +1,4 @@
 using CalamityEntropy.Content.Buffs;
-using CalamityMod;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -21,7 +20,7 @@ public class SoyMilk : ModItem
         Item.UseSound = SoundID.Item3;
         Item.consumable = true;
         Item.buffType = ModContent.BuffType<SoyMilkBuff>();
-        Item.buffTime = CalamityUtils.SecondsToFrames(300f);
+        Item.buffTime = CEUtils.SecondsToFrames(300f);
         Item.value = Item.buyPrice(0, 5, 0, 0);
     }
 }

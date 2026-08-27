@@ -1,4 +1,7 @@
-﻿using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.ILEditing;
 using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Books;
@@ -13,18 +16,7 @@ using CalamityEntropy.Content.Projectiles.HBProj;
 using CalamityEntropy.Content.Projectiles.SamsaraCasket;
 using CalamityEntropy.Content.Projectiles.TwistedTwin;
 using CalamityEntropy.Content.Projectiles.VoidEchoProj;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
-using CalamityMod.Enums;
-using CalamityMod.Graphics.Primitives;
-using CalamityMod.NPCs.CeaselessVoid;
-using CalamityMod.NPCs.Signus;
-using CalamityMod.NPCs.StormWeaver;
-using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Projectiles.Boss;
-using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Typeless;
+using CalamityEntropy.Core.Graphics;
 using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -103,6 +95,17 @@ namespace CalamityEntropy.Common
     }
     public class EGlobalProjectile : GlobalProjectile
     {
+        //注意:这些字段只在客户端绘制钩子里读,专用服务器上恒为 null。
+        [VaultLoaden("CalamityEntropy/Assets/Extra/ArchSmear")]
+        internal static Asset<Texture2D> ArchSmearTex;
+        [VaultLoaden("CalamityEntropy/Assets/Particles/BasicTrail")]
+        internal static Asset<Texture2D> BasicTrailAsset;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/WyrmArrow")]
+        internal static Asset<Texture2D> WyrmArrowTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/godhead")]
+        internal static Asset<Texture2D> GodheadTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/LightningArrow")]
+        internal static Asset<Texture2D> LightningArrowTex;
         public List<int> applyBuffs = new();
         public event Action<Projectile> OnKillActions;
         public bool Lightning = false;
@@ -117,9 +120,6 @@ namespace CalamityEntropy.Common
         public int ghcounter = 0;
         public int IndexOfTwistedTwinShootedThisProj = -1;
         public Color CacheColor = Color.White;
-        [VaultLoaden("CalamityEntropy/Assets/Extra/Voidsama")]
-        public static Asset<Texture2D> voidSamaSlash;
-        public static Asset<Texture2D> muraTex = null;
         public float MissileHoming = 0;
         public float ShootCount = 2;
         public int OnProj { get { return IndexOfTwistedTwinShootedThisProj; } set { IndexOfTwistedTwinShootedThisProj = value; } }
@@ -215,7 +215,6 @@ namespace CalamityEntropy.Common
             binaryWriter.Write(rpBow);
             binaryWriter.Write(ToFriendly);
             binaryWriter.Write(EventideShot);
-            binaryWriter.Write(projectile.Calamity().stealthStrike);
             binaryWriter.Write(zypArrow);
             binaryWriter.Write(ProminenceArrow);
             binaryWriter.Write(IlmeranEnhanced);
@@ -242,7 +241,6 @@ namespace CalamityEntropy.Common
             rpBow = binaryReader.ReadBoolean();
             ToFriendly = binaryReader.ReadBoolean();
             EventideShot = binaryReader.ReadBoolean();
-            projectile.Calamity().stealthStrike = binaryReader.ReadBoolean();
             zypArrow = binaryReader.ReadBoolean();
             ProminenceArrow = binaryReader.ReadBoolean();
             IlmeranEnhanced = binaryReader.ReadBoolean();
@@ -278,9 +276,9 @@ namespace CalamityEntropy.Common
                 Lifetime++;
             if (buriedShoot)
             {
-                PRTLoader.NewParticle<PRT_CustomSpark>(projectile.Center + projectile.velocity.normalize() * 40, -projectile.velocity * 0.05f, Color.Black, 0.03f).Configure("CalamityMod/Particles/GlowSpark2", false, 9, new Vector2(0.6f, 1.3f), false, false, 0f, false, false);
-                //绿火花AfterPlayers:Calamity GeneralDrawLayer弹幕前后层PRT没有,硬提RenderLayer盖蓝光
-                PRTLoader.NewParticle<PRT_CustomSpark>(projectile.Center + projectile.velocity.normalize() * 40, -projectile.velocity * 0.05f, Color.LightGreen, 0.012f).Configure("CalamityMod/Particles/GlowSpark", false, 7, new Vector2(0.6f, 1.9f), true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
+                PRTLoader.NewParticle<PRT_CustomSpark>(projectile.Center + projectile.velocity.normalize() * 40, -projectile.velocity * 0.05f, Color.Black, 0.03f).Configure("CalamityEntropy/Assets/Particles/GlowSpark2", false, 9, new Vector2(0.6f, 1.3f), false, false, 0f, false, false);
+                //绿火花AfterPlayers:弹幕前后层PRT没有,硬提RenderLayer盖蓝光
+                PRTLoader.NewParticle<PRT_CustomSpark>(projectile.Center + projectile.velocity.normalize() * 40, -projectile.velocity * 0.05f, Color.LightGreen, 0.012f).Configure("CalamityEntropy/Assets/Particles/GlowSpark", false, 7, new Vector2(0.6f, 1.9f), true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
             }
         }
         public bool Losted = false;
@@ -309,7 +307,8 @@ namespace CalamityEntropy.Common
                 }
                 if (projectile.owner.ToPlayer().Entropy().BarrenCard)
                 {
-                    if (projectile.DamageType == CEUtils.RogueDC)
+                    // 灾厄盗贼伤害类型退役，荒瘠卡追踪改按原版投掷伤害判定
+                    if (projectile.DamageType.CountsAsClass(DamageClass.Throwing))
                     {
                         BarrenHoming = true;
                     }
@@ -386,7 +385,7 @@ namespace CalamityEntropy.Common
                         dmgupcount = 16 * projectile.extraUpdates;
                     }
                 }
-                if ((source is EntitySource_ItemUse && checkHoldOut && projectile.owner == Main.myPlayer && (projectile.ModProjectile is BaseIdleHoldoutProjectile || projectile.type == ModContent.ProjectileType<VoidEchoProj>() || projectile.type == ModContent.ProjectileType<HB>() || projectile.type == ModContent.ProjectileType<GhostdomWhisperHoldout>() || projectile.type == ModContent.ProjectileType<RailPulseBowProjectile>() || projectile.type == ModContent.ProjectileType<SamsaraCasketProj>() || projectile.type == ModContent.ProjectileType<OblivionHoldout>() || projectile.type == ModContent.ProjectileType<HadopelagicEchoIIProj>())))
+                if ((source is EntitySource_ItemUse && checkHoldOut && projectile.owner == Main.myPlayer && (projectile.type == ModContent.ProjectileType<VoidEchoProj>() || projectile.type == ModContent.ProjectileType<HB>() || projectile.type == ModContent.ProjectileType<GhostdomWhisperHoldout>() || projectile.type == ModContent.ProjectileType<RailPulseBowProjectile>() || projectile.type == ModContent.ProjectileType<SamsaraCasketProj>() || projectile.type == ModContent.ProjectileType<OblivionHoldout>() || projectile.type == ModContent.ProjectileType<HadopelagicEchoIIProj>())))
                 {
                     checkHoldOut = false;
                     foreach (Projectile p in Main.projectile)
@@ -477,7 +476,7 @@ namespace CalamityEntropy.Common
 
         public override bool CanHitPlayer(Projectile projectile, Player target)
         {
-            if (vdtype >= 0 || projectile.ModProjectile is GodSlayerRocketProjectile)
+            if (vdtype >= 0)
             {
                 return false;
             }
@@ -590,15 +589,15 @@ namespace CalamityEntropy.Common
             {
                 if (Freeze)
                 {
+                    // 鼠标世界坐标改走 CEUtils.mouseWorld() 扩展（内部为去灾厄自研实现，含联机同步）
                     if (wisperShine)
-                        projectile.Center = projectile.GetOwner().Center + wisperOffset.RotatedBy((projectile.GetOwner().Calamity().mouseWorld - projectile.GetOwner().Center).ToRotation());
+                        projectile.Center = projectile.GetOwner().Center + wisperOffset.RotatedBy((projectile.GetOwner().mouseWorld() - projectile.GetOwner().Center).ToRotation());
                     else
                         for (int i = 0; i < int.Max(9 - projectile.MaxUpdates, 1); i++)
-                            projectile.Center = Vector2.Lerp(projectile.Center, projectile.GetOwner().Center + wisperOffset.RotatedBy((projectile.GetOwner().Calamity().mouseWorld - projectile.GetOwner().Center).ToRotation()), 0.01f);
-                    projectile.GetOwner().Calamity().mouseWorldListener = true;
+                            projectile.Center = Vector2.Lerp(projectile.Center, projectile.GetOwner().Center + wisperOffset.RotatedBy((projectile.GetOwner().mouseWorld() - projectile.GetOwner().Center).ToRotation()), 0.01f);
                     if (projectile.velocity.Length() < 2)
                         projectile.velocity = Vector2.One * 2;
-                    projectile.velocity = new Vector2(projectile.velocity.Length(), 0).RotatedBy((projectile.GetOwner().Calamity().mouseWorld - projectile.Center).ToRotation());
+                    projectile.velocity = new Vector2(projectile.velocity.Length(), 0).RotatedBy((projectile.GetOwner().mouseWorld() - projectile.Center).ToRotation());
                     projectile.timeLeft++;
                     if (projectile.velocity.Length() * projectile.MaxUpdates < 46)
                     {
@@ -639,21 +638,8 @@ namespace CalamityEntropy.Common
                     projectile.velocity += (homing.Center - projectile.Center).normalize() * Utils.Remap(CEUtils.getDistance(projectile.Center, homing.Center), 600, 0, 0.6f, 3) / ((float)projectile.MaxUpdates);
                 }
             }
-            if (init_)
-            {
-                if (projectile.type == ModContent.ProjectileType<DoGFire>() && CalamityEntropy.EntropyMode)
-                {
-                    if (NPC.AnyNPCs(ModContent.NPCType<Signus>()) || NPC.AnyNPCs(ModContent.NPCType<StormWeaverHead>()) || NPC.AnyNPCs(ModContent.NPCType<CeaselessVoid>()))
-                    {
-                        projectile.velocity *= 0.6f;
-                    }
-                    else
-                    {
-                        projectile.MaxUpdates *= 2;
-                    }
-                }
-                init_ = false;
-            }
+            // 原熵灾模式下对灾厄神明吞噬者烈焰弹幕的强化已随灾厄脱钩移除
+            init_ = false;
             if (ProminenceArrow)
             {
                 if (trail_pmn == null || !trail_pmn.active)
@@ -685,7 +671,7 @@ namespace CalamityEntropy.Common
                     projectile.velocity *= 0.92f;
                 }
             }
-            if ((projectile.ModProjectile is ExobladeProj || projectile.type == ProjectileID.LastPrismLaser || projectile.type == ProjectileID.LastPrism) && projectile.owner.ToPlayer().Entropy().WeaponBoost > 0)
+            if ((projectile.type == ProjectileID.LastPrismLaser || projectile.type == ProjectileID.LastPrism) && projectile.owner.ToPlayer().Entropy().WeaponBoost > 0)
             {
                 if (counter % 2 == 0)
                 {
@@ -745,7 +731,7 @@ namespace CalamityEntropy.Common
                     Main.player[0].velocity = t.velocity;
                 }*/
             }
-            if (projectile.Entropy().vdtype >= 0 || projectile.ModProjectile is GodSlayerRocketProjectile)
+            if (projectile.Entropy().vdtype >= 0)
             {
                 projectile.hostile = false;
                 projectile.friendly = true;
@@ -1016,7 +1002,7 @@ namespace CalamityEntropy.Common
             {
                 Main.spriteBatch.UseAdditive();
                 float sine = MathHelper.Lerp(Math.Abs((float)Math.Sin(Main.GlobalTimeWrappedHourly * 50f / MathHelper.Pi)), 0.8f, 0.7f);
-                Texture2D bTexture = CEUtils.getExtraTex("ArchSmear");
+                Texture2D bTexture = ArchSmearTex.Value;
                 for (int i = 0; i < 10; i++)
                 {
                     float bScale2 = 0.75f;
@@ -1050,11 +1036,12 @@ namespace CalamityEntropy.Common
                 Main.spriteBatch.UseBlendState(BlendState.AlphaBlend);
                 odp.Add(projectile.position);
                 odp.Reverse();
-                GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-                PrimitiveRenderer.RenderTrail(odp, new PrimitiveSettings(WidthFunction_Zyp, ColorFunction_Zyp, (_, _) => projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
+                // 自有 TrailStreak 等效 shader + 自研图元渲染器；条带贴图暂用自绘 BasicTrail（原灾厄 ScarletDevilStreak，texture-map 就绪后可再换近似贴图）
+                GameShaders.Misc["CalamityEntropy:TrailStreak"].SetShaderTexture(BasicTrailAsset);
+                CEPrimitiveRenderer.RenderTrail(odp, new CEPrimitiveSettings(WidthFunction_Zyp, ColorFunction_Zyp, (_, _) => projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityEntropy:TrailStreak"]), 30);
                 odp.Reverse();
                 odp.RemoveAt(odp.Count - 1);
-                Texture2D txx = CEUtils.getExtraTex("WyrmArrow");
+                Texture2D txx = WyrmArrowTex.Value;
                 Main.spriteBatch.ExitShaderRegion();
                 Main.spriteBatch.Draw(txx, projectile.Center - Main.screenPosition + projectile.velocity.SafeNormalize(Vector2.UnitX) * 4, null, lightColor, projectile.velocity.ToRotation() + MathHelper.PiOver2, txx.Size() / 2f, float.Max(projectile.scale, 1), (projectile.velocity.X < 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally), 0);
             }
@@ -1063,7 +1050,7 @@ namespace CalamityEntropy.Common
 
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-                Texture2D star = CEUtils.getExtraTex("StarTexture");
+                Texture2D star = CEExtraAssets.StarTexture;
 
                 float sx = (float)(Math.Cos(Main.GlobalTimeWrappedHourly * 24) * 0.15f + 0.9f);
                 float ls = GWBow ? 2 : 1;
@@ -1078,14 +1065,6 @@ namespace CalamityEntropy.Common
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
             }
-            if (projectile.ModProjectile != null && projectile.ModProjectile is MurasamaSlash)
-            {
-                if (VoidsamaTex(projectile))
-                {
-                    TextureAssets.Projectile[projectile.type] = muraTex;
-                }
-            }
-
             /*if (projectile.ModProjectile != null)
             {
                 if (SSMFInfo == null)
@@ -1106,10 +1085,6 @@ namespace CalamityEntropy.Common
             {
                 projectile.owner.ToPlayer().Center = lastCenter;
             }
-        }
-        public static bool VoidsamaTex(Projectile projectile)
-        {
-            return projectile.GetOwner().name.ToLower().Contains("polaris") || projectile.GetOwner().name.ToLower().Contains("chalost");
         }
         public static float GetEventideDamageMultiplier(float radian, float maxR, float maxDmgMul)
         {
@@ -1153,7 +1128,7 @@ namespace CalamityEntropy.Common
         {
             if (Losted)
             {
-                Effect trans = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Trans", AssetRequestMode.ImmediateLoad).Value;
+                Effect trans = CEEffectAssets.Trans;
                 Main.spriteBatch.EnterShaderRegion(BlendState.AlphaBlend, trans);
                 trans.Parameters["strength"].SetValue(1);
                 trans.Parameters["color"].SetValue(new Vector4(0, 0, 0, 1));
@@ -1161,14 +1136,6 @@ namespace CalamityEntropy.Common
             }
             if (WisperArrow)
                 return false;
-            if (projectile.ModProjectile != null && projectile.ModProjectile is MurasamaSlash)
-            {
-                if (projectile.GetOwner().name.ToLower().Contains("polaris") || projectile.GetOwner().name.ToLower().Contains("chalost"))
-                {
-                    muraTex = TextureAssets.Projectile[projectile.type];
-                    TextureAssets.Projectile[projectile.type] = voidSamaSlash;
-                }
-            }
             this.projectile = projectile;
             if (IndexOfTwistedTwinShootedThisProj >= 0 && projectile.friendly)
             {
@@ -1186,7 +1153,7 @@ namespace CalamityEntropy.Common
             }
             if (projectile.Entropy().gh && projectile.friendly && projectile.owner >= 0 && projectile.owner.ToPlayer().Entropy().GodHeadVisual)
             {
-                tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/godhead").Value;
+                tx = GodheadTex.Value;
                 float rsize = (projectile.width + projectile.height) / 2 * 6;
                 if (rsize < 128)
                 {
@@ -1212,10 +1179,10 @@ namespace CalamityEntropy.Common
                 Color cl = new Color(250, 250, 255);
                 for (int i = odp2.Count - 1; i >= 1; i--)
                 {
-                    CEUtils.drawLine(Main.spriteBatch, ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value, this.odp2[i], this.odp2[i - 1], cl * ((float)i / (float)odp2.Count), size);
+                    CEUtils.drawLine(Main.spriteBatch, CEExtraAssets.white, this.odp2[i], this.odp2[i - 1], cl * ((float)i / (float)odp2.Count), size);
                     size -= sizej;
                 }
-                tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/LightningArrow").Value;
+                tx = LightningArrowTex.Value;
                 float x = 0f;
                 for (int i = 0; i < projectile.Entropy().odp.Count; i++)
                 {
@@ -1225,7 +1192,7 @@ namespace CalamityEntropy.Common
                 Main.spriteBatch.Draw(tx, projectile.Center - Main.screenPosition, null, Color.White, projectile.rotation, new Vector2(tx.Width, tx.Height) / 2, projectile.scale, SpriteEffects.None, 0);
                 Main.spriteBatch.UseAdditive();
                 float sine = MathHelper.Lerp(Math.Abs((float)Math.Sin(Main.GlobalTimeWrappedHourly * 50f / MathHelper.Pi)), 0.8f, 0.7f);
-                Texture2D bTexture = CEUtils.getExtraTex("ArchSmear");
+                Texture2D bTexture = ArchSmearTex.Value;
                 for (int i = 0; i < 10; i++)
                 {
                     float bScale2 = 0.75f;
@@ -1261,7 +1228,7 @@ namespace CalamityEntropy.Common
                 float sizej = size / odp2.Count;
                 for (int i = odp2.Count - 1; i >= 1; i--)
                 {
-                    CEUtils.drawLine(Main.spriteBatch, ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value, this.odp2[i], this.odp2[i - 1], color * ((float)i / (float)odp2.Count), size);
+                    CEUtils.drawLine(Main.spriteBatch, CEExtraAssets.white, this.odp2[i], this.odp2[i - 1], color * ((float)i / (float)odp2.Count), size);
                     size -= sizej;
                 }
 
@@ -1308,9 +1275,9 @@ namespace CalamityEntropy.Common
                 float scale = 1.6f;
                 PRTLoader.NewParticle<PRT_ShineParticle>(projectile.Center, Vector2.Zero, Color.Red * 0.8f, scale * 0.8f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
                 PRTLoader.NewParticle<PRT_ShineParticle>(projectile.Center, Vector2.Zero, Color.White * 0.8f, scale * 0.5f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
-                PRTLoader.NewParticle<PRT_CustomPulse>(projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24);
-                PRTLoader.NewParticle<PRT_CustomPulse>(projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 18);
-                PRTLoader.NewParticle<PRT_CustomPulse>(projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.02f, 15);
+                PRTLoader.NewParticle<PRT_CustomPulse>(projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24);
+                PRTLoader.NewParticle<PRT_CustomPulse>(projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 18);
+                PRTLoader.NewParticle<PRT_CustomPulse>(projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.02f, 15);
             }
             if (projectile.friendly)
             {
@@ -1363,7 +1330,7 @@ namespace CalamityEntropy.Common
                     dust.color = Color.Aqua;
                     dust.fadeIn = 2f;
                 }
-                PRTLoader.NewParticle<PRT_CustomPulse>(projectile.Center, Vector2.Zero, new Color(60, 255, 255), 0.01f).Configure("CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, 0.8f, 20);
+                PRTLoader.NewParticle<PRT_CustomPulse>(projectile.Center, Vector2.Zero, new Color(60, 255, 255), 0.01f).Configure("CalamityEntropy/Assets/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, 0.8f, 20);
                 if (projectile.numHits == 0)
                 {
                     Projectile.NewProjectile(projectile.GetSource_FromAI(), projectile.Center, projectile.velocity * projectile.MaxUpdates, ModContent.ProjectileType<KinanitionSpawn>(), projectile.damage, projectile.knockBack, projectile.owner);
@@ -1392,7 +1359,9 @@ namespace CalamityEntropy.Common
                     if (Main.rand.NextBool(84))
                     {
                         int buffIndex = Main.rand.Next(BuffLoader.BuffCount);
-                        if (Main.debuff[buffIndex] && BuffLoader.GetBuff(buffIndex) != null && !BuffLoader.GetBuff(buffIndex).GetType().Namespace.Contains("DamageOverTime"))
+                        //脱离灾厄:DoT排除过滤同步兼容自有PortsDoT命名空间(原仅排除灾厄DamageOverTime)
+                        string buffNs = BuffLoader.GetBuff(buffIndex)?.GetType().Namespace ?? "";
+                        if (Main.debuff[buffIndex] && BuffLoader.GetBuff(buffIndex) != null && !buffNs.Contains("DamageOverTime") && !buffNs.Contains("PortsDoT"))
                         {
                             target.AddBuff(buffIndex, 120);
                         }
@@ -1427,10 +1396,12 @@ namespace CalamityEntropy.Common
                 {
                     PRTLoader.NewParticle<PRT_StarTrailParticle>(projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(10, 20), Color.White, Main.rand.NextFloat(0.6f, 1.2f)).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0);
                 }
+                // 自研移植的星幻感染 DoT（debuff-map：PortsDoT 同短名）
                 target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 300);
             }
             if (IlmeranEnhanced)
             {
+                // 自研移植的溺渊重压 DoT（debuff-map：PortsDoT 同短名）
                 target.AddBuff(ModContent.BuffType<CrushDepth>(), 400);
             }
             if (projectile.type == ProjectileID.Terragrim && projectile.velocity.Y > 0 && projectile.velocity.Y > Math.Abs(projectile.velocity.X))
@@ -1441,31 +1412,12 @@ namespace CalamityEntropy.Common
             hittingTarget = -1;
             if (ProminenceArrow || projectile.ModProjectile is ProminenceSplitShot)
             {
-                target.AddBuff(BuffID.Daybreak, 300);
+                // 自研移植的圣火 DoT（debuff-map：PortsDoT 同短名）+ 原版破晓，与脱钩前双 debuff 行为一致
                 target.AddBuff(ModContent.BuffType<HolyFlames>(), 300);
+                target.AddBuff(BuffID.Daybreak, 300);
             }
-            if (MariExplode && projectile.DamageType.CountsAsClass(DamageClass.Throwing) && projectile.Calamity().stealthStrike)
-            {
-                if (projectile.TryGetOwner(out var owner))
-                {
-                    if (owner.Entropy().MariviniumSet)
-                    {
-                        if (Main.rand.NextBool(3))
-                        {
-                            MariExplode = false;
-                            Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<WaterExplosion>(), projectile.damage.ApplyAccArmorDamageBonus(projectile.GetOwner()), projectile.knockBack, projectile.owner);
-                        }
-                    }
-                }
-            }
+            // 潜行系统退役：玛瑞薇姆套装原「潜伏攻击命中水爆」效果暂停用，新机制后续按映射表实装
             BarrenHoming = false;
-            if (projectile.ModProjectile is MagnusBeam || projectile.ModProjectile is LunicBeam)
-            {
-                if (projectile.owner.ToPlayer().Entropy().WeaponBoost > 0)
-                {
-                    target.Entropy().applyMarkedOfDeath = 480 + projectile.owner.ToPlayer().Entropy().WeaponBoost * 260;
-                }
-            }
             if (vdtype == 3)
             {
                 EGlobalNPC.AddVoidTouch(target, 240, 10, 800, 16);
@@ -1493,7 +1445,8 @@ namespace CalamityEntropy.Common
             if (projectile.owner != -1 && projectile.friendly)
             {
                 EModPlayer plr = projectile.owner.ToPlayer().Entropy();
-                if (projectile.owner.ToPlayer().Entropy().plagueEngine && projectile.DamageType.CountsAsClass<TrueMeleeDamageClass>())
+                // 灾厄真近战伤害类型退役，改以「近战伤害且需持有者近身判定」近似真近战
+                if (projectile.owner.ToPlayer().Entropy().plagueEngine && projectile.DamageType.CountsAsClass(DamageClass.Melee) && projectile.ownerHitCheck)
                 {
                     PlagueInternalCombustionEngine.ApplyTrueMeleeEffect(projectile.owner.ToPlayer());
                 }

@@ -1,6 +1,4 @@
-﻿using CalamityMod;
-using CalamityMod.Dusts;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 using Terraria;
 using Terraria.Audio;
@@ -40,7 +38,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 {
                     Vector2 vel = (Main.MouseWorld - player.MountedCenter).normalize().RotatedByRandom(0.22f) * 24 * Main.rand.NextFloat(0.3f, 1);
                     Vector2 dustRotate = vel;
-                    int sand = Dust.NewDust(player.Center + vel * 4, 0, 0, (int)CalamityDusts.SulphurousSeaAcid, 0, 0, 0, default, 1.2f);
+                    int sand = Dust.NewDust(player.Center + vel * 4, 0, 0, DustID.Sand, 0, 0, 0, default, 1.2f);
                     Main.dust[sand].noGravity = true;
                     Main.dust[sand].noLight = true;
                     Main.dust[sand].scale *= 1.4f;
@@ -102,7 +100,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 if (Projectile.alpha < 0)
                     Projectile.alpha = 0;
 
-                int sandyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default, 1f);
+                int sandyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Sand, 0f, 0f, 100, default, 1f);
                 Main.dust[sandyDust].noGravity = true;
                 Main.dust[sandyDust].velocity *= 0f;
             }
@@ -123,7 +121,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 Vector2 dustRotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                 dustRotate = dustRotate.RotatedBy((double)((float)(i - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Projectile.Center;
                 Vector2 dustDirection = dustRotate - Projectile.Center;
-                int killSand = Dust.NewDust(dustRotate + dustDirection, 0, 0, (int)CalamityDusts.SulphurousSeaAcid, dustDirection.X, dustDirection.Y, 100, default, 1.2f);
+                int killSand = Dust.NewDust(dustRotate + dustDirection, 0, 0, DustID.Sand, dustDirection.X, dustDirection.Y, 100, default, 1.2f);
                 Main.dust[killSand].noGravity = true;
                 Main.dust[killSand].noLight = true;
                 Main.dust[killSand].velocity = dustDirection * 0.5f;
@@ -135,7 +133,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             lightColor.R = (byte)(255 * Projectile.Opacity);
             lightColor.G = (byte)(255 * Projectile.Opacity);
             lightColor.B = (byte)(255 * Projectile.Opacity);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CEUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
             return false;
         }
     }

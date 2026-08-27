@@ -2,7 +2,6 @@
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.NPCs.NihilityTwin;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
@@ -39,27 +38,30 @@ namespace CalamityEntropy.Content.Items
 
         public override void PostUpdate()
         {
-            CalamityMod.CalamityUtils.ForceItemIntoWorld(Item);
+            CEUtils.ForceItemIntoWorld(Item);
             Item.TreasureBagLightAndDust();
         }
 
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
-            return CalamityUtils.DrawTreasureBagInWorld(Item, spriteBatch, ref rotation, ref scale, whoAmI);
+            return CEUtils.DrawTreasureBagInWorld(Item, spriteBatch, ref rotation, ref scale, whoAmI);
         }
 
         public override void ModifyItemLoot(ItemLoot itemLoot)
         {
             itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<NihilityActeriophage>()));
 
-            itemLoot.Add(ModContent.ItemType<NihilityShell>(), new Fraction(4, 5));
-            itemLoot.Add(ModContent.ItemType<Voidseeker>(), new Fraction(3, 5));
-            itemLoot.Add(ModContent.ItemType<EventideSniper>(), new Fraction(3, 5));
-            itemLoot.Add(ModContent.ItemType<NihilityBacteriophageWand>(), new Fraction(3, 5));
-            itemLoot.Add(ModContent.ItemType<StarlessNight>(), new Fraction(3, 5));
-            itemLoot.Add(ModContent.ItemType<VoidPathology>(), new Fraction(3, 5));
-            itemLoot.Add(ModContent.ItemType<NihilityFragments>(), 1, 26, 32);
-            itemLoot.Add(ModContent.ItemType<ChaoticPiece>(), 1, 26, 32);
+            //脱离灾厄:原灾厄DropHelper.Add扩展换原版规则,分数概率按CommonDrop(物品,分母,最少,最多,分子)对位
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<NihilityShell>(), 5, 1, 1, 4));
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<Voidseeker>(), 5, 1, 1, 3));
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<EventideSniper>(), 5, 1, 1, 3));
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<NihilityBacteriophageWand>(), 5, 1, 1, 3));
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<StarlessNight>(), 5, 1, 1, 3));
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<VoidPathology>(), 5, 1, 1, 3));
+            // 虚无碎片升为月后一阶通货，按 NPC 主力静态审计加量（26,32 → 32,40）
+            itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<NihilityFragments>(), 1, 32, 40));
+            itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<ChaoticPiece>(), 1, 26, 32));
+            // 灾厄宝袋重挂物（BookMarkProfaned 等）由 EGlobalItem 统一注入，此处勿重复
         }
     }
 }

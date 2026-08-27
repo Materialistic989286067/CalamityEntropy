@@ -8,11 +8,9 @@ using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.Cruiser;
 using CalamityEntropy.Utilities;
-using CalamityMod;
-using CalamityMod.Events;
-using CalamityMod.Items.Potions;
-using CalamityMod.World;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,6 +26,17 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
     [AutoloadBossHead]
     public class NihilityActeriophage : ModNPC
     {
+        //绘制用贴图,加载期由 VaultLoaden 赋值,只在客户端绘制路径读取
+        [VaultLoaden("CalamityEntropy/Content/NPCs/NihilityTwin/BodyAlt")]
+        private static Asset<Texture2D> bodyAltTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/NihilityTwin/back")]
+        private static Asset<Texture2D> backTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/NihilityTwin/mid")]
+        private static Asset<Texture2D> midTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/NihilityTwin/front")]
+        private static Asset<Texture2D> frontTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/NihilityTwin/NihRope")]
+        internal static Asset<Texture2D> nihRopeTex;
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<VoidVirus>(), 360);
@@ -68,7 +77,6 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             NPC.width = 140;
             NPC.height = 140;
             NPC.damage = 106;
-            NPC.Calamity().DR = 0.15f;
             if (Main.expertMode)
             {
                 NPC.damage += 2;
@@ -79,15 +87,12 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             }
             NPC.defense = 75;
             NPC.lifeMax = 360000;
-            if (BossRushEvent.BossRushActive)
-            {
-                NPC.lifeMax += 360000;
-            }
-            if (CalamityWorld.death)
+            // 难度映射:死亡→大师、复仇→专家(difficulty-map)
+            if (Main.masterMode)
             {
                 NPC.damage += 5;
             }
-            else if (CalamityWorld.revenge)
+            else if (Main.expertMode)
             {
                 NPC.damage += 4;
             }
@@ -110,25 +115,50 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<NihilityTwinBag>()));
 
-            npcLoot.DefineConditionalDropSet(() => true).Add(DropHelper.PerPlayer(ModContent.ItemType<SupremeHealingPotion>(), 1, 5, 15), hideLootReport: true);
+            // 灾厄至尊回复药水→原版超级治疗药水,数量照搬(misc-map);按人掉落并隐藏图鉴条目
+            npcLoot.Add(new DropPerPlayerOnThePlayer(ItemID.SuperHealingPotion, 1, 5, 15, new HiddenDropCondition()));
 
-
-            var normalOnly = npcLoot.DefineNormalOnlyDropSet();
+            LeadingConditionRule normalOnly = new LeadingConditionRule(new Conditions.NotExpert());
             {
-                normalOnly.Add(ModContent.ItemType<NihilityShell>(), new Fraction(4, 5));
-                normalOnly.Add(ModContent.ItemType<Voidseeker>(), new Fraction(4, 5));
-                normalOnly.Add(ModContent.ItemType<EventideSniper>(), new Fraction(4, 5));
-                normalOnly.Add(ModContent.ItemType<StarlessNight>(), new Fraction(4, 5));
-                normalOnly.Add(ModContent.ItemType<NihilityBacteriophageWand>(), new Fraction(4, 5));
-                normalOnly.Add(ModContent.ItemType<VoidPathology>(), new Fraction(4, 5));
-                normalOnly.Add(ModContent.ItemType<NihilityFragments>(), 1, 18, 24);
-                normalOnly.Add(ModContent.ItemType<ChaoticPiece>(), 1, 18, 24);
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<NihilityShell>(), 5, 1, 1, 4));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<Voidseeker>(), 5, 1, 1, 4));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<EventideSniper>(), 5, 1, 1, 4));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<StarlessNight>(), 5, 1, 1, 4));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<NihilityBacteriophageWand>(), 5, 1, 1, 4));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<VoidPathology>(), 5, 1, 1, 4));
+                normalOnly.OnSuccess(ItemDropRule.Common(ModContent.ItemType<NihilityFragments>(), 1, 18, 24));
+                normalOnly.OnSuccess(ItemDropRule.Common(ModContent.ItemType<ChaoticPiece>(), 1, 18, 24));
             }
-            npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<NihilityTwinRelic>());
-            npcLoot.Add(ModContent.ItemType<NihilityTwinTrophy>(), 10);
+            npcLoot.Add(normalOnly);
+            // 遗物:原灾厄复仇/大师条件对齐原版大师掉落惯例(difficulty-map)
+            npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsMasterMode(), ModContent.ItemType<NihilityTwinRelic>()));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<NihilityTwinTrophy>(), 10));
 
+            // 首杀传记:承接原灾厄按人实例掉落语义
+            npcLoot.Add(new DropPerPlayerOnThePlayer(ModContent.ItemType<NihilityTwinLore>(), 1, 1, 1, new LoreFirstKill()));
+        }
 
-            npcLoot.AddConditionalPerPlayer(() => !EDownedBosses.downedNihilityTwin, ModContent.ItemType<NihilityTwinLore>());
+        // 原灾厄全局 DR=0.15 的本地等效;公有字段供血条等外部读取
+        public float DamageReduction = 0.15f;
+        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
+        {
+            modifiers.FinalDamage *= 1f - DamageReduction;
+        }
+
+        // 恒真但隐藏图鉴条目的条件:对应原 hideLootReport 语义
+        private class HiddenDropCondition : IItemDropRuleCondition, IProvideItemConditionDescription
+        {
+            public bool CanDrop(DropAttemptInfo info) => true;
+            public bool CanShowItemDropInUI() => false;
+            public string GetConditionDescription() => null;
+        }
+
+        // 首杀传记条件:对应 downed 旗标未置位时每名玩家各掉一份
+        private class LoreFirstKill : IItemDropRuleCondition, IProvideItemConditionDescription
+        {
+            public bool CanDrop(DropAttemptInfo info) => !EDownedBosses.downedNihilityTwin;
+            public bool CanShowItemDropInUI() => true;
+            public string GetConditionDescription() => null;
         }
         public override void OnKill()
         {
@@ -204,6 +234,8 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         public float ropeLerp = 1;
         public int spawnAnm = 150;
         float shake = 0;
+        // 出场动画持续屏震的复用实例(仅客户端)
+        private ScreenShaker.ScreenShake spawnShake = null;
         public override void OnSpawn(IEntitySource source)
         {
         }
@@ -248,8 +280,16 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
                     cell.Center = NPC.Center;
                     cell.velocity *= 0;
                     NPC.velocity *= 0;
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3.2f * shake;
-
+                    // 原灾厄全局屏震(逐帧置强度)改自有 ScreenShaker:复用同一震动实例并逐帧刷新振幅
+                    if (!Main.dedServ)
+                    {
+                        if (spawnShake == null || !spawnShake.active)
+                        {
+                            spawnShake = new ScreenShaker.ScreenShake(Vector2.Zero, 0);
+                            ScreenShaker.AddShake(spawnShake);
+                        }
+                        spawnShake.amplitude = 3.2f * shake;
+                    }
                 }
                 return;
             }
@@ -1030,7 +1070,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             Texture2D tex = NPC.getTexture();
             if (phase == 2 && aitype == 5)
             {
-                tex = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/NihilityTwin/BodyAlt").Value;
+                tex = bodyAltTex.Value;
             }
             Color color = Color.White;
 
@@ -1039,9 +1079,9 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             float erot = 0;
             erot += (1f - (1f / (1f + NPC.velocity.Length()))) * 0.12f;
 
-            Texture2D l1 = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/NihilityTwin/back").Value;
-            Texture2D l2 = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/NihilityTwin/mid").Value;
-            Texture2D l3 = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/NihilityTwin/front").Value;
+            Texture2D l1 = backTex.Value;
+            Texture2D l2 = midTex.Value;
+            Texture2D l3 = frontTex.Value;
 
             Main.EntitySpriteDraw(l1, buttom - Main.screenPosition, null, color, rot - erot, new Vector2(40, 46), NPC.scale, SpriteEffects.None);
             Main.EntitySpriteDraw(l1, buttom - Main.screenPosition, null, color, rot + erot, new Vector2(0, 46), NPC.scale, SpriteEffects.FlipHorizontally);
@@ -1096,7 +1136,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-                gd.Textures[0] = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/NihilityTwin/NihRope").Value;
+                gd.Textures[0] = nihRopeTex.Value;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);

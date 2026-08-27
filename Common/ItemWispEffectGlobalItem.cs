@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
+﻿using CalamityEntropy.Assets.Register;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ModLoader;
@@ -20,7 +20,7 @@ namespace CalamityEntropy.Common
                 return true;
             }
             checkItemColor(item);
-            Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Wisp", AssetRequestMode.ImmediateLoad).Value;
+            Effect shader = CEEffectAssets.Wisp;
             shader.Parameters["minColor"].SetValue(new Color(40, 6, 100).ToVector4());
             shader.Parameters["maxColor"].SetValue(new Color(255, 220, 255).ToVector4());
             shader.Parameters["min"].SetValue(item.Entropy().wispColor[0]);
@@ -49,7 +49,7 @@ namespace CalamityEntropy.Common
                 return true;
             }
             checkItemColor(item);
-            Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Wisp", AssetRequestMode.ImmediateLoad).Value;
+            Effect shader = CEEffectAssets.Wisp;
             shader.Parameters["minColor"].SetValue(new Color(40, 6, 100).ToVector4());
             shader.Parameters["maxColor"].SetValue(new Color(255, 220, 255).ToVector4());
             shader.Parameters["min"].SetValue(item.Entropy().wispColor[0]);

@@ -1,7 +1,8 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = CEUtils.RogueDC;
+            Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 70;
             Projectile.height = 70;
             Projectile.friendly = true;
@@ -152,7 +153,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                 SoundStyle SwingSound = SoundID.Item1;
                 SwingSound.Pitch = 0f;
-                if (Projectile.Calamity().stealthStrike)
+                if (Projectile.IsEmpowered())
                 {
                     SwingSound.Pitch = 1f;
                 }
@@ -189,8 +190,8 @@ namespace CalamityEntropy.Content.Projectiles
             }
             if (exp)
             {
-                SoundEngine.PlaySound(new("CalamityMod/Sounds/NPCKilled/DevourerSegmentBreak1") { Volume = 0.3f }, Projectile.Center);
-                float sparkCount = Projectile.Calamity().stealthStrike ? 26 : 16;
+                SoundEngine.PlaySound(new("CalamityEntropy/Assets/Sounds/Smash", 2) { Volume = 0.3f }, Projectile.Center);
+                float sparkCount = Projectile.IsEmpowered() ? 26 : 16;
                 for (int i = 0; i < sparkCount; i++)
                 {
                     Vector2 sparkVelocity2 = new Vector2(16, 0).RotatedBy(Projectile.rotation).RotatedByRandom(MathHelper.ToRadians(40)) * Main.rand.NextFloat(0.5f, 1.8f);
@@ -198,7 +199,7 @@ namespace CalamityEntropy.Content.Projectiles
                     float sparkScale2 = Main.rand.NextFloat(0.95f, 1.8f);
                     Color sparkColor2 = Color.Black;
 
-                    float velc = Projectile.Calamity().stealthStrike ? 1.5f : 0.9f;
+                    float velc = Projectile.IsEmpowered() ? 1.5f : 0.9f;
                     if (Main.rand.NextBool())
                     {
                         //PRT_AltSpark跟LineCal随机混用,旧Calamity spark/Lines二选一
@@ -209,7 +210,7 @@ namespace CalamityEntropy.Content.Projectiles
                         PRTLoader.NewParticle<PRT_LineCal>(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f), sparkVelocity2 * velc * 1.2f, Main.rand.NextBool() ? Color.Yellow : Color.Orange, sparkScale2 * 1).Configure(false, (int)(sparkLifetime2 * 1));
                     }
                 }
-                if (!Projectile.Calamity().stealthStrike)
+                if (!Projectile.IsEmpowered())
                 {
                     for (int j = 0; j < 32; j++)
                     {
@@ -225,7 +226,7 @@ namespace CalamityEntropy.Content.Projectiles
             }
             if (exp)
             {
-                if (Projectile.Calamity().stealthStrike)
+                if (Projectile.IsEmpowered())
                 {
                     if (!stick)
                     {
@@ -330,7 +331,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override string Texture => CEUtils.WhiteTexPath;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.timeLeft = 28;
             Projectile.width = Projectile.height = 32;
         }
@@ -351,7 +352,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override string Texture => CEUtils.WhiteTexPath;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.localNPCHitCooldown = -1;
             Projectile.timeLeft = 12;
             Projectile.width = Projectile.height = 32;
@@ -411,7 +412,7 @@ namespace CalamityEntropy.Content.Projectiles
                         break;
                     ve.Add(new CEUtils.VertexPointSets(arc[j], Color.White, 36 * w * pw, 0));
                 }
-                ThalassianWaterBolt.DrawTrail(ve, color1, color2, CEUtils.getExtraTex("Streak1"), CEUtils.getExtraTex("Streak2"), false, 0.2f);
+                ThalassianWaterBolt.DrawTrail(ve, color1, color2, CEExtraAssets.Streak1, CEExtraAssets.Streak2, false, 0.2f);
             }
             return false;
         }

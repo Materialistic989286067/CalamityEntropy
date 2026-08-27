@@ -5,7 +5,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.Particles.CalamityPorts
 {
-    //BloomParticle,GeneralParticleHandler搬来,pulse用1-Pow(1-Completion,4)是Calamity原曲线
+    //BloomParticle,旧版粒子系统搬来,pulse用1-Pow(1-Completion,4)是Calamity原曲线
     public class PRT_BloomCal : BasePRT
     {
         public float OriginalScale;
@@ -27,7 +27,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             opacity = 0f;   //CanPool,Fade分支的opacity得清
         }
 
-        //@CalamityMod/Particles/BloomCircle → PRTSharedAssets,和CustomPulse默认TexPath是同一张
+        //Assets/Particles/BloomCircle → PRTSharedAssets,和CustomPulse默认TexPath是同一张
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_BloomCal Configure(float finalScale, int lifetime, bool fade = true)

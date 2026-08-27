@@ -1,10 +1,9 @@
-﻿using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
-using CalamityMod.NPCs.AquaticScourge;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -32,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             Item.knockBack = 0;
             Item.shootSpeed = 26;
             Item.useAnimation = Item.useTime = 26;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Green;
             Item.width = 38;
             Item.height = 38; 
@@ -107,7 +106,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                 npc.GetGlobalNPC<WhipDebuffNPC>().BaitStick = 2;
                 if (IsActive)
                 {
-                    Projectile.GetOwner().Calamity().mouseWorldListener = true;
+                    Projectile.GetOwner().Entropy().MouseWorldListener = true;
                     npc.GetGlobalNPC<WhipDebuffNPC>().ClearBaitTags();
                     npc.GetGlobalNPC<WhipDebuffNPC>().Tags.Add(new WhipTag(this.GetType().Name, 5, this.TagDamage, 1, 0, this.GetType().Name) { IsABaitTag = true });
                 }
@@ -138,7 +137,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             if (activeEffectAlpha >= 0.01f)
             {
                 Main.spriteBatch.UseAdditiveClamp();
-                Texture2D pulse = CEUtils.getExtraTex("SoftRoundExplosion");
+                Texture2D pulse = CEExtraAssets.SoftRoundExplosion;
                 for(float i = 0; i < 1f; i += 0.5f)
                 {
                     float scale = CEUtils.Frac(i + Main.GlobalTimeWrappedHourly);
@@ -214,7 +213,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             modifiers.ArmorPenetration += 30;
-            if(target.type == NPCID.TheDestroyerBody || target.type == ModContent.NPCType<AquaticScourgeBody>() || target.type == ModContent.NPCType<AquaticScourgeBodyAlt>())
+            //脱离灾厄:灾厄渊海灾虫体节特判随灾厄移除,只保留原版毁灭者体节减伤
+            if(target.type == NPCID.TheDestroyerBody)
             {
                 modifiers.SourceDamage *= 0.2f;
             }
@@ -251,7 +251,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                 }
                 else
                 {
-                    targetPos = player.Calamity().mouseWorld;
+                    targetPos = player.Entropy().MouseWorld;
                 }
                 Projectile.velocity = CEUtils.CalculateSourceVel(Projectile.Center, targetPos, int.Clamp((int)(Projectile.Distance(targetPos) / 30f), 0, 50), 0.7f);
             }
@@ -307,7 +307,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.OnFire3, 180);
-            SoundStyle burn = new("CalamityMod/Sounds/Item/WeldingBurn");
+            SoundStyle burn = new SoundStyle("CalamityEntropy/Assets/Sounds/steam") { PitchVariance = 0.2f };
             SoundEngine.PlaySound(burn with { Volume = 0.28f, Pitch = 0.5f }, target.Center);
             for (int i = 0; i < 5; i++)
             {

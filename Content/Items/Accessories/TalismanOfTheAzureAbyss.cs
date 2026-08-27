@@ -1,11 +1,11 @@
+using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
+using Terraria.ID;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.width = 52;
             Item.height = 52;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
             Item.rare = ModContent.RarityType<VoidPurple>();
             Item.defense = 10;
         }
@@ -44,8 +44,8 @@ namespace CalamityEntropy.Content.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<VoidBar>(5).
-                AddIngredient<Lumenyl>(6).
-                AddIngredient<AscendantSpiritEssence>(4).
+                AddIngredient(ItemID.CrystalShard, 6).
+                AddIngredient<WraithSoulEssence>(4).
                 AddTile(ModContent.TileType<VoidWellTile>()).
                 Register();
         }
@@ -121,7 +121,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D trail1 = CEUtils.getExtraTex("Streak2Trans");
+            Texture2D trail1 = CEExtraAssets.Streak2Trans;
             CEUtils.DrawGlow(Projectile.Center, Color.MediumVioletRed * 2, 0.4f * Projectile.ai[0]);
             CEUtils.DrawGlow(Projectile.Center, Color.MediumVioletRed * 2, 0.4f * Projectile.ai[0]);
             DrawRing(Projectile.Center - Main.screenPosition, trail1, new Vector2(70, 70) * Projectile.ai[0], new Vector2(32, 32) * Projectile.ai[0], Color.LightBlue, BlendState.Additive);
@@ -233,7 +233,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D trail1 = CEUtils.getExtraTex("Streak2Trans");
+            Texture2D trail1 = CEExtraAssets.Streak2Trans;
             CEUtils.DrawGlow(Projectile.Center, Color.LightBlue * 2, 0.4f * Projectile.ai[0]);
             CEUtils.DrawGlow(Projectile.Center, Color.LightBlue * 2, 0.4f * Projectile.ai[0]);
             DrawRing(Projectile.Center - Main.screenPosition, trail1, new Vector2(64, 64) * Projectile.ai[0], new Vector2(1, 1) * Projectile.ai[0], new Color(180, 180, 255), BlendState.Additive);

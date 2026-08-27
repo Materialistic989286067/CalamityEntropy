@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityEntropy.Assets.Register;
+using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -70,7 +73,7 @@ namespace CalamityEntropy.Content.Projectiles
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D warn = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/vlbw").Value;
+            Texture2D warn = CEExtraAssets.vlbw;
 
             spriteBatch.Draw(warn, Projectile.Center - Main.screenPosition, null, Color.Yellow * opc, Projectile.rotation, warn.Size() / 2 * new Vector2(0, 1), new Vector2(10, 1.2f) * Projectile.scale * 1.46f * new Vector2(0.5f, opc), SpriteEffects.None, 0);
             spriteBatch.Draw(warn, Projectile.Center - Main.screenPosition, null, ((drawcount / 2) % 2 == 0 ? Color.White : Color.Yellow) * opc, Projectile.rotation, warn.Size() / 2 * new Vector2(0, 1), new Vector2(10, 1) * Projectile.scale * 1.46f * new Vector2(0.5f, opc), SpriteEffects.None, 0);

@@ -1,8 +1,7 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Cooldowns;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Items;
+using CalamityEntropy.Core.Cooldowns;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -25,7 +24,7 @@ namespace CalamityEntropy.Content.Items
             Item.useStyle = -1;
             Item.noMelee = true;
             Item.shoot = ModContent.ProjectileType<DivineShield>();
-            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+            Item.value = Item.buyPrice(gold: 10);
             Item.rare = ItemRarityID.LightRed;
             Item.shootSpeed = 5;
 

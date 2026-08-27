@@ -1,7 +1,9 @@
-﻿using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Graphics.Primitives;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.Graphics.Shaders;
@@ -75,9 +77,9 @@ namespace CalamityEntropy.Content.Projectiles
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:ArtAttack"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-            GameShaders.Misc["CalamityMod:ArtAttack"].Apply();
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(TrailWidth, TrailColor, (_, _) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:ArtAttack"]), 180);
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].SetShaderTexture(CEExtraAssets.SylvestaffStreakAsset);
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].Apply();
+            CEPrimitiveRenderer.RenderTrail(Projectile.oldPos, new(TrailWidth, TrailColor, (_, _) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityEntropy:ArtAttack"]), 180);
             Main.spriteBatch.ExitShaderRegion();
 
             Color color = Color.LightGoldenrodYellow;

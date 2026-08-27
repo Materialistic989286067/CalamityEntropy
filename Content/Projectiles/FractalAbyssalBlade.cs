@@ -1,4 +1,4 @@
-﻿using CalamityMod;
+﻿using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;

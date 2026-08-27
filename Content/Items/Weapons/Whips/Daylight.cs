@@ -1,6 +1,4 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -21,7 +19,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
             Item.DefaultToWhip(ModContent.ProjectileType<DaylightProjectile>(), 40, 4, 8f, 30);
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = SoundID.Item130;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.autoReuse = true;
             Item.width = 44;
             Item.height = 38;
@@ -31,7 +29,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
         {
             CreateRecipe()
                 .AddIngredient(ItemID.AncientBattleArmorMaterial)
-                .AddIngredient<EssenceofSunlight>(8)
+                .AddIngredient(ItemID.SoulofLight, 8)
                 .AddIngredient(ItemID.GoldBar, 6)
                 .AddIngredient(ItemID.Silk, 6)
                 .AddTile(TileID.Anvils)
@@ -39,7 +37,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
 
             CreateRecipe()
                 .AddIngredient(ItemID.AncientBattleArmorMaterial)
-                .AddIngredient<EssenceofSunlight>(8)
+                .AddIngredient(ItemID.SoulofLight, 8)
                 .AddIngredient(ItemID.PlatinumBar, 6)
                 .AddIngredient(ItemID.Silk, 6)
                 .AddTile(TileID.Anvils)

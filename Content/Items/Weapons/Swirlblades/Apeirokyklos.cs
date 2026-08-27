@@ -1,19 +1,17 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Rogue;
+using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Weapons;
+using InnoVault;
 using InnoVault.PRT;
-using Microsoft.Build.Tasks.Deployment.ManifestUtilities;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
-using System.Runtime.Intrinsics.Arm;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -22,11 +20,14 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 {
-    public class Apeirokyklos : RogueWeapon
+    public class Apeirokyklos : ModItem, ICEChargeWeapon
     {
+        // 充能条 8 秒；原潜伏乘数 伤害0.9/弹速1.2 并入释放乘数
+        public CEChargeProfile ChargeProfile => CEChargeProfile.ChargeBar(8f, 0.9f, 1.2f);
+
         public override void SetDefaults()
         {
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 30;
             Item.width = 42;
             Item.height = 46;
@@ -34,7 +35,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Item.crit = 10;
             Item.ArmorPenetration = 40;
             Item.UseSound = CEUtils.GetSound("ApeirokyklosThrow", 1, 12, 0.5f) with { PitchRange = (0.3f, 0.55f) };
-            Item.value = CalamityGlobalItem.RarityCalamityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 3, gold: 20);
             Item.rare = ModContent.RarityType<AbyssalBlue>();
             Item.shoot = ModContent.ProjectileType<ApeirokyklosProj>();
             Item.shootSpeed = 32f;
@@ -45,16 +46,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Item.noMelee = true;
             Item.noUseGraphic = true;
         }
-        public override float StealthDamageMultiplier => 0.9f;
-        public override float StealthVelocityMultiplier => 1.2f;
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            bool ult = CEChargeWeapon.TryConsume(player, Item);
             int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            if (player.Calamity().StealthStrikeAvailable() && p.WithinBounds(Main.maxProjectiles))
+            if (ult && p >= 0 && p < Main.maxProjectiles)
             {
-                Main.projectile[p].Calamity().stealthStrike = true;
-                CEUtils.SyncProj(p);
+                CEChargeWeapon.Empower(p);
             }
             return false;
         }
@@ -74,6 +72,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
     }
     public class ApeirokyklosProj : BaseSwirlblade
     {
+        //日冕贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Extra/Corona")]
+        internal static Asset<Texture2D> CoronaTex;
         public override string Texture => CEUtils.ItemTexPath<Apeirokyklos>();
         public override void SetStaticDefaults()
         {
@@ -88,21 +89,21 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Projectile.light = 1;
         }
         public override int BladeOpenTime => 15;
-        public override float Radius => 210 * (Projectile.Calamity().stealthStrike ? (stealthHitted ? 0.7f : 1.5f) : 1);
+        public override float Radius => 210 * (Projectile.IsEmpowered() ? (stealthHitted ? 0.7f : 1.5f) : 1);
         public override int FlyTime => 600;
         public override Rectangle CollisionRect => Projectile.Center.getRectCentered(90, 90);
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             base.ModifyHitNPC(target, ref modifiers);
         }
-        public override int SpreadTime => Projectile.Calamity().stealthStrike ? 120 : 56;
+        public override int SpreadTime => Projectile.IsEmpowered() ? 120 : 56;
         public bool stealthHitted = false;
         public float chargeBloom = 0;
         public override int OldPosLength => 18;
         public override bool CollideWithNPC => !stealthHitted;
         public override void OnCollideWithNPC(NPC npc)
         {
-            if (Projectile.Calamity().stealthStrike)
+            if (Projectile.IsEmpowered())
             {
                 stealthHitted = true;
                 Projectile.velocity = Projectile.velocity.RotatedByRandom(0.2f).normalize() * 30 * -1;
@@ -124,7 +125,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 }
                 for (float i = 1; i >= 0.1f; i -= 0.1f)
                 {
-                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 180, 255), new Color(180, 200, 255), i), 0.005f * i * (Radius / 180f)).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f * i * (Radius / 180f), 10 * 0.07f * (Radius / 180f) * i * i, 12 + (int)(i * 12));
+                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 180, 255), new Color(180, 200, 255), i), 0.005f * i * (Radius / 180f)).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f * i * (Radius / 180f), 10 * 0.07f * (Radius / 180f) * i * i, 12 + (int)(i * 12));
                 }
                 if(Main.myPlayer == Projectile.owner)
                 {
@@ -149,7 +150,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             }
             if (chargeBloom > 0)
                 chargeBloom -= 0.02f;
-            if(Spreaded && Projectile.Calamity().stealthStrike)
+            if(Spreaded && Projectile.IsEmpowered())
             {
                 if(stealthHitted && Counter % 6 == 0)
                 {
@@ -202,8 +203,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Main.EntitySpriteDraw(Projectile.getDrawData(lightColor, overridePos: Projectile.Center));
             if (BladeScale > 0)
             {
-                Texture2D smear = CEUtils.getExtraTex("CircularSmear");
-                Texture2D co = CEUtils.getExtraTex("Corona");
+                Texture2D smear = CEExtraAssets.CircularSmear;
+                Texture2D co = CoronaTex.Value;
                 float scale = Radius / 78f * Projectile.scale * BladeScale;
                 float time = Main.GlobalTimeWrappedHourly;
                 Vector2 o = smear.Size() * 0.5f;
@@ -235,7 +236,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             if (chargeBloom > 0)
             {
                 Main.spriteBatch.UseAdditiveClamp();
-                Texture2D b = CEUtils.getExtraTex("BloomRing");
+                Texture2D b = CEExtraAssets.BloomRing;
                 Main.spriteBatch.Draw(b, Projectile.Center - Main.screenPosition, null, Color.LightBlue, 0, b.Size() * 0.5f, Projectile.scale * 3 * chargeBloom * chargeBloom * chargeBloom, SpriteEffects.None, 0);
                 Main.spriteBatch.Draw(b, Projectile.Center - Main.screenPosition, null, Color.LightBlue, 0, b.Size() * 0.5f, Projectile.scale * 3 * chargeBloom * chargeBloom, SpriteEffects.None, 0);
                 Main.spriteBatch.Draw(b, Projectile.Center - Main.screenPosition, null, Color.LightBlue, 0, b.Size() * 0.5f, Projectile.scale * 3 * chargeBloom, SpriteEffects.None, 0);
@@ -278,7 +279,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         public override string Texture => CEUtils.WhiteTexPath;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.timeLeft = 26;
             Projectile.MaxUpdates = 1;
             Projectile.localNPCHitCooldown = -1;

@@ -4,11 +4,12 @@ using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Melee;
+using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -24,7 +25,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             Item.damage = 10000;
             Item.crit = 20;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.width = 132;
             Item.height = 156;
             Item.useTime = 22;
@@ -32,7 +33,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 7;
             Item.rare = ModContent.RarityType<AbyssalBlue>();
-            Item.value = CalamityGlobalItem.RarityCalamityRedBuyPrice;
+            Item.value = Item.buyPrice(3, 20);
             Item.UseSound = null;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -52,7 +53,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<DeathsAscension>()
+                .AddIngredient(ItemID.StarWrath)
                 .AddIngredient(ModContent.ItemType<WyrmTooth>(), 12)
                 .AddIngredient<FadingRunestone>()
                 .AddTile<AbyssalAltarTile>()
@@ -67,9 +68,12 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class ErebodrepanonHeld : ModProjectile
     {
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/Erebodrepanon";
+        //星形贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Extra/Star2")]
+        internal static Asset<Texture2D> Star2Tex;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(ModContent.GetInstance<TrueMeleeDamageClass>(), false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.width = Projectile.height = 8;
             Projectile.MaxUpdates = 10;
             Projectile.localNPCHitCooldown = -1;
@@ -83,7 +87,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AI()
         {
             Player player = Projectile.GetOwner();
-            float speed = Projectile.GetOwner().GetTotalAttackSpeed<TrueMeleeDamageClass>();
+            float speed = Projectile.GetOwner().GetTotalAttackSpeed(DamageClass.Melee);
             Projectile.Center = player.MountedCenter;
             player.itemTime = player.itemAnimation = 3;
             player.heldProj = Projectile.whoAmI;
@@ -210,9 +214,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D tex = Projectile.GetTexture();
-            Texture2D star = CEUtils.getExtraTex("Star2");
-            Texture2D s3 = CEUtils.getExtraTex("CircularSmear");
-            Texture2D s2 = CEUtils.getExtraTex("CircularSmearSmokey");
+            Texture2D star = Star2Tex.Value;
+            Texture2D s3 = CEExtraAssets.CircularSmear;
+            Texture2D s2 = CEExtraAssets.CircularSmearSmokey;
             float rotation = Projectile.rotation + 1.047f * dir; 
             SpriteEffects ef = dir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically;
             Vector2 origin = dir > 0 ? new Vector2(8, tex.Height - 8) : new Vector2(8, 8);
@@ -310,7 +314,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.UseAdditive();
-            Texture2D s = CEUtils.getExtraTex("StarChromatic");
+            Texture2D s = CEExtraAssets.StarChromatic;
             float scale = Projectile.ai[0] / 40f * 0.2f;
             float a = Projectile.ai[0] / 40f;
             if (Projectile.ai[0] >= 40)

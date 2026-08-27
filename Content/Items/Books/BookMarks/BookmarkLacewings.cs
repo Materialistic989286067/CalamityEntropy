@@ -1,6 +1,7 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -160,6 +161,9 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             }
 
         }
+        //草蛉贴图,加载期就位,不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Items/Books/BookMarks/Fairy/Lacewing")]
+        internal static Texture2D LacewingTex;
         public Color colorDraw = Color.White;
         public int dir = 1;
         public override bool? CanHitNPC(NPC target)
@@ -168,7 +172,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = CEUtils.RequestTex("CalamityEntropy/Content/Items/Books/BookMarks/Fairy/Lacewing");
+            Texture2D tex = LacewingTex;
             Rectangle frame = new Rectangle(0, 24 * (((int)Main.GameUpdateCount / 4) % 3), tex.Width, 24);
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, Color.Lerp(colorDraw, Color.White, 0.8f) * Projectile.Opacity, 0, new Vector2(12, 11), Projectile.scale, dir > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
             Main.spriteBatch.UseBlendState(BlendState.Additive);

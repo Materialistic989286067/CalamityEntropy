@@ -1,4 +1,4 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityEntropy.Content.Buffs.PortsDoT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;

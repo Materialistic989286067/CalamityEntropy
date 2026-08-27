@@ -1,6 +1,4 @@
 ﻿using CalamityEntropy.Content.Particles;
-using CalamityMod;
-using CalamityMod.Dusts;
 using InnoVault.PRT;
 using Terraria;
 using Terraria.ID;
@@ -35,9 +33,6 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.lavaImmune = true;
-            NPC.Calamity().VulnerableToHeat = false;
-            NPC.Calamity().VulnerableToCold = true;
-            NPC.Calamity().VulnerableToWater = true;
             NPC.friendly = true;
         }
 
@@ -110,19 +105,16 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
         }
         public override void HitEffect(NPC.HitInfo hit)
         {
+            // 硫火尘暂以原版红火把尘近似；灾厄 gore 资产不复存在，碎块演出删除
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.RedTorch, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 40; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, hit.HitDirection, -1f, 0, default, 1f);
-                }
-                if (Main.netMode != NetmodeID.Server)
-                {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, ModContent.GetInstance<CalamityMod.CalamityMod>().Find<ModGore>("Scryllar").Type, NPC.scale);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.RedTorch, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }

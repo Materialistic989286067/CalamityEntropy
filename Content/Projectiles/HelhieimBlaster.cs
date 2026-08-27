@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 using Terraria;
 using Terraria.Audio;
@@ -8,6 +9,9 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class HelhieimBlaster : ModProjectile
     {
+        //枪体帧动画(hb0~hb17),加载期就位,PreDraw 不再拼接路径逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/HB/hb", 0, 18, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] Frames;
         int frame = 0;
 
         public override void SetStaticDefaults()
@@ -131,7 +135,7 @@ namespace CalamityEntropy.Content.Projectiles
             {
                 return false;
             }
-            Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/HB/hb" + frame.ToString()).Value;
+            Texture2D tx = Frames[frame];
             SpriteEffects ef = SpriteEffects.None;
             if (Projectile.rotation.ToRotationVector2().X < 0)
             {
@@ -139,7 +143,7 @@ namespace CalamityEntropy.Content.Projectiles
             }
             if (frame == 8)
             {
-                tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/HB/hb" + ((ct / 3) % 3 + 6).ToString()).Value;
+                tx = Frames[(ct / 3) % 3 + 6];
             }
             Main.spriteBatch.Draw(tx, Projectile.Center - Main.screenPosition + Projectile.rotation.ToRotationVector2() * back + new Vector2(0, up), null, Projectile.owner.ToPlayer().Entropy().WeaponBoost > 0 ? Color.Purple : Color.White, Projectile.rotation, new Vector2(165, 144) / 2, Projectile.scale, ef, 0);
             return false;

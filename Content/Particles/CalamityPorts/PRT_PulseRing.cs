@@ -25,7 +25,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             opacity = 0f;   //CanPool,脉冲环opacity每实例独立,Reset得清
         }
 
-        //@CalamityMod/Particles/HollowCircleHardEdge → PRTSharedAssets
+        //Assets/Particles/HollowCircleHardEdge → PRTSharedAssets
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_PulseRing Configure(float finalScale, int lifetime,

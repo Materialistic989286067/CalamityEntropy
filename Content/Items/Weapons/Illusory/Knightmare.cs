@@ -1,11 +1,11 @@
-﻿using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Donator;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Summon;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -40,14 +40,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Illusory
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.shoot = ModContent.ProjectileType<IllusoryBladeMinion>();
             Item.shootSpeed = 2f;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
             Item.autoReuse = true;
             Item.UseSound = SoundID.Item4;
             Item.noMelee = true;
             Item.buffType = ModContent.BuffType<IllusoryBlade>();
             Item.rare = ModContent.RarityType<VoidPurple>();
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.Calamity().donorItem = true;
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -60,7 +59,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Illusory
         public override void AddRecipes()
         {
             CreateRecipe()
-        .AddIngredient<DazzlingStabberStaff>()
+        .AddIngredient(ItemID.StardustDragonStaff)
                 .AddIngredient(ItemID.EmpressBlade)
                 .AddIngredient<VoidBar>(5)
                 .AddTile<VoidWellTile>()
@@ -199,7 +198,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Illusory
         public float trailAlpha = 0;
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D trail = CEUtils.getExtraTex("PatchyTallNoise");
+            Texture2D trail = CEExtraAssets.PatchyTallNoise;
             List<ColoredVertex> ve = new List<ColoredVertex>();
             Color b = new Color(200, 200, 255);
             odp.Add(Projectile.Center);
@@ -219,7 +218,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Illusory
             {
                 var gd = Main.graphics.GraphicsDevice;
                 SpriteBatch sb = Main.spriteBatch;
-                Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/SwordTrail5", AssetRequestMode.ImmediateLoad).Value;
+                Effect shader = CEEffectAssets.SwordTrail5;
                 sb.End();
                 sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                 shader.Parameters["color2"].SetValue((new Color(190, 190, 255)).ToVector4());
@@ -229,13 +228,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Illusory
 
                 shader.CurrentTechnique.Passes["EffectPass"].Apply();
 
-                gd.Textures[1] = CEUtils.getExtraTex("Extra_201");
+                gd.Textures[1] = CEExtraAssets.Extra_201;
                 gd.Textures[0] = trail;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-                trail = CEUtils.getExtraTex("SwordSlashTexture");
+                trail = CEExtraAssets.SwordSlashTexture;
                 gd.Textures[0] = trail;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-                trail = CEUtils.getExtraTex("Perlin");
+                trail = CEExtraAssets.Perlin;
                 gd.Textures[0] = trail;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 Main.spriteBatch.ExitShaderRegion();

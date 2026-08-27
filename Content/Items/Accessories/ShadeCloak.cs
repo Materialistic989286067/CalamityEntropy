@@ -1,4 +1,3 @@
-﻿using CalamityMod.Items;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,7 +12,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         {
             Item.width = 42;
             Item.height = 42;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
             Item.expert = true;
@@ -31,8 +30,8 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override void AddRecipes()
         {
             /*CreateRecipe().AddIngredient(ItemID.SoulofNight, 8)
-                .AddIngredient<SolarVeil>(12)
-                .AddIngredient<DepthCells>(4)
+                .AddIngredient(ItemID.Ectoplasm, 12)
+                .AddIngredient(ItemID.SoulofNight, 4)
                 .AddIngredient(ItemID.Ectoplasm, 8);*/
         }
     }

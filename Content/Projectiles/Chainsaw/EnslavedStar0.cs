@@ -1,7 +1,6 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Projectiles.Rogue;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -14,6 +13,9 @@ namespace CalamityEntropy.Content.Projectiles.Chainsaw
 {
     public class EnslavedStar0 : ModProjectile
     {
+        //链锯帧动画数组(序号 0 起),加载期就位,PreDraw 不再拼接路径逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Chainsaw/EnslavedStar", 0, 2, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] Frames;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
@@ -21,7 +23,7 @@ namespace CalamityEntropy.Content.Projectiles.Chainsaw
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 96;
             Projectile.height = 96;
             Projectile.friendly = true;
@@ -115,7 +117,7 @@ namespace CalamityEntropy.Content.Projectiles.Chainsaw
 
         public override bool PreDraw(ref Color dc)
         {
-            Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Chainsaw/EnslavedStar" + (((int)(Projectile.ai[0] / 4)) % frame).ToString()).Value;
+            Texture2D tx = Frames[((int)(Projectile.ai[0] / 4)) % frame];
             var rand = Main.rand;
             SpriteEffects ef = SpriteEffects.None;
             if (Projectile.velocity.X < 0)

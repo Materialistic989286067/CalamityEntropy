@@ -1,17 +1,10 @@
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.CalPlayer;
-using CalamityMod.CalPlayer.Dashes;
-using CalamityMod.Enums;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
 using InnoVault.PRT;
 using System;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -32,7 +25,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         {
             Item.width = 60;
             Item.height = 60;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
             Item.defense = 8;
             Item.accessory = true;
             Item.rare = ModContent.RarityType<VoidPurple>();
@@ -40,10 +33,9 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            CalamityPlayer modPlayer = player.Calamity();
             player.Entropy().VoidShieldVisual = !hideVisual;
             player.Entropy().VoidCoreItem = Item;
-            modPlayer.DashID = VoidCoreDash.ID;
+            player.GetModPlayer<CEShieldDashPlayer>().ActiveDash = VoidCoreDash.Instance;
             player.dashType = 0;
             player.AddCritDamage(DamageClass.Generic, CritDamage);
         }
@@ -59,27 +51,24 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
         public override void AddRecipes()
         {
+            // 脱离灾厄:原 RuinousSoul×6 按 material-map 换虚无碎片并与原有 10 枚合并
             CreateRecipe()
                 .AddIngredient<AzafureDriverCore>()
-                .AddIngredient<NihilityFragments>(10)
-                .AddIngredient<RuinousSoul>(6)
+                .AddIngredient<NihilityFragments>(16)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
     }
-    public class VoidCoreDash : PlayerDashEffect
+    public class VoidCoreDash : CEShieldDashEffect
     {
+        public static readonly VoidCoreDash Instance = new();
 
         public int Time;
 
         public bool PostHit;
 
-        public new static string ID => "Void Core";
+        public static string ID => "VoidCoreDash";
         public override string DashID => ID;
-
-        public override DashCollisionType CollisionType => DashCollisionType.ShieldSlam;
-
-        public override bool IsOmnidirectional => false;
 
         public override float CalculateDashSpeed(Player player)
         {
@@ -139,11 +128,12 @@ namespace CalamityEntropy.Content.Items.Accessories
             }
         }
 
-        public override void OnHitEffects(Player player, NPC npc, IEntitySource source, ref DashHitContext hitContext)
+        public override void OnHitEffects(Player player, NPC npc, ref CEDashHitContext hitContext)
         {
             if (!PostHit)
             {
-                player.Calamity().GeneralScreenShakePower = 6f;
+                // 脱离灾厄:原灾厄 GeneralScreenShakePower=6,改用自有屏震
+                ScreenShaker.AddShake(new ScreenShaker.ScreenShake(Vector2.Zero, 6));
                 PostHit = true;
             }
             NPC target = npc;

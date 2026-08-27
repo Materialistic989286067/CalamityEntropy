@@ -1,7 +1,6 @@
 ﻿
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Items;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -20,14 +19,14 @@ namespace CalamityEntropy.Content.Items.Weapons.Training
         public override void SetDefaults()
         {
             Item.damage = 12;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.width = 28;
             Item.height = 68;
             Item.useTime = 12;
             Item.useAnimation = 12;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 6;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = null;
             Item.noMelee = true;
@@ -66,7 +65,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Training
         public override string Texture => CEUtils.WhiteTexPath;
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -80,6 +79,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Training
         public float FrameTime => 4 / Projectile.GetOwner().GetTotalAttackSpeed(Projectile.DamageType);
         public float frameCounter = 0;
         public int frame = 0;
+        //斩击帧贴图(Slash0~6),按序号批量加载,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Content/Items/Weapons/Training/Slash/Slash", 0, 7, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] SlashFrames;
         public int atkType => (int)Projectile.ai[0];
         public int TotalFrame() => atkType switch
         {
@@ -279,7 +281,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Training
                 Main.EntitySpriteDraw(tex, Projectile.GetOwner().GetFrontHandPositionImproved(Projectile.GetOwner().compositeFrontArm) - Main.screenPosition, null, lightColor, rot, origin, Projectile.scale * 0.76f, effect);
             }
 
-            Texture2D slash = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/Training/Slash/Slash" + atkType.ToString());
+            Texture2D slash = SlashFrames[atkType];
             int num1 = slash.Height / TotalFrame();
             Rectangle sourceRect = new Rectangle(0, num1 * frame, slash.Width, num1 - 2);
             Main.EntitySpriteDraw(slash, Projectile.Center + new Vector2(16 * Projectile.GetOwner().direction, -16) * Projectile.scale - Main.screenPosition, sourceRect, Color.White, 0, new Vector2(slash.Width / 2f, (num1 - 2) / 2), Projectile.scale, Projectile.velocity.X > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);

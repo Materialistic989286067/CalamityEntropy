@@ -1,13 +1,15 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.IO;
 using Terraria;
@@ -21,7 +23,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void SetDefaults()
         {
             Item.damage = 230;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.width = 56;
             Item.noUseGraphic = true;
             Item.height = 56;
@@ -29,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAnimation = 40;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 6;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.value = Item.buyPrice(gold: 60);
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = null;
             Item.channel = true;
@@ -46,7 +48,7 @@ namespace CalamityEntropy.Content.Items.Weapons
     {
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(ModContent.GetInstance<TrueMeleeDamageClass>(), false , -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false , -1);
             Projectile.width = Projectile.height = 16;
             Projectile.MaxUpdates = 2;
             Projectile.timeLeft = 800;
@@ -220,7 +222,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + Projectile.rotation.ToRotationVector2() * 20, null, Color.White, Projectile.rotation + MathHelper.PiOver4, new Vector2(17, 81), Projectile.scale * scaleE * 2, SpriteEffects.None, 0);
             Main.spriteBatch.UseAdditive();
             Main.spriteBatch.Draw(glowTex, Projectile.Center - Main.screenPosition + Projectile.rotation.ToRotationVector2() * 20, null, Color.Aqua * glow * 0.6f, Projectile.rotation + MathHelper.PiOver4, new Vector2(17, 81), Projectile.scale * scaleE * 2, SpriteEffects.None, 0);
-            Texture2D sm = CEUtils.getExtraTex("CircularSmearSmokey");
+            Texture2D sm = CEExtraAssets.CircularSmearSmokey;
             Main.spriteBatch.Draw(sm, Projectile.Center - Main.screenPosition, null, new Color(120, 120, 190) * sAlpha, Projectile.rotation + MathHelper.PiOver4 * 3 + -0.6f * dir, sm.Size().Half(), 3.16f * Projectile.scale * scaleE, SpriteEffects.None, 0);
             Main.spriteBatch.ExitShaderRegion();
             return false;
@@ -256,6 +258,9 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class RuneBolt : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
+        //符文飘带贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Extra/RuneRibbon2")]
+        internal static Asset<Texture2D> RuneRibbon2Tex;
         public int length = 2400;
         public override void SetDefaults()
         {
@@ -333,8 +338,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.UseBlendState(BlendState.Additive, SamplerState.LinearWrap);
-            Texture2D tex = CEUtils.getExtraTex("Streak1");
-            Texture2D r = CEUtils.getExtraTex("RuneRibbon2");
+            Texture2D tex = CEExtraAssets.Streak1;
+            Texture2D r = RuneRibbon2Tex.Value;
             CEUtils.DrawGlow(Projectile.Center, Color.White * Projectile.ai[1], 2f * Projectile.scale, true, null, false);
             CEUtils.DrawGlow(Projectile.Center, Color.White * Projectile.ai[1], 1.6f * Projectile.scale, true, null, false);
             CEUtils.DrawGlow(Projectile.Center, Color.Aqua * Projectile.ai[1], 4f * Projectile.scale, true, null, false);

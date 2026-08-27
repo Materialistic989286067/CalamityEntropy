@@ -1,15 +1,14 @@
-﻿using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Rarities;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,7 +36,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAnimation = 7;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 4;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(0, 20);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.UseSound = null;
             Item.noMelee = true;
@@ -57,6 +56,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public int AmmoLeft = 0;
         public static int MaxAmmo = 100;
+        //弹药条底图,加载期由 VaultLoaden 赋值,仅物品栏绘制读取
+        [VaultLoaden("CalamityEntropy/Assets/GenericBarBack")]
+        internal static Asset<Texture2D> BarBackTex;
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             tooltips.Replace("[AMMOMAX]", MaxAmmo);
@@ -82,11 +84,11 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            var barBG = ModContent.Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarBack").Value;
+            var barBG = BarBackTex.Value;
             float p = ((float)AmmoLeft / MaxAmmo);
             CEUtils.DrawChargeBar(scale * 2f, position + new Vector2(8, 40) * scale, p, Color.Lerp(Color.Firebrick, Color.Orange, p));
             Vector2 drawPos = position + Vector2.UnitY * (frame.Height - 2 + 6f) * scale + Vector2.UnitX * (frame.Width - barBG.Width * 1.2f) * scale * 0.5f;
-            CalamityUtils.DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, AmmoLeft.ToString(), drawPos + new Vector2(-68, -30) * scale, Color.Orange, Color.Black, scale * 2);
+            CEUtils.DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, AmmoLeft.ToString(), drawPos + new Vector2(-68, -30) * scale, Color.Orange, Color.Black, scale * 2);
 
         }
 
@@ -126,7 +128,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AI()
         {
-            Projectile.GetOwner().Calamity().mouseWorldListener = true;
+            Projectile.GetOwner().Entropy().MouseWorldListener = true;
             Player player = Projectile.GetOwner();
             if (player.dead)
             {
@@ -242,7 +244,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             trail?.DrawTrail(Main.spriteBatch);
-            Texture2D tex = CEUtils.getExtraTex("Diamond");
+            Texture2D tex = CEExtraAssets.Diamond;
             float scale = 0.06f * Projectile.scale;
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, Color.Orange * Projectile.Opacity, Projectile.rotation, tex.Size().Half(), new Vector2(2, 1) * scale, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, Color.White * Projectile.Opacity, Projectile.rotation, tex.Size().Half(), new Vector2(2, 1) * scale * 0.5f, SpriteEffects.None, 0);

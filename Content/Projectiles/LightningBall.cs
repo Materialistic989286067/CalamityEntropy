@@ -1,6 +1,6 @@
-﻿using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -83,9 +83,10 @@ namespace CalamityEntropy.Content.Projectiles
                 }
             }
             SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/ExoTwinsEject"), Projectile.Center);
-            if (CEUtils.getDistance(Projectile.Center, Projectile.GetOwner().Center) < 1200)
+            //原灾厄震屏只在拥有者本端可见, 换自有屏震后补拥有者判定保持一致(原强度7)
+            if (Main.myPlayer == Projectile.owner && CEUtils.getDistance(Projectile.Center, Projectile.GetOwner().Center) < 1200)
             {
-                Projectile.GetOwner().Calamity().GeneralScreenShakePower = 7;
+                CalamityEntropy.Instance.screenShakeAmp = 2.5f;
             }
         }
 
@@ -95,7 +96,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D light = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/a_circle").Value;
+            Texture2D light = CEExtraAssets.a_circle;
             Main.spriteBatch.Draw(light, Projectile.Center - Main.screenPosition, null, (Projectile.ai[1] == 1 ? Color.Red : new Color(128, 128, 128)), 0, light.Size() / 2, 0.6f * Projectile.scale, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(light, Projectile.Center - Main.screenPosition, null, (Projectile.ai[1] == 1 ? new Color(255, 200, 200) : Color.White), 0, light.Size() / 2, 0.4f * Projectile.scale, SpriteEffects.None, 0);
 

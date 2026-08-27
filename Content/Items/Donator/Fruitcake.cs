@@ -1,8 +1,4 @@
 ﻿using CalamityEntropy.Common;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.SummonItems;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -18,7 +14,7 @@ namespace CalamityEntropy.Content.Items.Donator
         {
             Item.width = 40;
             Item.height = 40;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.value = Item.buyPrice(gold: 60);
             Item.rare = ItemRarityID.Yellow;
             Item.accessory = true;
         }
@@ -29,11 +25,11 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         public override void AddRecipes()
         {
+            // 灾厄原料按 material-map.md 替换：OverloadedSludge→史莱姆王冠（与原有王冠合并为2）、PurifiedGel→粉凝胶
             CreateRecipe()
-                .AddIngredient<OverloadedSludge>()
                 .AddIngredient(ItemID.WoodenArrow)
-                .AddIngredient(ItemID.SlimeCrown)
-                .AddIngredient<PurifiedGel>(8)
+                .AddIngredient(ItemID.SlimeCrown, 2)
+                .AddIngredient(ItemID.PinkGel, 8)
                 .Register();
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
@@ -58,8 +54,9 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         public static int Level()
         {
+            // 成长阶梯按 progression-map.md 重排：原版节点 + 自有 Boss 线
             int l = 0;
-            if (NPC.downedSlimeKing || NPC.downedBoss1 || NPC.downedBoss2 || DownedBossSystem.downedDesertScourge)
+            if (NPC.downedSlimeKing || NPC.downedBoss1 || NPC.downedBoss2)
             {
                 l = 1;
             }
@@ -67,11 +64,11 @@ namespace CalamityEntropy.Content.Items.Donator
             {
                 l = 2;
             }
-            if (DownedBossSystem.downedSlimeGod)
+            if (EDownedBosses.downedApsychos)
             {
                 l = 3;
             }
-            if (DownedBossSystem.downedCryogen || DownedBossSystem.downedBrimstoneElemental)
+            if (NPC.downedMechBossAny)
             {
                 l = 4;
             }
@@ -83,7 +80,7 @@ namespace CalamityEntropy.Content.Items.Donator
             {
                 l = 6;
             }
-            if (DownedBossSystem.downedPolterghast)
+            if (EDownedBosses.downedNihilityTwin)
             {
                 l = 7;
             }

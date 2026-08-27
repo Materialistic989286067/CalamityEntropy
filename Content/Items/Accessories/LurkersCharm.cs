@@ -1,6 +1,4 @@
-﻿using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Accessories;
+using CalamityEntropy.Core.Weapons;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -13,13 +11,14 @@ namespace CalamityEntropy.Content.Items.Accessories
         public static float damage = 0.12f;
         public static float MoveSpeed = 0.10f;
         public static float endurance = 0.10f;
-        public static float stealthGen = 0.08f;
+        // 大招充能速度 +12%(原潜行回复 8%×1.5,rogue-weapons.md §三)
+        public static float chargeRate = 0.12f;
         public override void SetDefaults()
         {
             Item.width = 42;
             Item.defense = 4;
             Item.height = 42;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ItemRarityID.Blue;
             Item.accessory = true;
         }
@@ -28,25 +27,31 @@ namespace CalamityEntropy.Content.Items.Accessories
             tooltips.Replace("[A]", damage.ToPercent());
             tooltips.Replace("[B]", MoveSpeed.ToPercent());
             tooltips.Replace("[D]", endurance.ToPercent());
-            tooltips.Replace("[C]", stealthGen.ToPercent());
+            tooltips.Replace("[C]", chargeRate.ToPercent());
 
         }
         public static string ID = "LurkersCharm";
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.GetDamage<RogueDamageClass>() += damage;
+            // 新效果:盗贼伤害转全伤害,潜行回复转大招充能速度(潜行体系退役)
+            player.GetDamage(DamageClass.Generic) += damage;
             player.Entropy().moveSpeed += MoveSpeed;
-            player.Entropy().RogueStealthRegenMult += stealthGen;
+            player.GetModPlayer<CEChargePlayer>().ChargeRateMult += chargeRate;
             player.Entropy().addEquip(ID, !hideVisual);
         }
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ItemID.Magiluminescence)
-                .AddIngredient<RogueEmblem>(1)
-                .AddIngredient(ItemID.SoulofNight, 4)
-                .AddTile(TileID.MythrilAnvil)
-                .Register();
+            // 脱离灾厄:灾厄盗贼徽章(RogueEmblem)改为任一原版职业徽章的平行配方
+            int[] emblems = [ItemID.WarriorEmblem, ItemID.RangerEmblem, ItemID.SorcererEmblem, ItemID.SummonerEmblem];
+            foreach (int emblem in emblems)
+            {
+                CreateRecipe().AddIngredient(ItemID.Magiluminescence)
+                    .AddIngredient(emblem)
+                    .AddIngredient(ItemID.SoulofNight, 4)
+                    .AddTile(TileID.MythrilAnvil)
+                    .Register();
+            }
         }
     }
 }

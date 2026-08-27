@@ -1,5 +1,8 @@
-﻿using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Projectiles;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
@@ -258,7 +261,7 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
 
             if (ve.Count >= 3)
             {
-                trail = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value;
+                trail = CEExtraAssets.white;
                 gd.Textures[0] = trail;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
             }
@@ -277,7 +280,7 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
 
             if (ve.Count >= 3)
             {
-                trail = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/SwordSlashTexture").Value;
+                trail = CEExtraAssets.SwordSlashTexture;
                 gd.Textures[0] = trail;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
             }

@@ -1,5 +1,6 @@
-﻿using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Particles.CalamityPorts;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -35,7 +36,7 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = CEUtils.getExtraTex("Glow2");
+            Texture2D tex = CEExtraAssets.Glow2;
             Main.spriteBatch.UseBlendState(BlendState.NonPremultiplied);
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, new Color(180, 0, 0), Projectile.rotation, tex.Size() / 2f, Projectile.scale * new Vector2(1f, 0.08f), SpriteEffects.None, 0);
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, new Color(255, 90, 90), Projectile.rotation, tex.Size() / 2f, Projectile.scale * new Vector2(0.8f, 0.025f), SpriteEffects.None, 0);

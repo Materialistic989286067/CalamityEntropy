@@ -1,8 +1,6 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Melee;
+using CalamityEntropy.Content.Items.Donator;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -28,7 +26,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Nemesis
             Item.knockBack = 5.5f;
             Item.UseSound = null;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityCalamityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 3, gold: 20);
             Item.rare = ItemRarityID.Red;
             Item.shoot = ModContent.ProjectileType<NemesisProj>();
             Item.shootSpeed = 18f;
@@ -52,15 +50,14 @@ namespace CalamityEntropy.Content.Items.Weapons.Nemesis
             {
                 newLevel = 2;
             }
-            if (!player.Calamity().bladeArmEnchant)
-                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, newLevel);
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, newLevel);
             return false;
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient<TheBurningSky>()
-                .AddIngredient<GalactusBlade>()
+            CreateRecipe().AddIngredient<FlowingLight>()
+                .AddIngredient(ItemID.StarWrath)
                 .AddIngredient<FadingRunestone>()
                 .AddTile<VoidWellTile>()
                 .Register();

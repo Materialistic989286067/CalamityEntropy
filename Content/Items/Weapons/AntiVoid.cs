@@ -1,11 +1,11 @@
-﻿using CalamityEntropy.Common;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Cooldowns;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using CalamityEntropy.Core.Cooldowns;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -39,13 +39,13 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAnimation = 16;
             Item.autoReuse = true;
             Item.scale = 2f;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.damage = 325;
             Item.knockBack = 6;
             Item.crit = 44;
             Item.shoot = ModContent.ProjectileType<AntivoidSlash>();
             Item.shootSpeed = 12;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.value = Item.buyPrice(0, 60);
             Item.rare = ModContent.RarityType<VoidPurple>();
         }
         public override bool AltFunctionUse(Player player)
@@ -95,8 +95,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             CreateRecipe()
                 .AddIngredient<VoidBlade>()
-                .AddIngredient<TwistingNether>(4)
-                .AddIngredient<RuinousSoul>(4)
+                .AddIngredient<WraithSoulEssence>(4)
+                .AddIngredient<NihilityFragments>(4)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
@@ -104,6 +104,15 @@ namespace CalamityEntropy.Content.Items.Weapons
 
     public class AntivoidSlash : ModProjectile
     {
+        //绘制用贴图与着色器,加载期由 VaultLoaden 统一赋值,只在客户端绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Extra/RuneRibbon")]
+        internal static Asset<Texture2D> RuneRibbonTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/MotionTrail3")]
+        internal static Asset<Texture2D> MotionTrail3Tex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/Extra_202")]
+        internal static Asset<Texture2D> Extra202Tex;
+        [VaultLoaden("CalamityEntropy/Assets/Effects/AntivoidTrail", AssetMode.EffectValue, "EffectPass")]
+        internal static Effect AntivoidTrailShader;
         List<float> odr = new List<float>();
         List<float> odl = new List<float>();
         public override void SetStaticDefaults()
@@ -115,7 +124,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -233,7 +242,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override bool PreDraw(ref Color lightColor)
         {
             rofs += 0.01f;
-            Texture2D trail = CEUtils.getExtraTex("RuneRibbon");
+            Texture2D trail = RuneRibbonTex.Value;
             List<ColoredVertex> ve = new List<ColoredVertex>();
             float MaxUpdateTimes = 14 * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
@@ -256,15 +265,15 @@ namespace CalamityEntropy.Content.Items.Weapons
             {
                 var gd = Main.graphics.GraphicsDevice;
                 SpriteBatch sb = Main.spriteBatch;
-                Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/AntivoidTrail", AssetRequestMode.ImmediateLoad).Value;
+                Effect shader = AntivoidTrailShader;
                 sb.End();
                 shader.Parameters["alpha"].SetValue(1f - progress);
                 shader.Parameters["offset"].SetValue(rofs);
                 sb.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, shader, Main.GameViewMatrix.TransformationMatrix);
                 shader.CurrentTechnique.Passes["EffectPass"].Apply();
-                gd.Textures[1] = CEUtils.getExtraTex("MotionTrail3");
+                gd.Textures[1] = MotionTrail3Tex.Value;
                 gd.Textures[0] = trail;
-                gd.Textures[2] = CEUtils.getExtraTex("Extra_202");
+                gd.Textures[2] = Extra202Tex.Value;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 Main.spriteBatch.ExitShaderRegion();
             }

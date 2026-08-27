@@ -1,7 +1,9 @@
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Particles.CalamityPorts;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -12,6 +14,11 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class IceEdge2 : EBookBaseProjectile
     {
+        //冰刃两层贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/IceEdge")]
+        internal static Asset<Texture2D> IceEdgeTex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/IceEdge2")]
+        internal static Asset<Texture2D> IceEdge2Tex;
         List<Vector2> odp = new List<Vector2>();
         List<float> odr = new List<float>();
         public override void SetStaticDefaults()
@@ -88,8 +95,8 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/IceEdge").Value;
-            Texture2D tx2 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/IceEdge2").Value;
+            Texture2D tx = IceEdgeTex.Value;
+            Texture2D tx2 = IceEdge2Tex.Value;
             float x = 0f;
             for (int i = 0; i < odp.Count; i++)
             {

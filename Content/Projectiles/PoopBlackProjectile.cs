@@ -1,4 +1,4 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityEntropy.Content.Buffs.PortsDoT;
 using Terraria;
 using Terraria.ModLoader;
 

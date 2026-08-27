@@ -1,5 +1,7 @@
 ﻿using CalamityEntropy.Common;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -9,6 +11,9 @@ namespace CalamityEntropy.Content.Items.Donator
 {
     public class PenMinion : ModProjectile
     {
+        //蓄力光柱背景贴图,加载期就位,不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Assets/Extra/lbg")]
+        internal static Asset<Texture2D> LbgTex;
         private List<Vector2> odp = new List<Vector2>();
         private List<float> odi = new List<float>();
         private Player target;
@@ -173,7 +178,7 @@ namespace CalamityEntropy.Content.Items.Donator
                 {
                     op = (30 - lbg) / 20f;
                 }
-                CEUtils.drawTexture(ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/lbg").Value, centerd + rotationd.ToRotationVector2() * 200, rotationd + ((float)(Math.PI / 2f)), (new Color(0, 0, 0)) * 0.7f * op, new Vector2(xw, 9));
+                CEUtils.drawTexture(LbgTex.Value, centerd + rotationd.ToRotationVector2() * 200, rotationd + ((float)(Math.PI / 2f)), (new Color(0, 0, 0)) * 0.7f * op, new Vector2(xw, 9));
             }
             Projectile.rotation -= MathHelper.PiOver4;
             Main.EntitySpriteDraw(Projectile.getDrawData(Color.White, null));

@@ -45,7 +45,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff<LifeOppress>(600);
-            //AdditiveBlend走Configure分桶,旧GeneralParticleHandler Before层那套
+            //AdditiveBlend走Configure分桶,旧版粒子系统 Before层那套
             PRTLoader.NewParticle<PRT_HadCircle2>(target.Center, Vector2.Zero, new Color(170, 170, 255), 0).Configure(0, true, PRTDrawModeEnum.AdditiveBlend, 0);
             PRTLoader.NewParticle<PRT_HadCircle2>(target.Center, Vector2.Zero, new Color(170, 170, 255), 0).Configure(0, true, PRTDrawModeEnum.AdditiveBlend, 0);
         }

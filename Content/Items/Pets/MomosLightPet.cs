@@ -1,9 +1,11 @@
-﻿using CalamityEntropy.Content.Items.Donator;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Items.Donator;
 using CalamityEntropy.Content.Items.Vanity;
-using CalamityMod;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -49,6 +51,14 @@ namespace CalamityEntropy.Content.Items.Pets
     }
     public class Molightpet : ModProjectile
     {
+        //帧动画与菜单贴图统一在加载期就位,不再在 PreDraw 里逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Deus/AstrumDeus")]
+        internal static Asset<Texture2D> MenuTex;
+        [VaultLoaden("CalamityEntropy/Content/Items/Pets/Molightpet")]
+        internal static Asset<Texture2D> Frame1;
+        //数组下标 0 对应文件 mo2
+        [VaultLoaden("CalamityEntropy/Content/Items/Pets/mo/mo", 2, 4, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] FramesRest;
         public int counter = 0;
         public override void SetStaticDefaults()
         {
@@ -70,20 +80,14 @@ namespace CalamityEntropy.Content.Items.Pets
         {
             if (Main.gameMenu)
             {
-                Texture2D txd = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Deus/AstrumDeus").Value;
+                Texture2D txd = MenuTex.Value;
                 Main.EntitySpriteDraw(txd, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, new Vector2(txd.Width, txd.Height) / 2, Projectile.scale, SpriteEffects.FlipHorizontally, 0);
 
                 return false;
             }
-            List<Texture2D> list = new List<Texture2D>();
-            list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Items/Pets/Molightpet").Value);
-            list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Items/Pets/mo/mo2").Value);
-            list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Items/Pets/mo/mo3").Value);
-            list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Items/Pets/mo/mo4").Value);
-            list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Items/Pets/mo/mo5").Value);
-
-            Texture2D tx = list[(counter / 4) % list.Count];
-            if (Main.player[Projectile.owner].Calamity().mouseWorld.X > Projectile.Center.X)
+            int frameIdx = (counter / 4) % 5;
+            Texture2D tx = frameIdx == 0 ? Frame1.Value : FramesRest[frameIdx - 1];
+            if (Main.player[Projectile.owner].Entropy().MouseWorld.X > Projectile.Center.X)
             {
                 Projectile.direction = 1;
             }
@@ -103,7 +107,7 @@ namespace CalamityEntropy.Content.Items.Pets
 
 
             Main.spriteBatch.UseBlendState(BlendState.Additive);
-            Main.spriteBatch.Draw(CEUtils.getExtraTex("GlowCone"), Projectile.Center - Main.screenPosition, null, Color.White * 0.2f, (Projectile.GetOwner().Calamity().mouseWorld - Projectile.Center).ToRotation(), new Vector2(0, 250), new Vector2(1.4f, 0.8f), SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(CEExtraAssets.GlowCone, Projectile.Center - Main.screenPosition, null, Color.White * 0.2f, (Projectile.GetOwner().Entropy().MouseWorld - Projectile.Center).ToRotation(), new Vector2(0, 250), new Vector2(1.4f, 0.8f), SpriteEffects.None, 0);
             Main.spriteBatch.ExitShaderRegion();
 
             return false;
@@ -111,7 +115,7 @@ namespace CalamityEntropy.Content.Items.Pets
         }
         void MoveToTarget(Vector2 targetPos)
         {
-            Projectile.GetOwner().Calamity().mouseWorldListener = true;
+            Projectile.GetOwner().Entropy().MouseWorldListener = true;
             if (CEUtils.getDistance(Projectile.Center, targetPos) > 1600)
             {
                 Projectile.Center = Main.player[Projectile.owner].Center - new Vector2(0, 200);
@@ -126,7 +130,7 @@ namespace CalamityEntropy.Content.Items.Pets
             CEUtils.AddLight(Projectile.Center, Color.White, 4);
             Vector2 lp = Projectile.Center;
             bool addlight = false;
-            float r = (Projectile.GetOwner().Calamity().mouseWorld - Projectile.Center).ToRotation();
+            float r = (Projectile.GetOwner().Entropy().MouseWorld - Projectile.Center).ToRotation();
             for (int i = 0; i < 1000; i += 8)
             {
                 Point tpos = ((lp + r.ToRotationVector2() * i) / 16f).ToPoint();
@@ -151,7 +155,7 @@ namespace CalamityEntropy.Content.Items.Pets
         {
             for (float r = -0.12f; r <= 0.12f; r += 0.01f)
             {
-                float rot = (Projectile.GetOwner().Calamity().mouseWorld - Projectile.Center).ToRotation() + r;
+                float rot = (Projectile.GetOwner().Entropy().MouseWorld - Projectile.Center).ToRotation() + r;
 
                 for (float i = 0; i < 900; i += 8)
                 {

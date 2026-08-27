@@ -1,9 +1,9 @@
-﻿using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Rogue;
+using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -15,8 +15,11 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
-    public class ProphecyFlyingKnife : RogueWeapon
+    public class ProphecyFlyingKnife : ModItem, ICEChargeWeapon
     {
+        // 命中计数 10；原潜伏乘数 伤害2.4/弹速3/击退2 并入释放乘数
+        public CEChargeProfile ChargeProfile => CEChargeProfile.HitCount(10, 2.4f, 3f, 2f);
+
         public int atkType = 1;
         public override void SetStaticDefaults()
         {
@@ -35,27 +38,23 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.knockBack = 2.8f;
             Item.UseSound = SoundID.Item1;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.value = Item.buyPrice(gold: 60);
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<FutureKnife>();
             Item.shootSpeed = 26f;
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Ranged;
         }
 
-        public override float StealthDamageMultiplier => 2.4f;
-        public override float StealthVelocityMultiplier => 3f;
-        public override float StealthKnockbackMultiplier => 2f;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<PFKnifeHeld>(), 0, 0, player.whoAmI, atkType);
 
-            if (player.Calamity().StealthStrikeAvailable())
+            if (CEChargeWeapon.TryConsume(player, Item))
             {
                 int p = Projectile.NewProjectile(source, position, velocity, type, damage * 2, knockback, player.whoAmI);
-                if (p.WithinBounds(Main.maxProjectiles))
+                if (p >= 0 && p < Main.maxProjectiles)
                 {
-                    Main.projectile[p].Calamity().stealthStrike = true;
-                    p.ToProj().netUpdate = true;
+                    CEChargeWeapon.Empower(p);
                 }
                 Projectile.NewProjectile(source, position, velocity.RotatedBy(0.2f), type, (int)(damage * 0.2f), knockback, player.whoAmI);
                 Projectile.NewProjectile(source, position, velocity.RotatedBy(-0.2f), type, (int)(damage * 0.2f), knockback, player.whoAmI);
@@ -199,7 +198,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => "CalamityEntropy/Content/Projectiles/FutureKnife";
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.width = Projectile.height = 36;
             Projectile.timeLeft = 90;
         }
@@ -211,7 +210,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public PRT_TrailParticle trail;
         public override void AI()
         {
-            Projectile.GetOwner().Calamity().mouseWorldListener = true;
+            Projectile.GetOwner().Entropy().MouseWorldListener = true;
             if (Projectile.Entropy().FirstFrames)
             {
                 Projectile.velocity = (targetPos - Projectile.Center) / 12f;
@@ -231,7 +230,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                         }
                         else
                         {
-                            Projectile.rotation = (Projectile.GetOwner().Calamity().mouseWorld - Projectile.Center).ToRotation();
+                            Projectile.rotation = (Projectile.GetOwner().Entropy().MouseWorld - Projectile.Center).ToRotation();
                         }
                         Projectile.velocity = Projectile.rotation.ToRotationVector2() * 40;
                         Projectile.MaxUpdates *= 2;
@@ -243,7 +242,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                         if (trail == null)
                         {
                             //轨迹类maxLength/SameAlpha字段Configure前先赋,PRTDrawMode只能走Configure
-                            trail = PRTLoader.NewParticle<PRT_TrailParticle>(Projectile.Center, Vector2.Zero, Color.Aqua * 0.6f, Projectile.scale * 0.6f * (Projectile.Calamity().stealthStrike ? 2 : 1));
+                            trail = PRTLoader.NewParticle<PRT_TrailParticle>(Projectile.Center, Vector2.Zero, Color.Aqua * 0.6f, Projectile.scale * 0.6f * (Projectile.IsEmpowered() ? 2 : 1));
                             trail.maxLength = 16;
                             trail.Configure(1, true, PRTDrawModeEnum.AdditiveBlend);
                         }
@@ -263,7 +262,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                     }
                     else
                     {
-                        float tr = (Projectile.GetOwner().Calamity().mouseWorld - Projectile.Center).ToRotation();
+                        float tr = (Projectile.GetOwner().Entropy().MouseWorld - Projectile.Center).ToRotation();
                         Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, tr, 0.2f, false);
                         Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, tr, 0.04f, true);
                     }
@@ -285,7 +284,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 Main.EntitySpriteDraw(Projectile.getDrawData(Color.White));
             }
             Main.spriteBatch.UseAdditive();
-            Texture2D t = CEUtils.getExtraTex("CircularSmear");
+            Texture2D t = CEExtraAssets.CircularSmear;
             Main.spriteBatch.Draw(t, Projectile.Center - Main.screenPosition, null, Color.Aqua * sAlpha, Main.GlobalTimeWrappedHourly * 64 + MathHelper.PiOver2 * 1.5f, t.Size().Half(), Projectile.scale * 0.4f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(t, Projectile.Center - Main.screenPosition, null, Color.Aqua * sAlpha, Main.GlobalTimeWrappedHourly * 64 + MathHelper.PiOver2 * 1.5f, t.Size().Half(), Projectile.scale * 0.4f, SpriteEffects.None, 0);
             Main.spriteBatch.ExitShaderRegion();

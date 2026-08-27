@@ -115,7 +115,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             float scale = ExplodeRadius / 40f;
-            //PRT_PulseRing scale/lifetime走Configure,旧GeneralParticleHandler
+            //PRT_PulseRing scale/lifetime走Configure,旧版粒子系统
             PRTLoader.NewParticle<PRT_PulseRing>(Projectile.Center, Vector2.Zero, Color.OrangeRed, 0.1f).Configure(scale * 0.46f, 14);
             PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.OrangeRed, scale * 0.8f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
             PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.White, scale * 0.5f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);

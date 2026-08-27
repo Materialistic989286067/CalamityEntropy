@@ -1,5 +1,5 @@
 ﻿using CalamityEntropy.Content.Tiles;
-using CalamityMod.Items;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.Items
             Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.createTile = ModContent.TileType<ArmorReforgStationTile>();
             Item.rare = ItemRarityID.Green;
         }

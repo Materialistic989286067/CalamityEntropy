@@ -1,7 +1,9 @@
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Utilities;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
@@ -12,6 +14,9 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class SlimeYoyoProjectile : ModProjectile
     {
+        //黏液绳贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/SlimeRope")]
+        internal static Asset<Texture2D> RopeTex;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
@@ -182,7 +187,7 @@ namespace CalamityEntropy.Content.Projectiles
             GraphicsDevice gd = Main.graphics.GraphicsDevice;
             if (ve.Count >= 3)
             {
-                gd.Textures[0] = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SlimeRope").Value;
+                gd.Textures[0] = RopeTex.Value;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
             }
 

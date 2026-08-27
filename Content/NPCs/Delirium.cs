@@ -1,24 +1,6 @@
-﻿using CalamityEntropy.Content.NPCs.NihilityTwin;
+﻿using CalamityEntropy.Content.NPCs.FriendFinderNPC;
+using CalamityEntropy.Content.NPCs.NihilityTwin;
 using CalamityEntropy.Content.NPCs.Prophet;
-using CalamityMod;
-using CalamityMod.NPCs.AstrumAureus;
-using CalamityMod.NPCs.BrimstoneElemental;
-using CalamityMod.NPCs.Bumblebirb;
-using CalamityMod.NPCs.CalClone;
-using CalamityMod.NPCs.CeaselessVoid;
-using CalamityMod.NPCs.Crabulon;
-using CalamityMod.NPCs.Cryogen;
-using CalamityMod.NPCs.HiveMind;
-using CalamityMod.NPCs.OldDuke;
-using CalamityMod.NPCs.Perforator;
-using CalamityMod.NPCs.Polterghast;
-using CalamityMod.NPCs.PrimordialWyrm;
-using CalamityMod.NPCs.Providence;
-using CalamityMod.NPCs.Ravager;
-using CalamityMod.NPCs.Signus;
-using CalamityMod.NPCs.SunkenSea;
-using CalamityMod.NPCs.SupremeCalamitas;
-using CalamityMod.NPCs.Yharon;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
@@ -35,42 +17,24 @@ namespace CalamityEntropy.Content.NPCs
         {
             return false;
         }
+        // 变身池删除全部灾厄 Boss 条目，保留原版与自有 Boss（本 NPC 目前处于停用状态）
         public static List<int> npcTurns = new List<int>()
         {
             NPCID.KingSlime,
-            ModContent.NPCType<GiantClam>(),
             NPCID.EyeofCthulhu,
-            ModContent.NPCType<Crabulon>(),
             NPCID.BrainofCthulhu,
-            ModContent.NPCType<HiveMind>(),
-            ModContent.NPCType<PerforatorHive>(),
-            ModContent.NPCType<Crabulon>(),
             NPCID.QueenBee,
             NPCID.SkeletronHead,
             NPCID.Deerclops,
             NPCID.QueenSlimeBoss,
-            ModContent.NPCType<Cryogen>(),
             NPCID.Retinazer,
             NPCID.Spazmatism,
-            ModContent.NPCType<BrimstoneElemental>(),
-            ModContent.NPCType<CalamitasClone>(),
             NPCID.Plantera,
-            ModContent.NPCType<AstrumAureus>(),
             NPCID.Golem,
             NPCID.DukeFishron,
             NPCID.HallowBoss,
             NPCID.CultistBoss,
-            ModContent.NPCType<RavagerBody>(),
             NPCID.MoonLordCore,
-            ModContent.NPCType<Dragonfolly>(),
-            ModContent.NPCType<Providence>(),
-            ModContent.NPCType<CeaselessVoid>(),
-            ModContent.NPCType<Signus>(),
-            ModContent.NPCType<Polterghast>(),
-            ModContent.NPCType<OldDuke>(),
-            ModContent.NPCType<Yharon>(),
-            ModContent.NPCType<PrimordialWyrmHead>(),
-            ModContent.NPCType<SupremeCalamitas>(),
             ModContent.NPCType<NihilityActeriophage>(),
             ModContent.NPCType<TheProphet>()
         };

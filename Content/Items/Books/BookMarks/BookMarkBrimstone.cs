@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -12,7 +11,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             base.SetDefaults();
             Item.rare = ItemRarityID.Pink;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Brimstone");
         public override Color tooltipColor => new Color(180, 6, 6);
@@ -41,7 +40,8 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override void OnHitNPC(Projectile projectile, NPC target, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<CalamityMod.Buffs.DamageOverTime.BrimstoneFlames>(), 300);
+            //完整限定名会被入口类同名遮蔽(CalamityEntropy 先解析为类),改经 global:: 前缀
+            target.AddBuff(ModContent.BuffType<global::CalamityEntropy.Content.Buffs.PortsDoT.BrimstoneFlames>(), 300);
         }
     }
 }

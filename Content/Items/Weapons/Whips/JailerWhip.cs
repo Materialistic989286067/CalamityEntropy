@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -33,7 +32,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ModContent.ItemType<AncientBoneDust>(), 2)
+            CreateRecipe().AddIngredient(ItemID.Bone, 2)
                 .AddIngredient(ItemID.Chain, 6)
                 .AddIngredient(ItemID.Silk, 4)
                 .AddIngredient(ItemID.HellstoneBar, 5)

@@ -2,8 +2,6 @@
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
@@ -36,7 +34,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = ItemUseStyleID.Swing;
             Item.shoot = ModContent.ProjectileType<NihilityMinion>();
             Item.shootSpeed = 2f;
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1, gold: 50);
             Item.autoReuse = true;
             Item.UseSound = SoundID.Item8;
             Item.noMelee = true;

@@ -1,10 +1,9 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Items.Weapons.Fractal;
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Rogue;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -33,16 +32,16 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         public override void AddRecipes()
         {
+            // 灾厄原料按 material-map.md 替换：CosmiliteBar×12+AscendantSpiritEssence×2→幽渊魂髓（合并为×14）、DivineGeode→虚无碎片
             CreateRecipe()
                 .AddIngredient(ItemID.Gungnir)
-                .AddIngredient<CosmiliteBar>(12)
-                .AddIngredient<DivineGeode>(12)
+                .AddIngredient<WraithSoulEssence>(14)
+                .AddIngredient<NihilityFragments>(12)
                 .AddIngredient(ItemID.FragmentNebula, 4)
                 .AddIngredient(ItemID.FragmentSolar, 4)
                 .AddIngredient(ItemID.FragmentStardust, 4)
                 .AddIngredient(ItemID.FragmentVortex, 4)
-                .AddIngredient<AscendantSpiritEssence>(2)
-                .AddTile<CosmicAnvil>()
+                .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
 
@@ -60,7 +59,7 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityCalamityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 3, gold: 20);
             Item.rare = ItemRarityID.Blue;
             Item.shoot = ModContent.ProjectileType<GungnirThrow>();
             Item.shootSpeed = 28;
@@ -126,15 +125,15 @@ namespace CalamityEntropy.Content.Items.Donator
                 }
                 for (int i = 0; i < 1; i++)
                 {
+                    // 天雷改用自有 Lightning 弹幕（ai 须保持 0 由其自行初始化）；
+                    // 自有闪电路径约 480px，落点上移量相应缩短以保证劈中目标
                     int lightningDamage = (int)(Projectile.damage * 1.25f);
-                    Vector2 lightningSpawnPosition = Projectile.Center - Vector2.UnitY.RotatedByRandom(0.2f) * 1000f;
-                    Vector2 lightningShootVelocity = (target.Center - lightningSpawnPosition + target.velocity * 7.5f).SafeNormalize(Vector2.UnitY) * 15f;
-                    int lightning = Projectile.NewProjectile(Projectile.GetSource_FromThis(), lightningSpawnPosition, lightningShootVelocity, ModContent.ProjectileType<StormfrontLightning>(), lightningDamage, 0f, Projectile.owner);
+                    Vector2 lightningSpawnPosition = target.Center - Vector2.UnitY.RotatedByRandom(0.2f) * 240f;
+                    Vector2 lightningShootVelocity = (target.Center - lightningSpawnPosition + target.velocity * 7.5f).SafeNormalize(Vector2.UnitY) * 30f;
+                    int lightning = Projectile.NewProjectile(Projectile.GetSource_FromThis(), lightningSpawnPosition, lightningShootVelocity, ModContent.ProjectileType<Lightning>(), lightningDamage, 0f, Projectile.owner);
                     if (Main.projectile.IndexInRange(lightning))
                     {
                         Main.projectile[lightning].CritChance = Projectile.CritChance;
-                        Main.projectile[lightning].ai[0] = lightningShootVelocity.ToRotation();
-                        Main.projectile[lightning].ai[1] = Main.rand.Next(100);
                         Main.projectile[lightning].DamageType = Projectile.DamageType;
                     }
                 }
@@ -142,7 +141,7 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/SwordTrail3", AssetRequestMode.ImmediateLoad).Value;
+            Effect shader = CEEffectAssets.SwordTrail3;
             List<ColoredVertex> ve = new();
             {
                 for (int i = 0; i < oldPos.Count; i++)
@@ -167,7 +166,7 @@ namespace CalamityEntropy.Content.Items.Donator
                     shader.Parameters["uTime"].SetValue(Main.GlobalTimeWrappedHourly * 2.4f);
                     shader.Parameters["alpha"].SetValue(1);
                     shader.CurrentTechnique.Passes["EffectPass"].Apply();
-                    gd.Textures[0] = CEUtils.getExtraTex("Streak2");
+                    gd.Textures[0] = CEExtraAssets.Streak2;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                     Main.spriteBatch.ExitShaderRegion();
                 }
@@ -197,7 +196,7 @@ namespace CalamityEntropy.Content.Items.Donator
                     shader.Parameters["uTime"].SetValue(Main.GlobalTimeWrappedHourly * 3f);
                     shader.Parameters["alpha"].SetValue(1);
                     shader.CurrentTechnique.Passes["EffectPass"].Apply();
-                    gd.Textures[0] = CEUtils.getExtraTex("Streak1");
+                    gd.Textures[0] = CEExtraAssets.Streak1;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                     Main.spriteBatch.ExitShaderRegion();
                 }

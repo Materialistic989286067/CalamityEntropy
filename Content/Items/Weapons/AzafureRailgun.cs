@@ -1,14 +1,15 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Rarities;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -28,7 +29,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAnimation = 50;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 14;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(0, 5);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.UseSound = null;
             Item.noMelee = true;
@@ -41,7 +42,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(4)
-                .AddIngredient<SeaPrism>(8)
+                .AddIngredient(ItemID.Coral, 8)
                 .AddTile(TileID.Anvils)
                 .Register();
         }
@@ -50,6 +51,9 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class AzafureRailgunHeld : ModProjectile
     {
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/AzafureRailgun";
+        //蓄力指示线贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Content/Particles/CrLine")]
+        internal static Asset<Texture2D> CrLineTex;
         public override bool ShouldUpdatePosition()
         {
             return false;
@@ -96,10 +100,10 @@ namespace CalamityEntropy.Content.Items.Weapons
                     }
                 }
                 Projectile.timeLeft = 3;
-                player.Calamity().mouseWorldListener = true;
-                Projectile.rotation = (player.Calamity().mouseWorld - player.Center).ToRotation();
+                player.Entropy().MouseWorldListener = true;
+                Projectile.rotation = (player.Entropy().MouseWorld - player.Center).ToRotation();
                 Projectile.velocity = Projectile.rotation.ToRotationVector2() * 16;
-                player.SetHandRot(((player.Calamity().mouseWorld - player.Center).ToRotation().ToRotationVector2() + new Vector2(0, 1f)).ToRotation());
+                player.SetHandRot(((player.Entropy().MouseWorld - player.Center).ToRotation().ToRotationVector2() + new Vector2(0, 1f)).ToRotation());
                 player.itemAnimation = player.itemTime = 4;
                 player.heldProj = Projectile.whoAmI;
             }
@@ -133,13 +137,13 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             Texture2D t = Projectile.GetTexture();
             Main.EntitySpriteDraw(t, Projectile.Center - Main.screenPosition + Projectile.rotation.ToRotationVector2() * 16, null, lightColor, Projectile.rotation, t.Size() / 2f, Projectile.scale, (Projectile.velocity.X > 0) ? SpriteEffects.None : SpriteEffects.FlipVertically);
-            Texture2D tex = CEUtils.getExtraTex("a_circle");
+            Texture2D tex = CEExtraAssets.a_circle;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Vector2 pos = FirePos;
             float size = Charge;
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(250, 250, 250), Projectile.rotation, tex.Size() * 0.5f, size * 0.25f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(255, 80, 80), Projectile.rotation, tex.Size() * 0.5f, size * 0.4f, SpriteEffects.None, 0);
-            Texture2D line = CEUtils.RequestTex("CalamityEntropy/Content/Particles/CrLine");
+            Texture2D line = CrLineTex.Value;
             float offset = (1.14f - Charge) * 56;
             //Main.spriteBatch.End();
             //GraphicsDevice gdv = Main.graphics.GraphicsDevice;
@@ -236,7 +240,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public void DrawEnergyBall(Vector2 pos, float size, float alpha)
         {
             Projectile.rotation = Projectile.velocity.ToRotation();
-            Texture2D tex = CEUtils.getExtraTex("a_circle");
+            Texture2D tex = CEExtraAssets.a_circle;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(250, 250, 250) * alpha, Projectile.rotation, tex.Size() * 0.5f, new Vector2(1 + (Projectile.velocity.Length() * 0.4f), 1) * size * 0.18f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(255, 80, 80) * alpha, Projectile.rotation, tex.Size() * 0.5f, new Vector2(1 + (Projectile.velocity.Length() * 0.4f), 1) * size * 0.32f, SpriteEffects.None, 0);
@@ -314,7 +318,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public void DrawEnergyBall(Vector2 pos, float size, float alpha)
         {
             Projectile.rotation = Projectile.velocity.ToRotation();
-            Texture2D tex = CEUtils.getExtraTex("a_circle");
+            Texture2D tex = CEExtraAssets.a_circle;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(250, 250, 250) * alpha, Projectile.rotation, tex.Size() * 0.5f, size * 0.18f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(255, 80, 80) * alpha, Projectile.rotation, tex.Size() * 0.5f, size * 0.32f, SpriteEffects.None, 0);

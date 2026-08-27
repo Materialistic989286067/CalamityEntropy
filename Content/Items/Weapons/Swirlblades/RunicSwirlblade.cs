@@ -1,20 +1,17 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityEntropy.Content.Projectiles;
-using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Rogue;
+using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Weapons;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Content;
 using System.Collections.Generic;
-using System.Runtime.Intrinsics.Arm;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -22,11 +19,14 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 {
-    public class RunicSwirlblade : RogueWeapon
+    public class RunicSwirlblade : ModItem, ICEChargeWeapon
     {
+        // 充能条 5 秒；原潜伏乘数 伤害0.6/弹速1.2 并入释放乘数
+        public CEChargeProfile ChargeProfile => CEChargeProfile.ChargeBar(5f, 0.6f, 1.2f);
+
         public override void SetDefaults()
         {
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 30;
             Item.width = 50;
             Item.height = 58;
@@ -34,7 +34,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Item.crit = 5;
             Item.ArmorPenetration = 15;
             Item.UseSound = SoundID.Item1 with { Volume = 1f };
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.value = Item.buyPrice(gold: 60);
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<RunicSwirlbladeProj>();
             Item.shootSpeed = 58f;
@@ -45,16 +45,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Item.noMelee = true;
             Item.noUseGraphic = true;
         }
-        public override float StealthDamageMultiplier => 0.6f;
-        public override float StealthVelocityMultiplier => 1.2f;
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            bool ult = CEChargeWeapon.TryConsume(player, Item);
             int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            if (player.Calamity().StealthStrikeAvailable() && p.WithinBounds(Main.maxProjectiles))
+            if (ult && p >= 0 && p < Main.maxProjectiles)
             {
-                Main.projectile[p].Calamity().stealthStrike = true;
-                CEUtils.SyncProj(p);
+                CEChargeWeapon.Empower(p);
             }
             return false;
         }
@@ -62,7 +59,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         {
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<GlacierSwirlblade>())
-                .AddIngredient(ModContent.ItemType<SamsaraSlicer>())
+                .AddIngredient(ItemID.ChlorophyteClaymore)
                 .AddIngredient(ItemID.Ectoplasm, 6)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
@@ -74,6 +71,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
     }
     public class RunicSwirlbladeProj : BaseSwirlblade
     {
+        //脉冲圆环贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Extra/HighResFoggyCircleHardEdge")]
+        internal static Asset<Texture2D> FoggyCircleTex;
         public override string Texture => CEUtils.ItemTexPath<RunicSwirlblade>(); public override int OldPosLength => 10;
         public override void SetDefaults()
         {
@@ -82,8 +82,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Projectile.tileCollide = false;
             Projectile.light = 1;
         }
-        public override float Radius => 170 * (Projectile.Calamity().stealthStrike ? 1.2f : 1);
-        public override int SpreadTime => Projectile.Calamity().stealthStrike ? 50 : 13;
+        public override float Radius => 170 * (Projectile.IsEmpowered() ? 1.2f : 1);
+        public override int SpreadTime => Projectile.IsEmpowered() ? 50 : 13;
         public float ExtraRadius = 0;
         public override void AI()
         {
@@ -93,7 +93,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 float particleRot = CEUtils.randomRot();
                 PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center + particleRot.ToRotationVector2() * Radius * BladeScale * Projectile.scale, particleRot.ToRotationVector2().RotatedBy(-1.86f) * Main.rand.NextFloat(12, 18), (Main.rand.NextBool() ? new Color(200, 220, 255) : Color.LightBlue) * BladeScale, Main.rand.NextFloat(0.6f, 1f) * 0.04f * BladeScale * Projectile.scale).Configure(false, Main.rand.Next(12, 16), new Vector2(0.18f, 1f), false, false);
             }
-            if (Projectile.Calamity().stealthStrike)
+            if (Projectile.IsEmpowered())
             {
                 if (Spreaded)
                 {
@@ -143,7 +143,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 ThalassianWaterBolt.DrawTrail(vp, new Color(255, 255, 255), new Color(190, 200, 255));
             }
             Main.EntitySpriteDraw(Projectile.getDrawData(lightColor, overridePos: Projectile.Center + (Spreaded ? CEUtils.randomPointInCircle(4) : Vector2.Zero)));
-            Texture2D smear = CEUtils.getExtraTex("CircularSmear");
+            Texture2D smear = CEExtraAssets.CircularSmear;
             if (BladeScale > 0)
             {
                 float scale = Radius / 78f * Projectile.scale * BladeScale;
@@ -164,7 +164,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 CommonEffects.rotation.CurrentTechnique.Passes[0].Apply();
                 CommonEffects.rotation.Parameters["center"].SetValue(Vector2.One * 0.5f);
                 CommonEffects.rotation.Parameters["rad"].SetValue(Main.GlobalTimeWrappedHourly * 7);
-                Texture2D cTex = CEUtils.getExtraTex("Ray");
+                Texture2D cTex = CEExtraAssets.Ray;
                 for(float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver4)
                 {
                     float rt = i + Projectile.localAI[1];
@@ -172,7 +172,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                     Main.spriteBatch.Draw(cTex, Projectile.Center + rt.ToRotationVector2() * ExtraRadius * eRad * Projectile.scale - Main.screenPosition, null, new Color(200, 220, 255) * Projectile.Opacity * ExtraRadius, rt, cTex.Size() * 0.5f, new Vector2(0.38f, 1) * ExtraRadius * Radius * 0.9f / 78f * Projectile.scale, SpriteEffects.None, 0);
                 }
 
-                Texture2D pulse = CEUtils.getExtraTex("HighResFoggyCircleHardEdge");
+                Texture2D pulse = FoggyCircleTex.Value;
                 Main.spriteBatch.Draw(pulse, Projectile.Center - Main.screenPosition, null, new Color(136, 160, 200) * Projectile.Opacity * ExtraRadius, Projectile.rotation, pulse.Size().Half(), ExtraRadius * Radius * 0.0016f * Projectile.scale * 0.7f, SpriteEffects.None, 0);
                 Main.spriteBatch.Draw(pulse, Projectile.Center - Main.screenPosition, null, new Color(136, 160, 200) * Projectile.Opacity * ExtraRadius, Projectile.rotation, pulse.Size().Half(), ExtraRadius * Radius * 0.0016f * Projectile.scale, SpriteEffects.None, 0);
 
@@ -201,7 +201,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 
         public override void OnRetract()
         {
-            if (Projectile.Calamity().stealthStrike)
+            if (Projectile.IsEmpowered())
             {
                 CEUtils.PlaySound("soulshine", Main.rand.NextFloat(0.3f, 0.36f), Projectile.Center);
                 CEUtils.PlaySound("soulshine", Main.rand.NextFloat(1.85f, 2.2f), Projectile.Center);
@@ -239,7 +239,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = CEUtils.RogueDC;
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 12;
             Projectile.height = 12;
             Projectile.friendly = true;
@@ -267,12 +267,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             if (Projectile.Entropy().FirstFrames)
             {
                 Projectile.ai[0] = Main.rand.NextFloat(100);
+                //ai[2] 随生成包同步，各端首帧本地打标即可
                 if (Projectile.ai[2] > 0)
                 {
-                    Projectile.Calamity().stealthStrike = true;
+                    Projectile.SetEmpowered(false);
                     Projectile.scale *= 2f;
                 }
-                if (Projectile.Calamity().stealthStrike)
+                if (Projectile.IsEmpowered())
                 {
                     for (int i = 0; i < 16; i++)
                     {
@@ -288,7 +289,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             PreCounter++;
             if(PreCounter == 1 + MovingTime * 4)
             {
-                if (!Projectile.Calamity().stealthStrike) 
+                if (!Projectile.IsEmpowered()) 
                 {
                     NPC target = Projectile.FindMinionTarget(3600);
                     if (target != null)
@@ -297,7 +298,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                     } 
                 }
             }
-            if (Projectile.Calamity().stealthStrike || PreCounter > MovingTime * 4)
+            if (Projectile.IsEmpowered() || PreCounter > MovingTime * 4)
             {
                 NPC target = Projectile.FindMinionTarget(1600);
                 if (Projectile.localAI[0]++ > 28 && target != null)
@@ -383,15 +384,15 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             }
             if (ve.Count >= 3)
             {
-                Texture2D tx = CEUtils.getExtraTex("DeathRay");
+                Texture2D tx = CEExtraAssets.DeathRay;
                 gd.Textures[0] = tx;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-                gd.Textures[0] = CEUtils.getExtraTex("Streak2");
+                gd.Textures[0] = CEExtraAssets.Streak2;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve2.ToArray(), 0, ve2.Count - 2);
             }
 
-            Texture2D glow = CEUtils.getExtraTex("Glow2");
-            Texture2D tex = CEUtils.getExtraTex("Ray");
+            Texture2D glow = CEExtraAssets.Glow2;
+            Texture2D tex = CEExtraAssets.Ray;
 
             Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition, null, new Color(60, 60, 255), Projectile.rotation, glow.Size().Half(), 0.34f * Projectile.scale, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition, null, new Color(230, 230, 255), Projectile.rotation, glow.Size().Half(), 0.18f * Projectile.scale, SpriteEffects.None, 0);

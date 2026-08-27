@@ -24,24 +24,31 @@ namespace CalamityEntropy.Common
         [DefaultValue(true)]
         public bool ItemAdditionalInfo { get; set; }
 
+        /// <summary>聊天文字特效开关(自研,替代原灾厄客户端配置 TextEffects),TextEffectHandler 读取。</summary>
+        [DefaultValue(true)]
+        public bool TextEffects { get; set; }
+
         [DefaultValue(true)]
         public bool ScreenWarpEffects { get; set; }
 
         [DefaultValue(true)]
         public bool ChainsawShakeScreen { get; set; }
 
+        /// <summary>屏幕震动强度(自研,替代原灾厄客户端配置 ScreenshakePower),ScreenShaker 读取。</summary>
+        [SliderColor(224, 165, 56, 128)]
+        [Range(0f, 2f)]
+        [DefaultValue(1f)]
+        [Increment(0.05f)]
+        public float ScreenShakePower { get; set; }
+
         [DefaultValue(1f)]
         [Range(0f, 2f)]
         [Increment(0.05f)]
         public float EntropyMeleeWeaponSoundVolume { get; set; }
 
-        [DefaultValue(true)]
-        public bool MariviumArmorSetOnlyProvideStealthBarWhenHoldingRogueWeapons { get; set; }
-
+        //脱离灾厄:MariviumArmorSetOnlyProvideStealthBarWhenHoldingRogueWeapons(潜行条)与
+        //CalamityTextEffectCompatibilityFix(灾厄文字特效兼容)配置项已删除
         [Header("Compatibility")]
-        [DefaultValue(true)]
-        public bool CalamityTextEffectCompatibilityFix { get; set; }
-        
         [DefaultValue(true)]
         public bool TileEffect { get; set; }
         [DefaultValue(true)]

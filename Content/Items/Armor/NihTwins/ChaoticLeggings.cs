@@ -1,6 +1,4 @@
 using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items;
-using CalamityMod.Items.Placeables.Ores;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,7 +12,7 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
         {
             Item.width = 30;
             Item.height = 30;
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1, gold: 50);
             Item.defense = 26;
             Item.rare = ModContent.RarityType<NihilityBlue>();
         }
@@ -28,7 +26,7 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
         {
             CreateRecipe()
                 .AddIngredient<ChaoticPiece>(5)
-                .AddIngredient<ExodiumCluster>(6)
+                .AddIngredient(ItemID.LunarOre, 6)
                 .AddIngredient(ItemID.LunarBar, 8)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();

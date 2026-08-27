@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -28,13 +27,11 @@ namespace CalamityEntropy.Content.Items
             float dropRand = Main.rand.NextFloat();
             resultStack = Main.rand.Next(2, 4);
 
-            // 40% chance for Mysterious Circuitry
-            // 40% chance for Dubious Plating
-            // 20% chance for 5-12 Silver Coins
+            // 产出：40% 阿扎弗电路 / 40% 阿扎弗镀层 / 20% 5-12 枚银币
             if (dropRand < 0.4f)
-                resultType = ModContent.ItemType<MysteriousCircuitry>();
+                resultType = ModContent.ItemType<AzafureCircuitry>();
             else if (dropRand < 0.8f)
-                resultType = ModContent.ItemType<DubiousPlating>();
+                resultType = ModContent.ItemType<AzafurePlating>();
             else
             {
                 resultStack = Main.rand.Next(5, 13);

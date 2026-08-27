@@ -1,10 +1,9 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Items;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -34,7 +33,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.shoot = ModContent.ProjectileType<OblivionSkullMinion>();
             Item.shootSpeed = 2f;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.autoReuse = true;
             Item.UseSound = SoundID.Item8;
             Item.noMelee = true;
@@ -56,6 +55,9 @@ namespace CalamityEntropy.Content.Items.Weapons
     }
     public class OblivionSkullMinion : ModProjectile
     {
+        //环绕骷髅弹贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Content/Items/Weapons/SkullProj")]
+        internal static Asset<Texture2D> SkullProjTex;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
@@ -108,7 +110,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 Projectile.Center = player.Center + CEUtils.randomPointInCircle(128);
             }
             Projectile.pushByOther(0.36f);
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             float speedMult = 0.95f;
             NPC target = Projectile.FindMinionTarget();
             float targetRot = Projectile.rotation;
@@ -117,7 +119,8 @@ namespace CalamityEntropy.Content.Items.Weapons
                 if (delay >= 0)
                 {
                     maxProj = 6;
-                    maxProj = int.Min(6, (int)((target.life + target.defense * 6f) / (1 - target.Calamity().DR) / Projectile.damage) + 1);
+                    // 灾厄 DR 体系已退场,按无减伤估算所需弹数
+                    maxProj = int.Min(6, (int)((target.life + target.defense * 6f) / Projectile.damage) + 1);
                 }
                 targetRot = (target.Center - Projectile.Center).ToRotation();
                 if (delay-- < 0)
@@ -131,7 +134,6 @@ namespace CalamityEntropy.Content.Items.Weapons
                         Vector2 pos = ((projCharge - 1) * (MathHelper.TwoPi / maxProj)).ToRotationVector2() * 60 + Projectile.Center;
                         for (int i = 0; i < 9; i++)
                         {
-                            //EParticle.spawnNew→PRTLoader.NewParticle,spawn点和数值迁移纪律:一个不改
                             PRTLoader.NewParticle<PRT_HeavySmokeCal>(pos + CEUtils.randomPointInCircle(3), CEUtils.randomPointInCircle(6), Color.MediumPurple, Main.rand.NextFloat(0.26f, 0.36f)).Configure(0.6f, 18, Main.rand.NextFloat(-0.1f, 0.1f), true);
                         }
                     }
@@ -147,14 +149,12 @@ namespace CalamityEntropy.Content.Items.Weapons
                             Fire(target.Center);
                         projCharge = 0;
                         delay = maxProj * 5;
-                        if (player.HasBuff<AdrenalineMode>())
-                            delay /= 2;
                     }
                 }
             }
             else
             {
-                targetRot = (player.Calamity().mouseWorld - Projectile.Center).ToRotation();
+                targetRot = (player.Entropy().MouseWorld - Projectile.Center).ToRotation();
                 ChargeCounter = 0;
                 projCharge = 0;
             }
@@ -195,13 +195,13 @@ namespace CalamityEntropy.Content.Items.Weapons
         public int chargeTime = 12;
         public void DrawSkull(Vector2 pos)
         {
-            Texture2D tex = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/SkullProj");
+            Texture2D tex = SkullProjTex.Value;
             Main.EntitySpriteDraw(tex, pos - Main.screenPosition, null, Color.White, Projectile.rotation, tex.Size() / 2, Projectile.scale, Projectile.rotation.ToRotationVector2().X > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);
         }
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D tex = Projectile.GetTexture();
-            Texture2D projTex = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/SkullProj");
+            Texture2D projTex = SkullProjTex.Value;
 
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, tex.Size() / 2, Projectile.scale, Projectile.rotation.ToRotationVector2().X > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);
             foreach (Vector2 vec in GetProjOffsets())

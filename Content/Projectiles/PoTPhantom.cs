@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +14,9 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class PoTPhantom : ModProjectile
     {
+        //幻影贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/PoTYharimPhantom")]
+        internal static Asset<Texture2D> PhantomTex;
         List<float> odr = new List<float>();
         public int noSlowTime = 0;
         public float timej = 1f;
@@ -150,7 +155,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/PoTYharimPhantom").Value;
+            Texture2D tx = PhantomTex.Value;
 
             Main.spriteBatch.Draw(tx, Projectile.Center - Main.screenPosition, null, Color.White * 0.8f, 0, tx.Size() / 2, Projectile.scale * 3, (Projectile.velocity.X >= 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally), 0);
 

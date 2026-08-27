@@ -1,6 +1,4 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -22,7 +20,7 @@ namespace CalamityEntropy.Content.Items.Ammo
             Item.height = 8;
             Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true; Item.knockBack = 1f;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<CondensedBulletProjectile>();
             Item.shootSpeed = 1f;
@@ -32,7 +30,7 @@ namespace CalamityEntropy.Content.Items.Ammo
         public override void AddRecipes()
         {
             CreateRecipe(50)
-                .AddIngredient<PurifiedGel>()
+                .AddIngredient(ItemID.PinkGel)
                 .AddTile(TileID.WorkBenches)
                 .Register();
         }

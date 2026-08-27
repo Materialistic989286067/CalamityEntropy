@@ -1,6 +1,4 @@
-﻿using CalamityEntropy.Content.ArmorPrefixes;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Ores;
+using CalamityEntropy.Content.ArmorPrefixes;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,7 +14,7 @@ namespace CalamityEntropy.Content.Items.PrefixItem
                 return;
             CreateRecipe().
             AddIngredient<VoidScales>(1).
-            AddIngredient<NightmareFuel>(2)
+            AddIngredient(ItemID.SpookyWood, 2)
             .Register();
         }
     }
@@ -29,7 +27,7 @@ namespace CalamityEntropy.Content.Items.PrefixItem
                 return;
             CreateRecipe().
                 AddIngredient<VoidScales>(2).
-                AddIngredient<AscendantSpiritEssence>(1)
+                AddIngredient<WraithSoulEssence>(1)
                 .Register();
         }
     }
@@ -40,11 +38,11 @@ namespace CalamityEntropy.Content.Items.PrefixItem
         {
             if (!ArmorPrefix.Enabled)
                 return;
+            // 脱离灾厄:YharonSoulFragment/AshesofAnnihilation 均映射虚空之鳞,合并数量
             CreateRecipe().
-                AddIngredient<YharonSoulFragment>(10).
-                AddIngredient<EffulgentFeather>(10).
-                AddIngredient<AshesofAnnihilation>(2)
-                .AddIngredient<ExoPrism>(2)
+                AddIngredient<VoidScales>(12).
+                AddIngredient<NihilityFragments>(10)
+                .AddIngredient<VoidBar>(2)
                 .Register();
         }
     }
@@ -55,10 +53,10 @@ namespace CalamityEntropy.Content.Items.PrefixItem
         {
             if (!ArmorPrefix.Enabled)
                 return;
+            // 脱离灾厄:YharonSoulFragment/AshesofAnnihilation 均映射虚空之鳞,合并数量
             CreateRecipe().
-                AddIngredient<YharonSoulFragment>(1)
-                .AddIngredient<AshesofAnnihilation>(1)
-                .AddIngredient<ExoPrism>(1)
+                AddIngredient<VoidScales>(2)
+                .AddIngredient<VoidBar>(1)
                 .Register();
         }
     }
@@ -88,12 +86,13 @@ namespace CalamityEntropy.Content.Items.PrefixItem
         {
             if (!ArmorPrefix.Enabled)
                 return;
+            // 脱离灾厄:BloodOrb 按 material-map 拆双配方,腐化用腐肉、猩红用脊椎骨
             CreateRecipe().AddIngredient(ItemID.DemoniteBar, 1)
-                .AddIngredient<BloodOrb>(5)
+                .AddIngredient(ItemID.RottenChunk, 5)
                 .AddIngredient(ItemID.StoneBlock, 10)
                 .Register();
             CreateRecipe().AddIngredient(ItemID.CrimtaneBar, 1)
-                .AddIngredient<BloodOrb>(5)
+                .AddIngredient(ItemID.Vertebrae, 5)
                 .AddIngredient(ItemID.StoneBlock, 10)
                 .Register();
         }
@@ -142,7 +141,7 @@ namespace CalamityEntropy.Content.Items.PrefixItem
             if (!ArmorPrefix.Enabled)
                 return;
             CreateRecipe().AddIngredient(ItemID.StoneBlock, 10).
-                AddIngredient<CorrodedFossil>(5)
+                AddIngredient(ItemID.FossilOre, 5)
                 .Register();
         }
     }
@@ -196,7 +195,7 @@ namespace CalamityEntropy.Content.Items.PrefixItem
                 return;
             CreateRecipe().AddIngredient(ItemID.Silk, 5)
                 .AddIngredient(ItemID.Ectoplasm)
-                .AddIngredient<LivingShard>(10)
+                .AddIngredient(ItemID.ChlorophyteBar, 10)
                 .Register();
         }
     }
@@ -209,7 +208,7 @@ namespace CalamityEntropy.Content.Items.PrefixItem
                 return;
             CreateRecipe().AddIngredient(ItemID.Silk, 5)
                 .AddIngredient(ItemID.Ectoplasm)
-                .AddIngredient<EssenceofHavoc>(2)
+                .AddIngredient(ItemID.SoulofNight, 2)
                 .Register();
         }
     }
@@ -248,9 +247,9 @@ namespace CalamityEntropy.Content.Items.PrefixItem
         {
             if (!ArmorPrefix.Enabled)
                 return;
-            CreateRecipe().AddIngredient<ExodiumCluster>(5)
+            CreateRecipe().AddIngredient(ItemID.LunarOre, 5)
                 .AddIngredient(ItemID.Glass, 5)
-                .AddIngredient<UnholyEssence>(4)
+                .AddIngredient<NihilityFragments>(4)
                 .Register();
         }
     }
@@ -261,9 +260,9 @@ namespace CalamityEntropy.Content.Items.PrefixItem
         {
             if (!ArmorPrefix.Enabled)
                 return;
-            CreateRecipe().AddIngredient<ExodiumCluster>(5)
+            CreateRecipe().AddIngredient(ItemID.LunarOre, 5)
                 .AddIngredient(ItemID.Glass, 5)
-                .AddIngredient<CosmiliteBar>(1)
+                .AddIngredient<WraithSoulEssence>(1)
                 .Register();
         }
     }
@@ -274,9 +273,9 @@ namespace CalamityEntropy.Content.Items.PrefixItem
         {
             if (!ArmorPrefix.Enabled)
                 return;
-            CreateRecipe().AddIngredient<ExodiumCluster>(5)
+            CreateRecipe().AddIngredient(ItemID.LunarOre, 5)
                 .AddIngredient(ItemID.Glass, 5)
-                .AddIngredient<RuinousSoul>()
+                .AddIngredient<NihilityFragments>()
                 .Register();
         }
     }
@@ -287,9 +286,9 @@ namespace CalamityEntropy.Content.Items.PrefixItem
         {
             if (!ArmorPrefix.Enabled)
                 return;
-            CreateRecipe().AddIngredient<ExodiumCluster>(5)
+            CreateRecipe().AddIngredient(ItemID.LunarOre, 5)
                 .AddIngredient(ItemID.Glass, 5)
-                .AddIngredient<DivineGeode>(4)
+                .AddIngredient<NihilityFragments>(4)
                 .Register();
         }
     }
@@ -300,9 +299,9 @@ namespace CalamityEntropy.Content.Items.PrefixItem
         {
             if (!ArmorPrefix.Enabled)
                 return;
-            CreateRecipe().AddIngredient<ExodiumCluster>(5)
+            CreateRecipe().AddIngredient(ItemID.LunarOre, 5)
                 .AddIngredient(ItemID.Glass, 5)
-                .AddIngredient<Necroplasm>()
+                .AddIngredient<NihilityFragments>()
                 .Register();
         }
     }

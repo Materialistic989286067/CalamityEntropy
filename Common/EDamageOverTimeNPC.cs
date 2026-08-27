@@ -28,7 +28,8 @@ namespace CalamityEntropy.Common
                 }
             }
 
-            damageApply = (int)(damageApply * npc.Entropy().DebuffDamageMult());
+            // Debuff 伤害倍率不在此自乘：统一由 EGlobalNPC.UpdateLifeRegen 全局放大
+            //（GlobalNPC 按 FullName 字母序执行，本类恒先于 EGlobalNPC，放大必然覆盖到本处扣减）
             damage += damageApply;
             npc.lifeRegen -= damageApply * 2;
         }

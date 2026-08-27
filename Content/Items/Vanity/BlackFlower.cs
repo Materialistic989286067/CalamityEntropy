@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Common;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -62,9 +61,17 @@ namespace CalamityEntropy.Content.Items.Vanity
 
         public override void AddRecipes()
         {
+            // 血珠按映射拆为脊椎骨/腐肉双平行配方
             CreateRecipe()
                 .AddIngredient(ItemID.Sunflower)
-                .AddIngredient<BloodOrb>(2)
+                .AddIngredient(ItemID.Vertebrae, 2)
+                .AddIngredient(ItemID.Ruby)
+                .AddCondition(Condition.InGraveyard)
+                .AddTile(TileID.WorkBenches)
+                .Register();
+            CreateRecipe()
+                .AddIngredient(ItemID.Sunflower)
+                .AddIngredient(ItemID.RottenChunk, 2)
                 .AddIngredient(ItemID.Ruby)
                 .AddCondition(Condition.InGraveyard)
                 .AddTile(TileID.WorkBenches)

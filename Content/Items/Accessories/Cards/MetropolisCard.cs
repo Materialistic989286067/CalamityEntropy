@@ -1,7 +1,4 @@
-﻿using CalamityEntropy.Common;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using CalamityEntropy.Common;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,7 +12,7 @@ namespace CalamityEntropy.Content.Items.Accessories.Cards
         {
             Item.width = 22;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
 
@@ -23,15 +20,16 @@ namespace CalamityEntropy.Content.Items.Accessories.Cards
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.Calamity().rogueStealthMax += 0.10f;
+            // 原+10%潜行上限,潜行退役后按 Echo 前缀先例减半转通用伤害
+            player.GetDamage(DamageClass.Generic) += 0.05f;
             player.GetModPlayer<EModPlayer>().metropolisCard = true;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<AncientBoneDust>(), 5).
-                AddIngredient(ModContent.ItemType<EssenceofHavoc>(), 3).
+                AddIngredient(ItemID.Bone, 5).
+                AddIngredient(ItemID.SoulofNight, 3).
                 AddTile(TileID.Bookcases).
                 Register();
         }

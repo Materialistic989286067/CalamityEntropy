@@ -1,6 +1,4 @@
 using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,7 +13,7 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
         {
             Item.width = 48;
             Item.height = 42;
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1, gold: 50);
             Item.defense = 35;
             Item.rare = ModContent.RarityType<NihilityBlue>();
         }
@@ -27,9 +25,9 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
 
         public override void AddRecipes()
         {
+            // 脱离灾厄:原 Necroplasm×6 换虚无碎片并与原有 8 枚合并
             CreateRecipe()
-                .AddIngredient<NihilityFragments>(8)
-                .AddIngredient(ModContent.ItemType<Necroplasm>(), 6)
+                .AddIngredient<NihilityFragments>(14)
                 .AddIngredient(ItemID.LunarBar, 12)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();

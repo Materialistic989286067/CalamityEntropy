@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -14,7 +13,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             base.SetDefaults();
             Item.rare = ItemRarityID.Orange;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Bee");
         public override EBookProjectileEffect getEffect()

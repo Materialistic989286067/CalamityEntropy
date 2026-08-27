@@ -1,6 +1,7 @@
-﻿using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod.Buffs.DamageOverTime;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -67,7 +68,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            var tex = CEUtils.getExtraTex("StarTexture_White");
+            var tex = CEExtraAssets.StarTexture_White;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Color color = Projectile.whoAmI % 2 == 0 ? new Color(190, 190, 80) : new Color(116, 200, 180);
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, color * 0.8f, Main.GlobalTimeWrappedHourly, tex.Size() / 2f, Projectile.scale * 0.3f * new Vector2(1, 0.8f), SpriteEffects.None);
@@ -114,7 +115,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                     if (ve.Count >= 3)
                     {
-                        Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/MegaStreakBacking2").Value;
+                        Texture2D tx = CEExtraAssets.MegaStreakBacking2;
                         gd.Textures[0] = tx;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                     }
@@ -141,7 +142,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                     if (ve.Count >= 3)
                     {
-                        Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Streak1").Value;
+                        Texture2D tx = CEExtraAssets.Streak1;
                         gd.Textures[0] = tx;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                     }

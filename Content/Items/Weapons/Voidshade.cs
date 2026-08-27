@@ -1,7 +1,5 @@
 ﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -28,16 +26,15 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAnimation = 32;
             Item.autoReuse = true;
             Item.scale = 1f;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.damage = 100;
             Item.knockBack = 6;
             Item.UseSound = CEUtils.GetSound("powerwhip");
             Item.crit = 6;
             Item.shoot = ModContent.ProjectileType<VoidshadeHeld>();
             Item.shootSpeed = 16;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ModContent.RarityType<VoidPurple>();
-            Item.Calamity().devItem = true;
         }
         public override bool AltFunctionUse(Player player)
         {
@@ -82,7 +79,8 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ItemID.BreakerBlade).AddIngredient(ModContent.ItemType<Voidstone>(), 12).AddTile(TileID.Anvils).Register();
+            //脱离灾厄:灾厄Voidstone按material-map换黑曜石
+            CreateRecipe().AddIngredient(ItemID.BreakerBlade).AddIngredient(ItemID.Obsidian, 12).AddTile(TileID.Anvils).Register();
         }
     }
 }

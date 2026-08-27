@@ -1,10 +1,10 @@
-﻿using CalamityMod.Cooldowns;
+﻿using CalamityEntropy.Core.Cooldowns;
 using Terraria.Audio;
 using Terraria.Localization;
 
 namespace CalamityEntropy.Content.Cooldowns
 {
-    public class ProtectiveCannonCooldown : CooldownHandler
+    public class ProtectiveCannonCooldown : CECooldownHandler
     {
         public static new string ID => "ProtectiveCannonCooldown";
         public override bool ShouldDisplay => true;

@@ -1,10 +1,9 @@
 ﻿using CalamityEntropy.Content.Items;
-using CalamityMod.Tiles.BaseTiles;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Tiles
 {
-    public class NihilityTwinRelicTile : BaseBossRelic
+    public class NihilityTwinRelicTile : CEBaseBossRelic
     {
         public override string RelicTextureName => "CalamityEntropy/Content/Tiles/NihilityTwinRelicTile";
 

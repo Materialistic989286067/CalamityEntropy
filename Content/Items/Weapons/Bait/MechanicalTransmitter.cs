@@ -1,15 +1,13 @@
-﻿using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Typeless;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -36,7 +34,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             Item.knockBack = 0;
             Item.shootSpeed = 32;
             Item.useAnimation = Item.useTime = 24;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.value = Item.buyPrice(gold: 60);
             Item.rare = ItemRarityID.Yellow;
             Item.width = 42;
             Item.height = 42; 
@@ -64,7 +62,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             CreateRecipe()
                 .AddIngredient(ItemID.HallowedBar, 8)
                 .AddIngredient(ItemID.Wire, 20)
-                .AddIngredient<MysteriousCircuitry>(2)
+                .AddIngredient<AzafureCircuitry>(2)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
@@ -110,7 +108,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                 npc.GetGlobalNPC<WhipDebuffNPC>().BaitStick = 2;
                 if (IsActive)
                 {
-                    Projectile.GetOwner().Calamity().mouseWorldListener = true;
+                    Projectile.GetOwner().Entropy().MouseWorldListener = true;
                     npc.GetGlobalNPC<WhipDebuffNPC>().ClearBaitTags();
                     npc.GetGlobalNPC<WhipDebuffNPC>().Tags.Add(new WhipTag(this.GetType().Name, 5, this.TagDamage, 1, 0, this.GetType().Name) { IsABaitTag = true });
                     if (ActiveCounter % 16 == 0)
@@ -146,7 +144,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             if (activeEffectAlpha >= 0.01f)
             {
                 Main.spriteBatch.UseAdditiveClamp();
-                Texture2D pulse = CEUtils.getExtraTex("HollowCircleSoftEdge");
+                Texture2D pulse = CEExtraAssets.HollowCircleSoftEdge;
                 for(float i = 0; i < 1f; i += 0.5f)
                 {
                     float scale = CEUtils.Frac(i + Main.GlobalTimeWrappedHourly * 2f);
@@ -165,7 +163,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
         {
             Projectile.tileCollide = false;
             OnHitEffect(Projectile.Center);
-            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/WulfrumProsthesisSucc") with { Volume = 0.34f}, target.Center);
+            SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/cellheal") with { Volume = 0.34f}, target.Center);
             Projectile.velocity *= 0;
             StickNPC = target.whoAmI;
             StickOffset = Projectile.Center - target.Center;

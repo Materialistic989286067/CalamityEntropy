@@ -1,8 +1,6 @@
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Items.Weapons.Summon;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -21,7 +19,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -75,7 +73,7 @@ namespace CalamityEntropy.Content.Projectiles
                 }
             }
             Player player = Projectile.GetOwner();
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             player.heldProj = Projectile.whoAmI;
             if (Projectile.timeLeft > 1)
             {
@@ -85,10 +83,10 @@ namespace CalamityEntropy.Content.Projectiles
 
             if (charge < 1)
             {
-                Projectile.velocity = (player.Calamity().mouseWorld - player.Center).normalize() * Projectile.velocity.Length();
+                Projectile.velocity = (player.Entropy().MouseWorld - player.Center).normalize() * Projectile.velocity.Length();
                 charge += 0.025f * player.GetTotalAttackSpeed(Projectile.DamageType) * (player.AzafureEnhance() ? 1.6f : 1);
                 player.direction = Projectile.velocity.X > 0 ? 1 : -1;
-                Projectile.rotation = (player.Calamity().mouseWorld - player.Center).ToRotation() - player.direction * ((float)Math.Cos(((float)Math.Cos(((float)Math.Cos(charge * MathHelper.Pi - MathHelper.Pi) * 0.5f + 0.5f) * MathHelper.Pi - MathHelper.Pi) * 0.5f + 0.5f) * MathHelper.Pi - MathHelper.Pi) * 0.5f + 0.5f) * MathHelper.ToRadians(150);
+                Projectile.rotation = (player.Entropy().MouseWorld - player.Center).ToRotation() - player.direction * ((float)Math.Cos(((float)Math.Cos(((float)Math.Cos(charge * MathHelper.Pi - MathHelper.Pi) * 0.5f + 0.5f) * MathHelper.Pi - MathHelper.Pi) * 0.5f + 0.5f) * MathHelper.Pi - MathHelper.Pi) * 0.5f + 0.5f) * MathHelper.ToRadians(150);
                 Projectile.timeLeft = 70;
             }
             if (charge >= 1)
@@ -124,10 +122,10 @@ namespace CalamityEntropy.Content.Projectiles
                 }
                 else
                 {
-                    Projectile.velocity = (player.Calamity().mouseWorld - player.Center).normalize() * Projectile.velocity.Length();
+                    Projectile.velocity = (player.Entropy().MouseWorld - player.Center).normalize() * Projectile.velocity.Length();
                     player.direction = Projectile.velocity.X > 0 ? 1 : -1;
 
-                    Projectile.rotation = (player.Calamity().mouseWorld - player.Center).ToRotation() - player.direction * ((float)Math.Cos(((float)Math.Cos(((float)Math.Cos(charge * MathHelper.Pi - MathHelper.Pi) * 0.5f + 0.5f) * MathHelper.Pi - MathHelper.Pi) * 0.5f + 0.5f) * MathHelper.Pi - MathHelper.Pi) * 0.5f + 0.5f) * MathHelper.ToRadians(150);
+                    Projectile.rotation = (player.Entropy().MouseWorld - player.Center).ToRotation() - player.direction * ((float)Math.Cos(((float)Math.Cos(((float)Math.Cos(charge * MathHelper.Pi - MathHelper.Pi) * 0.5f + 0.5f) * MathHelper.Pi - MathHelper.Pi) * 0.5f + 0.5f) * MathHelper.Pi - MathHelper.Pi) * 0.5f + 0.5f) * MathHelper.ToRadians(150);
                     Projectile.timeLeft = 70;
                 }
                 if (Projectile.timeLeft == 50 && CanHit)
@@ -211,20 +209,18 @@ namespace CalamityEntropy.Content.Projectiles
                 target.AddBuff(ModContent.BuffType<MaliciousCode>(), 460);
             }
             Projectile.ai[2] = target.whoAmI;
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = 16;
+            CEUtils.SetShake(target.Center, 16);
             Projectile.GetOwner().ApplyDamageToNPC(target, damageDone, 0, 0, hit.Crit, Projectile.DamageType);
             Projectile.rotation += 0.36f * Projectile.GetOwner().direction;
             Projectile.netUpdate = true;
             Item FalseGun;
             int gunID = ItemID.Minishark;
-            int CVEID = ModContent.ItemType<CosmicViperEngine>();
             FalseGun = new Item();
-            var Pk = new Item();
             FalseGun.SetDefaults(gunID, true);
-            Pk.SetDefaults(CVEID, true);
             FalseGun.damage = Projectile.damage / 10;
-            FalseGun.knockBack = Pk.knockBack;
-            FalseGun.shootSpeed = Pk.shootSpeed * 1.25f;
+            // 数值模板原为灾厄 CosmicViperEngine（击退 6、弹速 10），常数内联
+            FalseGun.knockBack = 6f;
+            FalseGun.shootSpeed = 10f * 1.25f;
             FalseGun.consumeAmmoOnFirstShotOnly = false;
             FalseGun.consumeAmmoOnLastShotOnly = false;
             FalseGun.ArmorPenetration = Projectile.ArmorPenetration;
@@ -347,7 +343,7 @@ namespace CalamityEntropy.Content.Projectiles
             {
                 OnHitBothSide(target);
                 Projectile.localAI[0] = target.whoAmI;
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = 16;
+                CEUtils.SetShake(target.Center, 16);
                 Projectile.rotation += 0.36f * Projectile.GetOwner().direction;
                 Projectile.netUpdate = true;
             }

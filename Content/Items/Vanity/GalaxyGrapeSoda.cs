@@ -1,7 +1,5 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items.Pets;
-using CalamityMod;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -43,10 +41,9 @@ namespace CalamityEntropy.Content.Items.Vanity
             Item.width = 22;
             Item.height = 30;
             Item.accessory = true;
-            Item.value = CalamityMod.Items.CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Green;
             Item.vanity = true;
-            Item.Calamity().devItem = true;
         }
 
         public override void UpdateVanity(Player player)
@@ -68,7 +65,7 @@ namespace CalamityEntropy.Content.Items.Vanity
                 .AddIngredient(ModContent.ItemType<GodsSnack>(), 1)
                 .AddIngredient(ItemID.Bottle, 1)
                 .AddIngredient(ItemID.FallenStar, 5)
-                .AddIngredient(ModContent.ItemType<BlightedGel>(), 20)
+                .AddIngredient(ItemID.Gel, 20)
                 .AddTile(TileID.WorkBenches).Register();
         }
     }

@@ -1,8 +1,6 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Rarities;
+using CalamityEntropy.Content.Rarities;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
@@ -14,8 +12,8 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override void SetDefaults()
         {
             base.SetDefaults();
-            Item.rare = ModContent.RarityType<PureGreen>();
-            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
+            Item.rare = ModContent.RarityType<GlowGreen>();
+            Item.value = Item.buyPrice(platinum: 1, gold: 75);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Abyss");
         public override EBookProjectileEffect getEffect()
@@ -34,7 +32,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 int damage = projectile.damage / 15;
                 Vector2 p = target.Center + CEUtils.randomRot().ToRotationVector2() * 300;
                 Projectile.NewProjectile(projectile.GetSource_FromThis(), p, (target.Center - p).SafeNormalize(Vector2.One), ModContent.ProjectileType<AbyssBookmarkCrack>(), (int)projectile.GetOwner().GetTotalDamage(projectile.DamageType).ApplyTo(175), projectile.knockBack, projectile.owner);
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = 5;
+                CEUtils.SetShake(target.Center, 5);
                 CEUtils.PlaySound("crack", 1, projectile.Center, 3);
             }
         }

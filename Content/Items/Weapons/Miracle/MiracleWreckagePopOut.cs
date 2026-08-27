@@ -1,8 +1,10 @@
 ﻿using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -10,6 +12,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Miracle
 {
     public class MiracleWreckagePopOut : ModProjectile
     {
+        //竖向拖影贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Extra/VerticalSmearLarge")]
+        internal static Asset<Texture2D> VerticalSmearLargeTex;
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/Miracle/MiracleWreckage";
         public override void SetDefaults()
         {
@@ -70,7 +75,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Miracle
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            CEUtils.PlaySound("HalleysInfernoHit", Main.rand.NextFloat(2.8f, 3.2f), target.Center, 4, 0.4f * CEUtils.WeapSound, path: "CalamityMod/Sounds/Item/");
+            CEUtils.PlaySound("energyImpact", Main.rand.NextFloat(2.8f, 3.2f), target.Center, 4, 0.4f * CEUtils.WeapSound);
             PRTLoader.NewParticle<PRT_ShineParticle>(target.Center, Vector2.Zero, new Color(255, 180, 255), 1.2f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 6);
         }
         public override bool PreDraw(ref Color lightColor)
@@ -89,7 +94,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Miracle
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + offset, null, lightColor * Projectile.Opacity, rotation, origin, Projectile.scale, SpriteEffects.None, 0);
             if (Projectile.localAI[0] < Projectile.MaxUpdates * 60)
             {
-                Texture2D vs = CEUtils.getExtraTex("VerticalSmearLarge");
+                Texture2D vs = VerticalSmearLargeTex.Value;
                 Main.spriteBatch.UseBlendState(BlendState.Additive);
                 Main.spriteBatch.Draw(vs, Projectile.Center - Main.screenPosition + offset, null, Color.MediumVioletRed, Projectile.rotation + MathHelper.PiOver2, vs.Size() / 2f, Projectile.scale * 0.36f, SpriteEffects.None, 0);
                 Main.spriteBatch.ExitShaderRegion();

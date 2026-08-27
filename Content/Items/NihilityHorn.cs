@@ -1,7 +1,5 @@
 ﻿using CalamityEntropy.Content.NPCs.NihilityTwin;
-using CalamityMod.Events;
-using CalamityMod.Items.Placeables.Ores;
-using CalamityMod.Rarities;
+using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -24,7 +22,7 @@ namespace CalamityEntropy.Content.Items
             Item.UseSound = CEUtils.GetSound("horn");
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.consumable = false;
-            Item.rare = ModContent.RarityType<Turquoise>();
+            Item.rare = ModContent.RarityType<NihilityBlue>();
 
         }
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
@@ -34,7 +32,7 @@ namespace CalamityEntropy.Content.Items
 
         public override bool CanUseItem(Player player)
         {
-            return !NPC.AnyNPCs(ModContent.NPCType<NihilityActeriophage>()) && !BossRushEvent.BossRushActive;
+            return !NPC.AnyNPCs(ModContent.NPCType<NihilityActeriophage>());
         }
 
         public override bool? UseItem(Player player)
@@ -50,8 +48,8 @@ namespace CalamityEntropy.Content.Items
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<ExodiumCluster>(), 6).
-                AddIngredient(ModContent.ItemType<Voidstone>(), 6).
+                AddIngredient(ItemID.LunarOre, 6).
+                AddIngredient(ItemID.Obsidian, 6).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -14,7 +13,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
         {
             Item.DefaultToWhip(ModContent.ProjectileType<SinewLashProj>(), 32, 3, 4, 42);
             Item.rare = ItemRarityID.Blue;
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.value = Item.buyPrice(gold: 1);
             Item.autoReuse = true;
         }
         public override bool CanUseItem(Player player)

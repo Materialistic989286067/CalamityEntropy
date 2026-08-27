@@ -1,8 +1,4 @@
-﻿using CalamityMod.Items;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,8 +13,8 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.width = 26;
             Item.defense = 15;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.rare = ModContent.RarityType<Turquoise>();
+            Item.value = Item.buyPrice(platinum: 1, gold: 50);
+            Item.rare = ModContent.RarityType<NihilityBlue>();
             Item.accessory = true;
         }
 
@@ -36,12 +32,13 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override void AddRecipes()
         {
+            // 脱离灾厄:灾厄暗日戒指改为原版天界石(表外裁定,拜月后同档)
             CreateRecipe().
                 AddIngredient(ItemID.CelestialShell).
-                AddIngredient(ModContent.ItemType<DarkSunRing>()).
-                AddIngredient(ModContent.ItemType<AscendantSpiritEssence>(), 4).
-                AddIngredient(ModContent.ItemType<AuricBar>(), 5)
-                .AddTile(ModContent.TileType<CosmicAnvil>()).
+                AddIngredient(ItemID.CelestialStone).
+                AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 4).
+                AddIngredient(ModContent.ItemType<VoidBar>(), 5)
+                .AddTile(TileID.LunarCraftingStation).
                 Register();
         }
     }

@@ -1,7 +1,6 @@
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
-using CalamityMod.Buffs.StatDebuffs;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;

@@ -1,10 +1,11 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -26,7 +27,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = ItemUseStyleID.RaiseLamp;
             Item.noMelee = true;
             Item.knockBack = 1f;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(0, 2);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.UseSound = SoundID.DD2_DefenseTowerSpawn;
             Item.autoReuse = true;
@@ -51,7 +52,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(6)
-                .AddIngredient<MysteriousCircuitry>()
+                .AddIngredient<AzafureCircuitry>()
                 .AddIngredient(ItemID.HealingPotion)
                 .AddTile(TileID.Anvils)
                 .Register();
@@ -243,7 +244,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             if (LineWidth > 0.01f)
             {
                 Vector2 laserStart = Projectile.Center + new Vector2(10, -28);
-                Texture2D ball = CEUtils.getExtraTex("BasicCircle");
+                Texture2D ball = CEExtraAssets.BasicCircle;
                 float scale = 1 + 0.16f * (float)(Math.Sin(Main.GlobalTimeWrappedHourly * 12));
                 scale *= LineWidth;
                 //Main.spriteBatch.UseBlendState(BlendState.Additive);

@@ -1,5 +1,5 @@
-﻿using CalamityEntropy.Content.Particles;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
 using Terraria;
 using Terraria.ModLoader;

@@ -1,6 +1,6 @@
-﻿using CalamityEntropy.Content.Particles;
-using CalamityMod;
-using CalamityMod.Items;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -25,7 +25,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.noMelee = true;
             Item.knockBack = 6f;
             Item.crit = 5;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(0, 20);
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<AshesBowHoldout>();
             Item.UseSound = null;
@@ -198,7 +198,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.UseAdditive();
-            Texture2D tex = CEUtils.getExtraTex("Glow2");
+            Texture2D tex = CEExtraAssets.Glow2;
             for (float i = 0.2f; i <= 1; i += 0.2f)
             {
                 Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, Color.Lerp(Color.White, Color.OrangeRed, i) * 1f, Projectile.velocity.ToRotation(), new Vector2(0, tex.Height * 0.5f), new Vector2(length / tex.Width, 200f / tex.Height * width) * i, SpriteEffects.None, 0);

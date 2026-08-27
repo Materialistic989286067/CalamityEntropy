@@ -1,10 +1,12 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Graphics.Primitives;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Graphics.Shaders;
@@ -55,17 +57,17 @@ namespace CalamityEntropy.Content.Projectiles
         public override bool PreDraw(ref Color lightColor)
         {
             odp.Add(Projectile.Center);
-            Texture2D tex = CEUtils.getExtraTex("StarTexture");
+            Texture2D tex = CEExtraAssets.StarTexture;
 
             Main.spriteBatch.UseBlendState(BlendState.Additive);
 
             Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
-            GameShaders.Misc["CalamityMod:ArtAttack"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/StreakSolid"));
-            GameShaders.Misc["CalamityMod:ArtAttack"].Apply();
-            PrimitiveRenderer.RenderTrail(odp, new PrimitiveSettings(TrailWidth1, TrailColor1, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityMod:ArtAttack"]), 180);
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].SetShaderTexture(CEExtraAssets.StreakSolidAsset);
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].Apply();
+            CEPrimitiveRenderer.RenderTrail(odp, new CEPrimitiveSettings(TrailWidth1, TrailColor1, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityEntropy:ArtAttack"]), 180);
 
-            GameShaders.Misc["CalamityMod:ArtAttack"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Streak2"));
-            PrimitiveRenderer.RenderTrail(odp, new PrimitiveSettings(TrailWidth2, TrailColor2, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityMod:ArtAttack"]), 180);
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].SetShaderTexture(CEExtraAssets.Streak2Asset);
+            CEPrimitiveRenderer.RenderTrail(odp, new CEPrimitiveSettings(TrailWidth2, TrailColor2, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityEntropy:ArtAttack"]), 180);
 
             Main.spriteBatch.ExitShaderRegion();
 

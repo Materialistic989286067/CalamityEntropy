@@ -2,8 +2,6 @@
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Summon;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -33,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = ItemUseStyleID.Swing;
             Item.shoot = ModContent.ProjectileType<NyxolithrakenDragon>();
             Item.shootSpeed = 2f;
-            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2, gold: 80);
             Item.autoReuse = true;
             Item.UseSound = SoundID.Item8;
             Item.noMelee = true;
@@ -53,8 +51,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<EndoHydraStaff>()
-                .AddIngredient<YharonsKindleStaff>()
+                .AddIngredient(ItemID.StardustCellStaff)
+                .AddIngredient(ItemID.StardustDragonStaff)
                 .AddIngredient<WyrmTooth>(10)
                 .AddIngredient<FadingRunestone>()
                 .AddTile<AbyssalAltarTile>().Register();

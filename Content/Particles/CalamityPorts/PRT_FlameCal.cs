@@ -4,7 +4,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.Particles.CalamityPorts
 {
-    //FlameParticle,GeneralParticleHandler搬来,AI里自己Position+=Velocity所以框架位移必须关
+    //FlameParticle,旧版粒子系统搬来,AI里自己Position+=Velocity所以框架位移必须关
     public class PRT_FlameCal : BasePRT
     {
         public float RelativePower;
@@ -23,7 +23,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             Variant = 0;
         }
 
-        //@CalamityMod/Particles/Flames → PRTSharedAssets.Flames,HasAsset认不出@,Texture只能指白图
+        //Assets/Particles/Flames → PRTSharedAssets.Flames,Texture指白图占位
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_FlameCal Configure(int lifetime, float relativePower, Color darkColor)

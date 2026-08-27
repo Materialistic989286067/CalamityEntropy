@@ -1,10 +1,7 @@
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Ranged;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -32,7 +29,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.noUseGraphic = true;
             Item.channel = true;
             Item.knockBack = 0;
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2);
             Item.rare = ModContent.RarityType<VoidPurple>();
             Item.shoot = ModContent.ProjectileType<NeltharionHoldout>();
             Item.UseSound = null;
@@ -62,16 +59,16 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectileDirect(source, position, velocity, Item.shoot, damage, knockback, player.whoAmI, Item.useTime).velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
+            Projectile.NewProjectileDirect(source, position, velocity, Item.shoot, damage, knockback, player.whoAmI, Item.useTime).velocity = (player.mouseWorld() - player.MountedCenter).SafeNormalize(Vector2.Zero);
             return false;
         }
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<Kingsbane>()
-                .AddIngredient<Onyxia>()
+                .AddIngredient<Silence>()
+                .AddIngredient(ItemID.SDMG)
                 .AddIngredient<FadingRunestone>()
-                .AddIngredient<RuinousSoul>(2)
+                .AddIngredient<NihilityFragments>(2)
                 .AddTile<VoidWellTile>()
                 .Register();
         }
@@ -267,12 +264,12 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void OnKill(int timeLeft)
         {
-            //四连CustomPulse不同贴图,全走Configure现传@CalamityMod路径
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.MediumPurple * 1.5f, 0.005f).Configure("CalamityMod/Particles/ShineExplosion2", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, 0.14f * Projectile.scale, 27);
+            //四连CustomPulse不同贴图,全走Configure现传Assets/Particles路径
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.MediumPurple * 1.5f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShineExplosion2", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, 0.14f * Projectile.scale, 27);
             //Neltharion死亡四连CustomPulse,贴图路径全走Configure现传
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.MediumPurple * 1.5f, 0.005f).Configure("CalamityMod/Particles/ShineExplosion1", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, 0.14f * Projectile.scale, 24);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.MediumPurple * 1.5f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, 0.14f * Projectile.scale, 20);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.MediumPurple * 1.5f, 0.005f).Configure("CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, 0.14f * Projectile.scale, 30);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.MediumPurple * 1.5f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShineExplosion1", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, 0.14f * Projectile.scale, 24);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.MediumPurple * 1.5f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, 0.14f * Projectile.scale, 20);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.MediumPurple * 1.5f, 0.005f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, 0.14f * Projectile.scale, 30);
             CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromAI(), Projectile.owner.ToPlayer(), Projectile.Center, Projectile.damage, 120, Projectile.DamageType);
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             CEUtils.PlaySound("explosion", Main.rand.NextFloat(2.4f, 2.8f), Projectile.Center, 10, 0.5f);

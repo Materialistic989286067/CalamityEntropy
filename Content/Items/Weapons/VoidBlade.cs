@@ -1,6 +1,4 @@
 ﻿using CalamityEntropy.Content.Projectiles.VoidBlade;
-using CalamityMod;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,7 +11,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             Item.damage = 26;
             Item.crit = 15;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.width = 100;
             Item.noUseGraphic = true;
             Item.height = 100;
@@ -44,9 +42,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             Recipe recipe = CreateRecipe();
             recipe.AddIngredient(ItemID.Katana, 1);
-            recipe.AddIngredient(ModContent.ItemType<Voidstone>(), 5);
+            recipe.AddIngredient(ItemID.Obsidian, 5);
             recipe.AddIngredient(ItemID.Silk, 20);
-            recipe.AddIngredient(ModContent.ItemType<PurifiedGel>(), 6);
+            recipe.AddIngredient(ItemID.PinkGel, 6);
             recipe.AddTile(TileID.DemonAltar);
             recipe.Register();
         }

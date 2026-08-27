@@ -2,7 +2,6 @@
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod.Items;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -19,7 +18,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
         {
             Item.DefaultToWhip(ModContent.ProjectileType<YstralynProj>(), 900, 2, 4, 27);
             Item.rare = ModContent.RarityType<AbyssalBlue>();
-            Item.value = CalamityGlobalItem.RarityCalamityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 3, gold: 20);
             Item.autoReuse = true;
         }
 

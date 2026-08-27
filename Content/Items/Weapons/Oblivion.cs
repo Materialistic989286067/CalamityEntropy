@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -21,7 +20,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
             Item.rare = ModContent.RarityType<NihilityBlue>();
             Item.shoot = ModContent.ProjectileType<OblivionArrow>();
             Item.UseSound = new Terraria.Audio.SoundStyle("CalamityEntropy/Assets/Sounds/feathershot") { MaxInstances = 60, Volume = 0.3f, PitchRange = (0.8f, 1f) };
@@ -52,7 +51,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<Kinanition>())
-                .AddIngredient(ModContent.ItemType<Voidstone>(), 6)
+                .AddIngredient(ItemID.Obsidian, 6)
                 .AddIngredient(ModContent.ItemType<ChaoticPiece>(), 6)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();

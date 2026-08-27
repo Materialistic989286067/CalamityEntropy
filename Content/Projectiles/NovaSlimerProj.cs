@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityEntropy.Assets.Register;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -33,13 +34,11 @@ namespace CalamityEntropy.Content.Projectiles
                 Projectile.velocity += (target.Center - Projectile.Center).normalize() * 1f * (CEUtils.getDistance(Projectile.Center, target.Center) > 360 ? 1 : -1.4f);
                 if (CEUtils.getDistance(Projectile.Center, target.Center) < 400 && Projectile.ai[0] > 40)
                 {
-                    if (ModLoader.TryGetMod("CatalystMod", out Mod caly))
+                    //外部模组软集成裁撤: 原星云矛联动改为自有星辉弹
+                    int p = Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, (target.Center - Projectile.Center).normalize() * 14, ModContent.ProjectileType<FriendlyAstralShoot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    if (p.WithinBounds(Main.maxProjectiles))
                     {
-                        if (caly.TryFind<ModProjectile>("NebulaSpear", out var nsp))
-                        {
-                            int type = nsp.Type;
-                            Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, (target.Center - Projectile.Center).normalize() * 14, type, Projectile.damage, Projectile.knockBack, Projectile.owner, 1, -1, 0);
-                        }
+                        Main.projectile[p].DamageType = DamageClass.Magic;
                     }
                     Projectile.Kill();
                 }
@@ -58,13 +57,15 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            if (ModLoader.HasMod("CatalystMod"))
-            {
-                Texture2D tex = ModContent.Request<Texture2D>("CatalystMod/NPCs/Boss/Astrageldon/NovaSlimer").Value;
-                Texture2D texGlow = ModContent.Request<Texture2D>("CatalystMod/NPCs/Boss/Astrageldon/NovaSlimer_Glow").Value;
-                Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
-                Main.EntitySpriteDraw(texGlow, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
-            }
+            //外部模组贴图联动裁撤, 改自有星辉星云绘制
+            Texture2D tex = CEExtraAssets.StarTexture;
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
+            Color c1 = new Color(157, 100, 183);
+            Color c2 = new Color(255, 105, 234);
+            Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, c1, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale * 0.55f, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, c2 * 0.8f, -Projectile.rotation * 0.7f, tex.Size() * 0.5f, Projectile.scale * 0.4f, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, Color.White * 0.6f, Projectile.rotation * 1.3f, tex.Size() * 0.5f, Projectile.scale * 0.3f, SpriteEffects.None, 0);
+            Main.spriteBatch.UseBlendState(BlendState.AlphaBlend);
             return false;
         }
         public override bool? CanHitNPC(NPC target)

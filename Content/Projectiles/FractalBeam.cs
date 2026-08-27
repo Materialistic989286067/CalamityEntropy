@@ -1,4 +1,5 @@
-﻿using CalamityMod;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -38,7 +39,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D s = CEUtils.getExtraTex("StarTexture");
+            Texture2D s = CEExtraAssets.StarTexture;
             Main.spriteBatch.UseAdditive();
 
             float alpha = Projectile.Opacity;

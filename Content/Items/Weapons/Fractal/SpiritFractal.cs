@@ -1,10 +1,7 @@
-﻿using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Projectiles.Melee;
+using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -28,7 +25,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Item.useTime = Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 7;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = null;
             Item.noMelee = true;
@@ -66,10 +63,10 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public override void AddRecipes()
         {
             CreateRecipe().AddIngredient<ElementalFractal>()
-                .AddIngredient<VoidEdge>()
-                .AddIngredient<TerrorBlade>()
+                .AddIngredient<StarlessNight>()
+                .AddIngredient(ItemID.StarWrath)
                 .AddIngredient<RuneSong>()
-                .AddIngredient<RuinousSoul>(4)
+                .AddIngredient<NihilityFragments>(4)
                 .AddTile(TileID.LunarCraftingStation).Register();
         }
     }
@@ -86,7 +83,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -105,12 +102,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public float spawnProjCounter = 0;
         public override void AI()
         {
-            bool noProj = Projectile.GetOwner().Calamity().bladeArmEnchant;
-            if (noProj)
-            {
-                spawnProj = false;
-                shoot = false;
-            }
             Player owner = Projectile.GetOwner();
             float MaxUpdateTimes = owner.itemTimeMax * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
@@ -150,7 +141,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 {
                     spawnProjCounter -= 6f;
                     Vector2 spawnPos = Projectile.Center + Projectile.rotation.ToRotationVector2() * 48 * scale * Projectile.scale;
-                    if (Main.myPlayer == Projectile.owner && !noProj)
+                    if (Main.myPlayer == Projectile.owner)
                     {
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), spawnPos, CEUtils.randomPointInCircle(0.1f) + Projectile.rotation.ToRotationVector2() * 8, ModContent.ProjectileType<GhastlySoulLarge>(), Projectile.damage / 7, Projectile.knockBack, Projectile.owner, 0, 1);
                     }
@@ -206,10 +197,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             owner.heldProj = Projectile.whoAmI;
             owner.itemTime = 2;
             owner.itemAnimation = 2;
-            if (Projectile.GetOwner().Calamity().bladeArmEnchant)
-            {
-                owner.itemAnimation = int.Max(1, owner.itemAnimationMax - Projectile.Entropy().Lifetime);
-            }
             if (counter > MaxUpdateTimes)
             {
                 owner.itemTime = 1;
@@ -260,7 +247,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Main.EntitySpriteDraw(tex, Projectile.Center + Projectile.GetOwner().gfxOffY * Vector2.UnitY - Main.screenPosition, null, lightColor * alpha, rot, origin, Projectile.scale * scale * 1.1f, effect);
 
             Main.spriteBatch.UseBlendState(BlendState.Additive);
-            Texture2D bs = CEUtils.getExtraTex("SemiCircularSmear");
+            Texture2D bs = CEExtraAssets.SemiCircularSmear;
 
             Color color1 = new Color(48, 52, 79);
             Color color2 = new Color(242, 201, 190);

@@ -1,12 +1,8 @@
-﻿using CalamityEntropy.Content.Particles.CalamityPorts;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Potions;
-using CalamityMod.Items.Weapons.Melee;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -32,7 +28,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Item.useTime = Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 6;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = null;
             Item.noMelee = true;
@@ -61,11 +57,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public override void AddRecipes()
         {
             CreateRecipe().AddIngredient<AbyssFractal>()
-                .AddIngredient<TitanArm>()
-                .AddIngredient<AegisBlade>()
+                .AddIngredient(ItemID.ChlorophyteClaymore)
+                .AddIngredient(ItemID.TrueExcalibur)
                 .AddIngredient(ItemID.PiercingStarlight)
-                .AddIngredient<AureusCell>(4)
-                .AddIngredient<StarblightSoot>(16)
+                .AddIngredient(ItemID.ChlorophyteBar, 4)
+                .AddIngredient<StarlitScaleDust>(16)
                 .AddTile(TileID.MythrilAnvil).Register();
         }
     }
@@ -82,7 +78,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -101,12 +97,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public float spawnProjCounter = 0;
         public override void AI()
         {
-            bool noProj = Projectile.GetOwner().Calamity().bladeArmEnchant;
-            if (noProj)
-            {
-                spawnProj = false;
-                shoot = false;
-            }
             Player owner = Projectile.GetOwner();
             float MaxUpdateTimes = owner.itemTimeMax * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
@@ -161,10 +151,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             owner.heldProj = Projectile.whoAmI;
             owner.itemTime = 2;
             owner.itemAnimation = 2;
-            if (Projectile.GetOwner().Calamity().bladeArmEnchant)
-            {
-                owner.itemAnimation = int.Max(1, owner.itemAnimationMax - Projectile.Entropy().Lifetime);
-            }
             if (counter > MaxUpdateTimes)
             {
                 owner.itemTime = 1;
@@ -220,7 +206,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Main.EntitySpriteDraw(tex, Projectile.Center + Projectile.GetOwner().gfxOffY * Vector2.UnitY - Main.screenPosition, null, lightColor * alpha, rot, origin, Projectile.scale * scale * 1.1f, effect);
 
             Main.spriteBatch.UseBlendState(BlendState.Additive);
-            Texture2D bs = CEUtils.getExtraTex("SemiCircularSmear");
+            Texture2D bs = CEExtraAssets.SemiCircularSmear;
 
             Main.spriteBatch.Draw(bs, (Vector2)(Projectile.Center + CEUtils.GetOwner(Projectile).gfxOffY * Vector2.UnitY - Main.screenPosition), null, new Color(100, 50, 200) * (1 - (counter / MaxUpdateTime) * (counter / MaxUpdateTime)) * 0.7f, CEUtils.RotateTowardsAngle(Projectile.rotation, Projectile.velocity.ToRotation(), 0.64f, false) + MathHelper.ToRadians(36) * -dir, bs.Size() / 2f, Projectile.scale * 1.74f * scale, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(bs, (Vector2)(Projectile.Center + CEUtils.GetOwner(Projectile).gfxOffY * Vector2.UnitY - Main.screenPosition), null, Color.Lerp(Color.White, Color.Blue, counter / MaxUpdateTime) * (1 - (counter / MaxUpdateTime) * (counter / MaxUpdateTime)) * 0.7f, CEUtils.RotateTowardsAngle(Projectile.rotation, Projectile.velocity.ToRotation(), 0.24f, false) + MathHelper.ToRadians(36) * -dir, bs.Size() / 2f, Projectile.scale * 1.56f * scale, SpriteEffects.None, 0);
@@ -240,7 +226,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
     }
     public class AstralStarMelee : ModProjectile
     {
-        public override string Texture => "CalamityMod/Projectiles/Typeless/AstralStar";
+        public override string Texture => "CalamityEntropy/Assets/Extra/Ports/AstralStar";
 
         public override void SetStaticDefaults()
         {
@@ -287,7 +273,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 }
 
                 Vector2 vector = Vector2.UnitX.RotatedByRandom(1.5707963705062866).RotatedBy(base.Projectile.velocity.ToRotation());
-                int num3 = Dust.NewDust(base.Projectile.position, base.Projectile.width, base.Projectile.height, ModContent.DustType<AstralOrange>(), base.Projectile.velocity.X * 0.25f, base.Projectile.velocity.Y * 0.25f, 150);
+                int num3 = Dust.NewDust(base.Projectile.position, base.Projectile.width, base.Projectile.height, DustID.Torch, base.Projectile.velocity.X * 0.25f, base.Projectile.velocity.Y * 0.25f, 150);
                 Main.dust[num3].velocity = vector * 0.33f;
                 Main.dust[num3].position = base.Projectile.Center + vector * 6f;
             }
@@ -318,7 +304,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                     dust2.color = new Color(255, 255, 255, 255);
                 }
 
-                Dust.NewDust(base.Projectile.position, base.Projectile.width, base.Projectile.height, ModContent.DustType<AstralOrange>(), base.Projectile.velocity.X * 0.25f, base.Projectile.velocity.Y * 0.25f, 150);
+                Dust.NewDust(base.Projectile.position, base.Projectile.width, base.Projectile.height, DustID.Torch, base.Projectile.velocity.X * 0.25f, base.Projectile.velocity.Y * 0.25f, 150);
             }
 
             if (Main.rand.NextBool(10) && Main.netMode != 2)
@@ -326,7 +312,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 Gore.NewGore(base.Projectile.GetSource_FromAI(), base.Projectile.position, base.Projectile.velocity * 0.1f, Main.rand.Next(16, 18));
             }
 
-            CalamityUtils.HomeInOnNPC(Projectile, base.Projectile.tileCollide, 500f, 15f, 20f);
+            CEUtils.HomeInOnNPC(Projectile, base.Projectile.tileCollide, 500f, 15f, 20f);
 
         }
 
@@ -342,8 +328,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Projectile.DrawStarTrail(Color.Coral, Color.White);
-            CalamityUtils.DrawAfterimagesCentered(base.Projectile, ProjectileID.Sets.TrailingMode[base.Projectile.type], lightColor);
+            CEUtils.DrawAfterimagesCentered(base.Projectile, ProjectileID.Sets.TrailingMode[base.Projectile.type], lightColor);
             return false;
         }
 
@@ -378,7 +363,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
 
             for (int j = 0; j < 3; j++)
             {
-                int num3 = Dust.NewDust(base.Projectile.position, base.Projectile.width, base.Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100);
+                int num3 = Dust.NewDust(base.Projectile.position, base.Projectile.width, base.Projectile.height, DustID.Torch, 0f, 0f, 100);
                 Main.dust[num3].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -389,10 +374,10 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
 
             for (int k = 0; k < 3; k++)
             {
-                int num4 = Dust.NewDust(base.Projectile.position, base.Projectile.width, base.Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default(Color), 1.5f);
+                int num4 = Dust.NewDust(base.Projectile.position, base.Projectile.width, base.Projectile.height, DustID.Torch, 0f, 0f, 100, default(Color), 1.5f);
                 Main.dust[num4].noGravity = true;
                 Main.dust[num4].velocity *= 5f;
-                num4 = Dust.NewDust(base.Projectile.position, base.Projectile.width, base.Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100);
+                num4 = Dust.NewDust(base.Projectile.position, base.Projectile.width, base.Projectile.height, DustID.Torch, 0f, 0f, 100);
                 Main.dust[num4].velocity *= 2f;
             }
 

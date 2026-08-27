@@ -1,7 +1,5 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Rogue;
+using CalamityEntropy.Core.Weapons;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -9,8 +7,11 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
-    public class AmethystFrisbee : RogueWeapon
+    public class AmethystFrisbee : ModItem, ICEChargeWeapon
     {
+        // 充能条 4 秒；原潜伏乘数 伤害1.6/弹速1.2/击退3 并入释放乘数
+        public CEChargeProfile ChargeProfile => CEChargeProfile.ChargeBar(4f, 1.6f, 1.2f, 3f);
+
         public override void SetDefaults()
         {
             Item.width = 54;
@@ -25,18 +26,14 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.knockBack = 4f;
             Item.UseSound = null;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<AmethystFrisbeeProjectile>();
             Item.shootSpeed = 36f;
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Melee;
         }
         public int altShotCount = 0;
 
-
-        public override float StealthDamageMultiplier => 1.6f;
-        public override float StealthVelocityMultiplier => 1.2f;
-        public override float StealthKnockbackMultiplier => 3f;
         public override void UpdateInventory(Player player)
         {
             if (altShotCount > 0)
@@ -55,13 +52,12 @@ namespace CalamityEntropy.Content.Items.Weapons
                 velocity *= 0.54f;
             }
             CEUtils.PlaySound("throw", 1, player.Center);
-            if (player.Calamity().StealthStrikeAvailable())
+            if (CEChargeWeapon.TryConsume(player, Item))
             {
                 int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, altShotCount > 0 ? 1 : 0);
-                if (p.WithinBounds(Main.maxProjectiles))
+                if (p >= 0 && p < Main.maxProjectiles)
                 {
-                    Main.projectile[p].Calamity().stealthStrike = true;
-                    p.ToProj().netUpdate = true;
+                    CEChargeWeapon.Empower(p);
                 }
                 return false;
             }

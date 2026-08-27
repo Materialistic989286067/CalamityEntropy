@@ -1,8 +1,9 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles.CalamityPorts;
+using CalamityEntropy.Core.Graphics;
 using CalamityEntropy.Utilities;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -68,7 +69,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = 7;
+            ScreenShaker.AddShake(new ScreenShaker.NoDirQuickShake(7));
             base.OnHitNPC(target, hit, damageDone);
             CEUtils.PlaySound("FleshWhipHit", Main.rand.NextFloat(0.8f, 1.2f), EndPoint);
             target.AddBuff(ModContent.BuffType<BurningBlood>(), 600);
@@ -238,7 +239,7 @@ namespace CalamityEntropy.Content.Projectiles
         {
             if (Projectile.ai[1] > 0 && Projectile.ai[1] < 1)
             {
-                Texture2D texr = CEUtils.getExtraTex("BloomRing");
+                Texture2D texr = CEExtraAssets.BloomRing;
                 Main.spriteBatch.UseBlendState(BlendState.Additive);
                 Main.spriteBatch.Draw(texr, Projectile.Center - Main.screenPosition, null, new Color(255, 160, 160) * Projectile.ai[1], 0, texr.Size() / 2f, 1 - Projectile.ai[1], SpriteEffects.None, 0);
                 Main.spriteBatch.ExitShaderRegion();

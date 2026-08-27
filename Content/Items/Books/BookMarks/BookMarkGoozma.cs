@@ -1,10 +1,7 @@
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items;
-using CalamityMod.Projectiles.Magic;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -22,9 +19,19 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             base.SetDefaults();
             Item.rare = ItemRarityID.Master;
-            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1, gold: 75);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Goozma");
+        public override void AddRecipes()
+        {
+            // 原联动模组 Boss 掉落, 脱钩后改为自有合成线
+            CreateRecipe()
+                .AddIngredient(ItemID.Gel, 999)
+                .AddIngredient(ItemID.PinkGel, 99)
+                .AddIngredient<WraithSoulEssence>(5)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
+        }
         public override void modifyShootCooldown(ref int shootCooldown)
         {
             shootCooldown = (int)(shootCooldown * 0.64f);
@@ -168,7 +175,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override bool PreDraw(ref Color lightColor)
         {
             base.Projectile.oldPos[0] = base.Projectile.position + base.Projectile.velocity.SafeNormalize(Vector2.Zero) * 50f;
-            PrimitiveRenderer.RenderTrail(base.Projectile.oldPos, new PrimitiveSettings(WidthFunction, ColorFunction, (float _, Vector2 _) => base.Projectile.Size * 0.5f), null);
+            CEPrimitiveRenderer.RenderTrail(base.Projectile.oldPos, new CEPrimitiveSettings(WidthFunction, ColorFunction, (float _, Vector2 _) => base.Projectile.Size * 0.5f), null);
             Texture2D value = TextureAssets.Projectile[base.Type].Value;
             Main.EntitySpriteDraw(value, base.Projectile.Center - Main.screenPosition, value.Frame(1, Main.projFrames[base.Type], 0, base.Projectile.frame), GetRocketColor(), base.Projectile.rotation, value.Size() * 0.5f, base.Projectile.scale, SpriteEffects.None);
             return false;
@@ -201,8 +208,8 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 for (int i = 0; i < 32; i++)
                     PRTLoader.NewParticle<PRT_GlowLightParticle>(Projectile.Center, CEUtils.randomPointInCircle(16), Color.LightBlue, Main.rand.NextFloat(0.6f, 1f)).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 22);
                 float scale = 3f;
-                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Main.DiscoColor * 1.4f, 0.005f).Configure("CalamityMod/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.06f, 16);
-                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Main.DiscoColor, 0.005f).Configure("CalamityMod/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.034f, 12);
+                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Main.DiscoColor * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.06f, 16);
+                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Main.DiscoColor, 0.005f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.034f, 12);
 
             }
         }

@@ -4,8 +4,6 @@ using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -28,7 +26,7 @@ namespace CalamityEntropy.Content.Items.Weapons.AzafureMissileLauncher
             Item.useStyle = ItemUseStyleID.RaiseLamp;
             Item.noMelee = true;
             Item.knockBack = 4f;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(0, 2);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.UseSound = SoundID.DD2_DefenseTowerSpawn;
             Item.autoReuse = true;
@@ -53,7 +51,7 @@ namespace CalamityEntropy.Content.Items.Weapons.AzafureMissileLauncher
         {
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(8)
-                .AddIngredient<MysteriousCircuitry>(4)
+                .AddIngredient<AzafureCircuitry>(4)
                 .AddIngredient(ItemID.HallowedBar, 10)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
@@ -243,7 +241,6 @@ namespace CalamityEntropy.Content.Items.Weapons.AzafureMissileLauncher
             ring.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 16);
             for (int i = 0; i < 2; i++)
             {
-                //EParticle.spawnNew→PRTLoader.NewParticle,spawn点和数值迁移纪律:一个不改
                 var la = PRTLoader.NewParticle<PRT_LightAlt>(center, Vector2.Zero, Color.Firebrick, 0.6f);
                 la.ScaleAdd = new Vector2(1, 0);
                 la.Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, 0, lifetime);

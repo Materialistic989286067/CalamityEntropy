@@ -1,5 +1,7 @@
 ﻿using CalamityEntropy.Content.Tiles;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.ModLoader;
@@ -13,7 +15,10 @@ namespace CalamityEntropy.Content.Items.MusicBoxes
     }
     public class AzafurePhonographTile : MusicBoxTile
     {
-        public Texture2D tex => CEUtils.RequestTex("CalamityEntropy/Content/Items/MusicBoxes/AzafurePhonographTileReal");
+        //实体贴图加载期就位,属性保留原名,绘制处不用改
+        [VaultLoaden("CalamityEntropy/Content/Items/MusicBoxes/AzafurePhonographTileReal")]
+        internal static Asset<Texture2D> TexAsset;
+        public Texture2D tex => TexAsset.Value;
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Tile t = Main.tile[i, j];

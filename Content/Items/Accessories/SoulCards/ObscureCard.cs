@@ -1,4 +1,3 @@
-﻿using CalamityMod.Items;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,7 +10,7 @@ namespace CalamityEntropy.Content.Items.Accessories.SoulCards
         {
             Item.width = 22;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }

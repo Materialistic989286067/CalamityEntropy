@@ -1,4 +1,5 @@
-﻿using InnoVault.PRT;
+﻿using CalamityEntropy.Assets.Register;
+using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 
@@ -48,7 +49,7 @@ namespace CalamityEntropy.Content.Particles
         {
             //Vortex.fx固定Additive+ZoomMatrix,跟PRT桶Blend对不上,每圈End/Begin一次
             sb.End();
-            Effect effect = PRTSharedAssets.Vortex.Value;
+            Effect effect = CEEffectAssets.Vortex;
             //Vortex.fx:Center漩涡中心UV,Strength扭曲强度,AspectRatio压扁比
             //TexOffset跟GlobalTimeWrappedHourly走让Voronoi流动,FadeOutDistance/Width管边缘柔化
             //enhanceLightAlpha抬中心亮度,跟后面DrawGlow叠一起才是旧门户观感

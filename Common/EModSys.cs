@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Content.Items.Accessories;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Items.Armor.AzafureT3;
 using CalamityEntropy.Content.Items.Armor.NihTwins;
@@ -12,11 +13,8 @@ using CalamityEntropy.Content.NPCs.Prophet;
 using CalamityEntropy.Content.NPCs.SpiritFountain;
 using CalamityEntropy.Content.UI;
 using CalamityEntropy.Content.UI.EntropyBookUI;
-using CalamityMod;
-using CalamityMod.Items.Ammo;
-using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.NPCs.SlimeGod;
-using CalamityMod.UI.CalamitasEnchants;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ReLogic.Content;
@@ -40,7 +38,35 @@ namespace CalamityEntropy.Common
 {
     public class EModSys : ModSystem
     {
-        private static Texture2D markTex => CEUtils.getExtraTex("EvMark");
+        //注意:这些字段只在客户端绘制路径读,专用服务器上恒为 null。
+        [VaultLoaden("CalamityEntropy/Assets/Extra/EvMark")]
+        private static Asset<Texture2D> markTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/Noise_14")]
+        private static Asset<Texture2D> Noise14Tex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/RectShield")]
+        private static Asset<Texture2D> RectShieldTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/Hexagon")]
+        private static Asset<Texture2D> HexagonTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/SS_Target")]
+        private static Asset<Texture2D> SSTargetTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/XythBar")]
+        private static Asset<Texture2D> XythBarTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/BrambleBar")]
+        private static Asset<Texture2D> BrambleBarTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/llBar1")]
+        private static Asset<Texture2D> LlBar1Tex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/llBar2")]
+        private static Asset<Texture2D> LlBar2Tex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/llBar3")]
+        private static Asset<Texture2D> LlBar3Tex;
+        [VaultLoaden("CalamityEntropy/Content/UI/ui_chargebar")]
+        private static Asset<Texture2D> ChargeBarTex;
+        [VaultLoaden("CalamityEntropy/Content/UI/VoidChargeBar")]
+        private static Asset<Texture2D> VoidChargeBarTex;
+        [VaultLoaden("CalamityEntropy/Content/UI/VoidChargeProgress")]
+        private static Asset<Texture2D> VoidChargeProgressTex;
+        [VaultLoaden("CalamityEntropy/Assets/Effects/NihShield", AssetMode.EffectValue, "TechPass")]
+        private static Effect NihShieldShader;
         internal static int timer;
         public static bool noItemUse = false;
         public float counter = 0;
@@ -50,8 +76,6 @@ namespace CalamityEntropy.Common
         public bool rCtrlLast = false;
         public bool eowLast = false;
         public int eowMaxLife = 0;
-        public bool slimeGodLast = false;
-        public int slimeGodMaxLife = 0;
         public Vector2 LastPlayerPos;
         public Vector2 LastPlayerVel;
         public static int AcropolisDontSpawn = 0;
@@ -108,12 +132,9 @@ namespace CalamityEntropy.Common
         {
             Fruitcake.ammoList = new();
             List<int> AmmoIds = new List<int>();
+            // 原对灾厄迫击炮弹药的排除已随灾厄脱钩移除（material-map 无对应条目：该排除仅服务灾厄弹药，脱钩后自然失效）
             for (int i = 0; i < ItemLoader.ItemCount; i++)
             {
-                if (i == ModContent.ItemType<MortarRound>() || i == ModContent.ItemType<RubberMortarRound>())
-                {
-                    continue;
-                }
                 if (ContentSamples.ItemsByType[i].ammo != AmmoID.None)
                 {
                     if (!AmmoIds.Contains(ContentSamples.ItemsByType[i].ammo))
@@ -133,8 +154,8 @@ namespace CalamityEntropy.Common
 
             center += player.gfxOffY * Vector2.UnitY;
             float scale = player.Entropy().DriverScale;
-            Texture2D noise = CEUtils.getExtraTex("Noise_14");
-            Texture2D tex = CEUtils.getExtraTex("RectShield");
+            Texture2D noise = Noise14Tex.Value;
+            Texture2D tex = RectShieldTex.Value;
             if (player.Entropy().AzafureDriverShieldItem == null && player.Entropy().DriverShieldVisual)
             {
                 active = true;
@@ -176,14 +197,14 @@ namespace CalamityEntropy.Common
         {
             scale *= 0.5f;
             Vector2 center = pos + Vector2.UnitY * player.gfxOffY;
-            Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/NihShield", AssetRequestMode.ImmediateLoad).Value;
+            Effect shader = NihShieldShader;
             shader.Parameters["offset"].SetValue(Main.GlobalTimeWrappedHourly);
             shader.Parameters["num"].SetValue(0.98f);
             shader.Parameters["OutlineColor"].SetValue((Color.Lerp(new Color(140, 140, 255), Color.White, 0.16f + 0.16f * (float)(Math.Sin(Main.GlobalTimeWrappedHourly * 6)))).ToVector4() * alpha);
             shader.CurrentTechnique.Passes[0].Apply();
             var gd = Main.graphics.GraphicsDevice;
-            gd.Textures[1] = CEUtils.getExtraTex("Noise_10");
-            Texture2D tex = CEUtils.getExtraTex("Hexagon");
+            gd.Textures[1] = CEExtraAssets.Noise_10;
+            Texture2D tex = HexagonTex.Value;
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, shader, Main.GameViewMatrix.TransformationMatrix);
             Main.spriteBatch.Draw(tex, center - Main.screenPosition, null, new Color(200, 200, 255) * alpha, 0, tex.Size() / 2f, scale, SpriteEffects.None, 0);
             Main.spriteBatch.End();
@@ -202,14 +223,14 @@ namespace CalamityEntropy.Common
             }
             scale *= 0.55f;
             Vector2 center = pos + Vector2.UnitY * player.gfxOffY;
-            Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/NihShield", AssetRequestMode.ImmediateLoad).Value;
+            Effect shader = NihShieldShader;
             shader.Parameters["offset"].SetValue(Main.GlobalTimeWrappedHourly);
             shader.Parameters["num"].SetValue(0.98f);
             shader.CurrentTechnique.Passes[0].Apply();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, shader, Main.GameViewMatrix.TransformationMatrix);
             var gd = Main.graphics.GraphicsDevice;
-            gd.Textures[1] = CEUtils.getExtraTex("Noise_10");
-            Texture2D tex = CEUtils.getExtraTex("Circle");
+            gd.Textures[1] = CEExtraAssets.Noise_10;
+            Texture2D tex = CEExtraAssets.Circle;
             for (int i = 0; i < 1; i++)
             {
                 float rot = 0.8f;
@@ -225,22 +246,7 @@ namespace CalamityEntropy.Common
             }
             Main.spriteBatch.End();
         }
-        public override void OnModLoad()
-        {
-            for (int index = 0; index < EnchantmentManager.EnchantmentList.Count; index++)
-            {
-                Enchantment enc = EnchantmentManager.EnchantmentList[index];
-                if (enc.IconTexturePath == "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Tainted")
-                {
-                    var method = typeof(Enchantment).GetField("ApplyRequirement", BindingFlags.Instance | BindingFlags.NonPublic);
-                    Predicate<Item> pd = (Predicate<Item>)(item => item.IsEnchantable() && item.damage > 0 && item.CountsAsClass<MeleeDamageClass>() && ((!item.noUseGraphic && item.shoot > ProjectileID.None) || CELists.SpecialTaintedEnchantmentList.Contains(item.type)));
-                    object boxed = enc;
-                    method.SetValue(boxed, pd);
-                    EnchantmentManager.EnchantmentList[index] = (Enchantment)boxed;
-                    break;
-                }
-            }
-        }
+        // 原对灾厄「污秽」附魔适用谓词的注入已随灾厄脱钩整体删除（附魔系统属灾厄专有）
         public override void PostDrawTiles()
         {
             foreach (Player player in Main.ActivePlayers)
@@ -336,7 +342,7 @@ namespace CalamityEntropy.Common
                 {
                     Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-                    var tx = CEUtils.getExtraTex("SS_Target");
+                    var tx = SSTargetTex.Value;
                     Main.spriteBatch.Draw(tx, SmartScope.target.Center - Main.screenPosition, null, Color.White, 0, tx.Size() / 2f, 1, SpriteEffects.None, 0);
                     Main.spriteBatch.End();
                 }
@@ -348,7 +354,7 @@ namespace CalamityEntropy.Common
                 {
                     if (!npc.dontTakeDamage && !npc.friendly)
                     {
-                        Main.spriteBatch.Draw(markTex, npc.Center - Main.screenPosition, null, Color.White, 0, markTex.Size() / 2, 1, SpriteEffects.None, 0f);
+                        Main.spriteBatch.Draw(markTex.Value, npc.Center - Main.screenPosition, null, Color.White, 0, markTex.Value.Size() / 2, 1, SpriteEffects.None, 0f);
                     }
                 }
                 Main.spriteBatch.End();
@@ -373,7 +379,7 @@ namespace CalamityEntropy.Common
         public static List<int> NeedTiles = new List<int>() { 41, 43, 44 };
         public void DrawWallsHL(List<int> types)
         {
-            Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/WhiteTrans", AssetRequestMode.ImmediateLoad).Value;
+            Effect shader = CEEffectAssets.WhiteTrans;
 
             shader.CurrentTechnique.Passes[0].Apply();
             shader.Parameters["strength"].SetValue(0.2f);
@@ -496,20 +502,6 @@ namespace CalamityEntropy.Common
 
         public override void PostUpdateDusts()
         {
-            //Debug
-            /*{
-                if (CEKeybinds.CommandMinions.JustPressed)
-                {
-                    OnModLoad();
-                    foreach (Enchantment enc in EnchantmentManager.EnchantmentList)
-                    {
-                        if (enc.IconTexturePath == "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Tainted")
-                        {
-                            var method = typeof(Enchantment).GetField("ApplyRequirement", BindingFlags.Instance | BindingFlags.NonPublic);
-                        }
-                    }
-                }
-            }*/
             ScreenShaker.Update();
             if (CalamityEntropy.FlashEffectStrength > 0)
             {
@@ -583,13 +575,13 @@ namespace CalamityEntropy.Common
         }
         public void drawChargeBar(Vector2 center, float prog, Color color)
         {
-            Texture2D bar = ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/ui_chargebar").Value;
+            Texture2D bar = ChargeBarTex.Value;
             Main.spriteBatch.Draw(bar, center, new Rectangle(0, 0, 54, 12), Color.White, 0, new Vector2(27, 6), 1, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(bar, center, new Rectangle(0, 12, (int)Math.Round(54 * prog), 12), color, 0, new Vector2(27, 6), 1, SpriteEffects.None, 0);
         }
         public void drawChargeBarNoback(Vector2 center, float prog, Color color)
         {
-            Texture2D bar = ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/ui_chargebar").Value;
+            Texture2D bar = ChargeBarTex.Value;
             Main.spriteBatch.Draw(bar, center, new Rectangle(0, 12, (int)Math.Round(54 * prog), 12), color, 0, new Vector2(27, 6), 1, SpriteEffects.None, 0);
         }
         public void drawXythBar()
@@ -598,7 +590,7 @@ namespace CalamityEntropy.Common
             {
                 float prog = xr.charge / 20f;
                 Vector2 Center = Main.ScreenSize.ToVector2() * 0.5f + new Vector2(0, 56);
-                Texture2D bar = CEUtils.getExtraTex("XythBar");
+                Texture2D bar = XythBarTex.Value;
                 Main.spriteBatch.Draw(bar, Center, new Rectangle(0, 0, 64, 26), Color.White, 0, new Vector2(32, 13), 1, SpriteEffects.None, 0);
                 Main.spriteBatch.Draw(bar, Center, new Rectangle(0, 26, (int)(8 + 48 * prog), 6), Color.White, 0, new Vector2(32, 1), 1, SpriteEffects.None, 0);
                 if (Main.MouseScreen.getRectCentered(2, 2).Intersects(Center.getRectCentered(64, 26)))
@@ -626,7 +618,7 @@ namespace CalamityEntropy.Common
         public static void DrawBrambleBar()
         {
             Main.spriteBatch.UseSampleState_UI(SamplerState.PointClamp);
-            Texture2D bar = CEUtils.getExtraTex("BrambleBar");
+            Texture2D bar = BrambleBarTex.Value;
             bbar = float.Lerp(bbar, Main.LocalPlayer.Entropy().BrambleBarCharge, 0.16f);
             Vector2 center = new Vector2(Main.screenWidth / 2, Main.screenHeight / 16);
             if ((center + bbarOffset).getRectCentered(100, 46).Intersects(Main.MouseScreen.getRectCentered(2, 2)))
@@ -653,9 +645,9 @@ namespace CalamityEntropy.Common
                     {
                         if (Main.LocalPlayer.dead || !(Main.LocalPlayer.GetModPlayer<VanityModPlayer>().vanityEquipped == nameof(LostHeirloom)))
                         { return true; }
-                        Texture2D t1 = CEUtils.getExtraTex("llBar1");
-                        Texture2D t2 = CEUtils.getExtraTex("llBar2");
-                        Texture2D t3 = CEUtils.getExtraTex("llBar3");
+                        Texture2D t1 = LlBar1Tex.Value;
+                        Texture2D t2 = LlBar2Tex.Value;
+                        Texture2D t3 = LlBar3Tex.Value;
                         Vector2 offset = new Vector2(Main.screenWidth - 610, 10);
                         Main.spriteBatch.Draw(t3, offset, Color.White);
                         Main.spriteBatch.DrawString(CalamityEntropy.efont2, Main.LocalPlayer.statLife.ToString(), offset + new Vector2(30, 24), Color.White, 0, Vector2.Zero, 0.6f, SpriteEffects.None, 0);
@@ -776,7 +768,13 @@ namespace CalamityEntropy.Common
                 {
                     if (Typer.activeTypers.Count > 0)
                     {
-                        Typer.activeTypers[0].sound = new Terraria.Audio.SoundStyle($"CalamityMod/Sounds/Custom/Codebreaker/DraedonTalk{Main.rand.Next(1, 4)}");
+                        // 打字机音按 sound-map 定稿：改用自有音效池的三个打字音（文件本名大小写不一致，勿改）
+                        Typer.activeTypers[0].sound = Main.rand.Next(3) switch
+                        {
+                            0 => new Terraria.Audio.SoundStyle("CalamityEntropy/Assets/Sounds/Typ1"),
+                            1 => new Terraria.Audio.SoundStyle("CalamityEntropy/Assets/Sounds/typ2"),
+                            _ => new Terraria.Audio.SoundStyle("CalamityEntropy/Assets/Sounds/typ3"),
+                        };
 
                         var t = Typer.activeTypers[0];
                         t.update();
@@ -803,8 +801,8 @@ namespace CalamityEntropy.Common
             {
                 return;
             }
-            Texture2D bar = ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/VoidChargeBar").Value;
-            Texture2D prog = ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/VoidChargeProgress").Value;
+            Texture2D bar = VoidChargeBarTex.Value;
+            Texture2D prog = VoidChargeProgressTex.Value;
             Config config = ModContent.GetInstance<Config>();
             Vector2 offset = new Vector2(config.VoidChargeBarX, config.VoidChargeBarY);
             float p = Main.LocalPlayer.Entropy().VoidCharge;
@@ -835,19 +833,12 @@ namespace CalamityEntropy.Common
             }
             bool eow = false;
             int maxlifeEows = 0;
-            bool sg = false;
-            int maxlifeSg = 0;
             foreach (NPC n in Main.ActiveNPCs)
             {
                 if (n.type == NPCID.EaterofWorldsHead || n.type == NPCID.EaterofWorldsBody || n.type == NPCID.EaterofWorldsTail)
                 {
                     eow = true;
                     maxlifeEows += n.lifeMax;
-                }
-                if (ModContent.NPCType<CrimulanPaladin>() == n.type || ModContent.NPCType<SplitCrimulanPaladin>() == n.type || ModContent.NPCType<EbonianPaladin>() == n.type || ModContent.NPCType<SplitEbonianPaladin>() == n.type)
-                {
-                    sg = true;
-                    maxlifeSg += n.lifeMax;
                 }
             }
             if (eow && !eowLast)
@@ -856,13 +847,8 @@ namespace CalamityEntropy.Common
             }
             eowLast = eow;
 
-            if (sg && !slimeGodLast)
-            {
-                slimeGodMaxLife = maxlifeSg;
-            }
-
-            slimeGodLast = sg;
-
+            // 原灾厄史莱姆之神分裂体血量统计已随脱钩移除；EntropyBossbar 特判块删除后
+            // slimeGodLast / slimeGodMaxLife 字段零消费，已一并删除
         }
 
         public static void RemoveItemInARecipe(Recipe recipe, int type)
@@ -894,14 +880,8 @@ namespace CalamityEntropy.Common
                 .AddIngredient(ItemID.Lens, 4)
                 .AddTile(TileID.DemonAltar)
                 .Register();
-            foreach (var recipe in Main.recipe)
-            {
-                if (recipe.createItem.type == ModContent.ItemType<CalamityMod.Items.Placeables.FurnitureAuric.AuricToilet>())
-                {
-                    recipe.createItem.type = ModContent.ItemType<Content.Items.AuricToilet>();
-                }
-            }
-            RemoveItemInRecipes(ModContent.ItemType<Sylvestaff>(), ItemID.GenderChangePotion);
+            // 原对灾厄配方的篡改（黄金马桶产物替换、树精法杖移除性别药水材料）已随灾厄脱钩删除；
+            // 自有 AuricToilet 的独立配方已在其自身 AddRecipes 补挂
         }
 
         public override void PreUpdateProjectiles()

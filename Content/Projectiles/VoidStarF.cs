@@ -1,6 +1,5 @@
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod.NPCs.ExoMechs.Ares;
 using InnoVault.PRT;
 using System;
 using System.Collections.Generic;
@@ -108,13 +107,6 @@ namespace CalamityEntropy.Content.Projectiles
 
         }
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            if (target.ModNPC is AresBody || target.ModNPC is AresGaussNuke || target.ModNPC is AresLaserCannon || target.ModNPC is AresPlasmaFlamethrower || target.ModNPC is AresTeslaCannon)
-            {
-                modifiers.SourceDamage += 0.28f;
-            }
-        }
         public override bool PreDraw(ref Color lightColor)
         {
 

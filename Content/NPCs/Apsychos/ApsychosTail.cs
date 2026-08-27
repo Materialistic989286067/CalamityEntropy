@@ -1,4 +1,3 @@
-﻿using CalamityMod;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -12,7 +11,8 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
         {
             Main.npcFrameCount[NPC.type] = 1;
             NPCID.Sets.MustAlwaysDraw[NPC.type] = true;
-            this.HideFromBestiary();
+            // 图鉴隐藏:原灾厄隐藏扩展的原版等价写法
+            NPCID.Sets.NPCBestiaryDrawOffset[Type] = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
             NPCID.Sets.MPAllowedEnemies[Type] = true;
         }
 

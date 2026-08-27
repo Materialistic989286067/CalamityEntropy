@@ -1,8 +1,7 @@
 ﻿using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Dusts;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -79,12 +78,9 @@ namespace CalamityEntropy.Content.Projectiles
             PRTLoader.NewParticle<PRT_StrikeParticle>(Projectile.Center - Projectile.velocity * 7, Projectile.velocity * 3, color, Projectile.scale * 0.6f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, Projectile.velocity.ToRotation());
             for (int i = 0; i < 24; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SquashDust>(), -Projectile.velocity);
-                dust.scale = Main.rand.NextFloat(2f, 2.5f);
-                dust.velocity = (new Vector2(35, 35).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.7f)) * Main.rand.NextFloat(0.4f, 1f);
-                dust.noGravity = false;
-                dust.color = Color.Goldenrod;
-                dust.fadeIn = 2f;
+                // 原灾厄SquashDust光珠,用自有GlowOrbCal等效(带重力,金色)
+                Vector2 vel = (new Vector2(35, 35).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.7f)) * Main.rand.NextFloat(0.4f, 1f);
+                PRTLoader.NewParticle<PRT_GlowOrbCal>(Projectile.Center, vel, Color.Goldenrod, Main.rand.NextFloat(2f, 2.5f)).Configure(true, 25);
             }
             SoundEngine.PlaySound(SoundID.Item96 with { Pitch = 0.6f, Volume = 1f }, Projectile.Center);
         }

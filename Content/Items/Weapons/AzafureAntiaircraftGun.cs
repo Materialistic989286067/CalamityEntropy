@@ -1,14 +1,10 @@
 ﻿using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -37,7 +33,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAnimation = 90;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 16;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(1, 0);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.UseSound = null;
             Item.noMelee = true;
@@ -55,8 +51,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(4)
-                .AddIngredient<DubiousPlating>(10)
-                .AddIngredient<ScoriaBar>(6)
+                .AddIngredient<AzafurePlating>(10)
+                .AddIngredient(ItemID.HallowedBar, 6)
                 .AddIngredient(ItemID.HellstoneBar, 18)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
@@ -122,7 +118,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                     }
                     for (int i = 0; i < 14; i++)
                     {
-                        Color smokeColor = CalamityUtils.MulticolorLerp(Main.rand.NextFloat(), new Color[3] { Color.White, Color.Gray, Color.LightGray });
+                        Color smokeColor = CEUtils.MulticolorLerp(Main.rand.NextFloat(), new Color[3] { Color.White, Color.Gray, Color.LightGray });
                         smokeColor = Color.Lerp(smokeColor, Color.Gray, 0.6f) * 0.65f;
                         //带Cal后缀是CalamityPorts,Configure签名对齐Calamity原构造不是统一五参
                         PRTLoader.NewParticle<PRT_HeavySmokeCal>(Projectile.Center - Projectile.velocity.normalize() * 120, Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(1.2f) * -1 * Main.rand.NextFloat(16, 24), smokeColor, 1f).Configure(1f, 40, 0.03f, true, 0.075f);
@@ -159,8 +155,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             {
                 player.itemAnimation = player.itemTime = 3;
                 Projectile.Center = player.MountedCenter + player.gfxOffY * Vector2.UnitY + Projectile.rotation.ToRotationVector2() * 40 + new Vector2(0, -20);
-                player.Calamity().mouseWorldListener = true;
-                float targetRot = (player.Calamity().mouseWorld - player.MountedCenter).ToRotation();
+                player.Entropy().MouseWorldListener = true;
+                float targetRot = (player.Entropy().MouseWorld - player.MountedCenter).ToRotation();
                 Projectile.velocity = CEUtils.RotateTowardsAngle(Projectile.velocity.ToRotation(), targetRot, 4f.ToRadians(), true).ToRotationVector2() * player.HeldItem.shootSpeed;
                 player.direction = Math.Sign(Projectile.velocity.X);
             }

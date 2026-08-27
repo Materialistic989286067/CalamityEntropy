@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Items.Vanity;
-using CalamityMod.Items.Accessories.Vanity;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;

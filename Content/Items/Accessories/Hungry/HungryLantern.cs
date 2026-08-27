@@ -1,4 +1,3 @@
-﻿using CalamityMod.Items;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
@@ -15,7 +14,7 @@ namespace CalamityEntropy.Content.Items.Accessories.Hungry
             Item.width = 36;
             Item.height = 62;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+            Item.value = Item.buyPrice(gold: 10);
             Item.rare = ItemRarityID.LightRed;
         }
         public static string ID => "HungryLantern";

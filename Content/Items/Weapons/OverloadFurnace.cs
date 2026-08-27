@@ -1,7 +1,5 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -21,22 +19,21 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.noMelee = true;
             Item.shoot = ModContent.ProjectileType<OverloadFurnaceHoldout>();
             Item.knockBack = 6f;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Green;
             Item.UseSound = null;
             Item.autoReuse = false;
             Item.shootSpeed = 22f;
             Item.channel = true;
             Item.noUseGraphic = true;
-            var modItem = Item.Calamity();
             Item.mana = 6;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<DubiousPlating>(), 5).
-                AddIngredient(ModContent.ItemType<MysteriousCircuitry>(), 2).
+                AddIngredient(ModContent.ItemType<AzafurePlating>(), 5).
+                AddIngredient(ModContent.ItemType<AzafureCircuitry>(), 2).
                 AddIngredient(ItemID.Ruby, 1).
                 AddTile(TileID.Anvils).
                 Register();

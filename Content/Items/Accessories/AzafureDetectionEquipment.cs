@@ -1,7 +1,5 @@
-﻿using CalamityEntropy.Content.Items.Armor.Azafure;
+using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,7 +12,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         {
             Item.width = 40;
             Item.height = 46;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.accessory = true;
             Item.defense = 2;
@@ -38,7 +36,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             CreateRecipe().
                 AddIngredient<RustyDetectionEquipment>().
                 AddIngredient<HellIndustrialComponents>(4).
-                AddIngredient<AerialiteBar>(8).
+                AddIngredient(ItemID.MeteoriteBar, 8).
                 AddTile(TileID.Anvils).
                 Register();
         }

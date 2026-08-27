@@ -1,7 +1,4 @@
-﻿using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using Terraria;
+﻿using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -21,7 +18,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = null;
             Item.autoReuse = false;
@@ -29,7 +26,6 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAmmo = AmmoID.Arrow;
             Item.channel = true;
             Item.noUseGraphic = true;
-            var modItem = Item.Calamity();
         }
         public bool cs = false;
         public override bool CanConsumeAmmo(Item ammo, Player player)
@@ -48,8 +44,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<DubiousPlating>(), 6).
-                AddIngredient(ModContent.ItemType<MysteriousCircuitry>(), 8).
+                AddIngredient(ModContent.ItemType<AzafurePlating>(), 6).
+                AddIngredient(ModContent.ItemType<AzafureCircuitry>(), 8).
                 AddIngredient(ItemID.SoulofLight, 5).
                 AddTile(TileID.Anvils).
                 Register();

@@ -1,6 +1,6 @@
-﻿using CalamityMod;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Graphics.Primitives;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -138,7 +138,7 @@ namespace CalamityEntropy.Content.Projectiles
         public Color PrimitiveColorFunction(float completionRatio, Vector2 vertex)
         {
             float colorInterpolant = (float)Math.Sin(Projectile.identity / 3f + completionRatio * 20f + Main.GlobalTimeWrappedHourly * 1.1f) * 0.5f + 0.5f;
-            Color color = CalamityUtils.MulticolorLerp(colorInterpolant, new Color(Main.rand.Next(20, 100), 204, 250), new Color(Main.rand.Next(20, 100), 204, 250));
+            Color color = CEUtils.MulticolorLerp(colorInterpolant, new Color(Main.rand.Next(20, 100), 204, 250), new Color(Main.rand.Next(20, 100), 204, 250));
             if (Projectile.ai[2] == 1)
             {
                 color.G = (byte)(color.G * 0.1f);
@@ -152,18 +152,18 @@ namespace CalamityEntropy.Content.Projectiles
             {
                 return false;
             }
-            Texture2D lm = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Glow2").Value;
+            Texture2D lm = CEExtraAssets.Glow2;
             float lw = 0.7f * ((36f - Projectile.ai[0]) / 36f);
             Color color = Color.White;
             if (Projectile.ai[2] == 1)
             {
                 color = Color.Red;
             }
-            GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].UseImage1("Images/Misc/Perlin");
-            GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].Apply();
+            GameShaders.Misc["CalamityEntropy:HeavenlyGaleLightningArc"].UseImage1("Images/Misc/Perlin");
+            GameShaders.Misc["CalamityEntropy:HeavenlyGaleLightningArc"].Apply();
 
-            PrimitiveRenderer.RenderTrail(points, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_, _) => Projectile.Size * 0.2f * lw, false,
-                shader: GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]), 10);
+            CEPrimitiveRenderer.RenderTrail(points, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_, _) => Projectile.Size * 0.2f * lw, false,
+                shader: GameShaders.Misc["CalamityEntropy:HeavenlyGaleLightningArc"]), 10);
             if (drawEnd && Projectile.ai[0] < 12)
             {
                 CEUtils.drawTexture(lm, endPos, 0, Color.White * ((12 - Projectile.ai[0]) / 12), new Vector2(1f, 1f));

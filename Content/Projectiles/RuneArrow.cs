@@ -1,7 +1,10 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
@@ -136,13 +139,13 @@ namespace CalamityEntropy.Content.Projectiles
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
                 if (ve.Count >= 3)
                 {
-                    Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/rvslash").Value;
+                    Texture2D tx = CEExtraAssets.rvslash;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }
                 if (!htd)
                 {
-                    Texture2D light = CEUtils.getExtraTex("lightball");
+                    Texture2D light = CEExtraAssets.lightball;
                     Main.spriteBatch.Draw(light, Projectile.Center - Main.screenPosition, null, Color.White * 0.4f, Projectile.rotation, light.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
                 }
 

@@ -3,7 +3,6 @@ using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.Cruiser;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -18,7 +17,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             base.SetDefaults();
             Item.rare = ModContent.RarityType<VoidPurple>();
-            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1, gold: 75);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Void");
         public override EBookProjectileEffect getEffect()

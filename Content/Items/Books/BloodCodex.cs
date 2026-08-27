@@ -1,9 +1,10 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod.Items;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -20,11 +21,13 @@ namespace CalamityEntropy.Content.Items.Books
             Item.crit = 6;
             Item.mana = 4;
             Item.rare = ItemRarityID.Blue;
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.value = Item.buyPrice(gold: 1);
             Item.width = 40;
             Item.height = 52;
         }
-        public override Texture2D BookMarkTexture => ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/EntropyBookUI/BCdx").Value;
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/BCdx")]
+        internal static Asset<Texture2D> BookMarkSlotTex;
+        public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<BloodCodexHeld>();
         public override int SlotCount => 1;
 

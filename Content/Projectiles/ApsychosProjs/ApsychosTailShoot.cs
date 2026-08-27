@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityEntropy.Assets.Register;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -55,7 +56,7 @@ namespace CalamityEntropy.Content.Projectiles.ApsychosProjs
         }
         public void DrawEnergyBall(Vector2 pos, float size, float alpha)
         {
-            Texture2D tex = CEUtils.getExtraTex("a_circle");
+            Texture2D tex = CEExtraAssets.a_circle;
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(160, 160, 255) * alpha, 0, tex.Size() * 0.5f, size * 0.3f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(34, 34, 180) * alpha, 0, tex.Size() * 0.5f, size * 0.4f, SpriteEffects.None, 0);
         }

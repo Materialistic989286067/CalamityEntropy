@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityEntropy.Assets.Register;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -58,7 +59,7 @@ namespace CalamityEntropy.Utilities
                 string wallpaperPath = GetDesktopWallpaper();
                 if (wallpaperPath == null)
                 {
-                    wallpaper = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value;
+                    wallpaper = CEExtraAssets.white;
                     return wallpaper;
                 }
                 GraphicsDevice graphicsDevice = Main.graphics.GraphicsDevice;
@@ -72,10 +73,10 @@ namespace CalamityEntropy.Utilities
                 }
                 else
                 {
-                    wallpaper = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value;
+                    wallpaper = CEExtraAssets.white;
                 }
             }
-            catch { wallpaper = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value; }
+            catch { wallpaper = CEExtraAssets.white; }
             return wallpaper;
 
         }

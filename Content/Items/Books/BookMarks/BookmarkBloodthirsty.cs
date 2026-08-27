@@ -1,8 +1,4 @@
 ﻿using CalamityEntropy.Common;
-using CalamityMod;
-using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
@@ -17,7 +13,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             base.SetDefaults();
             Item.rare = ItemRarityID.Red;
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.value = Item.buyPrice(gold: 1);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Bloodthirsty");
         public override Color tooltipColor => new Color(255, 6, 6);
@@ -32,9 +28,15 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override void AddRecipes()
         {
+            // 血珠改双平行配方: 脊椎骨版与腐肉版, 覆盖两种邪恶世界
             CreateRecipe()
-                .AddIngredient<AncientBoneDust>(2)
-                .AddIngredient<BloodOrb>()
+                .AddIngredient(ItemID.Bone, 2)
+                .AddIngredient(ItemID.Vertebrae)
+                .AddTile(TileID.Bookcases)
+                .Register();
+            CreateRecipe()
+                .AddIngredient(ItemID.Bone, 2)
+                .AddIngredient(ItemID.RottenChunk)
                 .AddTile(TileID.Bookcases)
                 .Register();
         }
@@ -57,10 +59,12 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     {
         public override void OnHitNPC(Projectile projectile, NPC target, int damageDone)
         {
+            // 重设计暂行案: 灾厄怒气泵送随 RageMode 退役, 改为命中喂养自有嗜血狂热值
+            // (BloodthirstyEffect, 上限 16, 受击也会增长, 由本书签的攻速加成消费)
             var plr = projectile.GetOwner();
-            if (plr.Calamity().RageEnabled && CECooldowns.CheckCD("BloodthirstyRage", 30) && !plr.HasBuff<RageMode>())
+            if (CECooldowns.CheckCD("BloodthirstyRage", 30))
             {
-                plr.Calamity().rage += projectile.GetOwner().Calamity().rageMax / 100;
+                plr.Entropy().BloodthirstyEffect = float.Min(16f, plr.Entropy().BloodthirstyEffect + 0.8f);
             }
         }
     }

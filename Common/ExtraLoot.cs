@@ -100,6 +100,22 @@ namespace CalamityEntropy.Common
                             }
                         }
                     }
+                    // 原灾厄热泉宝箱注入的 WispLantern，按表外裁定改挂原版水中宝箱 1/4（bookmark-rehang §六）
+                    if (chestTile.TileFrameX == 17 * 36)
+                    {
+                        if (WorldGen.genRand.NextBool(4))
+                        {
+                            for (int inventoryIndex = 0; inventoryIndex < Chest.maxItems; inventoryIndex++)
+                            {
+                                if (chest.item[inventoryIndex].type == ItemID.None)
+                                {
+                                    chest.item[inventoryIndex].SetDefaults(ModContent.ItemType<WispLantern>());
+                                    itemsPlaced++;
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 }
                 if (chestTile.TileType == TileID.Containers2)
                 {
@@ -136,33 +152,8 @@ namespace CalamityEntropy.Common
                         }
                     }
                 }
-                if (chestTile.TileType == ModContent.TileType<CalamityMod.Tiles.Abyss.AbyssTreasureChest>())
-                {
-                    if (WorldGen.genRand.NextBool(3))
-                    {
-                        for (int inventoryIndex = 0; inventoryIndex < Chest.maxItems; inventoryIndex++)
-                        {
-
-                            if (chest.item[inventoryIndex].type == ItemID.None)
-                            {
-                                int type = ModContent.ItemType<WispLantern>();
-
-                                if (WorldGen.genRand.NextBool(4))
-                                {
-                                    type = ModContent.ItemType<AbyssLantern>();
-                                }
-                                if (WorldGen.genRand.NextBool(2))
-                                {
-                                    type = ModContent.ItemType<EnduranceCard>();
-                                }
-
-                                chest.item[inventoryIndex].SetDefaults(type);
-                                itemsPlaced++;
-                                break;
-                            }
-                        }
-                    }
-                }
+                // 原灾厄热泉/深渊宝箱注入已随脱钩删除（misc-map §五）：EnduranceCard 改挂困难海洋木匣（EGlobalItem），
+                // WispLantern 已改挂原版水中宝箱 1/4（见上方注入），AbyssLantern 保留合成为唯一来源（bookmark-rehang §六）
             }
         }
     }

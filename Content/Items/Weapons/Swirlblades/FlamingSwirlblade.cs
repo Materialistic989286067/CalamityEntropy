@@ -1,19 +1,15 @@
-using AlchemistNPCLite.Items;
-using CalamityEntropy.Content.Items.Books;
+using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityEntropy.Content.Projectiles;
-using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Rogue;
+using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Weapons;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
-using System.Runtime.Intrinsics.Arm;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -21,11 +17,14 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 {
-    public class FlamingSwirlblade : RogueWeapon
+    public class FlamingSwirlblade : ModItem, ICEChargeWeapon
     {
+        // 充能条 4 秒；原潜伏乘数 伤害1/弹速1.4 并入释放乘数
+        public CEChargeProfile ChargeProfile => CEChargeProfile.ChargeBar(4f, 1f, 1.4f);
+
         public override void SetDefaults()
         {
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 26;
             Item.width = 48;
             Item.height = 52;
@@ -33,7 +32,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Item.crit = 2;
             Item.ArmorPenetration = 8;
             Item.UseSound = SoundID.Item1 with { Volume = 1.2f };
-            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+            Item.value = Item.buyPrice(gold: 10);
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<FlamingSwirlbladeProj>();
             Item.shootSpeed = 45f;
@@ -44,16 +43,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Item.noMelee = true;
             Item.noUseGraphic = true;
         }
-        public override float StealthDamageMultiplier => 1.0f;
-        public override float StealthVelocityMultiplier => 1.4f;
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            bool ult = CEChargeWeapon.TryConsume(player, Item);
             int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            if (player.Calamity().StealthStrikeAvailable() && p.WithinBounds(Main.maxProjectiles))
+            if (ult && p >= 0 && p < Main.maxProjectiles)
             {
-                Main.projectile[p].Calamity().stealthStrike = true;
-                CEUtils.SyncProj(p);
+                CEChargeWeapon.Empower(p);
             }
             return false;
         }
@@ -78,8 +74,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             base.SetDefaults();
             Projectile.localNPCHitCooldown = 6;
         }
-        public override float Radius => 170 * (Projectile.Calamity().stealthStrike ? 1.6f : 1);
-        public override int SpreadTime => Projectile.Calamity().stealthStrike ? 38 : 21;
+        public override float Radius => 170 * (Projectile.IsEmpowered() ? 1.6f : 1);
+        public override int SpreadTime => Projectile.IsEmpowered() ? 38 : 21;
         public override void AI()
         {
             base.AI();
@@ -124,7 +120,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Main.EntitySpriteDraw(Projectile.getDrawData(lightColor, overridePos: Projectile.Center + (Spreaded ? CEUtils.randomPointInCircle(4) : Vector2.Zero)));
             if (BladeScale > 0)
             {
-                Texture2D smear = CEUtils.getExtraTex("CircularSmear");
+                Texture2D smear = CEExtraAssets.CircularSmear;
                 float scale = Radius / 78f * Projectile.scale * BladeScale;
                 float time = Main.GlobalTimeWrappedHourly;
                 Vector2 o = smear.Size() * 0.5f;
@@ -147,7 +143,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             if(Main.myPlayer == Projectile.owner)
             {
                 int flame = ModContent.ProjectileType<FlamingSwirlbladeFlame>();
-                if(Projectile.Calamity().stealthStrike)
+                if(Projectile.IsEmpowered())
                 {
                     for(int i = 0; i < 8; i++)
                     {
@@ -178,9 +174,12 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
     }
     public class FlamingSwirlbladeFlame : ModProjectile
     {
+        //拖尾贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Extra/Streak5")]
+        internal static Asset<Texture2D> Streak5Tex;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.width = 28;
             Projectile.height = 28;
             Projectile.tileCollide = false;
@@ -251,7 +250,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 width *= Projectile.Opacity;
                 vp.Add(new CEUtils.VertexPointSets(odp[i], Color.White * alpha * Projectile.Opacity, 32 * Projectile.scale * width, 0));
             }
-            ThalassianWaterBolt.DrawTrail(vp, new Color(255, 235, 220), new Color(255, 120, 50), CEUtils.getExtraTex("Streak5"), CEUtils.getExtraTex("StreakSolid"), innerWidth: 1.6f);
+            ThalassianWaterBolt.DrawTrail(vp, new Color(255, 235, 220), new Color(255, 120, 50), Streak5Tex.Value, CEExtraAssets.StreakSolid, innerWidth: 1.6f);
             return false;
         }
         public override bool? CanHitNPC(NPC target)

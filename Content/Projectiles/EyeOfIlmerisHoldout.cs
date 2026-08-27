@@ -1,3 +1,4 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -120,7 +121,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D light = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Glow").Value;
+            Texture2D light = CEExtraAssets.Glow;
             Main.spriteBatch.Draw(light, Projectile.Center - Main.screenPosition * Projectile.scale, null, Color.LightBlue * 0.7f, 0, light.Size() / 2, 0.5f * Projectile.scale * (1 + (float)Math.Cos((counter) * 0.02f) * 0.2f), SpriteEffects.None, 0);
 
             Main.spriteBatch.End();
@@ -136,7 +137,7 @@ namespace CalamityEntropy.Content.Projectiles
             float sparkleScale = 0.28f * Projectile.scale;
             //PRT_SparkleCal bloom/color在Configure里,旧Calamity SparkleParticle两色构造
             PRTLoader.NewParticle<PRT_SparkleCal>(Projectile.Center, Vector2.Zero, color, sparkleScale)
-                .Configure(bloom, 17, Main.rand.NextFloat(-0.1f, 0.1f), 1.2f);  //holdout装饰sparkle,GeneralParticleHandler迁过来的,数值没动
+                .Configure(bloom, 17, Main.rand.NextFloat(-0.1f, 0.1f), 1.2f);  //holdout装饰sparkle,旧版粒子系统迁过来的,数值没动
         }
     }
 

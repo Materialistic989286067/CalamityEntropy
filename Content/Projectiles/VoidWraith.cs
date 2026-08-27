@@ -1,4 +1,5 @@
 using CalamityEntropy.Content.Particles.CalamityPorts;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -11,6 +12,9 @@ namespace CalamityEntropy.Content.Projectiles
 
     public class VoidWraith : ModProjectile
     {
+        //幽灵帧动画(VoidWraith0~5),加载期就位,绘制时不再拼接路径逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/vw/VoidWraith", 0, 6, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] Frames;
         public List<Vector2> odp = new List<Vector2>();
         public override void SetDefaults()
         {
@@ -76,7 +80,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public void draw()
         {
-            Texture2D draw = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/vw/VoidWraith" + Projectile.frame.ToString()).Value;
+            Texture2D draw = Frames[Projectile.frame];
             Vector2 drawPos = Projectile.Center + new Vector2(-7 * (Projectile.owner.ToPlayer().velocity.X > 0 ? 1 : -1), 4);
             Main.EntitySpriteDraw(draw, drawPos - Main.screenPosition, null, Color.White, MathHelper.ToRadians(Projectile.owner.ToPlayer().velocity.X * 1.4f), draw.Size() / 2, Projectile.scale, (Projectile.owner.ToPlayer().velocity.X > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally));
 

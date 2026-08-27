@@ -3,7 +3,6 @@ using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -41,7 +40,6 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Abyss
                 return false;
             }
             Player player = Main.player[Projectile.owner];
-            List<Texture2D> list = new List<Texture2D>();
             if (counter > 36)
             {
                 counter -= 36;

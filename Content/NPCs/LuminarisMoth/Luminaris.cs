@@ -1,3 +1,4 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Accessories;
@@ -6,12 +7,9 @@ using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles.LuminarisShoots;
+using CalamityEntropy.Core.Graphics;
 using CalamityEntropy.Utilities;
-using CalamityMod;
-using CalamityMod.BiomeManagers;
-using CalamityMod.Events;
-using CalamityMod.Items.Materials;
-using CalamityMod.World;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -50,6 +48,9 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
+                // 群系迁移:原灾厄星辉瘟疫图鉴背景改原版发光蘑菇+夜晚(biome-map)
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.SurfaceMushroom,
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Times.NightTime,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityEntropy.LuminarisBestiary")
             });
         }
@@ -99,13 +100,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
             NPC.height = 96;
             NPC.damage = 68;
             NPC.defense = 10;
-            NPC.Calamity().DR = 0.1f;
             NPC.lifeMax = 28000;
-            if (BossRushEvent.BossRushActive)
-            {
-                NPC.Calamity().DR = 0.2f;
-                NPC.lifeMax += 200000;
-            }
             NPC.HitSound = SoundID.NPCHit32;
             NPC.DeathSound = SoundID.NPCDeath22;
             NPC.value = 1600f;
@@ -122,7 +117,13 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
             {
                 NPC.scale *= 0.5f;
             }
-            SpawnModBiomes = new int[] { ModContent.GetInstance<AstralInfectionBiome>().Type };
+            // 原灾厄星辉瘟疫群系归属删除,召唤条件改发光蘑菇群系夜晚(biome-map,IllusionaryDew 侧)
+        }
+        // 原灾厄全局 DR=0.1 的本地等效(BossRush 加成随事件裁撤);公有字段供血条等外部读取
+        public float DamageReduction = 0.1f;
+        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
+        {
+            modifiers.FinalDamage *= 1f - DamageReduction;
         }
         public int frameCounter = 0;
         public Vector2 oldPos = Vector2.Zero;
@@ -247,11 +248,12 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
             {
                 enrange += 0.1f;
             }
-            if (CalamityWorld.revenge)
+            // 难度映射:复仇→专家、死亡→大师(difficulty-map)
+            if (Main.expertMode)
             {
                 enrange += 0.15f;
             }
-            if (CalamityWorld.death)
+            if (Main.masterMode)
             {
                 enrange += 0.15f;
             }
@@ -401,7 +403,8 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
                     }
                     if (AIChangeCounter == 220)
                     {
-                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = Utils.Remap(Main.LocalPlayer.Distance(NPC.Center), 1800f, 1000f, 0f, 4.5f);
+                        // 原灾厄全局屏震改自有 ScreenShaker,距离衰减照搬
+                        ScreenShaker.AddShake(new ScreenShaker.ScreenShake(Vector2.Zero, Utils.Remap(Main.LocalPlayer.Distance(NPC.Center), 1800f, 1000f, 0f, 4.5f)));
                         CalamityEntropy.FlashEffectStrength = 0.36f;
                         CEUtils.PlaySound("ksLand", 1.3f, NPC.Center);
                         for (int i = 0; i < 14; i++)
@@ -497,7 +500,8 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
                         Shoot<LuminarisAstralShoot>(NPC.Center, (player.Center - NPC.Center).normalize() * 6 * enrange, 0.9f, a, 0.12f * enrange, 2 * enrange);
                         a += rj;
                     }
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = Utils.Remap(Main.LocalPlayer.Distance(NPC.Center), 1800f, 1000f, 0f, 2f);
+                    // 原灾厄全局屏震改自有 ScreenShaker,距离衰减照搬
+                    ScreenShaker.AddShake(new ScreenShaker.ScreenShake(Vector2.Zero, Utils.Remap(Main.LocalPlayer.Distance(NPC.Center), 1800f, 1000f, 0f, 2f)));
                     CEUtils.PlaySound("ksLand", 1.6f, NPC.Center, volume: 0.5f);
 
                 }
@@ -799,33 +803,23 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
         }
 
         public static Texture2D texture = null;
-        public static Texture2D texTail1 = null;
-        public static Texture2D texTail2 = null;
-        public static Texture2D texStar = null;
+        //尾巴与星光贴图改由 VaultLoaden 在加载期赋值,卸载自动置空;texture 是 NPC 本体贴图(tML 自管),保留原懒取
+        [VaultLoaden("CalamityEntropy/Content/NPCs/LuminarisMoth/t1")]
+        public static Texture2D texTail1;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/LuminarisMoth/t2")]
+        public static Texture2D texTail2;
 
         public Rope tail1 = null;
         public Rope tail2 = null;
         public override void Unload()
         {
             texture = null;
-            texTail1 = null;
-            texTail2 = null;
-            texStar = null;
         }
         public int phase = 1;
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            if (texStar == null)
-            {
-                texStar = CEUtils.getExtraTex("StarTexture_White");
-            }
             if (texture == null)
                 texture = NPC.getTexture();
-            if (texTail1 == null || texTail2 == null)
-            {
-                texTail1 = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/LuminarisMoth/t1", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-                texTail2 = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/LuminarisMoth/t2", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-            }
 
             List<Vector2> afterImagePoints = new List<Vector2>();
             if (AfterImageTime > 0 && odp.Count > 8)
@@ -852,8 +846,8 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
             DrawTails(pos - NPC.Center, color);
             if (!afterImage)
             {
-                Asset<Texture2D> textured = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Enchanted", AssetRequestMode.ImmediateLoad);
-                Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Transform3", AssetRequestMode.ImmediateLoad).Value;
+                Asset<Texture2D> textured = CEExtraAssets.EnchantedAsset;
+                Effect shader = CEEffectAssets.Transform3;
                 shader.Parameters["uTime"].SetValue(Main.GlobalTimeWrappedHourly * 0.2f);
                 shader.Parameters["color"].SetValue((phase == 1 ? new Color(0, 190, 250, 255) : new Color(160, 80, 255, 255)).ToVector4());
                 shader.Parameters["strength"].SetValue(phase == 1 ? 0.2f : 1f);
@@ -871,6 +865,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
                 Main.spriteBatch.UseBlendState(BlendState.Additive);
                 float starX = 1f + (float)Math.Cos(Main.GlobalTimeWrappedHourly * 26) * 0.4f;
                 Vector2 starScale = new Vector2(starX, starX) * (1 + MegaTrail * 1.6f);
+                Texture2D texStar = CEExtraAssets.StarTexture_White;
                 Main.spriteBatch.Draw(texStar, pos - Main.screenPosition, null, Color.LightBlue * (color.A / 255f) * NPC.Opacity, 0, texStar.Size() * 0.5f, new Vector2(1f, 0.8f * 0.7f) * starScale * NPC.scale * 0.74f, SpriteEffects.None, 0);
                 Main.spriteBatch.Draw(texStar, pos - Main.screenPosition, null, Color.LightBlue * (color.A / 255f) * NPC.Opacity, 0, texStar.Size() * 0.5f, new Vector2(0.8f, 1f * 0.7f) * starScale * NPC.scale * 0.74f, SpriteEffects.None, 0);
                 Main.spriteBatch.ExitShaderRegion();
@@ -909,7 +904,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
 
                     if (ve.Count >= 3)
                     {
-                        Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/MegaStreakBacking2").Value;
+                        Texture2D tx = CEExtraAssets.MegaStreakBacking2;
                         gd.Textures[0] = tx;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                     }
@@ -936,7 +931,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
 
                     if (ve.Count >= 3)
                     {
-                        Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Streak1").Value;
+                        Texture2D tx = CEExtraAssets.Streak1;
                         gd.Textures[0] = tx;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                     }
@@ -964,7 +959,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
 
                         if (ve.Count >= 3)
                         {
-                            Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/MegaStreakInner").Value;
+                            Texture2D tx = CEExtraAssets.MegaStreakInner;
                             gd.Textures[0] = tx;
                             gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                         }
@@ -990,7 +985,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
 
                         if (ve.Count >= 3)
                         {
-                            Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Streak2").Value;
+                            Texture2D tx = CEExtraAssets.Streak2;
                             gd.Textures[0] = tx;
                             gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                         }
@@ -1070,24 +1065,44 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
         {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<LuminarisBag>()));
 
-            npcLoot.DefineConditionalDropSet(() => true).Add(DropHelper.PerPlayer(ItemID.GreaterHealingPotion, 1, 5, 15), hideLootReport: true);
+            // 治疗药水按人 5-15 瓶,隐藏图鉴条目(承接原灾厄 PerPlayer 语义)
+            npcLoot.Add(new DropPerPlayerOnThePlayer(ItemID.GreaterHealingPotion, 1, 5, 15, new HiddenDropCondition()));
 
-
-            var normalOnly = npcLoot.DefineNormalOnlyDropSet();
+            LeadingConditionRule normalOnly = new LeadingConditionRule(new Conditions.NotExpert());
             {
-                normalOnly.Add(ModContent.ItemType<StarlitPiercer>(), new Fraction(3, 5));
-                normalOnly.Add(ModContent.ItemType<Luminar>(), new Fraction(3, 5));
-                normalOnly.Add(ModContent.ItemType<StarSootInjector>(), new Fraction(3, 5));
-                normalOnly.Add(ModContent.ItemType<PhantomLightWing>(), new Fraction(3, 5));
-                normalOnly.Add(ModContent.ItemType<BottledStarlightCocoon>(), new Fraction(3, 5));
-                normalOnly.Add(ModContent.ItemType<LunarPlank>(), new Fraction(3, 5));
-                normalOnly.Add(ModContent.ItemType<StarblightSoot>(), 1, 42, 64);
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<StarlitPiercer>(), 5, 1, 1, 3));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<Luminar>(), 5, 1, 1, 3));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<StarSootInjector>(), 5, 1, 1, 3));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<PhantomLightWing>(), 5, 1, 1, 3));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<BottledStarlightCocoon>(), 5, 1, 1, 3));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<LunarPlank>(), 5, 1, 1, 3));
+                // 掉落自有化:灾厄星耀煤灰→星辉鳞尘,数量照搬(material-map §一)
+                normalOnly.OnSuccess(ItemDropRule.Common(ModContent.ItemType<StarlitScaleDust>(), 1, 42, 64));
             }
-            npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<LuminarisRelic>());
+            npcLoot.Add(normalOnly);
+            // 遗物:原灾厄复仇/大师条件对齐原版大师掉落惯例(difficulty-map)
+            npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsMasterMode(), ModContent.ItemType<LuminarisRelic>()));
 
-            npcLoot.Add(ModContent.ItemType<LuminarisTrophy>(), 10);
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<LuminarisTrophy>(), 10));
 
-            npcLoot.AddConditionalPerPlayer(() => !EDownedBosses.downedLuminaris, ModContent.ItemType<LuminarisLore>());
+            // 首杀传记:承接原灾厄按人实例掉落语义
+            npcLoot.Add(new DropPerPlayerOnThePlayer(ModContent.ItemType<LuminarisLore>(), 1, 1, 1, new LoreFirstKill()));
+        }
+
+        // 恒真但隐藏图鉴条目的条件:对应原 hideLootReport 语义
+        private class HiddenDropCondition : IItemDropRuleCondition, IProvideItemConditionDescription
+        {
+            public bool CanDrop(DropAttemptInfo info) => true;
+            public bool CanShowItemDropInUI() => false;
+            public string GetConditionDescription() => null;
+        }
+
+        // 首杀传记条件:对应 downed 旗标未置位时每名玩家各掉一份
+        private class LoreFirstKill : IItemDropRuleCondition, IProvideItemConditionDescription
+        {
+            public bool CanDrop(DropAttemptInfo info) => !EDownedBosses.downedLuminaris;
+            public bool CanShowItemDropInUI() => true;
+            public string GetConditionDescription() => null;
         }
     }
 }

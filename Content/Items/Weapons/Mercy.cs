@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items;
-using CalamityMod.Rarities;
+using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -24,8 +23,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAnimation = 0;
             Item.channel = true;
             Item.knockBack = 4;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<HotPink>();
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
+            Item.rare = ModContent.RarityType<VoidPurple>();
             Item.UseSound = null;
             Item.shoot = ModContent.ProjectileType<MercySpawner>();
             Item.shootSpeed = 1f;

@@ -1,7 +1,6 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items.Donator;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -61,7 +60,7 @@ namespace CalamityEntropy.Content.Items.Vanity.Ttiz
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<NightmareFuel>()
+                .AddIngredient(ItemID.SpookyWood)
                 .AddIngredient(ItemID.GoldBar, 5)
                 .AddTile(TileID.WorkBenches)
                 .Register();

@@ -2,10 +2,8 @@ using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -37,7 +35,7 @@ namespace CalamityEntropy.Content.Items.Weapons.SupportRemote
             Item.useStyle = ItemUseStyleID.Swing;
             Item.shoot = ModContent.ProjectileType<AzafureCombatDrone>();
             Item.shootSpeed = 2f;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.autoReuse = true;
             Item.UseSound = SoundID.Item8;
             Item.noMelee = true;
@@ -57,7 +55,7 @@ namespace CalamityEntropy.Content.Items.Weapons.SupportRemote
         {
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(10)
-                .AddIngredient<MysteriousCircuitry>(2)
+                .AddIngredient<AzafureCircuitry>(2)
                 .AddRecipeGroup(CERecipeGroups.AnyOrichalcumBar, 8)
                 .AddIngredient<AzafureDroneRemote>()
                 .AddTile(TileID.MythrilAnvil)
@@ -211,9 +209,9 @@ namespace CalamityEntropy.Content.Items.Weapons.SupportRemote
             //CustomPulse贴图路径Configure现传,Texture属性填白图应付框架
             PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.OrangeRed * 0.95f, scale * 0.8f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 6);
             PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.White * 0.95f, scale * 0.5f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 6);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 230, 60), 0.005f).Configure("CalamityMod/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.04f, 12);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 230, 60), 0.005f).Configure("CalamityMod/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 16);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 230, 60), 0.005f).Configure("CalamityMod/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.06f, 20);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 230, 60), 0.005f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.04f, 12);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 230, 60), 0.005f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 16);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 230, 60), 0.005f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.06f, 20);
 
             target.AddBuff<MechanicalTrauma>(260);
             target.AddBuff<ArmorCrunch>(300);

@@ -1,5 +1,4 @@
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -77,7 +76,6 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.GetOwner().velocity = Projectile.rotation.ToRotationVector2() * -4;
             Projectile.GetOwner().Entropy().immune = 46;
             CalamityEntropy.Instance.screenShakeAmp = 4;
-            Projectile.GetOwner().Calamity().GeneralScreenShakePower = 4;
             Projectile.GetOwner().Entropy().vShieldCD = 100.ApplyCdDec(Projectile.GetOwner());
             if (!Main.dedServ)
             {

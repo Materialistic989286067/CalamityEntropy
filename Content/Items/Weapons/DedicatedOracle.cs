@@ -1,9 +1,9 @@
 ﻿using CalamityEntropy.Content.Particles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using CalamityEntropy.Core.Weapons;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -11,8 +11,11 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
-    public class DedicatedOracle : ModItem
+    public class DedicatedOracle : ModItem, ICEChargeWeapon
     {
+        // 周期就绪 12 秒；未就绪时武器不可使用（原武器全部行为即大招）
+        public CEChargeProfile ChargeProfile => CEChargeProfile.Periodic(12f);
+
         public override void SetStaticDefaults()
         {
         }
@@ -25,10 +28,10 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAnimation = 16;
             Item.useStyle = -1;
             Item.damage = 500;
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1);
             Item.rare = ItemRarityID.Red;
             Item.shoot = ModContent.ProjectileType<DedicatedOracleSlashProj>();
             Item.shootSpeed = 8;
@@ -38,7 +41,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             NPC target = CEUtils.FindTarget_HomingProj(player, Main.MouseWorld, 360, null);
             castTarget = target;
-            return player.Calamity().StealthStrikeAvailable() && target != null;
+            return CEChargeWeapon.IsReady(Item) && target != null;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -46,15 +49,15 @@ namespace CalamityEntropy.Content.Items.Weapons
             if (castTarget != null)
             {
                 Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI, castTarget.whoAmI);
-                CEUtils.CostStealthForPlr(player);
+                CEChargeWeapon.TryConsume(player, Item);
             }
             return false;
         }
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<MeldBlob>(9)
-                .AddIngredient<SolarVeil>(8)
+                .AddIngredient(ItemID.SoulofNight, 9)
+                .AddIngredient(ItemID.Ectoplasm, 8)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
@@ -62,9 +65,12 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class DedicatedOracleSlashProj : ModProjectile
     {
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/ImprisonmentEye";
+        //黑幕光晕贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Extra/blackg")]
+        internal static Asset<Texture2D> BlackGlowTex;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
         }
         public override bool? CanHitNPC(NPC target)
         {
@@ -146,8 +152,6 @@ namespace CalamityEntropy.Content.Items.Weapons
             if (counter == 0) CEUtils.PlaySound("swing4", 1.6f, Projectile.Center);
             if (counter == 60)
             {
-                int stealthRegenDelay = 160.ApplyCdDec(player);
-                player.Entropy().StealthRegenDelay = stealthRegenDelay;
                 for (int i = 0; i < 16; i++)
                 {
                     var vel = (-Vector2.UnitY).RotatedByRandom(2.2f) * Main.rand.NextFloat(8, 15);
@@ -159,7 +163,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                     PRTLoader.NewParticle<PRT_SlashDarkRed>(player.Center, vel, Color.Red, Main.rand.NextFloat(0.5f, 1.4f)).Configure(1, true, PRTDrawModeEnum.AlphaBlend, vel.ToRotation(), 38);
                 }
                 CEUtils.PlaySound("AbyssalBladeLaunch", 1, Projectile.Center);
-                CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromAI(), player, Projectile.Center, Projectile.damage * 2, 600, Projectile.DamageType).Calamity().stealthStrike = true;
+                CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromAI(), player, Projectile.Center, Projectile.damage * 2, 600, Projectile.DamageType).SetEmpowered();
                 player.velocity = ((origPos - Projectile.Center) * new Vector2(1, 0.6f)).normalize() * 46;
                 if (player.velocity.Y < -24)
                     player.velocity.Y = -24;
@@ -191,7 +195,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 float bsize = 0.8f;
                 for (float i = 1; i <= 1.6f; i += 0.05f)
                 {
-                    Main.spriteBatch.Draw(CEUtils.getExtraTex("blackg"), Projectile.Center - Main.screenPosition, null, Color.Black * 0.06f * balpha, Main.GameUpdateCount * 0.9f * (i - 0.9f), new Vector2(1200, 1200), (1 + (i - 1) * 0.1f) * bsize * 6f, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(BlackGlowTex.Value, Projectile.Center - Main.screenPosition, null, Color.Black * 0.06f * balpha, Main.GameUpdateCount * 0.9f * (i - 0.9f), new Vector2(1200, 1200), (1 + (i - 1) * 0.1f) * bsize * 6f, SpriteEffects.None, 0);
                 }
             }
             return false;

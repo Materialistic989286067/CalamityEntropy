@@ -1,9 +1,6 @@
-﻿using CalamityEntropy.Content.Tiles;
-using CalamityMod;
-using CalamityMod.CalPlayer;
-using CalamityMod.Items;
-using CalamityMod.Items.Accessories.Wings;
-using CalamityMod.Rarities;
+﻿using CalamityEntropy.Common;
+using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Content.Tiles;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
@@ -13,13 +10,14 @@ using Terraria.ModLoader;
 namespace CalamityEntropy.Content.Items.Donator
 {
     [AutoloadEquip(EquipType.Wings)]
-    public class FlowingLight : BaseWings, IDonatorItem
+    public class FlowingLight : ModItem, IDonatorItem
     {
-        public override float BonusAscentWhileFalling => 1f;
-        public override float BonusAscentWhileRising => 0.17f;
-        public override float RisingSpeedThreshold => 1.5f;
-        public override float MaxAscentSpeed => 4f;
-        public override float BaseAscent => 0.15f;
+        // 原灾厄 BaseWings 的五项飞行参数，改由本类 VerticalWingSpeeds 直接承接
+        public float BonusAscentWhileFalling => 1f;
+        public float BonusAscentWhileRising => 0.17f;
+        public float RisingSpeedThreshold => 1.5f;
+        public float MaxAscentSpeed => 4f;
+        public float BaseAscent => 0.15f;
 
         public string DonatorName => "五彩斑斓的黑";
 
@@ -28,16 +26,24 @@ namespace CalamityEntropy.Content.Items.Donator
 
         public override void SetDefaults()
         {
-            base.SetDefaults();
             Item.width = 50;
             Item.height = 50;
-            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.value = Item.buyPrice(platinum: 2, gold: 80);
+            Item.rare = ModContent.RarityType<Golden>();
             Item.accessory = true;
+        }
+
+        public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
+        {
+            ascentWhenFalling = BonusAscentWhileFalling;
+            ascentWhenRising = BonusAscentWhileRising;
+            maxCanAscendMultiplier = RisingSpeedThreshold;
+            maxAscentMultiplier = MaxAscentSpeed;
+            constantAscend = BaseAscent;
         }
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            if (!ModContent.GetInstance<CalamityClientConfig>().TextEffects)
+            if (!Config.Instance.TextEffects)
             {
                 list.Replace("$", "");
             }
@@ -46,12 +52,13 @@ namespace CalamityEntropy.Content.Items.Donator
         {
             if (line.Text.StartsWith("$"))
             {
-                if (!ModContent.GetInstance<CalamityClientConfig>().TextEffects)
+                if (!Config.Instance.TextEffects)
                 {
                     return true;
                 }
                 DrawableTooltipLine nLine = new DrawableTooltipLine(new(Mod, "-", line.Text.Replace("$", "")), line.Index, line.X, line.Y, line.Color);
-                BurnishedAuric.Draw(Item, nLine);
+                // 鎏金描字：借用自有 ShiningViolet 通用描绘，配 Golden 稀有度同源金色
+                ShiningViolet.Draw(Item, nLine, new Color(246, 200, 0), new Color(255, 236, 130), new Color(255, 220, 80));
                 return false;
             }
             return true;
@@ -59,7 +66,6 @@ namespace CalamityEntropy.Content.Items.Donator
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.Entropy().addEquip("FlowingLightWing", !hideVisual);
-            CalamityPlayer modPlayer = player.Calamity();
             player.accRunSpeed = 9f;
             player.moveSpeed += 0.18f;
             player.iceSkate = true;
@@ -68,7 +74,6 @@ namespace CalamityEntropy.Content.Items.Donator
             player.lavaImmune = true;
             player.buffImmune[BuffID.OnFire] = true;
             player.noFallDmg = true;
-            modPlayer.seraphTracers = true;
 
             if (player.controlJump && player.controlDown && player.wingTime > 0)
             {
@@ -81,9 +86,10 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         public override void AddRecipes()
         {
+            // 灾厄原料按 material-map.md 替换：SeraphTracers→日耀之翼、WingsofRebirth（灾厄物）→猪鲨之翼
             CreateRecipe()
-                .AddIngredient<SeraphTracers>()
-                .AddIngredient<WingsofRebirth>()
+                .AddIngredient(ItemID.WingsSolar)
+                .AddIngredient(ItemID.FishronWings)
                 .AddIngredient<FadingRunestone>(2)
                 .AddTile<VoidWellTile>()
                 .DisableDecraft()

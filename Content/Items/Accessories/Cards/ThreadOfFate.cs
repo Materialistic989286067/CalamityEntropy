@@ -1,5 +1,4 @@
-﻿using CalamityEntropy.Content.Items.Accessories.EvilCards;
-using CalamityMod.Items;
+using CalamityEntropy.Content.Items.Accessories.EvilCards;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -17,7 +16,7 @@ namespace CalamityEntropy.Content.Items.Accessories.Cards
         {
             Item.width = 22;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.value = Item.buyPrice(gold: 60);
             Item.rare = ItemRarityID.Yellow;
             Item.material = true;
 

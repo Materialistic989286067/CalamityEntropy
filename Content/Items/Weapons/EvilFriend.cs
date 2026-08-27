@@ -1,6 +1,6 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Rarities;
+using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -35,7 +35,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.noMelee = true;
             Item.mana = 10;
             Item.buffType = ModContent.BuffType<LilBrimstoneBuff>();
-            Item.rare = ModContent.RarityType<HotPink>();
+            Item.rare = ModContent.RarityType<VoidPurple>();
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

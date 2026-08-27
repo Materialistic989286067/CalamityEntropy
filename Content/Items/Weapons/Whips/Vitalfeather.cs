@@ -1,7 +1,6 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items;
-using CalamityMod.Rarities;
+using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Localization;
@@ -16,8 +15,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
         public override void SetDefaults()
         {
             Item.DefaultToWhip(ModContent.ProjectileType<VitalfeatherProjectile>(), 140, 2, 4, 42);
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<Golden>();
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
             Item.autoReuse = true;
         }
 

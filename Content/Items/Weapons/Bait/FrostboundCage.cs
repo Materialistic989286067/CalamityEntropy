@@ -1,15 +1,14 @@
-﻿using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Typeless;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -36,7 +35,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             Item.knockBack = 0;
             Item.shootSpeed = 36;
             Item.useAnimation = Item.useTime = 30;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ItemRarityID.Pink;
             Item.width = 68;
             Item.height = 68;
@@ -104,7 +103,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                 npc.GetGlobalNPC<WhipDebuffNPC>().BaitStick = 2;
                 if (IsActive)
                 {
-                    Projectile.GetOwner().Calamity().mouseWorldListener = true;
+                    Projectile.GetOwner().Entropy().MouseWorldListener = true;
                     npc.GetGlobalNPC<WhipDebuffNPC>().ClearBaitTags();
                     npc.GetGlobalNPC<WhipDebuffNPC>().Tags.Add(new WhipTag(this.GetType().Name, 5, this.TagDamage, 1, 0, this.GetType().Name) { IsABaitTag = true });
                 }
@@ -165,7 +164,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             Main.spriteBatch.UseAdditiveClamp();
             if (activeEffectAlpha >= 0.01f)
             {
-                Texture2D pulse = CEUtils.getExtraTex("ShatteredExplosion");
+                Texture2D pulse = CEExtraAssets.ShatteredExplosion;
                 for(float i = 0; i < 1f; i += 0.1f)
                 {
                     float scale = CEUtils.Frac(i + Main.GlobalTimeWrappedHourly * 4f);
@@ -218,9 +217,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                 CEUtils.SyncProj(Projectile.whoAmI);
             }
             float scale = 4;
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.LightSkyBlue * 1.14f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.LightSkyBlue * 1.12f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.032f, 18);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.LightSkyBlue * 1.12f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.024f, 15);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.LightSkyBlue * 1.14f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.LightSkyBlue * 1.12f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.032f, 18);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.LightSkyBlue * 1.12f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.024f, 15);
         }
     }
     public class FrostboundSpirit : ModProjectile
@@ -421,7 +420,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             }
             ThalassianWaterBolt.DrawTrail(vp, new Color(100, 190, 255), EffectColor());
             Main.spriteBatch.UseAdditiveClamp();
-            Texture2D ar = CEUtils.getExtraTex("SpearArrowGlow2");
+            Texture2D ar = CEExtraAssets.SpearArrowGlow2;
             Main.spriteBatch.Draw(ar, Projectile.Center - Main.screenPosition, null, new Color(80, 90, 255), Projectile.rotation, ar.Size() * 0.5f, Projectile.scale * 0.3f, SpriteEffects.None, 0); Main.spriteBatch.Draw(ar, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, ar.Size() * 0.5f, Projectile.scale * 0.22f, SpriteEffects.None, 0);
             Main.spriteBatch.ExitShaderRegion();
             return false;

@@ -1,9 +1,10 @@
 ﻿
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
-using CalamityMod;
-using CalamityMod.NPCs.ExoMechs.Ares;
+using InnoVault;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -14,6 +15,11 @@ namespace CalamityEntropy.Content.Projectiles
 
     public class EndlessAbyssLaser : ModProjectile
     {
+        //激光着色器与贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Assets/Effects/abyssallaser", AssetMode.EffectValue, "fableeyelaser")]
+        internal static Effect AbyssalLaserShader;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/clback2")]
+        internal static Asset<Texture2D> LaserBack2Tex;
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             EGlobalNPC.AddVoidTouch(target, 20, 1, 600, 20);
@@ -51,13 +57,6 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public LoopSound sound = null;
         public LoopSound sound2 = null;
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            if (target.ModNPC is AresBody || target.ModNPC is AresGaussNuke || target.ModNPC is AresLaserCannon || target.ModNPC is AresPlasmaFlamethrower || target.ModNPC is AresTeslaCannon)
-            {
-                modifiers.SourceDamage += 0.28f;
-            }
-        }
         public override void AI()
         {
             if (st)
@@ -130,7 +129,7 @@ namespace CalamityEntropy.Content.Projectiles
 
             }
 
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = Utils.Remap(Main.LocalPlayer.Distance(Projectile.Center), 1800f, 1000f, 0f, 4.5f) * 1;
+            CEUtils.SetShake(Projectile.Center, 4.5f, 1800);
             if (Main.myPlayer == Projectile.owner)
             {
                 Player owner = Main.LocalPlayer;
@@ -184,14 +183,14 @@ namespace CalamityEntropy.Content.Projectiles
                 return false;
             }
             Main.spriteBatch.End();
-            var effect = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/abyssallaser", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            var effect = AbyssalLaserShader;
             effect.Parameters["yofs"].SetValue(-yx);
             {
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
                 //effect.CurrentTechnique.Passes["fableeyelaser"].Apply();
 
-                Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/BasicTrail").Value;
+                Texture2D tx = CEExtraAssets.BasicTrail;
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = new Color(255, 255, 255);
                 float p = -Main.GlobalTimeWrappedHourly * 2;
@@ -229,7 +228,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                 //effect.CurrentTechnique.Passes["fableeyelaser"].Apply();
 
-                Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/clback2").Value;
+                Texture2D tx = LaserBack2Tex.Value;
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = new Color(255, 235, 235);
                 float p = -Main.GlobalTimeWrappedHourly * 2;
@@ -266,7 +265,7 @@ namespace CalamityEntropy.Content.Projectiles
 
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, effect, Main.GameViewMatrix.TransformationMatrix);
             {
-                Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/SylvestaffStreak").Value;
+                Texture2D tx = CEExtraAssets.SylvestaffStreak;
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = new Color(255, 255, 255) * 0.7f;
                 float p = -Main.GlobalTimeWrappedHourly * 4;
@@ -300,7 +299,7 @@ namespace CalamityEntropy.Content.Projectiles
                 }
             }
             {
-                Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/PatchyTallNoise").Value;
+                Texture2D tx = CEExtraAssets.PatchyTallNoise;
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = new Color(255, 255, 255) * 0.75f;
                 float p = -Main.GlobalTimeWrappedHourly * 4;
@@ -328,7 +327,7 @@ namespace CalamityEntropy.Content.Projectiles
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
                 if (ve.Count >= 3)
                 {
-                    gd.Textures[0] = CEUtils.getExtraTex("Streak1");
+                    gd.Textures[0] = CEExtraAssets.Streak1;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
 
                 }

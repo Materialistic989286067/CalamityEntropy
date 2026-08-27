@@ -2,16 +2,13 @@
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.NPCs.Other;
+using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Intrinsics.Arm;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -20,8 +17,11 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
-    public class MewMewBomb : RogueWeapon, IGetFromStarterBag
+    public class MewMewBomb : ModItem, ICEChargeWeapon, IGetFromStarterBag
     {
+        // 周期就绪 8 秒；原潜伏乘数 伤害2.5/弹速1 并入释放乘数
+        public CEChargeProfile ChargeProfile => CEChargeProfile.Periodic(8f, 2.5f, 1f);
+
         public override void SetDefaults()
         {
             Item.width = 40;
@@ -35,11 +35,11 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.UseSound = null;
             Item.autoReuse = true;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<MewMewBombThrow>();
             Item.shootSpeed = 6.4f;
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Ranged;
             Item.crit = 8;
         }
         public override void AddRecipes()
@@ -50,20 +50,16 @@ namespace CalamityEntropy.Content.Items.Weapons
                 .AddTile(TileID.Anvils)
                 .Register();
         }
-        public override float StealthDamageMultiplier => 2.5f;
-        public override float StealthVelocityMultiplier => 1f;
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             SoundEngine.PlaySound(SoundID.Item1, position);
             SoundEngine.PlaySound(SoundID.Item1, position);
-            if (player.Calamity().StealthStrikeAvailable())
+            if (CEChargeWeapon.TryConsume(player, Item))
             {
                 int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-                if (p.WithinBounds(Main.maxProjectiles))
+                if (p >= 0 && p < Main.maxProjectiles)
                 {
-                    Main.projectile[p].Calamity().stealthStrike = true;
-                    p.ToProj().netUpdate = true;
+                    CEChargeWeapon.Empower(p);
                 }
                 return false;
             }
@@ -82,7 +78,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public List<float> oldRots = new List<float>();
         public override void SetDefaults()
         {
-            Projectile.DamageType = CEUtils.RogueDC;
+            Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 42;
             Projectile.height = 42;
             Projectile.friendly = true;
@@ -120,7 +116,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             if (Projectile.localAI[1] <= 0)
             {
                 Projectile.localAI[1] = 4 * Projectile.MaxUpdates;
-                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Pink * 1.1f, 0.01f).Configure("CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 0.4f, 20);
+                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Pink * 1.1f, 0.01f).Configure("CalamityEntropy/Assets/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 0.4f, 20);
                 SoundEngine.PlaySound(SoundID.Item56 with { Volume = 1.5f }, Projectile.Center);
                 SoundEngine.PlaySound(SoundID.Item58 with { Volume = 1f, Pitch = Main.rand.NextFloat(-0.4f, 0.4f) }, Projectile.Center);
             }
@@ -137,7 +133,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             {
                 EXPLODE();
             }
-            if(Exploded && Projectile.timeLeft == 2 && Projectile.Calamity().stealthStrike)
+            if(Exploded && Projectile.timeLeft == 2 && Projectile.IsEmpowered())
             {
                 foreach(Player plr in Main.ActivePlayers)
                 {
@@ -177,7 +173,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 {
                     Projectile.localAI[2] += 0.01f;
                     Projectile.scale = 1f + Projectile.localAI[2] + (0.5f + 0.5f * (float)(Math.Sin(Projectile.localAI[2] * 18))) * 0.04f;
-                    if (Projectile.localAI[2] > (Projectile.Calamity().stealthStrike ? 1 : 0.5f))
+                    if (Projectile.localAI[2] > (Projectile.IsEmpowered() ? 1 : 0.5f))
                     {
                         if (!Exploded)
                         {
@@ -207,7 +203,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             ExplodeEffect = false;
             CEUtils.PlaySound("PumpkinExplode" + Main.rand.Next(1, 3), Main.rand.NextFloat(1.65f, 1.85f), Projectile.Center);
-            if (Projectile.Calamity().stealthStrike)
+            if (Projectile.IsEmpowered())
             {
                 CEUtils.PlaySound("WulfrumScrewdriverScrewHit", Main.rand.NextFloat(0.8f, 1.25f), Projectile.Center);
             }
@@ -217,7 +213,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 
             SoundEngine.PlaySound(SoundID.Item58 with { Volume = 1.6f, Pitch = Main.rand.NextFloat(0.2f, 0.5f) }, Projectile.Center);
             SoundEngine.PlaySound(SoundID.Item58 with { Volume = 1.6f, Pitch = Main.rand.NextFloat(0.2f, 0.5f) }, Projectile.Center);
-            float scale = Projectile.Calamity().stealthStrike ? 1.3f : 1f;
+            float scale = Projectile.IsEmpowered() ? 1.3f : 1f;
             for (int i = 0; i < 46; i++)
             {
                 var d = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Fireworks, Main.rand.NextFloat(-12, 12) * scale, Main.rand.NextFloat(-12, 12) * scale);
@@ -229,7 +225,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 d.scale = Main.rand.NextFloat(1.2f, 1.4f) * scale;
                 d.noGravity = true;
             }
-            int plt = Projectile.Calamity().stealthStrike ? 15 : 12;
+            int plt = Projectile.IsEmpowered() ? 15 : 12;
             Vector2 v = Vector2.UnitX;
             PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center, v, Color.DeepPink, 0.04f * scale).Configure(false, plt, new Vector2(8, 4), true, false);
             PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center, v, Color.White, 0.03f * scale).Configure(false, plt, new Vector2(8, 4), true, false);
@@ -250,7 +246,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 return false;
             if (Exploded)
             {
-                int wd = Projectile.Calamity().stealthStrike ? 60 : 26;
+                int wd = Projectile.IsEmpowered() ? 60 : 26;
                 Rectangle h = Projectile.Center.getRectCentered(CrossBombDist * 2, wd);
                 Rectangle w = Projectile.Center.getRectCentered(wd, CrossBombDist * 2);
                 return targetHitbox.Intersects(h) || targetHitbox.Intersects(w);
@@ -262,8 +258,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             if (Hitted)
                 return;
             CEUtils.PlaySound("HIT", 1.8f, Projectile.Center);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Pink * 1.25f, 0.01f).Configure("CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 0.4f, 20);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Pink * 1.25f, 0.01f).Configure("CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 1.4f, 20);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Pink * 1.25f, 0.01f).Configure("CalamityEntropy/Assets/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 0.4f, 20);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Pink * 1.25f, 0.01f).Configure("CalamityEntropy/Assets/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 1.4f, 20);
             SoundEngine.PlaySound(SoundID.Item56 with { Volume = 1.5f }, Projectile.Center);
             Hitted = true;
             List<NPC> targetNearby = CEUtils.FindSomeNearEnemies(Projectile.Center, 24, 900);
@@ -274,8 +270,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             {
                 targetPos = CEUtils.randomPointInCircle(CrossBombDist * 1.2f) + Projectile.Center;
                 int hitCountTemp = 0;
-                Rectangle h = targetPos.getRectCentered(CrossBombDist * 2, Projectile.Calamity().stealthStrike ? 60 : 26);
-                Rectangle w = targetPos.getRectCentered(Projectile.Calamity().stealthStrike ? 60 : 26, CrossBombDist * 2);
+                Rectangle h = targetPos.getRectCentered(CrossBombDist * 2, Projectile.IsEmpowered() ? 60 : 26);
+                Rectangle w = targetPos.getRectCentered(Projectile.IsEmpowered() ? 60 : 26, CrossBombDist * 2);
                 foreach (NPC n in targetNearby)
                 {
                     if (w.Intersects(n.Hitbox) || h.Intersects(n.Hitbox))
@@ -295,15 +291,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public Vector2 ExplodeTargetPos = Vector2.Zero;
         public Vector2 hitPos = Vector2.Zero;
-        public override bool? CanHitNPC(NPC target)
-        {
-            if (target.type == ModContent.NPCType<ExhumedHeart>())
-            {
-                return false;
-            }
-            return null;
-        }
-        public int CrossBombDist => Projectile.Calamity().stealthStrike ? 500 : 320;
+        public int CrossBombDist => Projectile.IsEmpowered() ? 500 : 320;
         public override bool PreDraw(ref Color lightColor)
         {
             if (Exploded)

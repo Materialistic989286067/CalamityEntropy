@@ -1,10 +1,10 @@
-﻿using CalamityEntropy.Common;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Items.Weapons.TwinSaw;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -21,7 +21,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
         public override void SetDefaults()
         {
             Item.damage = 9;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.width = 42;
             Item.height = 42;
             Item.noUseGraphic = true;
@@ -59,10 +59,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
     {
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(ModContent.GetInstance<TrueMeleeDamageClass>(), false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 4;
         }
+        //帧动画贴图(AzafurePowerSaw0~1),按序号批量加载,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Content/Items/Weapons/Chainsaw/AzafurePowerSaw", 0, 2, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] SawFrames;
         public int frame = 2;
         public bool Hitted = false;
         public int Target = -1;
@@ -78,7 +81,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
         public override void AI()
         {
             var player = Projectile.GetOwner();
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             if (Projectile.localAI[0]++ == 0)
             {
                 CEUtils.PlaySound("HellkiteSwing2", Main.rand.NextFloat(1.4f, 1.7f), Projectile.Center, 8, CEUtils.WeapSound * 0.4f);
@@ -88,7 +91,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
                 Projectile.rotation = Projectile.velocity.ToRotation();
             }
             Projectile.Center = player.MountedCenter;
-            Projectile.velocity = Projectile.velocity.Length() * (player.Calamity().mouseWorld - Projectile.Center).normalize();
+            Projectile.velocity = Projectile.velocity.Length() * (player.Entropy().MouseWorld - Projectile.Center).normalize();
             player.heldProj = Projectile.whoAmI;
 
 
@@ -212,7 +215,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
         }
         public override bool PreDraw(ref Color dc)
         {
-            Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Items/Weapons/Chainsaw/AzafurePowerSaw" + (((int)(Projectile.ai[0] / 4)) % frame).ToString()).Value;
+            Texture2D tx = SawFrames[((int)(Projectile.ai[0] / 4)) % frame];
             Main.spriteBatch.Draw(tx, Projectile.Center + CEUtils.randomPointInCircle((Hitted && Counter < cutTime) ? 8 : 0) - Main.screenPosition, null, dc * Projectile.Opacity, Projectile.rotation, tx.Size() * 0.5f + heldOrigin, Projectile.scale, dir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically, 0);
             return false;
         }

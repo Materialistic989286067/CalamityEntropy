@@ -1,5 +1,5 @@
 ﻿using CalamityEntropy.Content.Items.Weapons;
-using CalamityMod;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
@@ -12,13 +12,17 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
 {
     public class ZeratosBullet0 : ModProjectile
     {
+        //帧动画数组(ZeratosBullet0~4),加载期就位,PreDraw 不再拼接路径逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/SamsaraCasket/ZeratosBullet", 0, 5, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] Frames;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<AverageDamageClass>();
+            // 灾厄均伤职业→自有NoneType(同为各职业20%继承),与轮回棺其余弹幕一致
+            Projectile.DamageType = NoneTypeDamageClass.Instance;
             Projectile.width = 40;
             Projectile.height = 40;
             Projectile.friendly = true;
@@ -75,7 +79,7 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
         {
             lightColor = Color.White;
             CEUtils.DrawAfterimage(TextureAssets.Projectile[Projectile.type].Value, odp, odr);
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/ZeratosBullet" + frame.ToString()).Value;
+            Texture2D tex = Frames[frame];
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, tex.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
 
             return false;

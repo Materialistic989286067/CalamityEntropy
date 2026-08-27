@@ -16,15 +16,6 @@
 	  <Reference Include="AlchemistNPCLite">
 	    <HintPath>..\ModAssemblies\AlchemistNPCLite.dll</HintPath>
 	  </Reference>
-	  <Reference Include="CalamityMod">
-	    <HintPath>..\ModAssemblies\CalamityMod.dll</HintPath>
-	  </Reference>
-	  <Reference Include="CalamityOverhaul">
-	    <HintPath>..\ModAssemblies\CalamityOverhaul.dll</HintPath>
-	  </Reference>
-	  <Reference Include="InfernumMode">
-	    <HintPath>..\ModAssemblies\InfernumMode.dll</HintPath>
-	  </Reference>
 	  <Reference Include="InnoVault">
 	    <HintPath>..\ModAssemblies\InnoVault.dll</HintPath>
 	  </Reference>

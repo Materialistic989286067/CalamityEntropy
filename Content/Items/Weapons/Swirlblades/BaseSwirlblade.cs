@@ -1,10 +1,8 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
-using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Metrics;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -22,7 +20,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         }
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, true, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, true, -1);
             Projectile.width = Projectile.height = 24;
             Projectile.localNPCHitCooldown = 6;
         }

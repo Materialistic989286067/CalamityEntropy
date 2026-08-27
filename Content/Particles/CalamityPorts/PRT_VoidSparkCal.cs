@@ -5,7 +5,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.Particles.CalamityPorts
 {
-    //照CalamityMod的VoidSpark翻的,黑芯+透明外圈叠两层,GlowSpark2/GlowSpark走SharedAssets
+    //灾厄VoidSpark的移植,黑芯+透明外圈叠两层,GlowSpark2/GlowSpark走SharedAssets
     public class PRT_VoidSparkCal : BasePRT
     {
         public Color InitialColor;
@@ -27,7 +27,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             ShrinkSpeed = 1f;
         }
 
-        public override string Texture => CEUtils.WhiteTexPath;   //@CalamityMod路径走不了Texture属性
+        public override string Texture => CEUtils.WhiteTexPath;   //Texture指白图占位,真图走SharedAssets
 
         public PRT_VoidSparkCal Configure(bool affectedByGravity, int lifetime, float shrinkSpeed = 1f,
             PRTRenderLayer? renderLayer = null)

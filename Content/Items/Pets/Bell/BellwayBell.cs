@@ -123,7 +123,7 @@ namespace CalamityEntropy.Content.Items.Pets.Bell
                             Projectile.velocity *= 0.2f;
                             Projectile.velocity.Y = -12;
                             SoundEngine.PlaySound(SoundID.Item128, Projectile.Center);
-                            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Gold, 0.0046f).Configure("CalamityMod/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f, 0.05f, 18);
+                            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Gold, 0.0046f).Configure("CalamityEntropy/Assets/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f, 0.05f, 18);
                         }
                     }
                 }
@@ -138,7 +138,7 @@ namespace CalamityEntropy.Content.Items.Pets.Bell
                     Projectile.velocity *= 0;
                     Flying = true;
                     SoundEngine.PlaySound(SoundID.Item128, Projectile.Center);
-                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Gold, 0.0046f).Configure("CalamityMod/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f, 0.05f, 18);
+                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Gold, 0.0046f).Configure("CalamityEntropy/Assets/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f, 0.05f, 18);
                     return;
                 }
                 Projectile.velocity *= 0.98f;

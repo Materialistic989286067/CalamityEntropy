@@ -1,6 +1,7 @@
-﻿using CalamityMod;
-using CalamityMod.Projectiles.Melee;
+﻿using CalamityEntropy.Assets.Register;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,7 +28,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -145,7 +146,7 @@ namespace CalamityEntropy.Content.Projectiles
                     for (int i = 0; i < 4; i++)
                     {
                         Player player = Projectile.owner.ToPlayer();
-                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(16)) * (1.6f + ((float)Main.rand.NextDouble() * 0.5f)), ModContent.ProjectileType<BlazingPhantomBlade>(), (int)(Projectile.damage * 0.9f), 4, Projectile.owner, (float)player.direction * player.gravDir, 56, player.GetAdjustedItemScale(player.HeldItem));
+                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(16)) * (1.6f + ((float)Main.rand.NextDouble() * 0.5f)), ModContent.ProjectileType<TyrantPhantomBlade>(), (int)(Projectile.damage * 0.9f), 4, Projectile.owner, (float)player.direction * player.gravDir, 56, player.GetAdjustedItemScale(player.HeldItem));
                     }
                 }
             }
@@ -168,7 +169,7 @@ namespace CalamityEntropy.Content.Projectiles
                     for (int i = 0; i < 2; i++)
                     {
                         Player player = Projectile.owner.ToPlayer();
-                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(16)) * (1.6f + ((float)Main.rand.NextDouble() * 0.5f)), ModContent.ProjectileType<BlazingPhantomBlade>(), (int)(Projectile.damage * 0.9f), 4, Projectile.owner, (float)player.direction * player.gravDir, 56, player.GetAdjustedItemScale(player.HeldItem));
+                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(16)) * (1.6f + ((float)Main.rand.NextDouble() * 0.5f)), ModContent.ProjectileType<TyrantPhantomBlade>(), (int)(Projectile.damage * 0.9f), 4, Projectile.owner, (float)player.direction * player.gravDir, 56, player.GetAdjustedItemScale(player.HeldItem));
                     }
                 }
             }
@@ -191,7 +192,7 @@ namespace CalamityEntropy.Content.Projectiles
                     for (int i = 0; i < 2; i++)
                     {
                         Player player = Projectile.owner.ToPlayer();
-                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(16)) * (1.6f + ((float)Main.rand.NextDouble() * 0.5f)), ModContent.ProjectileType<BlazingPhantomBlade>(), (int)(Projectile.damage * 0.9f), 4, Projectile.owner, (float)player.direction * player.gravDir, 56, player.GetAdjustedItemScale(player.HeldItem));
+                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(16)) * (1.6f + ((float)Main.rand.NextDouble() * 0.5f)), ModContent.ProjectileType<TyrantPhantomBlade>(), (int)(Projectile.damage * 0.9f), 4, Projectile.owner, (float)player.direction * player.gravDir, 56, player.GetAdjustedItemScale(player.HeldItem));
                     }
                 }
             }
@@ -303,7 +304,7 @@ namespace CalamityEntropy.Content.Projectiles
             GraphicsDevice gd = Main.graphics.GraphicsDevice;
             Player player = Main.player[Projectile.owner];
 
-            Texture2D tail = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Extra_201").Value;
+            Texture2D tail = CEExtraAssets.Extra_201;
             var r = Main.rand;
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);

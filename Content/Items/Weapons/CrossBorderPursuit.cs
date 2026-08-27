@@ -2,11 +2,11 @@
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using CalamityEntropy.Core.Weapons;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.DataStructures;
@@ -14,8 +14,11 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
-    public class CrossBorderPursuit : ModItem
+    public class CrossBorderPursuit : ModItem, ICEChargeWeapon
     {
+        // 周期就绪 10 秒；未就绪时武器不可使用（原武器全部行为即大招）
+        public CEChargeProfile ChargeProfile => CEChargeProfile.Periodic(10f);
+
         public override void SetStaticDefaults()
         {
         }
@@ -28,10 +31,10 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAnimation = 16;
             Item.useStyle = -1;
             Item.damage = 1300;
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Magic;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1);
             Item.rare = ModContent.RarityType<VoidPurple>();
             Item.shoot = ModContent.ProjectileType<CrossBorderPursuitProj>();
             Item.shootSpeed = 8;
@@ -41,7 +44,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             NPC target = CEUtils.FindTarget_HomingProj(player, Main.MouseWorld, 360, null);
             castTarget = target;
-            return player.Calamity().StealthStrikeAvailable() && target != null;
+            return CEChargeWeapon.IsReady(Item) && target != null;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -49,7 +52,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             if (castTarget != null)
             {
                 Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI, castTarget.whoAmI);
-                CEUtils.CostStealthForPlr(player);
+                CEChargeWeapon.TryConsume(player, Item);
             }
             return false;
         }
@@ -59,7 +62,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 .AddIngredient<DedicatedOracle>()
                 .AddIngredient<AnimaSola>()
                 .AddIngredient<VoidBar>(5)
-                .AddIngredient<AscendantSpiritEssence>(2)
+                .AddIngredient<WraithSoulEssence>(2)
                 .AddTile<VoidWellTile>()
                 .Register();
         }
@@ -67,9 +70,14 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class CrossBorderPursuitProj : ModProjectile
     {
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/TheoEye";
+        //魔法阵与锁链贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Content/Items/Weapons/TheoCircle")]
+        internal static Asset<Texture2D> TheoCircleTex;
+        [VaultLoaden("CalamityEntropy/Content/Items/Weapons/CrossBorderPursuitAlt")]
+        internal static Asset<Texture2D> ChainTex;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Magic, false, -1);
         }
         public override bool? CanHitNPC(NPC target)
         {
@@ -181,8 +189,6 @@ namespace CalamityEntropy.Content.Items.Weapons
             if (counter == 0) CEUtils.PlaySound("AntivoidDashHit", 1.2f, Projectile.Center);
             if (counter == MaxTime)
             {
-                int stealthRegenDelay = 240.ApplyCdDec(player);
-                player.Entropy().StealthRegenDelay = stealthRegenDelay;
                 CEUtils.PlaySound("CastTriangles", 0.8f, Projectile.Center);
                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), target.Center, Vector2.Zero, ModContent.ProjectileType<NetherRiftCrack>(), Projectile.damage * 2, 1, Projectile.owner).ToProj().DamageType = Projectile.DamageType;
                 for (int i = 0; i < 64; i++)
@@ -205,7 +211,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             Texture2D tex = Projectile.GetTexture();
             int counter = (int)Projectile.ai[1];
-            Texture2D circle = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/TheoCircle");
+            Texture2D circle = TheoCircleTex.Value;
             if (target != null)
             {
                 int adjustDrawingYPos = -20 - target.height / 2;
@@ -230,7 +236,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public void DrawChain(Vector2 center, float alpha)
         {
-            Texture2D chain = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/CrossBorderPursuitAlt");
+            Texture2D chain = ChainTex.Value;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             while (alpha > 0)
             {

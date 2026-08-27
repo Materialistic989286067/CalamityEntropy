@@ -1,21 +1,16 @@
-using AlchemistNPCLite.Items;
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Items.Armor.Azafure;
-using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Rogue;
+using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
-using System.Runtime.Intrinsics.Arm;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -24,11 +19,14 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 {
-    public class AzafureSwirlblade : RogueWeapon, IAzafureEnhancable
+    public class AzafureSwirlblade : ModItem, ICEChargeWeapon, IAzafureEnhancable
     {
+        // 充能条 4 秒；原潜伏乘数 伤害0.75/弹速1.2 并入释放乘数
+        public CEChargeProfile ChargeProfile => CEChargeProfile.ChargeBar(4f, 0.75f, 1.2f);
+
         public override void SetDefaults()
         {
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 46;
             Item.width = 74;
             Item.height = 70;
@@ -36,7 +34,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Item.crit = 3;
             Item.ArmorPenetration = 10;
             Item.UseSound = SoundID.Item1 with { Volume = 1.2f, Pitch = -0.32f };
-            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+            Item.value = Item.buyPrice(gold: 10);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.shoot = ModContent.ProjectileType<AzafureSwirlbladeProj>();
             Item.shootSpeed = 45f;
@@ -47,16 +45,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Item.noMelee = true;
             Item.noUseGraphic = true;
         }
-        public override float StealthDamageMultiplier => 0.75f;
-        public override float StealthVelocityMultiplier => 1.2f;
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            bool ult = CEChargeWeapon.TryConsume(player, Item);
             int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            if (player.Calamity().StealthStrikeAvailable() && p.WithinBounds(Main.maxProjectiles))
+            if (ult && p >= 0 && p < Main.maxProjectiles)
             {
-                Main.projectile[p].Calamity().stealthStrike = true;
-                CEUtils.SyncProj(p);
+                CEChargeWeapon.Empower(p);
             }
             return false;
         }
@@ -83,8 +78,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             base.SetDefaults();
             Projectile.localNPCHitCooldown = 7;
         }
-        public override float Radius => 140 * (Projectile.Calamity().stealthStrike ? 1.18f : 1) * (player.AzafureEnhance() ? 1.2f : 1);
-        public override int SpreadTime => (Projectile.Calamity().stealthStrike ? 24 : 30) + (player.AzafureEnhance() ? 14 : 0);
+        public override float Radius => 140 * (Projectile.IsEmpowered() ? 1.18f : 1) * (player.AzafureEnhance() ? 1.2f : 1);
+        public override int SpreadTime => (Projectile.IsEmpowered() ? 24 : 30) + (player.AzafureEnhance() ? 14 : 0);
         public override void AI()
         {
             base.AI();
@@ -129,7 +124,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Main.EntitySpriteDraw(Projectile.getDrawData(lightColor, overridePos: Projectile.Center + (Spreaded ? CEUtils.randomPointInCircle(4) : Vector2.Zero)));
             if (BladeScale > 0)
             {
-                Texture2D smear = CEUtils.getExtraTex("CircularSmearSmokey");
+                Texture2D smear = CEExtraAssets.CircularSmearSmokey;
                 float scale = Radius / 78f * Projectile.scale * BladeScale;
                 float time = Main.GlobalTimeWrappedHourly;
                 Vector2 o = smear.Size() * 0.5f;
@@ -155,7 +150,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             if (Main.myPlayer == Projectile.owner)
             {
                 int flame = ModContent.ProjectileType<AzafureSwirlbladeMissile>();
-                if (Projectile.Calamity().stealthStrike)
+                if (Projectile.IsEmpowered())
                 {
                     int totalCount = (player.AzafureEnhance() ? 10 : 8);
                     for (int i = 0; i < totalCount; i++)
@@ -179,7 +174,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             if (TimeUtilSpread == 2)
                 Projectile.velocity = CEUtils.randomRot().ToRotationVector2() * 34;
             float fm = float.Min(TimeUtilSpread, 26);
-            if (Projectile.Calamity().stealthStrike)
+            if (Projectile.IsEmpowered())
             {
                 if (ShootSaw)
                 {
@@ -246,7 +241,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
     {
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.width = 28;
             Projectile.height = 28;
             Projectile.tileCollide = false;
@@ -261,7 +256,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         {
             if(Projectile.Entropy().FirstFrames)
             {
-                SoundStyle ShootSound = new("CalamityMod/Sounds/Item/SawShot", 2) { PitchVariance = 0f, Volume = 1 };
+                SoundStyle ShootSound = new("CalamityEntropy/Assets/Sounds/SawShot", 2) { PitchVariance = 0f, Volume = 1 };
                 SoundEngine.PlaySound(ShootSound, Projectile.Center);
 
                 for (int i = 0; i < 32; i++)
@@ -328,7 +323,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D smear = CEUtils.getExtraTex("CircularSmearSmokey");
+            Texture2D smear = CEExtraAssets.CircularSmearSmokey;
             float scale = Radius / 78f * Projectile.scale * BladeScale;
             float time = Main.GlobalTimeWrappedHourly;
             Vector2 o = smear.Size() * 0.5f;
@@ -356,7 +351,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
     {
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, true, 1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, true, 1);
             Projectile.width = Projectile.height = 12;
             Projectile.MaxUpdates = 4;
         }
@@ -411,8 +406,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         public override void OnKill(int timeLeft)
         {
             CEUtils.PlaySound("explosion1", Main.rand.NextFloat(1.5f, 1.8f), Projectile.Center, 6, 0.5f);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Firebrick * 1.2f, 0.04f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.04f, 0.15f, 9);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed * 1.2f, 0.04f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.04f, 0.1f, 7);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Firebrick * 1.2f, 0.04f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.04f, 0.15f, 9);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed * 1.2f, 0.04f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.04f, 0.1f, 7);
             PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.Firebrick * 1.2f, 1.4f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 12);
             PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.White, 0.6f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 12);
             if (Projectile.owner == Main.myPlayer)

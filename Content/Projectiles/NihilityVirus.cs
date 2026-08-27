@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Utilities;
 using InnoVault;
@@ -228,7 +229,7 @@ namespace CalamityEntropy.Content.Projectiles
             }
 
             //增强光球效果，添加腐蚀粒子
-            Texture2D light = CEUtils.getExtraTex("lightball");
+            Texture2D light = CEExtraAssets.lightball;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Vector2 endPos = randomizedPoints[^1] - Main.screenPosition;
             //绘制多层光晕，模拟腐蚀

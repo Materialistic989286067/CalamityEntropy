@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Items.Vanity;
-using CalamityMod.UI.ResourceSets;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
@@ -32,9 +31,9 @@ namespace CalamityEntropy.Content.UI
             else { return string.Empty; }
         }
 
-        public static void PostDrawResourceHook(Action<CalamityResourceOverlay, ResourceOverlayDrawContext> orig, CalamityResourceOverlay self, ResourceOverlayDrawContext context)
+        // 原先挂钩灾厄的 CalamityResourceOverlay 转调绘制，脱离灾厄后改为 tML 原生覆写
+        public override void PostDrawResource(ResourceOverlayDrawContext context)
         {
-            orig.Invoke(self, context);
             Asset<Texture2D> asset = context.texture;
             string fancyFolder = "Images/UI/PlayerResourceSets/FancyClassic/";
             string barsFolder = "Images/UI/PlayerResourceSets/HorizontalBars/";

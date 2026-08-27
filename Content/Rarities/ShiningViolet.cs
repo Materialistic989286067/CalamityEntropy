@@ -1,6 +1,7 @@
-﻿using CalamityMod;
-using CalamityMod.Rarities;
+﻿using CalamityEntropy.Common;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using ReLogic.Graphics;
 using System;
 using Terraria;
@@ -14,6 +15,11 @@ namespace CalamityEntropy.Content.Rarities
 {
     public class ShiningViolet : ModRarity
     {
+        //提示文字发光与闪粒贴图,加载期由 VaultLoaden 赋值,只在物品栏提示绘制里读取
+        [VaultLoaden("CalamityEntropy/Assets/Extra/Ports/CrystalTextGlow")]
+        private static Asset<Texture2D> crystalTextGlowTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/Ports/CrystalTextSparkle")]
+        private static Asset<Texture2D> crystalTextSparkleTex;
         public override Color RarityColor => Color.Violet;
 
         public override int GetPrefixedRarity(int offset, float valueMult) => Type;
@@ -25,8 +31,8 @@ namespace CalamityEntropy.Content.Rarities
         public static void Draw(Item Item, SpriteBatch spriteBatch, string text, int X, int Y, Color textColor, Color lightColor, float rotation,
             Vector2 origin, Vector2 baseScale, float time, bool renderTextSparkles, DynamicSpriteFont font, Color cLinarR, Color cParticle)
         {
-            var crystalTextGlow = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/UI/CrystalTextGlow").Value;
-            var sparkle = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/UI/CrystalTextSparkle").Value;
+            var crystalTextGlow = crystalTextGlowTex.Value;
+            var sparkle = crystalTextSparkleTex.Value;
             var fontSize = font.MeasureString(text);
             var center = fontSize / 2f;
 
@@ -62,7 +68,6 @@ namespace CalamityEntropy.Content.Rarities
                 adX += font.MeasureString(chr).X;
             }
 
-            var bloomColor = ColorTool.Rainbowing(time * 4 - 0.9f);
             if (!renderTextSparkles)
                 return;
 
@@ -122,7 +127,7 @@ namespace CalamityEntropy.Content.Rarities
         public static void Draw(Item Item, string text, int X, int Y, float rotation, Vector2 origin, Vector2 baseScale, Color? textColor = null, Color? lightColor = null, bool? renderTextSparkles = null)
         {
             Draw(Item, Main.spriteBatch, text, X, Y, Colors.AlphaDarken(textColor ?? TextClr), lightColor ?? Color.Purple, rotation, origin, baseScale, Main.GlobalTimeWrappedHourly,
-                renderTextSparkles ?? CalamityClientConfig.Instance.TextEffects, FontAssets.MouseText.Value);
+                renderTextSparkles ?? Config.Instance.TextEffects, FontAssets.MouseText.Value);
         }
 
         public static void Draw(Item Item, DrawableTooltipLine line)

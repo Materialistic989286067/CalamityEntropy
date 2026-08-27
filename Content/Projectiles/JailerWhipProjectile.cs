@@ -1,6 +1,7 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
-using CalamityMod.Buffs.DamageOverTime;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -84,7 +85,7 @@ namespace CalamityEntropy.Content.Projectiles
 
         private void DrawLine(List<Vector2> list)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value;
+            Texture2D texture = CEExtraAssets.white;
             Rectangle frame = texture.Frame();
             Vector2 origin = new Vector2(0, 0.5f);
 

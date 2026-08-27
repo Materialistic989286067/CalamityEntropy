@@ -1,7 +1,5 @@
 ﻿using CalamityEntropy.Content.Projectiles.monument;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.FurnitureVoid;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityEntropy.Content.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -42,10 +40,10 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<DepthCells>(), 10).
-                AddIngredient(ModContent.ItemType<Lumenyl>(), 15).
-                AddIngredient(ModContent.ItemType<SmoothVoidstone>(), 45).
-                AddTile(ModContent.TileType<VoidCondenser>()).
+                AddIngredient(ItemID.SoulofNight, 10).
+                AddIngredient(ItemID.CrystalShard, 15).
+                AddIngredient(ItemID.Obsidian, 45).
+                AddTile(ModContent.TileType<VoidWellTile>()).
                 Register();
         }
 

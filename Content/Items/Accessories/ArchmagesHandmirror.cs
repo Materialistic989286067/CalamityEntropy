@@ -1,4 +1,3 @@
-﻿using CalamityMod.Items;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -17,7 +16,7 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override void SetDefaults()
         {
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ItemRarityID.Pink;
             Item.accessory = true;
         }

@@ -365,3 +365,14 @@ FodyWeavers.xsd
 
 .vs/
 .LocalizationCheck
+
+# Local working notes and editor/tool state. Doc\* is also in build.txt
+# buildIgnore so it never ships inside the .tmod either.
+Doc/
+.*/
+!.github/
+
+# Only README and LICENSE belong at the repo root as markdown
+/*.md
+!/README.md
+!/LICENSE.md

@@ -1,6 +1,4 @@
-﻿using CalamityMod;
-using CalamityMod.Items.Accessories.Wings;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using Terraria;
 using Terraria.DataStructures;
@@ -11,7 +9,7 @@ using Terraria.ModLoader.IO;
 namespace CalamityEntropy.Content.Items.Accessories
 {
     [AutoloadEquip(EquipType.Wings)]
-    public class BigShotsWing : BaseWings, ISpecialDrawingWing, IGetFromStarterBag
+    public class BigShotsWing : CEBaseWings, ISpecialDrawingWing, IGetFromStarterBag
     {
         public static float HorSpeed = 2.6f;
         public static float AccMul = 0.3f;
@@ -45,7 +43,8 @@ namespace CalamityEntropy.Content.Items.Accessories
             bool flag = false;
             foreach (NPC n in Main.ActiveNPCs)
             {
-                if (n.IsABoss())
+                // 脱离灾厄:灾厄 IsABoss 判定改为原版 boss 旗标+世吞体节特判
+                if (n.boss || n.type == NPCID.EaterofWorldsHead || n.type == NPCID.EaterofWorldsBody || n.type == NPCID.EaterofWorldsTail)
                 {
                     flag = true;
                     break;

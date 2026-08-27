@@ -1,10 +1,12 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -15,6 +17,17 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class PrisonOfPermafrostCircle : ModProjectile
     {
+        //法阵贴图组(火焰/冰晶/符环按序号收数组),加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/POP/flame", 1, 4, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] FlameFrames;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/POP/ice", 1, 3, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] IceFrames;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/POP/c", 1, 6, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] RuneFrames;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/POP/triangle")]
+        internal static Asset<Texture2D> TriangleTex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/POP/circle")]
+        internal static Asset<Texture2D> CircleTex;
         public int usingTime = 0;
         public int counter = 0;
         public float a1 = 0;
@@ -270,12 +283,8 @@ namespace CalamityEntropy.Content.Projectiles
             {
                 Projectile.Center = Projectile.Entropy().OnProj.ToProj().Center;
             }
-            List<Texture2D> flames = new List<Texture2D>();
-            flames.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/POP/flame1").Value);
-            flames.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/POP/flame2").Value);
-            flames.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/POP/flame3").Value);
-            flames.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/POP/flame4").Value);
-            Texture2D triangle = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/POP/triangle").Value;
+            Texture2D[] flames = FlameFrames;
+            Texture2D triangle = TriangleTex.Value;
             float alpha = (float)usingTime / 60f;
             if (alpha > 1)
             {
@@ -288,13 +297,7 @@ namespace CalamityEntropy.Content.Projectiles
 
             Main.spriteBatch.Draw(triangle, Projectile.Center - Main.screenPosition + new Vector2(0, 12), null, triC * alpha, 0, new Vector2(triangle.Width, triangle.Height) / 2, 1, SpriteEffects.None, 0);
 
-            Texture2D ice1 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/POP/ice1").Value;
-            Texture2D ice2 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/POP/ice2").Value;
-            Texture2D ice3 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/POP/ice3").Value;
-            List<Texture2D> ices = new List<Texture2D>();
-            ices.Add(ice1);
-            ices.Add(ice2);
-            ices.Add(ice3);
+            Texture2D[] ices = IceFrames;
             float angle = ((float)counter) / 180f * (float)Math.PI * 2f;
             int size = (int)((alpha * 8.3f) * (alpha * 8.3f));
             Vector2 ofs = Vector2.Zero;
@@ -305,19 +308,7 @@ namespace CalamityEntropy.Content.Projectiles
                 Main.spriteBatch.Draw(itx, Projectile.Center - Main.screenPosition + ofs + (new Vector2(size, 0).RotatedBy(angle + MathHelper.ToRadians(angle + i * 60))) * new Vector2(1, 0.8f), null, Color.White * alpha, 0, new Vector2(itx.Width, itx.Height) / 2, 1, SpriteEffects.None, 0);
             }
 
-            Texture2D c1 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/POP/c1").Value;
-            Texture2D c2 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/POP/c2").Value;
-            Texture2D c3 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/POP/c3").Value;
-            Texture2D c4 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/POP/c4").Value;
-            Texture2D c5 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/POP/c5").Value;
-            Texture2D c6 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/POP/c6").Value;
-            List<Texture2D> cs = new List<Texture2D>();
-            cs.Add(c1);
-            cs.Add(c2);
-            cs.Add(c3);
-            cs.Add(c4);
-            cs.Add(c5);
-            cs.Add(c6);
+            Texture2D[] cs = RuneFrames;
             angle = -((float)counter) / 180f * (float)Math.PI * 2f;
             size = (int)((alpha * 12f) * (alpha * 12f)) + (int)(Math.Cos((float)counter / 10) * 30);
             int size2 = (int)((alpha * 12f) * (alpha * 12f)) - (int)(Math.Cos((float)counter / 10) * 30); ;
@@ -347,7 +338,7 @@ namespace CalamityEntropy.Content.Projectiles
 
             }
 
-            Texture2D circle = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/POP/circle").Value;
+            Texture2D circle = CircleTex.Value;
             angle = MathHelper.ToDegrees(counter);
             size = (int)(alpha * 100);
             Vector2 lu = new Vector2(size, 0).RotatedBy(angle - MathHelper.ToRadians(angle - 135));

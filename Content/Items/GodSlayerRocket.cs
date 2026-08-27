@@ -1,6 +1,4 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items.Materials;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -32,7 +30,7 @@ namespace CalamityEntropy.Content.Items
 
         public override void AddRecipes()
         {
-            CreateRecipe(250).AddIngredient(ModContent.ItemType<CosmiliteBar>(), 5).AddIngredient(ModContent.ItemType<CoreofCalamity>(), 1).AddTile(ModContent.TileType<CosmicAnvil>()).Register();
+            CreateRecipe(250).AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 5).AddIngredient(ItemID.ChlorophyteBar, 1).AddTile(TileID.LunarCraftingStation).Register();
         }
     }
 }

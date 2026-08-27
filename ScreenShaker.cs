@@ -1,8 +1,6 @@
-﻿using CalamityMod;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.ModLoader;
 
 namespace CalamityEntropy
 {
@@ -106,7 +104,8 @@ namespace CalamityEntropy
             {
                 vec += ss.GetShiftVec();
             }
-            return vec * ModContent.GetInstance<CalamityClientConfig>().ScreenshakePower;
+            // 震动强度走自有客户端配置 Config.ScreenShakePower(替代原灾厄 ScreenshakePower)
+            return vec * Common.Config.Instance.ScreenShakePower;
         }
     }
 }

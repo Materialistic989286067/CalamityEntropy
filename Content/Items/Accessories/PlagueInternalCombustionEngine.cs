@@ -1,4 +1,3 @@
-﻿using CalamityMod.Items;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -13,7 +12,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         {
             Item.width = 98;
             Item.height = 60;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.value = Item.buyPrice(gold: 60);
             Item.rare = ItemRarityID.Yellow;
             Item.accessory = true;
         }

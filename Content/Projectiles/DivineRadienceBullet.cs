@@ -1,8 +1,10 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Graphics.Primitives;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.Graphics.Shaders;
@@ -108,11 +110,11 @@ namespace CalamityEntropy.Content.Projectiles
 
         public override bool PreDraw(ref Color lightColor)
         {
-            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
+            GameShaders.Misc["CalamityEntropy:TrailStreak"].SetShaderTexture(CEExtraAssets.SylvestaffStreakAsset);
             Vector2 overallOffset = Projectile.Size * 0.5f;
             overallOffset += Projectile.velocity * 1.4f;
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_, _) => overallOffset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction2, PrimitiveColorFunction2, (_, _) => overallOffset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]));
+            CEPrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_, _) => overallOffset, shader: GameShaders.Misc["CalamityEntropy:TrailStreak"]));
+            CEPrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction2, PrimitiveColorFunction2, (_, _) => overallOffset, shader: GameShaders.Misc["CalamityEntropy:TrailStreak"]));
             Main.spriteBatch.ExitShaderRegion();
             return false;
         }

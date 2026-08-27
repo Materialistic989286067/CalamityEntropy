@@ -1,7 +1,10 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -18,7 +21,9 @@ namespace CalamityEntropy.Content.Items.Books
             Item.mana = 13;
             Item.rare = ItemRarityID.Red;
         }
-        public override Texture2D BookMarkTexture => ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/EntropyBookUI/DS").Value;
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/DS")]
+        internal static Asset<Texture2D> BookMarkSlotTex;
+        public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<DarkScriptureHeld>();
         public override int SlotCount => 3;
 
@@ -69,10 +74,10 @@ namespace CalamityEntropy.Content.Items.Books
         public void Explode()
         {
             CEUtils.PlaySound("blackholeEnd", Main.rand.NextFloat(1.2f, 1.6f), Projectile.Center, volume: 0.4f);
-            //CustomPulse贴图路径现传,CalamityPorts走PRTPathTextures,三层爆炸+Shine是旧GeneralParticleHandler原样
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 80, 80), 0.02f).Configure("CalamityMod/Particles/SoftRoundExplosion", Vector2.One, 0, 0.02f, 0.1f, 16);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 80, 80), 0.02f).Configure("CalamityMod/Particles/SoftRoundExplosion", Vector2.One, 0, 0.02f, 0.09f, 16);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 80, 80), 0.02f).Configure("CalamityMod/Particles/SoftRoundExplosion", Vector2.One, 0, 0.02f, 0.08f, 16);
+            //CustomPulse贴图路径现传,CalamityPorts走PRTPathTextures,三层爆炸+Shine是旧版粒子系统原样
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 80, 80), 0.02f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", Vector2.One, 0, 0.02f, 0.1f, 16);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 80, 80), 0.02f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", Vector2.One, 0, 0.02f, 0.09f, 16);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 80, 80), 0.02f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", Vector2.One, 0, 0.02f, 0.08f, 16);
             PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.Red * 0.8f, 1.7f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 16);
             PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.White, 0.8f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 16);
             PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.White, 0.8f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 16);
@@ -151,7 +156,7 @@ namespace CalamityEntropy.Content.Items.Books
         }
         public void DrawEnergyBall(Vector2 pos, float size, float alpha)
         {
-            Texture2D tex = CEUtils.getExtraTex("a_circle");
+            Texture2D tex = CEExtraAssets.a_circle;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(160, 90, 90) * alpha, Projectile.rotation, tex.Size() * 0.5f, new Vector2(1 + (Projectile.velocity.Length() * 0.01f), 1) * size * 0.25f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(60, 2, 2) * alpha, Projectile.rotation, tex.Size() * 0.5f, new Vector2(1 + (Projectile.velocity.Length() * 0.01f), 1) * size * 0.4f, SpriteEffects.None, 0);

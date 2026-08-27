@@ -5,8 +5,6 @@ using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
 using InnoVault.PRT;
 using System.Collections.Generic;
 using Terraria;
@@ -28,7 +26,7 @@ namespace CalamityEntropy.Content.Items.Weapons.PeaceKey
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.UseSound = SoundID.DD2_DefenseTowerSpawn;
             Item.autoReuse = true;
@@ -62,7 +60,7 @@ namespace CalamityEntropy.Content.Items.Weapons.PeaceKey
             CreateRecipe()
                 .AddIngredient<AzafureProtectiveCannon>()
                 .AddIngredient<AzafureTacticalRadio>()
-                .AddIngredient<ScoriaBar>(6)
+                .AddIngredient(ItemID.HallowedBar, 6)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }

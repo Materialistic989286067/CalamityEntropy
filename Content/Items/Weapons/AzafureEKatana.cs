@@ -1,12 +1,8 @@
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Rarities;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -35,14 +31,14 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useTime = 10;
             Item.useAnimation = 10;
             Item.autoReuse = true;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.damage = 120;
             Item.knockBack = 6;
             Item.crit = 15;
             Item.channel = true;
             Item.shoot = ModContent.ProjectileType<AzafureEKatanaSlash>();
             Item.shootSpeed = 12;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(0, 5);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             if (Main.zenithWorld)
                 Item.damage *= 2;
@@ -67,7 +63,7 @@ namespace CalamityEntropy.Content.Items.Weapons
     {
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(ModContent.GetInstance<TrueMeleeDamageClass>(), false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
@@ -76,7 +72,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AI()
         {
             var player = Projectile.GetOwner();
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             if (Projectile.ai[0]++ == 0)
             {
                 float scale_ = Projectile.GetOwner().HeldItem.scale;
@@ -89,7 +85,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 
                 if (Projectile.frameCounter == 0 || Projectile.frameCounter == 3 || Projectile.frameCounter == 6)
                 {
-                    Projectile.velocity = (player.Calamity().mouseWorld - Projectile.Center).normalize() * 8;
+                    Projectile.velocity = (player.Entropy().MouseWorld - Projectile.Center).normalize() * 8;
                     Projectile.rotation = Projectile.velocity.ToRotation();
                     Projectile.ResetLocalNPCHitImmunity();
                     CEUtils.PlaySound("vbapear", 3.8f, Projectile.Center, 0, 0.2f);
@@ -141,14 +137,24 @@ namespace CalamityEntropy.Content.Items.Weapons
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * 160 * Scale, targetHitbox, 256);
         }
         public bool shake = true;
+        // 灾厄 Organic() 扩展的本地等价：按受击音效白名单区分肉质/非肉质
+        private static bool IsOrganic(NPC target)
+        {
+            return target.HitSound != SoundID.NPCHit4 && target.HitSound != SoundID.NPCHit41 && target.HitSound != SoundID.NPCHit2 &&
+                target.HitSound != SoundID.NPCHit5 && target.HitSound != SoundID.NPCHit11 && target.HitSound != SoundID.NPCHit30 &&
+                target.HitSound != SoundID.NPCHit34 && target.HitSound != SoundID.NPCHit36 && target.HitSound != SoundID.NPCHit42 &&
+                target.HitSound != SoundID.NPCHit49 && target.HitSound != SoundID.NPCHit52 && target.HitSound != SoundID.NPCHit53 &&
+                target.HitSound != SoundID.NPCHit54 && target.HitSound != null;
+        }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff<MechanicalTrauma>(160);
             Player Owner = Projectile.GetOwner();
-            if (target.Organic())
-                SoundEngine.PlaySound(Murasama.OrganicHit with { Pitch = -Main.rand.NextFloat(0.2f, 0.36f), Volume = 0.26f }, Projectile.Center);
+            // 原灾厄 Murasama 命中音；无机版库内有同名移植，有机版以 FleshWhipHit 近似
+            if (IsOrganic(target))
+                SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/FleshWhipHit") { Pitch = -Main.rand.NextFloat(0.2f, 0.36f), Volume = 0.26f }, Projectile.Center);
             else
-                SoundEngine.PlaySound(Murasama.InorganicHit with { Pitch = -Main.rand.NextFloat(0.2f, 0.36f), Volume = 0.26f }, Projectile.Center);
+                SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/MurasamaHitInorganic") { Pitch = -Main.rand.NextFloat(0.2f, 0.36f), Volume = 0.26f }, Projectile.Center);
 
             CEUtils.PlaySound("ExoHit1", Main.rand.NextFloat(1.7f, 2), target.Center, volume: 0.3f);
             for (int i = 0; i < 52; i++)

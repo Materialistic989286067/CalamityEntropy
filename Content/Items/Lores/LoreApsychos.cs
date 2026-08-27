@@ -1,10 +1,9 @@
-﻿using CalamityMod.Items.LoreItems;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 
 namespace CalamityEntropy.Content.Items.Lores
 {
-    public class LoreApsychos : LoreItem
+    public class LoreApsychos : CELoreItem
     {
         public override void SetDefaults()
         {

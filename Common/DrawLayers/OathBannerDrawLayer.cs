@@ -1,5 +1,7 @@
 ﻿using CalamityEntropy.Content.Items.Accessories;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
@@ -8,6 +10,10 @@ namespace CalamityEntropy.Common.DrawLayers
 {
     public class OathBannerDrawLayer : PlayerDrawLayer
     {
+        //旗帜贴图在加载期就位,不再每帧走 RequestTex 查表
+        [VaultLoaden("CalamityEntropy/Content/Items/Accessories/Oath/OathBannerHoldout")]
+        internal static Asset<Texture2D> BannerTex;
+
         public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
         {
             if (drawInfo.drawPlayer.dead)
@@ -23,7 +29,7 @@ namespace CalamityEntropy.Common.DrawLayers
         protected override void Draw(ref PlayerDrawSet drawInfo)
         {
             var player = drawInfo.drawPlayer;
-            Texture2D tex = CEUtils.RequestTex("CalamityEntropy/Content/Items/Accessories/Oath/OathBannerHoldout");
+            Texture2D tex = BannerTex.Value;
             int MaxFrame = 8;
             Vector2 offset = drawInfo.GetFrameOrigin() + new Vector2(player.width, player.height);
             int th = tex.Height / MaxFrame;

@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.Items.Weapons;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,13 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
 {
     public class SamsaraCasketProj : ModProjectile
     {
+        //棺体前后层(a/c 按等级 0~6)与剑格(b0~b5)贴图数组,加载期就位,PreDraw 不再拼接路径逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/SamsaraCasket/a", 0, 7, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] BackFrames;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/SamsaraCasket/c", 0, 7, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] FrontFrames;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/SamsaraCasket/b", 0, 6, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] SwordFrames;
 
         public override void SetStaticDefaults()
         {
@@ -249,7 +257,7 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
         {
             Player player = Projectile.owner.ToPlayer();
             var modPlayer = player.Entropy();
-            string tex = "0";
+            int tex = 0;
             int maxDrawSwords = 0;
             int count = 0;
             foreach (Projectile p in Main.projectile)
@@ -261,7 +269,7 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
             }
             if (modPlayer.samsaraCasketOpened || count > 0)
             {
-                tex = (MathHelper.Min(modPlayer.sCasketLevel + 1, 6)).ToString();
+                tex = (int)MathHelper.Min(modPlayer.sCasketLevel + 1, 6);
                 maxDrawSwords = modPlayer.sCasketLevel + 1;
             }
             Vector2 pos = Projectile.Center - new Vector2(0, 20);
@@ -270,21 +278,21 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
 
                 if (spawnAnm == 1)
                 {
-                    tex = "2";
+                    tex = 2;
                     maxDrawSwords = 2;
                 }
                 if (spawnAnm == 2)
                 {
-                    tex = "4";
+                    tex = 4;
                     maxDrawSwords = 4;
                 }
                 if (spawnAnm == 3)
                 {
-                    tex = "6";
+                    tex = 6;
                     maxDrawSwords = 6;
                 }
-                Texture2D back_ = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/a" + tex).Value;
-                Texture2D front_ = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/c" + tex).Value;
+                Texture2D back_ = BackFrames[tex];
+                Texture2D front_ = FrontFrames[tex];
                 Texture2D middleTex_;
 
                 Main.spriteBatch.Draw(back_, pos - Main.screenPosition, null, lightColor, player.fullRotation, back_.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
@@ -296,7 +304,7 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
                     }
                     if (i <= modPlayer.sCasketLevel)
                     {
-                        middleTex_ = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/b" + i.ToString()).Value;
+                        middleTex_ = SwordFrames[i];
                         bool glow = false;
                         if (swords[i])
                         {
@@ -312,8 +320,8 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
 
                 return false;
             }
-            Texture2D back = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/a" + tex).Value;
-            Texture2D front = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/c" + tex).Value;
+            Texture2D back = BackFrames[tex];
+            Texture2D front = FrontFrames[tex];
             Texture2D middleTex;
 
             Main.spriteBatch.Draw(back, pos - Main.screenPosition, null, lightColor, player.fullRotation, back.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
@@ -325,7 +333,7 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
                 }
                 if (i <= modPlayer.sCasketLevel)
                 {
-                    middleTex = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/b" + i.ToString()).Value;
+                    middleTex = SwordFrames[i];
                     bool glow = false;
                     if (swords[i])
                     {

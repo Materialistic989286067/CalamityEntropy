@@ -1,5 +1,4 @@
-﻿using CalamityMod;
-using InnoVault.PRT;
+﻿using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -101,7 +100,8 @@ namespace CalamityEntropy.Content.Particles
             {
                 Effect shader = PRTSharedAssets.Prominence.Value;
 
-                sb.EnterShaderRegion(BlendState.NonPremultiplied, shader);
+                //本地EnterShaderRegion等价:End+Begin(Immediate)带shader,原先是灾厄扩展
+                CEParticleUtils.EnterShaderRegion(sb, BlendState.NonPremultiplied, shader);
                 Main.instance.GraphicsDevice.Textures[1] = PRTExtraTextures.ColormapFire.Value;
                 shader.Parameters["color2"].SetValue(color2.ToVector4());
                 shader.Parameters["color1"].SetValue(color1.ToVector4());

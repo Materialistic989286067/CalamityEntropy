@@ -1,5 +1,7 @@
 ﻿using CalamityEntropy.Content.Buffs;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -9,6 +11,15 @@ namespace CalamityEntropy.Content.Projectiles.TwistedTwin
 {
     public class TwistedTwinMinion : ModProjectile
     {
+        //双子四形态贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/TwistedTwin/TwistedTwinMinion")]
+        internal static Asset<Texture2D> BodyTex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/TwistedTwin/a1")]
+        internal static Asset<Texture2D> A1Tex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/TwistedTwin/b1")]
+        internal static Asset<Texture2D> B1Tex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/TwistedTwin/b2")]
+        internal static Asset<Texture2D> B2Tex;
         public static float damageMul { get { return 1.0f + Main.LocalPlayer.Entropy().WeaponBoost * 0.05f; } }
         public override void SetStaticDefaults()
         {
@@ -101,18 +112,18 @@ namespace CalamityEntropy.Content.Projectiles.TwistedTwin
             Texture2D tx;
             if (Projectile.ai[1] > 0)
             {
-                tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/TwistedTwin/TwistedTwinMinion").Value;
+                tx = BodyTex.Value;
                 if (Projectile.ai[0] > 0)
                 {
-                    tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/TwistedTwin/a1").Value;
+                    tx = A1Tex.Value;
                 }
             }
             else
             {
-                tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/TwistedTwin/b1").Value;
+                tx = B1Tex.Value;
                 if (Projectile.ai[0] > 0)
                 {
-                    tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/TwistedTwin/b2").Value;
+                    tx = B2Tex.Value;
                 }
             }
             Main.spriteBatch.Draw(tx, Projectile.Center - Main.screenPosition, null, Color.White, 0, tx.Size() / 2, Projectile.scale, ef, 0);

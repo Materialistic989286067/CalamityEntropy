@@ -1,7 +1,5 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Rogue;
+using CalamityEntropy.Core.Weapons;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -9,8 +7,11 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
-    public class SpearOfRadiance : RogueWeapon
+    public class SpearOfRadiance : ModItem, ICEChargeWeapon
     {
+        // 命中计数 6；原潜伏乘数 伤害1.2/弹速1.5/击退3 并入释放乘数
+        public CEChargeProfile ChargeProfile => CEChargeProfile.HitCount(6, 1.2f, 1.5f, 3f);
+
         public override void SetDefaults()
         {
             Item.width = 36;
@@ -24,27 +25,22 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.UseSound = null;
             Item.autoReuse = true;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
+            Item.value = Item.buyPrice(gold: 35);
             Item.rare = ItemRarityID.LightPurple;
             Item.shoot = ModContent.ProjectileType<RadianceSpearThrow>();
             Item.shootSpeed = 68f;
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Melee;
         }
-
-        public override float StealthDamageMultiplier => 1.2f;
-        public override float StealthVelocityMultiplier => 1.5f;
-        public override float StealthKnockbackMultiplier => 3f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.Calamity().StealthStrikeAvailable())
+            if (CEChargeWeapon.TryConsume(player, Item))
             {
                 int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
-                if (p.WithinBounds(Main.maxProjectiles))
+                if (p >= 0 && p < Main.maxProjectiles)
                 {
-                    Main.projectile[p].Calamity().stealthStrike = true;
-                    p.ToProj().netUpdate = true;
                     p.ToProj().penetrate = 5;
+                    CEChargeWeapon.Empower(p);
                 }
                 return false;
             }

@@ -1,6 +1,4 @@
 ﻿using CalamityEntropy.Common;
-using CalamityMod;
-using CalamityMod.Items.Materials;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -51,10 +49,9 @@ namespace CalamityEntropy.Content.Items.Vanity
             Item.width = 22;
             Item.height = 30;
             Item.accessory = true;
-            Item.value = CalamityMod.Items.CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Green;
             Item.vanity = true;
-            Item.Calamity().devItem = true;
         }
 
         public override void UpdateVanity(Player player)
@@ -71,7 +68,7 @@ namespace CalamityEntropy.Content.Items.Vanity
         }
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ModContent.ItemType<AncientBoneDust>(), 1)
+            CreateRecipe().AddIngredient(ItemID.Bone, 1)
                 .AddIngredient(ItemID.FallenStar, 5)
                 .AddTile(TileID.WorkBenches).Register();
         }

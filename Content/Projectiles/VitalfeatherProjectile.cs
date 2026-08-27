@@ -1,6 +1,7 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
-using CalamityMod.Buffs.DamageOverTime;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -107,7 +108,7 @@ namespace CalamityEntropy.Content.Projectiles
 
         private void DrawLine(List<Vector2> list)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value;
+            Texture2D texture = CEExtraAssets.white;
             Rectangle frame = texture.Frame();
             Vector2 origin = new Vector2(0, 0.5f);
 
@@ -190,7 +191,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D light = CEUtils.getExtraTex("lightball");
+            Texture2D light = CEExtraAssets.lightball;
             Main.spriteBatch.Draw(light, lastTop - Main.screenPosition, null, Color.Gold * 0.2f, 0, light.Size() / 2, Projectile.scale * 0.4f, SpriteEffects.None, 0);
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);

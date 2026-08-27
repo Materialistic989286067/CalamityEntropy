@@ -1,5 +1,5 @@
 ﻿using CalamityEntropy.Content.Buffs;
-using CalamityMod.Buffs.DamageOverTime;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

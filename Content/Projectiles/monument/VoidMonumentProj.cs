@@ -1,5 +1,6 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Dusts;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,9 @@ namespace CalamityEntropy.Content.Projectiles.monument
 {
     public class VoidMonumentProj : ModProjectile
     {
+        //方尖碑帧动画(f1~f18,按 ai[1] 取帧),加载期就位,PreDraw 不再拼接路径逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/monument/f", 1, 18, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] Frames;
         SoundStyle hitSound = new("CalamityEntropy/Assets/Sounds/vb_hit");
         SoundStyle hs = new("CalamityEntropy/Assets/Sounds/vbuse");
         public override void SetStaticDefaults()
@@ -165,7 +169,7 @@ namespace CalamityEntropy.Content.Projectiles.monument
 
         public override bool PreDraw(ref Color dc)
         {
-            Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/monument/f" + ((int)Projectile.ai[1] + 1).ToString()).Value;
+            Texture2D tx = Frames[(int)Projectile.ai[1]];
             SpriteEffects se = SpriteEffects.None;
             if (Projectile.velocity.X < 0)
             {

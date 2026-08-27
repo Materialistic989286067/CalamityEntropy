@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -22,7 +21,7 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
             Item.knockBack = 6f;
             Item.UseSound = CEUtils.GetSound("soulshine");
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
+            Item.value = Item.buyPrice(0, 80);
             Item.rare = ItemRarityID.Cyan;
             Item.shoot = ModContent.ProjectileType<NightProjectionHoldout>();
             Item.shootSpeed = 22f;

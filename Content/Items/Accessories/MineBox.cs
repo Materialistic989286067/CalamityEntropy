@@ -1,8 +1,5 @@
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
 using InnoVault.PRT;
 using System.Collections.Generic;
 using Terraria;
@@ -16,12 +13,16 @@ namespace CalamityEntropy.Content.Items.Accessories
     {
         public static int BaseDamage = 75;
         public static float Dmg = 0.07f;
+        // 布雷间隔:每 5 秒 1 颗(rogue-weapons.md §三)
+        public const int MineInterval = 300;
+        public const float MineRange = 800f;
+        private int mineTimer;
         public override void SetDefaults()
         {
             Item.width = 38;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
-            Item.rare = ModContent.RarityType<DarkOrange>();
+            Item.value = Item.buyPrice(gold: 2);
+            Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.accessory = true;
         }
 
@@ -30,7 +31,27 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.Entropy().addEquip(ID, !hideVisual);
-            player.GetDamage(CEUtils.RogueDC) += Dmg;
+            // 新效果:远程伤害加成 + 周期在附近敌人脚下布雷(潜行体系退役)
+            player.GetDamage(DamageClass.Ranged) += Dmg;
+            if (mineTimer < MineInterval)
+            {
+                mineTimer++;
+                return;
+            }
+            if (player.whoAmI != Main.myPlayer)
+                return;
+            List<NPC> targets = new();
+            foreach (NPC npc in Main.ActiveNPCs)
+            {
+                if (npc.CanBeChasedBy() && npc.Distance(player.Center) <= MineRange)
+                    targets.Add(npc);
+            }
+            if (targets.Count == 0)
+                return;
+            NPC target = targets[Main.rand.Next(targets.Count)];
+            mineTimer = 0;
+            int damage = (int)player.GetTotalDamage(DamageClass.Ranged).ApplyTo(BaseDamage);
+            Projectile.NewProjectile(player.GetSource_Accessory(Item), target.Bottom - new Vector2(0, 10), Vector2.Zero, ModContent.ProjectileType<BoobyMine>(), damage, 2f, player.whoAmI);
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
@@ -43,7 +64,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<DubiousPlating>(8)
+                .AddIngredient<AzafurePlating>(8)
                 .AddRecipeGroup(CERecipeGroups.IronBar, 8)
                 .AddIngredient(ItemID.Bomb, 6)
                 .AddTile(TileID.Anvils)
@@ -54,7 +75,7 @@ namespace CalamityEntropy.Content.Items.Accessories
     {
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged);
             Projectile.timeLeft = 90;
         }
         public override bool? CanHitNPC(NPC target)

@@ -1,5 +1,4 @@
-﻿using CalamityMod;
-using CalamityMod.Items;
+using CalamityEntropy.Common;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
@@ -17,7 +16,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.width = 28;
             Item.height = 28;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ItemRarityID.Yellow;
         }
 
@@ -71,17 +70,18 @@ namespace CalamityEntropy.Content.Items.Accessories
                     Level = lv;
                 }
             }
+            // 脱离灾厄:灾厄 downed 旗标按 progression-map.md §三逐条替换到原版节点/自有 Boss
             Check(NPC.downedBoss1 || NPC.downedSlimeKing, 1);
-            Check(NPC.downedBoss2 || DownedBossSystem.downedPerforator || DownedBossSystem.downedHiveMind, 2);
+            Check(NPC.downedBoss2, 2);
             Check(NPC.downedBoss3 || NPC.downedQueenBee, 3);
             Check(Main.hardMode, 4);
             Check(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3, 5);
-            Check(NPC.downedPlantBoss || DownedBossSystem.downedCalamitasClone, 6);
+            Check(NPC.downedPlantBoss || (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3), 6);
             Check(NPC.downedMoonlord, 7);
-            Check(DownedBossSystem.downedProvidence, 8);
-            Check(DownedBossSystem.downedPolterghast || DownedBossSystem.downedStormWeaver || DownedBossSystem.downedCeaselessVoid || DownedBossSystem.downedSignus, 9);
-            Check(DownedBossSystem.downedDoG, 10);
-            Check(DownedBossSystem.downedYharon, 11);
+            Check(EDownedBosses.downedNihilityTwin, 8);
+            Check(EDownedBosses.downedNihilityTwin, 9);
+            Check(EDownedBosses.downedAbyssalWraith, 10);
+            Check(EDownedBosses.downedCruiser, 11);
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {

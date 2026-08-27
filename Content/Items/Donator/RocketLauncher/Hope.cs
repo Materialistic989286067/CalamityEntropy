@@ -1,7 +1,5 @@
 using CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo;
 using CalamityEntropy.Content.Items.Weapons;
-using CalamityMod;
-using CalamityMod.Items.Materials;
 using System;
 using Terraria;
 using Terraria.DataStructures;
@@ -35,26 +33,26 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
         }
 
         #region Animations
-        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
+        public override void HoldItem(Player player) => player.Entropy().MouseWorldListener = true;
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
-            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+            player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
             Vector2 itemPosition = player.MountedCenter + itemRotation.ToRotationVector2() * 76f;
             Vector2 itemSize = new Vector2(Item.width, Item.height);
             Vector2 itemOrigin = -HoldoutOffset().Value;
-            CalamityUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
+            CEUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
             base.UseStyle(player, heldItemFrame);
         }
 
         public override void UseItemFrame(Player player)
         {
-            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+            player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
 
             float animProgress = 1 - player.itemTime / (float)player.itemTimeMax;
-            float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
+            float rotation = (player.Center - player.Entropy().MouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
             if (animProgress < 0.5)
                 rotation += (-0.2f) * (float)Math.Pow((0.5f - animProgress) / 0.5f, 2) * player.direction;
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
@@ -71,10 +69,11 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 
         public override void AddRecipes()
         {
+            // RustExpeditioner 为本模组自有武器，保留；AerialiteBar 按 material-map.md 换陨石锭
             CreateRecipe()
                 .AddIngredient<RustExpeditioner>()
                 .AddIngredient<OsseousRemains>(20)
-                .AddIngredient<AerialiteBar>(10)
+                .AddIngredient(ItemID.MeteoriteBar, 10)
                 .AddIngredient(ItemID.SunplateBlock, 4)
                 .AddTile(TileID.Anvils)
                 .Register();

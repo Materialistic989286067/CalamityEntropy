@@ -1,8 +1,5 @@
-﻿using CalamityEntropy.Content.Projectiles.Chainsaw;
-using CalamityMod;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Ores;
-using CalamityMod.Rarities;
+using CalamityEntropy.Content.Projectiles.Chainsaw;
+using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,7 +11,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
         public override void SetDefaults()
         {
             Item.damage = 500;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.width = 42;
             Item.height = 42;
             Item.noUseGraphic = true;
@@ -23,7 +20,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 6;
             Item.value = 36;
-            Item.rare = ModContent.RarityType<CosmicPurple>();
+            Item.rare = ModContent.RarityType<AbyssalBlue>();
             Item.UseSound = SoundID.Item23;
             Item.channel = true;
             Item.noMelee = true;
@@ -40,8 +37,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
         {
             CreateRecipe().
                 AddIngredient<Euangelion>().
-                AddIngredient<ExodiumCluster>(20).
-                AddIngredient<DarksunFragment>(5).
+                AddIngredient(ItemID.LunarOre, 20).
+                AddIngredient(ItemID.FragmentSolar, 5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

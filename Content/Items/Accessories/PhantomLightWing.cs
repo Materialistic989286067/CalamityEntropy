@@ -1,6 +1,4 @@
-﻿using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items;
-using CalamityMod.Items.Accessories.Wings;
+using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -9,7 +7,7 @@ using Terraria.ModLoader;
 namespace CalamityEntropy.Content.Items.Accessories
 {
     [AutoloadEquip(EquipType.Wings)]
-    public class PhantomLightWing : BaseWings, ISpecialDrawingWing
+    public class PhantomLightWing : CEBaseWings, ISpecialDrawingWing
     {
         public static float HorSpeed = 6.4f;
         public static float AccMul = 1.1f;
@@ -29,7 +27,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             base.SetDefaults();
             Item.width = 22;
             Item.height = 20;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ModContent.RarityType<Lunarblight>();
             Item.accessory = true;
         }

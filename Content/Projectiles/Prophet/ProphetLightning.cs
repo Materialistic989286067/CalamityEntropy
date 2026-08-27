@@ -1,5 +1,6 @@
-﻿using CalamityEntropy.Content.Buffs;
-using CalamityMod;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
@@ -57,7 +58,7 @@ namespace CalamityEntropy.Content.Projectiles.Prophet
             if (Projectile.ai[0] == 80 && !Main.dedServ)
             {
                 SoundEngine.PlaySound(sound, Projectile.Center);
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = 6;
+                ScreenShaker.AddShake(new ScreenShaker.NoDirQuickShake(6));
             }
             if (Projectile.ai[0] < 80)
             {
@@ -127,7 +128,7 @@ namespace CalamityEntropy.Content.Projectiles.Prophet
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
                 if (ve.Count >= 3)
                 {
-                    Texture2D tx = CEUtils.getExtraTex("Streak2");
+                    Texture2D tx = CEExtraAssets.Streak2;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }
@@ -153,7 +154,7 @@ namespace CalamityEntropy.Content.Projectiles.Prophet
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
                 if (ve.Count >= 3)
                 {
-                    Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value;
+                    Texture2D tx = CEExtraAssets.white;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }

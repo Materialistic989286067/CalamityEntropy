@@ -1,4 +1,6 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.DamageClasses;
 using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Accessories;
@@ -22,31 +24,7 @@ using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.Pets;
-using CalamityMod;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.NPCs;
-using CalamityMod.NPCs.Abyss;
-using CalamityMod.NPCs.AstrumDeus;
-using CalamityMod.NPCs.CeaselessVoid;
-using CalamityMod.NPCs.Crabulon;
-using CalamityMod.NPCs.Cryogen;
-using CalamityMod.NPCs.DesertScourge;
-using CalamityMod.NPCs.DevourerofGods;
-using CalamityMod.NPCs.HiveMind;
-using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.NPCs.Perforator;
-using CalamityMod.NPCs.PrimordialWyrm;
-using CalamityMod.NPCs.ProfanedGuardians;
-using CalamityMod.NPCs.Providence;
-using CalamityMod.NPCs.Ravager;
-using CalamityMod.NPCs.SlimeGod;
-using CalamityMod.NPCs.SulphurousSea;
-using CalamityMod.NPCs.SunkenSea;
-using CalamityMod.NPCs.SupremeCalamitas;
-using CalamityMod.NPCs.TownNPCs;
-using CalamityMod.NPCs.Yharon;
-using CalamityMod.Systems.Collections;
-using CalamityMod.UI;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -69,6 +47,15 @@ namespace CalamityEntropy.Common
 {
     public class EGlobalNPC : GlobalNPC, ICELoader
     {
+        //注意:这些字段只在客户端绘制钩子里读,专用服务器上恒为 null。
+        [VaultLoaden("CalamityEntropy/Assets/Extra/AbyssalCircle")]
+        internal static Asset<Texture2D> AbyssalCircleTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/SoulDiscorderColorMap")]
+        internal static Asset<Texture2D> SoulDiscorderColorMapTex;
+        [VaultLoaden("CalamityEntropy/Assets/Effects/SoulDiscorder", AssetMode.EffectValue, "EnchantedPass")]
+        internal static Effect SoulDiscorderShader;
+        [VaultLoaden("CalamityEntropy/Assets/Effects/HeatDeath", AssetMode.EffectValue, "EnchantedPass")]
+        internal static Effect HeatDeathShader;
         public int VoidTouchTime = 0;
         public float VoidTouchLevel = 0;
         public float VoidTouchDR = 0;
@@ -79,30 +66,6 @@ namespace CalamityEntropy.Common
         public override bool AppliesToEntity(NPC entity, bool lateInstantiation)
         {
             return true;
-        }
-        public static int TrasherID = -1;
-        public override void OnHitNPC(NPC npc, NPC target, NPC.HitInfo hit)
-        {
-            if (TrasherID == -1)
-                TrasherID = ModContent.NPCType<Trasher>();
-            if (npc.type == TrasherID && target.life <= 0)
-            {
-                if (target.type == NPCID.Turtle || target.type == NPCID.TurtleJungle)
-                {
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
-                        int i = Item.NewItem(target.GetSource_Death(), target.getRect(), new Item(ModContent.ItemType<SusiesBracelet>()));
-                        CEUtils.SyncItem(i);
-                    }
-                }
-            }
-        }
-        public override void SetDefaults(NPC entity)
-        {
-            if (entity.type == ModContent.NPCType<PrimordialWyrmHead>())
-                entity.lifeMax = (int)(entity.lifeMax * 2.5f);
-            if (entity.type == ModContent.NPCType<PrimordialWyrmHead>())
-		        entity.damage = (int)(entity.damage * 1.2f);
         }
         public float DebuffDamageMult()
         {
@@ -116,6 +79,20 @@ namespace CalamityEntropy.Common
             }
             return r;
         }
+        public override void UpdateLifeRegen(NPC npc, ref int damage)
+        {
+            // 原生重实现：原先靠 IL 钩灾厄 DoT 管线应用减益伤害倍率，现直接放大负生命回复。
+            // 乘区链定稿（已核实）：GlobalNPC 按 FullName 字母序执行，EDamageOverTimeNPC 恒先于本类，
+            // 其自乘已删除——原版减益与本模组 DotBuff 的倍率统一由此处全局放大（各乘一次，无重叠）；
+            // PortsDoT 自研 DoT 由 CEDoTGlobalNPC 自乘（Core 命名空间字母序晚于本类，不吃本处放大）。
+            float dotMult = DebuffDamageMult();
+            if (dotMult > 1f && npc.lifeRegen < 0)
+            {
+                npc.lifeRegen = (int)(npc.lifeRegen * dotMult);
+                // 跳字随倍率同步放大，保持显示与实际伤害一致（全局放大只改 lifeRegen 不改跳字）
+                damage = (int)(damage * dotMult);
+            }
+        }
         public static void RemoveAllTags(NPC npc)
         {
             npc.GetGlobalNPC<WhipDebuffNPC>().Tags.Clear();
@@ -125,12 +102,6 @@ namespace CalamityEntropy.Common
                     continue;
                 if (BuffID.Sets.IsATagBuff[npc.buffType[i]])
                     npc.buffTime[i] = 0;
-                if (npc.buffTime[i] >= 1)
-                {
-                    int type = npc.buffType[i];
-                    if (CalamityBuffSets.SummonTagDebuff[type] is not null)
-                        npc.buffTime[i] = 0;
-                }
             }
         }
         public bool nextHitCrit = false;
@@ -172,16 +143,12 @@ namespace CalamityEntropy.Common
             if (mult < 0)
                 mult = 0;
 
-            if (mult < 1)
-            {
-                float dr = npc.Calamity().DR;
-                mult = mult + (1 - mult) * dr * dr * dr;
-            }
-            if (mult < 0)
-                mult = 0;
-
+            // 原灾厄 DR 越高衰减越弱的补偿项已随灾厄 DR 体系移除，倍率直接生效
             if (npc.HasBuff<LifeOppress>())
                 mult -= 0.35f;
+
+            if (mult < 0)
+                mult = 0;
 
             return mult;
         }
@@ -261,7 +228,7 @@ namespace CalamityEntropy.Common
                     GraphicsDevice gd = Main.graphics.GraphicsDevice;
                     if (ve.Count >= 3)
                     {
-                        Texture2D tx = CEUtils.getExtraTex("AbyssalCircle");
+                        Texture2D tx = AbyssalCircleTex.Value;
                         gd.Textures[0] = tx;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                     }
@@ -285,7 +252,7 @@ namespace CalamityEntropy.Common
                     GraphicsDevice gd = Main.graphics.GraphicsDevice;
                     if (ve.Count >= 3)
                     {
-                        Texture2D tx = CEUtils.getExtraTex("AbyssalCircle");
+                        Texture2D tx = AbyssalCircleTex.Value;
                         gd.Textures[0] = tx;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                     }
@@ -331,16 +298,6 @@ namespace CalamityEntropy.Common
                 LastLife = npc.life;
             }
             HitCounter++;
-            if (npc.ModNPC != null && npc.ModNPC is PrimordialWyrmHead && HitCounter > 120)
-            {
-                if (Main.GameUpdateCount % 30 == 0)
-                {
-                    if (npc.life < npc.lifeMax - 6000)
-                    {
-                        npc.life += 6000;
-                    }
-                }
-            }
             if (TDRCounter > 0)
             {
                 TDRCounter -= 0.75f;
@@ -393,6 +350,7 @@ namespace CalamityEntropy.Common
 
             if (applyMarkedOfDeath > 0)
             {
+                // 自研移植的死亡标记（debuff-map：PortsDoT 同短名，受击伤害 ×1.1）
                 npc.AddBuff(ModContent.BuffType<MarkedforDeath>(), applyMarkedOfDeath);
                 applyMarkedOfDeath = 0;
             }
@@ -697,18 +655,24 @@ namespace CalamityEntropy.Common
                     }
                 }
             }
+            // 原生重实现：原先通过 IL 把 DamageReduceMult 乘进灾厄 DR 属性，
+            // 现改为按等效比例直接放大受击伤害（mult 每降 1% 即多受 1% 伤害）
+            float drMult = DamageReduceMult(npc);
+            if (drMult < 1f)
+            {
+                modifiers.FinalDamage *= 2f - drMult;
+            }
         }
 
         public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers)
         {
+            // 原生重实现：鞭类 tag 增伤与强制暴击原先经 IL 钩灾厄的 ModifyHitByProjectile 触发，
+            // 灾厄钩子拆除后改由本钩子直接调用
+            npc.GetGlobalNPC<WhipDebuffNPC>().ModifyHitByProj(npc, projectile, ref modifiers);
 
             modifiers.FinalDamage += (npc.Entropy().VoidTouchLevel) * 0.01f * (1 - npc.Entropy().VoidTouchDR);
             if (projectile.owner >= 0 && projectile.friendly)
             {
-                if (projectile.GetOwner().Entropy().worshipRelic)
-                {
-                    modifiers.DisableCrit();
-                }
                 if (projectile.GetOwner().Entropy().CritDamage != null)
                 {
                     foreach (var v in projectile.GetOwner().Entropy().CritDamage)
@@ -741,14 +705,8 @@ namespace CalamityEntropy.Common
                     {
                         projectile.owner.ToPlayer().Entropy().VoidCharge += 0.005f;
                     }
-                    if (projectile.Calamity().stealthStrike)
-                    {
-                        projectile.owner.ToPlayer().Entropy().VoidCharge += 0.06f;
-                    }
-                    else
-                    {
-                        projectile.owner.ToPlayer().Entropy().VoidCharge += 0.008f;
-                    }
+                    // 潜行系统退役：原潜伏攻击额外充能分支移除，统一按普通命中充能
+                    projectile.owner.ToPlayer().Entropy().VoidCharge += 0.008f;
                     if (projectile.owner.ToPlayer().Entropy().VoidCharge > 1)
                     {
                         projectile.owner.ToPlayer().Entropy().VoidCharge = 1;
@@ -840,143 +798,139 @@ namespace CalamityEntropy.Common
                 drawColor = Color.Black;
             }
         }
+        // 灾厄 NPC 掉落注入已整体拆除，并已按 bookmark-rehang.md 重挂（见方法末尾重挂段；无映射条目的物品另有表外增补裁定）
         public override void ModifyNPCLoot(NPC npc, NPCLoot npcLoot)
         {
+            // 掉落规则全部为 tML 原生写法：Common = 无条件 1/n，ByCondition(NotExpert) = 仅普通模式（原灾厄掉落扩展的等价改写）
             List<int> osseousRemainsDropEnemies = new List<int>() { 174, 101, 94, 173, -22, -23, 181, 6, -11, -12 };
             if (osseousRemainsDropEnemies.Contains(npc.type))
             {
-                npcLoot.Add(ModContent.ItemType<OsseousRemains>(), 3, 6, 8);
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<OsseousRemains>(), 3, 6, 8));
             }
             if (npc.type == NPCID.MoonLordCore)
             {
-                npcLoot.AddNormalOnly(ModContent.ItemType<MoonlightCore>(), 3, 1, 1);
-            }
-            if (npc.type == ModContent.NPCType<Yharon>())
-            {
-                npcLoot.AddIf(() => (!NPC.downedMoonlord), ModContent.ItemType<FlowingLight>(), 1);
-                npcLoot.AddNormalOnly(ModContent.ItemType<BookMarkAuric>(), 4, 1, 1);
-            }
-            if (npc.type == ModContent.NPCType<DesertScourgeHead>())
-            {
-                npcLoot.AddNormalOnly(ModContent.ItemType<AntlionShell>(), 3, 1, 1);
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<MoonlightCore>(), 3));
             }
             if (npc.type == NPCID.WallofFlesh)
             {
-                npcLoot.AddNormalOnly(ModContent.ItemType<HungryLantern>(), 3, 1, 1);
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<HungryLantern>(), 3));
             }
             if (npc.type == NPCID.BrainofCthulhu)
             {
-                npcLoot.AddNormalOnly(ModContent.ItemType<CreeperWand>(), 3, 1, 1);
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<CreeperWand>(), 3));
+                // 重挂：原灾厄血肉宿主 1/3（bookmark-rehang）
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SinewLash>(), 3));
+            }
+            if (npc.type == NPCID.EaterofWorldsHead || npc.type == NPCID.EaterofWorldsBody || npc.type == NPCID.EaterofWorldsTail)
+            {
+                // 重挂：原灾厄腐巢意志 1/3，改挂原版世界吞噬者（LegacyHack 保证整体击杀只结算一次）
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.LegacyHack_IsABoss(), ModContent.ItemType<MindCorruptor>(), 3));
             }
             if (npc.type == NPCID.SkeletronHead)
             {
-                npcLoot.AddNormalOnly(ModContent.ItemType<OblivionSkull>(), 1, 1, 1);
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<OblivionSkull>()));
             }
             if (npc.type == NPCID.KingSlime)
             {
-                npcLoot.AddNormalOnly(ModContent.ItemType<ExquisiteCrown>(), 3, 1, 1);
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<ExquisiteCrown>(), 3));
             }
             if (npc.type == NPCID.EyeofCthulhu)
             {
-                npcLoot.AddNormalOnly(ModContent.ItemType<RottenFangs>(), 3, 1, 1);
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<RottenFangs>(), 3));
             }
             if (npc.type == NPCID.Deerclops)
             {
-                npcLoot.AddNormalOnly(ModContent.ItemType<BookmarkSnowgrave>(), 5, 1, 1);
-            }
-            if (npc.type == ModContent.NPCType<CeaselessVoid>())
-            {
-                npcLoot.AddNormalOnly(ModContent.ItemType<BottleDarkMatter>(), 4);
-            }
-            if (npc.type == ModContent.NPCType<DevourerofGodsHead>())
-            {
-                npcLoot.AddNormalOnly(ModContent.ItemType<BookmarkCosmic>(), 3, 1, 1);
-            }
-            if (npc.type == ModContent.NPCType<SupremeCalamitas>())
-            {
-                npcLoot.Add(ModContent.ItemType<TheFilthyContractWithMammon>(), 3, 1, 1);
-            }
-            if (npc.type == ModContent.NPCType<ToxicMinnow>() || npc.type == ModContent.NPCType<CannonballJellyfish>() || npc.type == ModContent.NPCType<Sulflounder>() || npc.type == ModContent.NPCType<Toxicatfish>())
-            {
-                npcLoot.Add(ModContent.ItemType<TerrorOfAbyss>(), 24);
-            }
-            if (npc.type == ModContent.NPCType<ProfanedGuardianCommander>())
-            {
-                npcLoot.Add(ModContent.ItemType<LavaPancake>(), 2);
-            }
-            if (npc.type == ModContent.NPCType<Providence>())
-            {
-                npcLoot.Add(ModContent.ItemType<HellBohea>(), 2);
-                npcLoot.Add(ModContent.ItemType<SacredStone>(), 3);
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<BookmarkSnowgrave>(), 5));
             }
             if (npc.type == NPCID.Paladin)
             {
-                npcLoot.Add(ModContent.ItemType<DevouringCard>(), 2);
-            }
-            if (npc.type == ModContent.NPCType<Crabulon>())
-            {
-                npcLoot.AddNormalOnly(ModContent.ItemType<WisperCard>(), 2);
-                npcLoot.AddNormalOnly(ModContent.ItemType<BookmarkSpore>(), 3);
-                npcLoot.AddNormalOnly(ModContent.ItemType<BookMarkCancer>(), 3);
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<DevouringCard>(), 2));
             }
             if (npc.type == NPCID.Golem)
             {
-                npcLoot.AddNormalOnly(ModContent.ItemType<MourningCard>(), 2);
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<MourningCard>(), 2));
             }
             if (npc.type == NPCID.DungeonSpirit)
             {
-                npcLoot.Add(ModContent.ItemType<RequiemCard>(), new Fraction(1, 16));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<RequiemCard>(), 16));
             }
             if (npc.type == NPCID.BigMimicHallow)
             {
-                npcLoot.Add(ModContent.ItemType<PurificationCard>(), new Fraction(1, 2));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<PurificationCard>(), 2));
             }
             if (npc.type == NPCID.Plantera)
             {
-                npcLoot.AddNormalOnly(ModContent.ItemType<LashingBramblerod>(), new Fraction(3, 5));
-                npcLoot.AddNormalOnly(ModContent.ItemType<MutantBulb>(), new Fraction(2, 5));
+                // 原 3/5 与 2/5 概率，分子写法保持不化简
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<LashingBramblerod>(), 5, 1, 1, 3));
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<MutantBulb>(), 5, 1, 1, 2));
             }
             if (npc.type == NPCID.WyvernHead)
             {
-                npcLoot.Add(ModContent.ItemType<VetrasylsEye>(), 20);
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<VetrasylsEye>(), 20));
             }
             if (npc.boss)
             {
-                npcLoot.Add(ModContent.ItemType<BookMarkPerfection>(), new Fraction(1, 30));
-            }
-            if (npc.type == ModContent.NPCType<HiveMind>())
-            {
-                npcLoot.Add(ModContent.ItemType<MindCorruptor>(), 3);
-            }
-            if (npc.type == ModContent.NPCType<PerforatorHive>())
-            {
-                npcLoot.Add(ModContent.ItemType<SinewLash>(), 3);
-            }
-            if (npc.type == ModContent.NPCType<Cryogen>())
-            {
-                npcLoot.Add(ModContent.ItemType<FrostboundCage>(), 3);
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkPerfection>(), 30));
             }
             if (npc.type == NPCID.QueenSlimeBoss)
             {
-                npcLoot.AddNormalOnly(ModContent.ItemType<Crystedge>(), 4, 1, 1);
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<Crystedge>(), 4));
             }
-            if (npc.type == ModContent.NPCType<Yharon>())
+            // —— 以下为脱离灾厄重挂（bookmark-rehang.md：原灾厄 Boss 掉落改挂自然敌怪 / 自有 Boss）——
+            if (npc.type == NPCID.Vulture || npc.type == NPCID.Antlion || npc.type == NPCID.WalkingAntlion || npc.type == NPCID.FlyingAntlion || npc.type == NPCID.TombCrawlerHead)
             {
+                // 原灾厄荒漠灾虫掉落，改挂前期沙漠敌怪
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkLeo>(), 30));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<DustyWhistle>(), 25));
+            }
+            if (npc.type == NPCID.Antlion || npc.type == NPCID.WalkingAntlion || npc.type == NPCID.FlyingAntlion || npc.type == NPCID.GiantWalkingAntlion || npc.type == NPCID.GiantFlyingAntlion || npc.type == NPCID.LarvaeAntlion)
+            {
+                // 原灾厄荒漠灾虫掉落，改挂蚁狮类敌怪
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<AntlionShell>(), 15));
+            }
+            if (npc.type == NPCID.AnomuraFungus || npc.type == NPCID.MushiLadybug || npc.type == NPCID.FungiBulb || npc.type == NPCID.GiantFungiBulb || npc.type == NPCID.FungoFish || npc.type == NPCID.ZombieMushroom || npc.type == NPCID.ZombieMushroomHat)
+            {
+                // 原灾厄菌生蟹掉落，改挂发光蘑菇群系敌怪
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkSpore>(), 40));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BlueFlatTopMushroom>(), 40));
+                // 新材料星辉鳞尘（material-map §一）：夜间 25% 掉 1–3
+                npcLoot.Add(ItemDropRule.ByCondition(new IsNight(), ModContent.ItemType<StarlitScaleDust>(), 4, 1, 3));
+            }
+            if (npc.type == NPCID.Shark || npc.type == NPCID.Squid || npc.type == NPCID.SeaSnail || npc.type == NPCID.PinkJellyfish)
+            {
+                // 原灾厄深渊怪宠物掉落，改挂困难模式海洋敌怪（misc-map §五增补段）
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsHardmode(), ModContent.ItemType<ToyRock>(), 40));
+            }
+            if (npc.type == NPCID.CultistBoss)
+            {
+                // 原灾厄死亡模式限定饰品，按 difficulty-map（death→大师）改挂大师模式拜月邪教徒 100%
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsMasterMode(), ModContent.ItemType<DeusCore>()));
+            }
+            if (npc.type == NPCID.Crab)
+            {
+                // 原灾厄菌生蟹掉落，改挂海洋螃蟹
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkCancer>(), 30));
+            }
+            if (npc.type == NPCID.IceElemental || npc.type == NPCID.IcyMerman || npc.type == NPCID.IceTortoise || npc.type == NPCID.ArmoredViking || npc.type == NPCID.IceGolem || npc.type == NPCID.Wolf)
+            {
+                // 原灾厄极地之灵掉落，改挂困难模式冰雪群系敌怪
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkIce>(), 40));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<FrostboundCage>(), 50));
+            }
+            if (npc.type == ModContent.NPCType<Content.NPCs.Cruiser.CruiserHead>())
+            {
+                // 原灾厄渊海灾虫掉落，槽位并入巡游者（progression-map §五）
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<WyrmTooth>(), 1, 65, 80));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkMarivium>()));
+                // 原灾厄犽戎普通模式掉落（条件照搬 IsNormal）
                 npcLoot.Add(ItemDropRule.ByCondition(new IsNormal(), ModContent.ItemType<Vitalfeather>(), 4));
             }
-            if (npc.type == ModContent.NPCType<PrimordialWyrmHead>())
+            if (npc.type == ModContent.NPCType<Content.NPCs.AbyssalWraith.AbyssalWraith>())
             {
-                npcLoot.Add(ModContent.ItemType<WyrmTooth>(), 1, 65, 80);
-                npcLoot.Add(ModContent.ItemType<BookmarkMarivium>(), 1);
-            }
-            if (npc.type == ModContent.NPCType<EidolonWyrmHead>())
-            {
-                npcLoot.Add(ModContent.ItemType<Nothing>(), 2, 1, 1);
-                npcLoot.Add(ModContent.ItemType<BookMarkAbyss>(), 2, 1, 1);
-            }
-            if (npc.type == ModContent.NPCType<GiantClam>())
-            {
-                npcLoot.Add(ModContent.ItemType<BookMarkSunkenSea>(), 1, 1, 1);
+                // 深渊亡魂扶正掉落表（原 DoG / 幽海飞龙掉落重挂；幽渊魂髓的掉落在 AbyssalWraith.ModifyNPCLoot 侧）
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkCosmic>()));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAbyss>(), 2));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Nothing>(), 2));
             }
         }
         public float WhiteLerp = 0;
@@ -987,190 +941,17 @@ namespace CalamityEntropy.Common
 
         public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            if (npc.type != NPCID.BrainofCthulhu && (npc.type != NPCID.DukeFishron || npc.ai[0] <= 9f) && npc.active)
-            {
-                if (CalamityClientConfig.Instance.DebuffDisplay && (npc.boss || BossHealthBarManager.MinibossHPBarList.Contains(npc.type) || BossHealthBarManager.OneToMany.ContainsKey(npc.type) || CalamityNPCSets.ForceDrawDebuffDisplay[npc.type]))
-                {
-                    List<Texture2D> currentDebuffs = new List<Texture2D>() { };
-                    CalamityGlobalNPC cnpc = npc.Calamity();
-
-                    for (int b = 0; b < CalamityGlobalNPC.moddedDebuffTextureList.Count(); b++)
-                    {
-                        if (CalamityGlobalNPC.moddedDebuffTextureList[b].Item2.Invoke(npc))
-                        {
-                            currentDebuffs.Add(Request<Texture2D>(CalamityGlobalNPC.moddedDebuffTextureList[b].Item1).Value);
-                        }
-                    }
-
-                    // Vanilla damage over time debuffs
-                    if (cnpc.electrified)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Electrified].Value);
-                    if (npc.onFire)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.OnFire].Value);
-                    if (npc.poisoned)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Poisoned].Value);
-                    if (npc.onFire2)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.CursedInferno].Value);
-                    if (npc.onFrostBurn)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Frostburn].Value);
-                    if (npc.venom)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Venom].Value);
-                    if (npc.shadowFlame)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.ShadowFlame].Value);
-                    if (npc.oiled)
-                        currentDebuffs.Add(Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/Oiled").Value);
-                    if (npc.javelined)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.BoneJavelin].Value);
-                    if (npc.daybreak)
-                        currentDebuffs.Add(Request<Texture2D>("CalamityMod/Buffs/DamageOverTime/Daybroken").Value);
-                    if (npc.celled)
-                        currentDebuffs.Add(Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/Celled").Value);
-                    if (npc.dryadBane)
-                        currentDebuffs.Add(Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/DryadsBane").Value);
-                    if (npc.dryadWard)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.DryadsWard].Value);
-                    if (npc.soulDrain && npc.realLife == -1)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.SoulDrain].Value);
-                    if (npc.onFire3) // Hellfire
-                        currentDebuffs.Add(Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/Hellfire").Value);
-                    if (npc.onFrostBurn2) // Frostbite
-                        currentDebuffs.Add(Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/Frostbite").Value);
-                    if (npc.tentacleSpiked)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.TentacleSpike].Value);
-
-                    // Vanilla stat debuffs
-                    if (npc.confused)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Confused].Value);
-                    if (npc.ichor)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Ichor].Value);
-                    if (cnpc.webbed)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Webbed].Value);
-                    if (npc.midas)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Midas].Value);
-                    if (npc.loveStruck)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Lovestruck].Value);
-                    if (npc.stinky)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Stinky].Value);
-                    if (npc.betsysCurse)
-                        currentDebuffs.Add(Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/BetsysCurse").Value);
-                    if (npc.dripping)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Wet].Value);
-                    if (npc.drippingSlime)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Slimed].Value);
-                    if (npc.drippingSparkleSlime)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.GelBalloonBuff].Value);
-
-                    void AddBuffDraw<T>() where T : ModBuff
-                    {
-                        if (npc.HasBuff<T>())
-                        {
-                            currentDebuffs.Add(TextureAssets.Buff[ModContent.BuffType<T>()].Value);
-                        }
-                    }
-
-                    AddBuffDraw<FlamingBlood>();
-                    AddBuffDraw<MechanicalTrauma>();
-                    AddBuffDraw<BonePiercingToxin>();
-                    AddBuffDraw<Deceive>();
-                    AddBuffDraw<VoidVirus>();
-                    AddBuffDraw<SoulDisorder>();
-                    AddBuffDraw<HeatDeath>();
-                    AddBuffDraw<Koishi>();
-                    AddBuffDraw<LifeOppress>();
-
-                    foreach (var entry in ExternalDebuffs)
-                    {
-                        if (entry.Condition(npc))
-                            currentDebuffs.Add(entry.TextureGetter());
-                    }
-
-                    if (npc.GetGlobalNPC<ScorpioEffectNPC>().effectLevel > 0)
-                    {
-                        currentDebuffs.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Buffs/AstralScorpionPoisonous").Value);
-                    }
-                    bool voidTouchDraw = false;
-                    int voidTouchIndex = 0;
-                    if (npc.Entropy().VoidTouchTime > 0)
-                    {
-                        currentDebuffs.Add(Request("CalamityEntropy/Content/Buffs/VoidTouch").Value);
-                        voidTouchDraw = true;
-                        voidTouchIndex = currentDebuffs.Count - 1;
-                    }
-                    bool abyssMarkDraw = false;
-                    int abyssMarkIndex = 0;
-                    if (npc.Entropy().StareOfAbyssLevel > 0)
-                    {
-                        currentDebuffs.Add(Request("CalamityEntropy/Content/Buffs/Wyrm/StareOfTheAbyss").Value);
-                        abyssMarkDraw = true;
-                        abyssMarkIndex = currentDebuffs.Count - 1;
-                    }
-                    bool eclipseMarkDraw = false;
-                    int eclipseMarkIndex = 0;
-                    if (npc.Entropy().EclipsedImprintLevel > 0)
-                    {
-                        currentDebuffs.Add(Request("CalamityEntropy/Content/Buffs/Wyrm/EclipsedImprint").Value);
-                        eclipseMarkDraw = true;
-                        eclipseMarkIndex = currentDebuffs.Count - 1;
-                    }
-                    // Total amount of elements in the buff list
-                    int currentDebuffsLength = currentDebuffs.Count();
-
-
-                    int buffTextureListLength = currentDebuffs.Count;
-                    // Total length of a single row in the buff display
-                    int totalLength = buffTextureListLength * 14;
-                    // Max amount of buffs per row
-                    int buffDisplayRowLimit = 5;
-                    // The maximum length of a single row in the buff display
-                    // Limited to 80 units, because every buff drawn here is half the size of a normal buff, 16 x 16, 16 * 5 = 80 units
-                    float drawPosX = totalLength >= 80f ? 40f : (float)(totalLength / 2);
-                    // The height of a single frame of the npc
-                    float npcHeight = (npc.height * npc.scale) / 2;
-                    // Offset the debuff display based on the npc's graphical offset, and 16 units, to create some space between the sprite and the display
-                    float drawPosY = npcHeight + npc.gfxOffY + 32f;
-
-                    // Iterate through the buff texture list
-                    for (int i = 0; i < currentDebuffs.Count; i++)
-                    {
-                        // Reset the X position of the display every 5th and non-zero iteration, otherwise decrease the X draw position by 16 units
-                        if (i != 0)
-                        {
-                            if (i % buffDisplayRowLimit == 0)
-                                drawPosX = 40f;
-                            else
-                                drawPosX -= 14f;
-                        }
-
-                        // Offset the Y position every row after 5 iterations to limit each displayed row to 5 debuffs
-                        float additionalYOffset = 14f * (float)Math.Floor(i * 0.2);
-
-                        var tex = currentDebuffs[i];
-                        spriteBatch.Draw(tex, npc.Center - screenPos - new Vector2(drawPosX, drawPosY + additionalYOffset), null, Color.White, 0f, default, 0.5f, SpriteEffects.None, 0f);
-                        if (voidTouchDraw && i == voidTouchIndex)
-                        {
-                            spriteBatch.DrawString(FontAssets.MouseText.Value, ((int)npc.Entropy().VoidTouchLevel).ToString(), npc.Center - screenPos - new Vector2(drawPosX, drawPosY + additionalYOffset), Color.White, 0, Vector2.Zero, 0.6f, SpriteEffects.None, 0);
-                        }
-                        if (abyssMarkDraw && i == abyssMarkIndex)
-                        {
-                            spriteBatch.DrawString(FontAssets.MouseText.Value, npc.Entropy().StareOfAbyssLevel.ToString(), npc.Center - screenPos - new Vector2(drawPosX, drawPosY + additionalYOffset), Color.White, 0, Vector2.Zero, 0.6f, SpriteEffects.None, 0);
-                        }
-                        if (eclipseMarkDraw && i == eclipseMarkIndex)
-                        {
-                            spriteBatch.DrawString(FontAssets.MouseText.Value, npc.Entropy().EclipsedImprintLevel.ToString(), npc.Center - screenPos - new Vector2(drawPosX, drawPosY + additionalYOffset), Color.White, 0, Vector2.Zero, 0.6f, SpriteEffects.None, 0);
-                        }
-                    }
-                }
-            }
+            // 原挂靠灾厄血条体系的 Boss 头顶 debuff 图标列表已整体退役（含灾厄全局实例读取与灾厄贴图）
             needExitShader = false;
             List<Effect> shaders = new List<Effect>();
             if (npc.HasBuff<SoulDisorder>())
             {
-                Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/SoulDiscorder", AssetRequestMode.ImmediateLoad).Value;
+                Effect shader = SoulDiscorderShader;
                 shader.Parameters["strength"].SetValue(1);
                 shader.Parameters["f1"].SetValue((float)npc.frame.Y / npc.getTexture().Height);
                 shader.Parameters["f2"].SetValue((float)(npc.frame.Y + npc.frame.Height) / npc.getTexture().Height);
                 shader.Parameters["offset"].SetValue(Main.GlobalTimeWrappedHourly);
-                shader.Parameters["colorMap"].SetValue(CEUtils.getExtraTex("SoulDiscorderColorMap"));
+                shader.Parameters["colorMap"].SetValue(SoulDiscorderColorMapTex.Value);
                 shaders.Add(shader);
             }
             if (npc.HasBuff<HeatDeath>())
@@ -1179,7 +960,7 @@ namespace CalamityEntropy.Common
                 {
                     hdStrength += 0.01f;
                 }
-                Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/HeatDeath", AssetRequestMode.ImmediateLoad).Value;
+                Effect shader = HeatDeathShader;
                 shader.Parameters["strength"].SetValue(hdStrength * 0.6f * (float)(Math.Cos(Main.GlobalTimeWrappedHourly * 1.3f) * 0.25f + 0.75f));
                 shader.Parameters["minColor"].SetValue((Color.Lerp(Color.DarkRed, new Color(170, 0, 250), (float)(Math.Cos(Main.GlobalTimeWrappedHourly * 2) * 0.5f + 0.5f))).ToVector4());
                 shader.Parameters["maxColor"].SetValue((Color.Lerp(new Color(170, 0, 250), Color.DarkRed, (float)(Math.Cos(Main.GlobalTimeWrappedHourly * 2) * 0.5f + 0.5f))).ToVector4());
@@ -1195,7 +976,7 @@ namespace CalamityEntropy.Common
             if (WhiteLerp > 0)
             {
                 WhiteLerp -= 1 / 5f;
-                Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/WhiteTrans", AssetRequestMode.ImmediateLoad).Value;
+                Effect shader = CEEffectAssets.WhiteTrans;
                 shader.Parameters["strength"].SetValue(WhiteLerp);
                 shaders.Add(shader);
             }
@@ -1212,7 +993,7 @@ namespace CalamityEntropy.Common
                 if (npc.type == NPCID.AncientLight || npc.type == NPCID.AncientDoom || EModILEdit.LostNPCsEntropy.Contains(npc.type))
                 {
                     needExitShader = true;
-                    Effect trans = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Trans", AssetRequestMode.ImmediateLoad).Value;
+                    Effect trans = CEEffectAssets.Trans;
                     Main.spriteBatch.EnterShaderRegion(BlendState.AlphaBlend, trans);
                     trans.Parameters["strength"].SetValue(1);
                     trans.Parameters["color"].SetValue(new Vector4(0, 0, 0, 1));
@@ -1231,12 +1012,13 @@ namespace CalamityEntropy.Common
                 {
                     if (npc.HasBuff<FlamingBlood>())
                     {
-                        SoundEngine.PlaySound(PerforatorHive.DeathSound with { Pitch = 0.4f }, npc.Center);
+                        // 原灾厄穿孔者巢死亡音效为字段引用，sound-map 未收录该条：以原版血肉爆裂音近似定稿
+                        SoundEngine.PlaySound(SoundID.NPCDeath12 with { Pitch = 0.4f }, npc.Center);
                         for (int i = 0; i < 90; i++)
                         {
                             PRTLoader.NewParticle<PRT_BloodCal>(npc.Center, CEUtils.randomPointInCircle(22), Color.Red, Main.rand.NextFloat(0.6f, 1)).Configure(16);
                         }
-                        PRTLoader.NewParticle<PRT_CustomPulse>(npc.Center, Vector2.Zero, new Color(255, 24, 24), 0.01f).Configure("CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.01f, 0.15f, 28);
+                        PRTLoader.NewParticle<PRT_CustomPulse>(npc.Center, Vector2.Zero, new Color(255, 24, 24), 0.01f).Configure("CalamityEntropy/Assets/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.01f, 0.15f, 28);
                     }
                 }
             }
@@ -1296,27 +1078,6 @@ namespace CalamityEntropy.Common
                     Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<BookMarkBlackKnife>()));
                 }
             }
-            if (npc.type == ModContent.NPCType<PrimordialWyrmHead>())
-            {
-                DownedBossSystem.downedPrimordialWyrm = true;
-            }
-            if (DownedBossSystem.downedAquaticScourge)
-            {
-                if (npc.ModNPC is Viperfish)
-                {
-                    if (Main.rand.NextBool(5))
-                    {
-                        Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<AbyssalPiercer>()));
-                    }
-                }
-                if (npc.ModNPC is GiantSquid)
-                {
-                    if (Main.rand.NextBool(2))
-                    {
-                        Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<AbyssalPiercer>()));
-                    }
-                }
-            }
             if (!npc.friendly && npc.lifeMax > 20)
             {
                 if (Main.bloodMoon)
@@ -1324,6 +1085,15 @@ namespace CalamityEntropy.Common
                     if (Main.rand.NextBool(800))
                     {
                         Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<CrimsonNight>()));
+                    }
+                    // 原灾厄掉落的两张邪恶卡，改挂血月敌怪各 1/40（misc-map §五增补段）
+                    if (Main.rand.NextBool(40))
+                    {
+                        Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<Fool>()));
+                    }
+                    if (Main.rand.NextBool(40))
+                    {
+                        Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<Frail>()));
                     }
                 }
                 Player n = null;
@@ -1371,7 +1141,8 @@ namespace CalamityEntropy.Common
                 {
                     ModPacket pack = Mod.GetPacket();
                     pack.Write((byte)CEMessageType.BossKilled);
-                    pack.Write(npc.ModNPC == null || npc.ModNPC.Mod is not CalamityMod.CalamityMod);
+                    // 灾厄脱钩后不存在灾厄 Boss，原「非灾厄 Boss」判定恒为真（接收端目前也未消费该值）
+                    pack.Write(true);
                     pack.Send();
                 }
                 else
@@ -1390,13 +1161,6 @@ namespace CalamityEntropy.Common
                             }
                         }
                     }
-                }
-            }
-            if (npc.type == ModContent.NPCType<GiantClam>())
-            {
-                if (!(Main.netMode == NetmodeID.MultiplayerClient))
-                {
-                    Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<EntityCard>()));
                 }
             }
             if (npc.type == NPCID.SkeletronHead)
@@ -1419,18 +1183,6 @@ namespace CalamityEntropy.Common
                 {
                     Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<Tarnish>()));
                 }
-            }
-            if (npc.type == ModContent.NPCType<Eidolist>())
-            {
-                if (Main.rand.NextBool(3))
-                {
-                    Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<Fool>()));
-                }
-            }
-            if (npc.type == ModContent.NPCType<SlimeGodCore>())
-            {
-                Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<Frail>()));
-
             }
             if (npc.type == NPCID.GiantWormHead)
             {
@@ -1464,51 +1216,18 @@ namespace CalamityEntropy.Common
                     Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<LostSoul>(), 1));
                 }
             }
-            if (npc.type == ModContent.NPCType<RavagerBody>())
-            {
-                Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<SacrificalMask>(), 1));
-            }
-
-            if (npc.type == ModContent.NPCType<DevilFish>() || npc.type == ModContent.NPCType<Laserfish>() || npc.type == ModContent.NPCType<ToxicMinnow>() || npc.type == ModContent.NPCType<LuminousCorvina>() || npc.type == ModContent.NPCType<Viperfish>() || npc.type == ModContent.NPCType<OarfishHead>())
-            {
-                if (Main.rand.NextDouble() < 0.02f)
-                {
-                    Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<ToyRock>(), 1));
-                }
-            }
-            if (npc.type == ModContent.NPCType<AstrumDeusHead>())
-            {
-                string modFolder = Path.Combine(Main.SavePath, "CalamityEntropy"); string myDataFilePath = Path.Combine(modFolder, "DeusKilled.txt");
-                if (!Directory.Exists(modFolder))
-                {
-                    Directory.CreateDirectory(modFolder);
-                }
-
-                using (StreamWriter sw = new StreamWriter(myDataFilePath))
-                {
-                    sw.WriteLine("a");
-                }
-            }
-            if (npc.type == ModContent.NPCType<DevourerofGodsHead>())
-            {
-                string modFolder = Path.Combine(Main.SavePath, "CalamityEntropy"); string myDataFilePath = Path.Combine(modFolder, "DoGKilled.txt");
-                if (!Directory.Exists(modFolder))
-                {
-                    Directory.CreateDirectory(modFolder);
-                }
-
-                using (StreamWriter sw = new StreamWriter(myDataFilePath))
-                {
-                    sw.WriteLine("a");
-                }
-            }
-
         }
         public class IsNormal : IItemDropRuleCondition, IProvideItemConditionDescription
         {
             public bool CanDrop(DropAttemptInfo info) => !Main.expertMode;
             public bool CanShowItemDropInUI() => !Main.expertMode;
             public string GetConditionDescription() => "Normal Only";
+        }
+        public class IsNight : IItemDropRuleCondition, IProvideItemConditionDescription
+        {
+            public bool CanDrop(DropAttemptInfo info) => !Main.dayTime;
+            public bool CanShowItemDropInUI() => true;
+            public string GetConditionDescription() => "At night";
         }
         public int f_owner = -1;
         public bool lostSoulDrop = true;
@@ -1552,25 +1271,7 @@ namespace CalamityEntropy.Common
                 {
                     npc.AddBuff<SoulDisorder>(360);
                 }
-                if (source is Projectile pr && pr.DamageType.CountsAsClass<ThrowingDamageClass>())
-                {
-                    if (!(pr.ModProjectile != null && (pr.ModProjectile is WristTornado || pr.ModProjectile is BoobyMine || pr.ModProjectile is SolarArrow)))
-                    {
-                        if (player.Entropy().worshipRelic)
-                        {
-                            player.Entropy().worshipStealthRegenTime = 20;
-                        }
-                        if (player.Entropy().hasAcc(GaleWristblades.ID) && CECooldowns.CheckCD("GaleWristblades", 30))
-                        {
-                            player.Entropy().GaleWristbladeCharge++;
-                            player.Entropy().WindPressureTime = 600;
-                        }
-                        if (player.Entropy().hasAcc(MineBox.ID) && pr.Calamity().stealthStrike && CECooldowns.CheckCD(ref CECooldowns.MineBoxCd, 60))
-                        {
-                            Projectile.NewProjectile(pr.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<BoobyMine>(), ((int)player.GetTotalDamage(pr.DamageType).ApplyTo(MineBox.BaseDamage)).ApplyAccArmorDamageBonus(player), 0, player.whoAmI);
-                        }
-                    }
-                }
+                // 崇拜圣物/疾风腕刃/诡雷盒的旧投掷命中接线已整体退役，新效果由饰品文件自含实现
                 if (player.Entropy().grudgeCard)
                 {
                     if (Main.rand.NextBool(4) && !CECooldowns.HasCooldown("GrudgeCD"))
@@ -1774,11 +1475,6 @@ namespace CalamityEntropy.Common
                 shop.Add(ModContent.ItemType<SoyMilk>(), new Condition(Mod.GetLocalization("DownedBoss2").Value, () => NPC.downedBoss2));
                 shop.Add(ModContent.ItemType<BrillianceCard>());
             }
-            if (shop.NpcType == ModContent.NPCType<Archmage>())
-            {
-                shop.Add(ModContent.ItemType<ThreadOfFate>());
-                shop.Add(ModContent.ItemType<ArchmagesHandmirror>());
-            }
             if (shop.NpcType == 108)
             {
                 shop.Add(ModContent.ItemType<AuraCard>(), new Condition(Mod.GetLocalization("HaveOracleDeck"), () => Main.LocalPlayer.Entropy().oracleDeckInInv));
@@ -1814,10 +1510,6 @@ namespace CalamityEntropy.Common
             if (shop.NpcType == 20)
             {
                 shop.Add(ModContent.ItemType<Confuse>());
-            }
-            if (shop.NpcType == ModContent.NPCType<Bandit>())
-            {
-                shop.Add(ModContent.ItemType<Barren>());
             }
         }
         public static void AddSoulCard<T>(NPCShop shop) where T : ModItem

@@ -1,7 +1,6 @@
-﻿using CalamityEntropy.Content.DamageClasses;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.NPCs.DevourerofGods;
+﻿using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.DamageClasses;
+using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -65,11 +64,8 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            // 原灾厄 DR 抵消除法与 DoG 体节特判已随灾厄 DR 体系移除，保留防御穿透
             modifiers.ArmorPenetration += target.defense + 64;
-            if (target.type != ModContent.NPCType<DevourerofGodsBody>())
-            {
-                modifiers.SourceDamage /= (1f - target.Calamity().DR);
-            }
         }
         public override void OnKill(int timeLeft)
         {

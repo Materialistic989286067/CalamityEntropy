@@ -12,6 +12,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Nemesis
 {
     internal class NemesisHeld : BaseKnife
     {
+        //蓄力条贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/GenericBarBack")]
+        internal static Asset<Texture2D> BarBackTex;
+        [VaultLoaden("CalamityEntropy/Assets/GenericBarFront")]
+        internal static Asset<Texture2D> BarFrontTex;
         public override int TargetID => ModContent.ItemType<Nemesis>();
         public override string trailTexturePath => EffectLoader.AssetPath + "MotionTrail3";
         public override string gradientTexturePath => EffectLoader.AssetPath + "NemesisBar";
@@ -182,8 +187,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Nemesis
             if (Projectile.ai[0] == 2 && newCharge <= maxCharge)
             {
                 {
-                    Texture2D barBG = ModContent.Request<Texture2D>(EffectLoader.AssetPath + "GenericBarBack", (AssetRequestMode)2).Value;
-                    Texture2D barFG = ModContent.Request<Texture2D>(EffectLoader.AssetPath + "GenericBarFront", (AssetRequestMode)2).Value;
+                    Texture2D barBG = BarBackTex.Value;
+                    Texture2D barFG = BarFrontTex.Value;
                     float barScale = 2f;
                     Vector2 barOrigin = barBG.Size() * 0.5f;
                     Vector2 drawPos = Owner.MountedCenter + new Vector2(0, 60) - Main.screenPosition;

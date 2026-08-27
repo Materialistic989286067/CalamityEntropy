@@ -1,6 +1,7 @@
 ﻿using CalamityEntropy.Content.Buffs.Pets;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,6 +10,16 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Wyrm
 {
     public class WyrmChan : ModProjectile
     {
+        //本体与眼睛两组帧的首帧文件名都不带序号(WyrmChan.png 同时是弹幕主贴图),
+        //数组标签只认「路径+数字」,首帧单独加载
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Wyrm/WyrmChan")]
+        internal static Asset<Texture2D> BodyFrame1;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Wyrm/WyrmChan", 2, 3, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] BodyFramesRest;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Wyrm/Eye")]
+        internal static Asset<Texture2D> EyeFrame1;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Wyrm/Eye", 2, 3, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] EyeFramesRest;
         public int counter = 0;
         public override void SetStaticDefaults()
         {
@@ -28,23 +39,15 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Wyrm
         {
             if (Main.gameMenu)
             {
-                Texture2D txd = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Wyrm/WyrmChan").Value;
+                Texture2D txd = BodyFrame1.Value;
                 Main.EntitySpriteDraw(txd, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, new Vector2(txd.Width, txd.Height) / 2, Projectile.scale, SpriteEffects.FlipHorizontally, 0);
 
                 return false;
             }
-            List<Texture2D> list = new List<Texture2D>();
-            list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Wyrm/WyrmChan").Value);
-            list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Wyrm/WyrmChan2").Value);
-            list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Wyrm/WyrmChan3").Value);
-            list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Wyrm/WyrmChan4").Value);
-            List<Texture2D> list2 = new List<Texture2D>();
-            list2.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Wyrm/Eye").Value);
-            list2.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Wyrm/Eye2").Value);
-            list2.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Wyrm/Eye3").Value);
-            list2.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Wyrm/Eye4").Value);
-            Texture2D tx = list[(counter / 6) % list.Count];
-            Texture2D tx2 = list2[(counter / 6) % list.Count];
+            //两组各 4 帧:首帧 + 后 3 帧,本体和眼睛用同一帧序号
+            int frame = (counter / 6) % (BodyFramesRest.Length + 1);
+            Texture2D tx = frame == 0 ? BodyFrame1.Value : BodyFramesRest[frame - 1];
+            Texture2D tx2 = frame == 0 ? EyeFrame1.Value : EyeFramesRest[frame - 1];
             if (Projectile.velocity.X > -2 && Projectile.velocity.X < 2f)
             {
                 if (Main.player[Projectile.owner].Center.X > Projectile.Center.X)

@@ -1,10 +1,9 @@
 ﻿using CalamityEntropy.Content.Items;
-using CalamityMod.Tiles.BaseTiles;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Tiles
 {
-    public class AcropolisRelicTile : BaseBossRelic
+    public class AcropolisRelicTile : CEBaseBossRelic
     {
         public override string RelicTextureName => "CalamityEntropy/Content/Tiles/AcropolisRelicTile";
 

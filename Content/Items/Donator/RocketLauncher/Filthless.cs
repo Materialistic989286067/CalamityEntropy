@@ -1,10 +1,8 @@
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Materials;
 using InnoVault.PRT;
 using System;
 using System.Collections.Generic;
@@ -48,26 +46,26 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
             Item.ArmorPenetration = 50;
         }
         #region Animations
-        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
+        public override void HoldItem(Player player) => player.Entropy().MouseWorldListener = true;
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
-            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+            player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
             Vector2 itemPosition = player.MountedCenter + itemRotation.ToRotationVector2() * 76f;
             Vector2 itemSize = new Vector2(Item.width, Item.height);
             Vector2 itemOrigin = -HoldoutOffset().Value;
-            CalamityUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
+            CEUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
             base.UseStyle(player, heldItemFrame);
         }
 
         public override void UseItemFrame(Player player)
         {
-            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+            player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
 
             float animProgress = 1 - player.itemTime / (float)player.itemTimeMax;
-            float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
+            float rotation = (player.Center - player.Entropy().MouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
             if (animProgress < 0.5)
                 rotation += (-0.2f) * (float)Math.Pow((0.5f - animProgress) / 0.5f, 2) * player.direction;
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
@@ -84,11 +82,11 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 
         public override void AddRecipes()
         {
+            // 灾厄原料按 material-map.md 替换：DivineGeode×20+RuinousSoul×10→虚无碎片（合并为×30）
             CreateRecipe()
                 .AddIngredient<Zeal>()
                 .AddIngredient<OsseousRemains>(20)
-                .AddIngredient<DivineGeode>(20)
-                .AddIngredient<RuinousSoul>(10)
+                .AddIngredient<NihilityFragments>(30)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
@@ -240,10 +238,10 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
         public override void OnKill(int timeLeft)
         {
             Projectile.GetOwner().Heal(5);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Violet * 1.2f, 0.005f).Configure("CalamityMod/Particles/ShineExplosion2", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, 0.12f * Projectile.scale, 24);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Violet * 1.2f, 0.005f).Configure("CalamityMod/Particles/ShineExplosion1", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, 0.12f * Projectile.scale, 24);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Violet * 1.2f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, 0.12f * Projectile.scale, 24);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Violet * 1.4f, 0.005f).Configure("CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, 0.123f * Projectile.scale, 24);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Violet * 1.2f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShineExplosion2", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, 0.12f * Projectile.scale, 24);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Violet * 1.2f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShineExplosion1", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, 0.12f * Projectile.scale, 24);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Violet * 1.2f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, 0.12f * Projectile.scale, 24);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Violet * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, 0.123f * Projectile.scale, 24);
 
             CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromAI(), Projectile.owner.ToPlayer(), Projectile.Center, Projectile.damage * 5, 250, Projectile.DamageType);
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);

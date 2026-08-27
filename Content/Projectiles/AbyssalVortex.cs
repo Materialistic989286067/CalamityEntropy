@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityEntropy.Assets.Register;
+using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
@@ -15,7 +17,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = CEUtils.RogueDC;
+            Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 256;
             Projectile.height = 256;
             Projectile.hostile = false;
@@ -53,7 +55,7 @@ namespace CalamityEntropy.Content.Projectiles
         public void DrawVortex(Vector2 pos, Color color, float Size = 1, float glow = 1f)
         {
             Main.spriteBatch.End();
-            Effect effect = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Vortex", AssetRequestMode.ImmediateLoad).Value;
+            Effect effect = CEEffectAssets.Vortex;
             effect.Parameters["Center"].SetValue(new Vector2(0.5f, 0.5f));
             effect.Parameters["Strength"].SetValue(22);
             effect.Parameters["AspectRatio"].SetValue(1);
@@ -65,7 +67,7 @@ namespace CalamityEntropy.Content.Projectiles
             effect.Parameters["enhanceLightAlpha"].SetValue(0.8f);
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             effect.CurrentTechnique.Passes[0].Apply();
-            Main.spriteBatch.Draw(CEUtils.getExtraTex("VoronoiShapes"), pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12, CEUtils.getExtraTex("VoronoiShapes").Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(CEExtraAssets.VoronoiShapes, pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12, CEExtraAssets.VoronoiShapes.Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
             CEUtils.DrawGlow(pos, Color.White * 0.4f * glow, 0.8f * Size * glow);
         }
         public override bool PreDraw(ref Color lightColor)

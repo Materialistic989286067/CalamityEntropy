@@ -1,6 +1,4 @@
-﻿using CalamityMod.Items;
-using CalamityMod.Projectiles.Magic;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,7 +15,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             base.SetDefaults();
             Item.rare = ItemRarityID.Orange;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Crimson");
         public override EBookProjectileEffect getEffect()
@@ -44,7 +42,11 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             {
                 for (int i = 0; i < 16; i++)
                 {
-                    Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center + new Vector2(Main.rand.NextFloat(-80, 80), 400), new Vector2(0, -18), ModContent.ProjectileType<BloodBlast>(), (damageDone / 36).Softlimitation(75), projectile.knockBack / 3, projectile.owner, 0, Main.rand.NextFloat(-0.1f, 0.1f)).ToProj().DamageType = projectile.DamageType;
+                    // 原灾厄 BloodBlast 改用自有 BloodSpray; 血珠自地下升起, 关掉碰撞并缩短寿命保持原节奏
+                    var blood = Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center + new Vector2(Main.rand.NextFloat(-80, 80), 400), new Vector2(0, -18), ModContent.ProjectileType<BloodSpray>(), (damageDone / 36).Softlimitation(75), projectile.knockBack / 3, projectile.owner).ToProj();
+                    blood.DamageType = projectile.DamageType;
+                    blood.tileCollide = false;
+                    blood.timeLeft = 90;
                 }
             }
 

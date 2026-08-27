@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Graphics.Effects;
 using Terraria.ModLoader;
@@ -18,6 +20,9 @@ namespace CalamityEntropy.Content.Skies
     }
     public class SnowgraveSky : CustomSky
     {
+        //整屏渐变贴图,加载期由 VaultLoaden 赋值,绘制里不再走 getExtraTex
+        [VaultLoaden("CalamityEntropy/Assets/Extra/WhiteFade")]
+        private static Asset<Texture2D> whiteFadeTex;
         private bool skyActive;
         private float opacity;
         public override void Deactivate(params object[] args)
@@ -47,7 +52,7 @@ namespace CalamityEntropy.Content.Skies
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
             spriteBatch.End();
-            Texture2D tex = CEUtils.getExtraTex("WhiteFade");
+            Texture2D tex = whiteFadeTex.Value;
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null);
 
             Color c1 = new Color(180, 200, 255, (int)(255 * opacity * 0.9f));

@@ -5,10 +5,9 @@ using Terraria;
 
 namespace CalamityEntropy.Content.Particles.CalamityPorts
 {
-    //VelChangingSpark贴图路径调用点现传,没法写死VaultLoaden,走PRTPathTextures运行时缓存
     public class PRT_VelChangingSpark : BasePRT
     {
-        public string TexPath = "CalamityMod/Particles/BloomCircle";
+        public string TexPath = "CalamityEntropy/Assets/Particles/BloomCircle";
         public Color InitialColor;
         public Vector2 EndVelocity;
         public Vector2 Stretch = Vector2.One;
@@ -22,7 +21,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         public override void Reset()
         {
             base.Reset();
-            TexPath = "CalamityMod/Particles/BloomCircle";
+            TexPath = "CalamityEntropy/Assets/Particles/BloomCircle";
             InitialColor = default;
             EndVelocity = default;
             Stretch = Vector2.One;

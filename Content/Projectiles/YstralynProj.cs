@@ -1,8 +1,9 @@
-﻿using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Buffs.Wyrm;
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
-using CalamityMod.Buffs.StatDebuffs;
+using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -76,9 +77,9 @@ namespace CalamityEntropy.Content.Projectiles
             CEUtils.PlaySound("ystn_hit", Main.rand.NextFloat(0.86f, 1.2f), target.Center, 3, 0.76f);
             for (int ii = 0; ii < 4; ii++)
             {
-                for (int i = 0; i < (Projectile.Calamity().stealthStrike ? 6 : 1); i++)
+                for (int i = 0; i < (Projectile.IsEmpowered() ? 6 : 1); i++)
                 {
-                    //AbyssalLine旧GeneralParticleHandler spawn,现走BasePRT,参数照抄
+                    //AbyssalLine旧版粒子系统 spawn,现走BasePRT,参数照抄
                     var __prt = PRTLoader.NewParticle<PRT_AbyssalLine>(target.Center, Vector2.Zero, Color.White, 1).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, CEUtils.randomRot());  //AbyssalLine带lifetime的Configure是CalamityPorts签名
                     __prt.lx = 1.2f;
                     __prt.xadd = 1.2f;
@@ -93,7 +94,7 @@ namespace CalamityEntropy.Content.Projectiles
             {
                 return;
             }
-            Texture2D px = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value;
+            Texture2D px = CEExtraAssets.white;
             float jd = 1;
             float lw = 1 - Timer / (Projectile.owner.ToPlayer().itemAnimationMax * Projectile.MaxUpdates);
             if (lw > 0.26f)
@@ -109,7 +110,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         private void DrawLine(List<Vector2> list)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value;
+            Texture2D texture = CEExtraAssets.white;
             Rectangle frame = texture.Frame();
             Vector2 origin = new Vector2(0, 0.5f);
 

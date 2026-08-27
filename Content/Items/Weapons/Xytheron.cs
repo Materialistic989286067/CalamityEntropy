@@ -1,8 +1,6 @@
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod;
-using CalamityMod.Items;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -16,7 +14,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             Item.damage = 9200;
             Item.crit = 20;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.width = 86;
             Item.height = 86;
             Item.useTime = 22;
@@ -24,7 +22,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 7;
             Item.rare = ModContent.RarityType<AbyssalBlue>();
-            Item.value = CalamityGlobalItem.RarityCalamityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 3, gold: 20);
             Item.UseSound = null;
             Item.noMelee = true;
             Item.noUseGraphic = true;

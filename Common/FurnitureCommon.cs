@@ -1,5 +1,4 @@
-﻿using CalamityMod;
-using Terraria;
+﻿using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -1174,7 +1173,8 @@ internal static class FurnitureCommon
         TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop, 2, 0);
         TileObjectData.newTile.StyleLineSkip = 2;
         TileObjectData.addTile(mt.Type);
-        mt.AddMapEntry(mapColor, lava ? CalamityUtils.GetText("Tiles.LavaFountain") : Language.GetText("MapObject.WaterFountain"));
+        //脱离灾厄:熔岩喷泉地图名改用自有键(hjson 键 Tiles.LavaFountain)
+        mt.AddMapEntry(mapColor, lava ? CEUtils.GetText("Tiles.LavaFountain") : Language.GetText("MapObject.WaterFountain"));
         mt.AnimationFrameHeight = 72;
     }
 

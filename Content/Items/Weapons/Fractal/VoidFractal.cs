@@ -1,10 +1,9 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Melee;
+using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -28,7 +27,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Item.useTime = Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 6;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
             Item.rare = ModContent.RarityType<VoidPurple>();
             Item.UseSound = null;
             Item.noMelee = true;
@@ -90,7 +89,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         {
             CreateRecipe()
                 .AddIngredient<SpiritFractal>()
-                .AddIngredient<MawOfInfinity>()
+                .AddIngredient<VoidAnnihilate>()
                 .AddIngredient<VoidBar>(5)
                 .AddTile<VoidWellTile>()
                 .Register();
@@ -110,7 +109,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -129,12 +128,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public float spawnProjCounter = 0;
         public override void AI()
         {
-            bool noProj = Projectile.GetOwner().Calamity().bladeArmEnchant;
-            if (noProj)
-            {
-                spawnProj = false;
-                shoot = false;
-            }
             Player owner = Projectile.GetOwner();
             float MaxUpdateTimes = owner.itemTimeMax * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
@@ -180,7 +173,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 {
                     spawnProjCounter -= 6f;
                     Vector2 spawnPos = Projectile.Center + Projectile.rotation.ToRotationVector2() * 48 * scale * Projectile.scale;
-                    if (Main.myPlayer == Projectile.owner && !noProj)
+                    if (Main.myPlayer == Projectile.owner)
                     {
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), spawnPos, CEUtils.randomPointInCircle(0.1f) + Projectile.rotation.ToRotationVector2() * 8, ModContent.ProjectileType<VoidStarF>(), Projectile.damage / 3, Projectile.knockBack, Projectile.owner).ToProj().DamageType = DamageClass.Melee;
                     }
@@ -259,11 +252,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 owner.heldProj = Projectile.whoAmI;
                 owner.itemTime = 2;
                 owner.itemAnimation = 2;
-
-                if (Projectile.GetOwner().Calamity().bladeArmEnchant)
-                {
-                    owner.itemAnimation = int.Max(1, (int)(owner.itemAnimationMax * 0.6f) - Projectile.Entropy().Lifetime);
-                }
             }
             if (counter > MaxUpdateTimes)
             {
@@ -357,8 +345,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Main.EntitySpriteDraw(phantom, Projectile.Center + Projectile.GetOwner().gfxOffY * Vector2.UnitY - Main.screenPosition, null, Color.White * alpha * phantomAlpha, rot, origin, Projectile.scale * scale * 1.1f, effect);
 
             Main.spriteBatch.UseBlendState(BlendState.Additive);
-            Texture2D bs = CEUtils.getExtraTex("SemiCircularSmear");
-            Texture2D ss = CEUtils.getExtraTex("SlashSmear");
+            Texture2D bs = CEExtraAssets.SemiCircularSmear;
+            Texture2D ss = CEExtraAssets.SlashSmear;
 
             Color color1 = new Color(20, 20, 255);
             Color color2 = new Color(102, 20, 255);
@@ -430,9 +418,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public override bool PreDraw(ref Color lightColor)
         {
             lightColor = Color.White;
-            Texture2D t1 = CEUtils.getExtraTex("B1");
-            Texture2D t2 = CEUtils.getExtraTex("T2");
-            Texture2D te = CEUtils.getExtraTex("FLEND");
+            Texture2D t1 = CEExtraAssets.B1;
+            Texture2D t2 = CEExtraAssets.T2;
+            Texture2D te = CEExtraAssets.FLEND;
             float w = 32;
             Main.spriteBatch.UseBlendState(BlendState.Additive, SamplerState.LinearWrap);
 
@@ -484,8 +472,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             }
             else
             {
-                bool noProj = Projectile.GetOwner().Calamity().bladeArmEnchant;
-                if (Projectile.ai[0] == 1 && !noProj)
+                if (Projectile.ai[0] == 1)
                 {
                     int type = ModContent.ProjectileType<FinalFractalBlade>();
                     Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity.RotatedBy(MathHelper.PiOver2) * 0.1f, type, Projectile.damage, Projectile.knockBack, Projectile.owner);
@@ -552,7 +539,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Vector2 end = points[points.Count - 1];
 
             Main.spriteBatch.UseBlendState(BlendState.NonPremultiplied, SamplerState.LinearClamp);
-            DrawSlashPart(GetVPoints(start, end, 100), GetVPoints(start, end, -100), CEUtils.getExtraTex("MegaStreakBacking2b"), (Projectile.ai[0] == 0 ? new Color(180, 0, 255, 160) : new Color(240, 200, 255, 180)), (Projectile.ai[0] == 0 ? new Color(180, 0, 255, 160) : new Color(240, 200, 255, 180)));
+            DrawSlashPart(GetVPoints(start, end, 100), GetVPoints(start, end, -100), CEExtraAssets.MegaStreakBacking2b, (Projectile.ai[0] == 0 ? new Color(180, 0, 255, 160) : new Color(240, 200, 255, 180)), (Projectile.ai[0] == 0 ? new Color(180, 0, 255, 160) : new Color(240, 200, 255, 180)));
             DrawSlashPart(GetVPoints(start, end, 26), GetVPoints(start, end, -26), CEUtils.pixelTex, new Color(180, 55, 235), new Color(255, 200, 255, 0));
             DrawSlashPart(GetVPoints(Vector2.Lerp(start, end, 0.2f), Vector2.Lerp(end, start, 0.2f), 26), GetVPoints(Vector2.Lerp(start, end, 0.1f), Vector2.Lerp(end, start, 0.1f), -26), CEUtils.pixelTex, Color.Black, Color.Black);
             return false;

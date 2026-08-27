@@ -1,10 +1,12 @@
-using CalamityEntropy.Common;
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Items;
+using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Weapons;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -23,7 +25,7 @@ namespace CalamityEntropy.Content.Items.Armor.Smoldering
         {
             Item.width = 32;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+            Item.value = Item.buyPrice(gold: 10);
             Item.defense = 5;
             Item.rare = ItemRarityID.LightRed;
         }
@@ -39,11 +41,8 @@ namespace CalamityEntropy.Content.Items.Armor.Smoldering
             player.setBonus = Mod.GetLocalization("SmolderingSetBonus").Value;
             player.Entropy().smolderingSet = true;
             player.maxMinions += 1;
-            if (!ModContent.GetInstance<Config>().MariviumArmorSetOnlyProvideStealthBarWhenHoldingRogueWeapons || player.HeldItem.DamageType.CountsAsClass(CEUtils.RogueDC))
-            {
-                player.Calamity().wearingRogueArmor = true;
-                player.Calamity().rogueStealthMax += 0.8f;
-            }
+            // 潜行体系退役:原潜行条(上限0.8)按容量×10%换算为大招充能速度
+            player.GetModPlayer<CEChargePlayer>().ChargeRateMult += 0.08f;
         }
         public override void UpdateEquip(Player player)
         {
@@ -124,7 +123,7 @@ namespace CalamityEntropy.Content.Items.Armor.Smoldering
             {
                 Projectile.timeLeft = 3;
             }
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             float targetRot = 0;
             int delayMax = (int)(60 - 30 * (1f - (player.statLife / (float)player.statLifeMax2)));
 
@@ -162,10 +161,13 @@ namespace CalamityEntropy.Content.Items.Armor.Smoldering
             Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, targetRot, 0.14f, false);
 
         }
+        //尾巴体节贴图,加载期就位,不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Items/Armor/Smoldering/SmolderingSeg")]
+        internal static Asset<Texture2D> SegTex;
         public override bool PreDraw(ref Color lightColor)
         {
             lightColor = Color.White;
-            Texture2D seg = CEUtils.RequestTex("CalamityEntropy/Content/Items/Armor/Smoldering/SmolderingSeg");
+            Texture2D seg = SegTex.Value;
             foreach (var s in segs)
             {
                 Main.EntitySpriteDraw(seg, s.Center - Main.screenPosition, null, lightColor, s.rotation, seg.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
@@ -211,9 +213,9 @@ namespace CalamityEntropy.Content.Items.Armor.Smoldering
             //Smoldering重击爆炸,CustomPulse贴图路径现传走PRTPathTextures
             PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.Red * 0.8f, scale * 0.8f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
             PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.White * 0.8f, scale * 0.5f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 18);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.02f, 15);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 18);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.02f, 15);
         }
         public override bool PreDraw(ref Color lightColor)
         {
@@ -232,7 +234,7 @@ namespace CalamityEntropy.Content.Items.Armor.Smoldering
         }
         public void DrawEnergyBall(Vector2 pos, float size, float alpha)
         {
-            Texture2D tex = CEUtils.getExtraTex("a_circle");
+            Texture2D tex = CEExtraAssets.a_circle;
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(255, 230, 140) * alpha, 0, tex.Size() * 0.5f, size * 0.12f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(120, 90, 0) * alpha, 0, tex.Size() * 0.5f, size * 0.2f, SpriteEffects.None, 0);
         }

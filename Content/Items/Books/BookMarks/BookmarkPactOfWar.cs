@@ -1,9 +1,7 @@
 ﻿using CalamityEntropy.Common;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items;
-using CalamityMod.Rarities;
+using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -19,8 +17,8 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override void SetDefaults()
         {
             base.SetDefaults();
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<Golden>();
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
 
         }
         public override Texture2D UITexture => BookMark.GetUITexture("PactOfWar");
@@ -145,7 +143,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public float RibbonTrailWidthFunction(float completionRatio, Vector2 vertex)
         {
             float baseWidth = Utils.GetLerpValue(1f, 0.54f, completionRatio, true) * 5f;
-            float endTipWidth = CalamityUtils.Convert01To010(Utils.GetLerpValue(0.96f, 0.89f, completionRatio, true)) * 2.4f;
+            float endTipWidth = CEUtils.Convert01To010(Utils.GetLerpValue(0.96f, 0.89f, completionRatio, true)) * 2.4f;
             return (baseWidth + endTipWidth) * 0.6f * Projectile.scale;
         }
 
@@ -162,8 +160,8 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 p1.Add(v1[i].pos);
                 p2.Add(v2[i].pos);
             }
-            PrimitiveRenderer.RenderTrail(p1, new(RibbonTrailWidthFunction, RibbonTrailColorFunction), 66);
-            PrimitiveRenderer.RenderTrail(p2, new(RibbonTrailWidthFunction, RibbonTrailColorFunction), 66);
+            CEPrimitiveRenderer.RenderTrail(p1, new(RibbonTrailWidthFunction, RibbonTrailColorFunction), 66);
+            CEPrimitiveRenderer.RenderTrail(p2, new(RibbonTrailWidthFunction, RibbonTrailColorFunction), 66);
 
             Main.spriteBatch.End();
             Main.spriteBatch.begin_();
@@ -304,7 +302,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public float RibbonTrailWidthFunction(float completionRatio, Vector2 vertex)
         {
             float baseWidth = Utils.GetLerpValue(1f, 0.54f, completionRatio, true) * 5f;
-            float endTipWidth = CalamityUtils.Convert01To010(Utils.GetLerpValue(0.96f, 0.89f, completionRatio, true)) * 2.4f;
+            float endTipWidth = CEUtils.Convert01To010(Utils.GetLerpValue(0.96f, 0.89f, completionRatio, true)) * 2.4f;
             return (baseWidth + endTipWidth) * 0.6f * Projectile.scale;
         }
         public Color RibbonTrailColorFunction(float completionRatio, Vector2 vertex)
@@ -328,8 +326,8 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 p1.Add(v1[i].pos);
                 p2.Add(v2[i].pos);
             }
-            PrimitiveRenderer.RenderTrail(p1, new(RibbonTrailWidthFunction, RibbonTrailColorFunction), 66);
-            PrimitiveRenderer.RenderTrail(p2, new(RibbonTrailWidthFunction, RibbonTrailColorFunction), 66);
+            CEPrimitiveRenderer.RenderTrail(p1, new(RibbonTrailWidthFunction, RibbonTrailColorFunction), 66);
+            CEPrimitiveRenderer.RenderTrail(p2, new(RibbonTrailWidthFunction, RibbonTrailColorFunction), 66);
 
             Main.spriteBatch.End();
             Main.spriteBatch.begin_();

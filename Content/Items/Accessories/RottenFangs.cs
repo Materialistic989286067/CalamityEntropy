@@ -1,5 +1,4 @@
-﻿using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod.Items;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault.PRT;
 using Terraria;
 using Terraria.ID;
@@ -14,7 +13,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.width = 26;
             Item.height = 16;
             Item.rare = ItemRarityID.Orange;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.accessory = true;
         }
 

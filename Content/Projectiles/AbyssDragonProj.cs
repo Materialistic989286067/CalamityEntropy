@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Common;
-using CalamityMod;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -55,13 +54,13 @@ namespace CalamityEntropy.Content.Projectiles
                         Projectile.timeLeft = 1;
                 }
                 Vector2 spawnPos = player.Center + CEUtils.randomRot().ToRotationVector2() * 1400;
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), spawnPos, (player.Calamity().mouseWorld - spawnPos).normalize() * 12, ModContent.ProjectileType<AbyssalStar>(), (int)(Projectile.damage * 0.24f), Projectile.knockBack, player.whoAmI);
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), spawnPos, (player.Entropy().MouseWorld - spawnPos).normalize() * 12, ModContent.ProjectileType<AbyssalStar>(), (int)(Projectile.damage * 0.24f), Projectile.knockBack, player.whoAmI);
 
             }
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             if (target == null)
             {
-                Vector2 t = player.Calamity().mouseWorld + new Vector2(0, -120);
+                Vector2 t = player.Entropy().MouseWorld + new Vector2(0, -120);
                 if (CEUtils.getDistance(t, Projectile.Center) > 300)
                 {
                     Projectile.velocity *= 0.96f;
@@ -98,13 +97,13 @@ namespace CalamityEntropy.Content.Projectiles
             }
 
             Vector2 orgPos = Projectile.Center;
-            Projectile.Center = player.Calamity().mouseWorld;
+            Projectile.Center = player.Entropy().MouseWorld;
             target = null;
             foreach (NPC n in Main.ActiveNPCs)
             {
                 if (!n.friendly && n.CanBeChasedBy(Projectile))
                 {
-                    if (target == null || target.Distance(player.Calamity().mouseWorld) > n.Distance(player.Calamity().mouseWorld))
+                    if (target == null || target.Distance(player.Entropy().MouseWorld) > n.Distance(player.Entropy().MouseWorld))
                     {
                         target = n;
                     }

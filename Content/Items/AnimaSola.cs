@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Items;
+using CalamityEntropy.Core.Cooldowns;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -21,7 +20,7 @@ namespace CalamityEntropy.Content.Items
             Item.useAnimation = 16;
             Item.useStyle = -1;
             Item.noMelee = true;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1);
             Item.rare = ItemRarityID.Red;
             Item.noUseGraphic = true;
 

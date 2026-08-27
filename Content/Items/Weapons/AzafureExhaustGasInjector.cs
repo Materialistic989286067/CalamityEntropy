@@ -1,17 +1,15 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Rarities;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using Microsoft.CodeAnalysis.Operations;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,7 +37,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAnimation = 7;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 0;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(0, 20);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.UseSound = null;
             Item.noMelee = true;
@@ -51,9 +49,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<SparkSpreader>()
+                .AddIngredient(ItemID.PhoenixBlaster)
                 .AddIngredient<HellIndustrialComponents>(6)
-                .AddIngredient<AerialiteBar>(8)
+                .AddIngredient(ItemID.MeteoriteBar, 8)
                 .AddTile(TileID.Anvils)
                 .Register();
         }
@@ -75,7 +73,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AI()
         {
-            Projectile.GetOwner().Calamity().mouseWorldListener = true;
+            Projectile.GetOwner().Entropy().MouseWorldListener = true;
             Player player = Projectile.GetOwner();
             if (player.dead)
             {
@@ -199,7 +197,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 {
                     for (float i = 0; i < 1; i+=0.05f)
                     {
-                        CEUtils.DrawRotatedGlow(p.Center - p.velocity * i * 8, new Color(255, 160, 40) * p.Opacity * 0.4f * (1 - p.ai[1]) * (1 - p.ai[1]), p.ai[0] * (1 - i), Projectile.rotation, true, CEUtils.getExtraTex("Smoke"), false);
+                        CEUtils.DrawRotatedGlow(p.Center - p.velocity * i * 8, new Color(255, 160, 40) * p.Opacity * 0.4f * (1 - p.ai[1]) * (1 - p.ai[1]), p.ai[0] * (1 - i), Projectile.rotation, true, CEExtraAssets.Smoke, false);
                     }
                 }
             }

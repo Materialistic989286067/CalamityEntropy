@@ -1,5 +1,4 @@
-﻿using CalamityMod;
-using CalamityMod.Projectiles.Melee;
+﻿using CalamityEntropy.Core.Weapons;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.IO;
@@ -23,7 +22,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = CEUtils.RogueDC;
+            Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 52;
             Projectile.height = 52;
             Projectile.friendly = true;
@@ -139,7 +138,7 @@ namespace CalamityEntropy.Content.Projectiles
             if (Projectile.ai[0] == 10)
             {
                 float p = 1;
-                if (Projectile.Calamity().stealthStrike)
+                if (Projectile.IsEmpowered())
                 {
                     p = 2f;
                 }
@@ -160,7 +159,7 @@ namespace CalamityEntropy.Content.Projectiles
                 p.ToProj().DamageType = Projectile.DamageType;
                 p.ToProj().Center += p.ToProj().velocity * 6;
             }
-            if (sp && (Projectile.Calamity().stealthStrike))
+            if (sp && (Projectile.IsEmpowered()))
             {
                 for (int i = 0; i < 4; i++)
                 {

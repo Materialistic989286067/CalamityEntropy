@@ -1,7 +1,7 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,17 +18,19 @@ namespace CalamityEntropy.Content.Items.Books
             Item.crit = 5;
             Item.mana = 16;
             Item.rare = Item.rare = ItemRarityID.Red;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1);
         }
-        public override Texture2D BookMarkTexture => ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/EntropyBookUI/BookMark4").Value;
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/BookMark4")]
+        internal static Asset<Texture2D> BookMarkSlotTex;
+        public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<NightEpicHeld>();
         public override int SlotCount => 4;
 
         public override void AddRecipes()
         {
             CreateRecipe().AddIngredient<RedemptionBible>()
-                .AddIngredient<AstralBar>(8)
-                .AddIngredient<StarblightSoot>(6)
+                .AddIngredient(ItemID.FragmentNebula, 8)
+                .AddIngredient<StarlitScaleDust>(6)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

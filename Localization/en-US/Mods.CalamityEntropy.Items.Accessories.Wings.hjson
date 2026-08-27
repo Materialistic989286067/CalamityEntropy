@@ -5,6 +5,8 @@ FlowingLight: {
 		{$CommonItemTooltip.FlightAndSlowfall}
 		Hold ↓ when flying to hover
 		Hold ↓ to accelerate the descent
+		Immunity to lava and fire, and negates fall damage
+		Allows sprinting on water and ice, greatly increasing movement speed
 		$"Reaching the pinnacle of perfection"
 		'''
 }

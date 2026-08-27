@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items;
-using CalamityMod;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.ObjectInteractions;
@@ -12,7 +11,8 @@ namespace CalamityEntropy.Content.Tiles
 {
     public class VoidCandleTile : ModTile
     {
-        public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Item/LouderPhantomPhoenix2");
+        // 脱离灾厄:原灾厄 LouderPhantomPhoenix2,按 sound-map 替换为自有音效
+        public static readonly SoundStyle ActivationSound = new("CalamityEntropy/Assets/Sounds/soulScreem");
 
         public override void SetStaticDefaults()
         {
@@ -27,7 +27,7 @@ namespace CalamityEntropy.Content.Tiles
             TileObjectData.newTile.CoordinateWidth = 16;
             TileObjectData.addTile(Type);
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
-            AddMapEntry(new Color(180, 40, 255), CalamityUtils.GetItemName<VoidCandle>());
+            AddMapEntry(new Color(180, 40, 255), CEUtils.GetItemName<VoidCandle>());
             TileID.Sets.HasOutlines[Type] = false;
         }
 

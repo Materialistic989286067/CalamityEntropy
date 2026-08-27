@@ -1,10 +1,10 @@
-﻿using CalamityMod.Cooldowns;
+﻿using CalamityEntropy.Core.Cooldowns;
 using Terraria.Audio;
 using Terraria.Localization;
 
 namespace CalamityEntropy.Content.Cooldowns
 {
-    public class FetalDreamCooldown : CooldownHandler
+    public class FetalDreamCooldown : CECooldownHandler
     {
         public static new string ID => "FetalDreamCooldown";
         public override bool ShouldDisplay => true;

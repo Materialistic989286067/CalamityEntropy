@@ -1,4 +1,4 @@
-﻿using CalamityMod;
+﻿using CalamityEntropy.Common;
 using Terraria;
 
 namespace CalamityEntropy.Content.ArmorPrefixes
@@ -32,7 +32,8 @@ namespace CalamityEntropy.Content.ArmorPrefixes
         }
         public override bool? canApplyTo(Item item)
         {
-            if (!DownedBossSystem.downedCalamitas)
+            // 脱离灾厄:原终灾门槛按 progression-map.md 重映射为击败巡游者
+            if (!EDownedBosses.downedCruiser)
             {
                 return false;
             }

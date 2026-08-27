@@ -1,9 +1,9 @@
-﻿using CalamityEntropy.Common;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Magic;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
+using CalamityEntropy.Content.Buffs.PortsDoT;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -21,20 +21,23 @@ namespace CalamityEntropy.Content.Items.Books
             Item.crit = 4;
             Item.mana = 18;
             Item.rare = ItemRarityID.Lime;
-            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
+            Item.value = Item.buyPrice(gold: 45);
             Item.width = 40;
             Item.height = 54;
             Item.shootSpeed = 18;
         }
-        public override Texture2D BookMarkTexture => ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/EntropyBookUI/PE").Value;
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/PE")]
+        internal static Asset<Texture2D> BookMarkSlotTex;
+        public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<PressureEsotericaHeld>();
         public override int SlotCount => 4;
 
         public override void AddRecipes()
         {
+            // 原灾厄原料: PrimordialEarth(世花后魔法武器)按档位换彩虹魔杖
             CreateRecipe()
-                .AddIngredient<PrimordialEarth>()
-                .AddIngredient<DepthCells>(3)
+                .AddIngredient(ItemID.RainbowRod)
+                .AddIngredient(ItemID.SoulofNight, 3)
                 .AddIngredient(ItemID.Ectoplasm, 8)
                 .AddTile(TileID.Bookcases)
                 .Register();
@@ -160,7 +163,7 @@ namespace CalamityEntropy.Content.Items.Books
             {
                 return;
             }
-            Texture2D px = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value;
+            Texture2D px = CEExtraAssets.white;
             float jd = 1;
             float lw = damage;
             if (Projectile.timeLeft < 60)

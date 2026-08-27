@@ -1,3 +1,4 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
@@ -95,7 +96,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             {
-                Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/MegaStreakBacking2b").Value;
+                Texture2D tx = CEExtraAssets.MegaStreakBacking2b;
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = this.color;
                 float p = -Main.GlobalTimeWrappedHourly * 2;
@@ -121,7 +122,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             {
-                Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Streak1").Value;
+                Texture2D tx = CEExtraAssets.Streak1;
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = new Color(255, 246, 246);
                 float p = -Main.GlobalTimeWrappedHourly * 2;

@@ -1,9 +1,7 @@
-﻿using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod.Items;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Materials;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Accessories
@@ -15,7 +13,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         {
             Item.width = 86;
             Item.height = 86;
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1, gold: 50);
             Item.rare = ModContent.RarityType<VoidPurple>();
             Item.accessory = true;
 
@@ -31,12 +29,13 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override void AddRecipes()
         {
+            // 脱离灾厄:三件灾厄饰品原料改为原版同职能饰品(表外裁定,档位由虚空井/虚空锭把关)
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<RoverDrive>(), 1).
-                AddIngredient(ModContent.ItemType<ManaPolarizer>(), 1).
-                AddIngredient(ModContent.ItemType<CryoStone>(), 1).
+                AddIngredient(ItemID.ObsidianShield, 1).
+                AddIngredient(ItemID.ManaFlower, 1).
+                AddIngredient(ItemID.FrozenShield, 1).
                 AddIngredient(ModContent.ItemType<VoidBar>(), 5).
-                AddIngredient(ModContent.ItemType<AscendantSpiritEssence>(), 4).
+                AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 4).
                 AddTile(ModContent.TileType<VoidWellTile>()).
                 Register();
         }

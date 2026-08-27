@@ -1,8 +1,6 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Buffs.Wyrm;
 using CalamityEntropy.Content.Items.Donator;
-using CalamityMod;
-using CalamityMod.ChatTags;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
 using System.Collections.Generic;
@@ -17,7 +15,7 @@ using Terraria.UI.Chat;
 
 namespace CalamityEntropy.Core.ChatTags
 {
-    public sealed class CalamityEntropyBuffTagHandler : AbstractTagHandler<CalamityEntropyBuffTagHandler>
+    public sealed class CalamityEntropyBuffTagHandler : CETagHandler<CalamityEntropyBuffTagHandler>
     {
         public static Color FireDebuffColor => new Color(253, 107, 2);
         public static Color SicknessDebuffColor => new Color(136, 198, 10);
@@ -54,7 +52,6 @@ namespace CalamityEntropy.Core.ChatTags
                 [ModContent.BuffType<Deceive>()] = TypelessDebuffColor,
                 [ModContent.BuffType<BonePiercingToxin>()] = TypelessDebuffColor,
                 [ModContent.BuffType<HeatDeath>()] = TypelessDebuffColor,
-                [ModContent.BuffType<WindPressure>()] = BuffColor,
                 [ModContent.BuffType<Koishi>()] = Color.Cyan,
             };
 
@@ -82,7 +79,8 @@ namespace CalamityEntropy.Core.ChatTags
                     }
                     else
                     {
-                        buffColor = CalamityUtils.GetDebuffTooltipNameColor(buffId);
+                        // 颜色表未收录时按增/减益给默认色（原先由灾厄的元素减益调色函数兜底）
+                        buffColor = Main.debuff[buffId] ? TypelessDebuffColor : BuffColor;
                     }
 
                     var name = $"{(DrawIcon ? " " : "")}{Lang.GetBuffName(buffId)}";
@@ -165,7 +163,7 @@ namespace CalamityEntropy.Core.ChatTags
                 bool hasAltHintAlready = false;
                 for (int i = 0; i < tooltips.Count; i++)
                 {
-                    if (tooltips[i].Name.StartsWith("RagnarokMod:AltHint") || tooltips[i].Name.StartsWith("CalamityMod:AltHint") || tooltips[i].Name.StartsWith("IEoR:AltHint"))
+                    if (tooltips[i].Name.StartsWith("RagnarokMod:AltHint") || tooltips[i].Name.StartsWith("IEoR:AltHint"))
                     {
                         hasAltHintAlready = true;
                         break;

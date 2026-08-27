@@ -1,4 +1,6 @@
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using ReLogic.Graphics;
 using System;
 using System.Collections.Generic;
@@ -10,6 +12,9 @@ namespace CalamityEntropy.Common
 {
     public class Typer
     {
+        //????????????,???????????
+        [VaultLoaden("CalamityEntropy/Assets/Extra/light")]
+        internal static Asset<Texture2D> LightTex;
         public string text;
         public DynamicSpriteFont font;
         public float scale;
@@ -108,7 +113,7 @@ namespace CalamityEntropy.Common
                     if (this.sound.HasValue)
                     {
                         char char_ = this.text[this.charCount];
-                        string noSound = " £¬¡£¡°¡±£¡,.\'\"/<>[]{}!@#$%^&*()+-*";
+                        string noSound = " ,.\'\"/<>[]{}!@#$%^&*()+-*";
                         if (!noSound.Contains(char_))
                         {
                             SoundEngine.PlaySound(this.sound.Value);
@@ -165,7 +170,7 @@ namespace CalamityEntropy.Common
                     }
                     Color colordraw = this.colorList[i];
 
-                    Texture2D light = CEUtils.getExtraTex("light");
+                    Texture2D light = LightTex.Value;
                     Vector2 dsize = new Vector2(this.font.MeasureString(this.text[i].ToString()).X, this.font.MeasureString(this.text[i].ToString()).X);
                     if (this.lightSizeList[i] != Vector2.Zero)
                     {
@@ -207,7 +212,7 @@ namespace CalamityEntropy.Common
             /*if (CEKeybinds.RuneDashHotKey.JustPressed)
             {
                 Typer.activeTypers.Clear();
-                List<string> texts = new(){"ÄãÎªÉ¶¸úÎÒÖ±½Ó±í°×°¡£¿£¡", "¸ÂÀ²gameÀï²»ÊÇÕâÑù£¡", "ÄãÓ¦¸Ã¶à¸úÎÒÁÄÌì£¬È»ºóÌáÉıÎÒµÄºÃ¸Ğ¶È¡£Å¼¶û¸øÎÒËÍËÍÀñÎï£¬È»ºóÔÚÄÇ¸öÌØÊâ½ÚÈÕÊ±ºò¸úÎÒÓĞÌØÊâ»¥¶¯¡£", "×îºóÔÚÄ³¸öÎÒÄÚĞÄÉñÃØÊÂ¼şÖĞ£¬ÏòÎÒ±í°×£¬ÎÒÍ¬Òâ¸úÄãÔÚÒ»Æğ£¬È»ºóÎÒ¸øÄã¿´ÎÒµÄÌØÊâCG°¡¡£", "ÄãÔõÃ´Ö±½ÓÉÏÀ´¸úÎÒ±í°×£¡£¿¸ÂÀ²gameÀï¸ù±¾²»ÊÇÕâÑù£¡","ÎÒ²»½ÓÊÜ£¡£¡"};
+                List<string> texts = new(){"?????", "game?", "?ö????ø????????", "?¼?????????CG", "ô???game","??"};
                 List<int> shakeMap = new() { 2, 2, 1, 0, 2, 3 };
                 bool flag = false;
                 for (int i = 0; i < texts.Count; i++)

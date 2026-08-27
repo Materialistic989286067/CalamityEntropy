@@ -1,5 +1,4 @@
-﻿using CalamityMod;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 
 namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
@@ -32,8 +31,6 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             NPC.noTileCollide = true;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
-            NPC.Calamity().VulnerableToHeat = true;
-            NPC.Calamity().VulnerableToSickness = false;
             NPC.friendly = true;
         }
         public override void HitEffect(NPC.HitInfo hit)

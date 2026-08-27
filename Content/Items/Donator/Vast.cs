@@ -1,8 +1,5 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Events;
-using CalamityMod.Items;
 using InnoVault.PRT;
 using System.Collections.Generic;
 using Terraria;
@@ -20,7 +17,7 @@ namespace CalamityEntropy.Content.Items.Donator
         {
             Item.width = 40;
             Item.height = 40;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Yellow;
             Item.accessory = true;
 
@@ -93,19 +90,20 @@ namespace CalamityEntropy.Content.Items.Donator
         //sorry not sorry. At least now its, what, 0.12% more efficient??? I don't know.
         public static int Level()
         {
-            if (DownedBossSystem.downedPolterghast)
+            // 成长阶梯按 progression-map.md 重排：原版节点 + 自有 Boss 线
+            if (EDownedBosses.downedNihilityTwin)
                 return 7;
             if (NPC.downedMoonlord)
                 return 6;
             if (EDownedBosses.downedProphet)
                 return 5;
-            if (DownedBossSystem.downedCryogen || DownedBossSystem.downedBrimstoneElemental)
+            if (NPC.downedMechBossAny)
                 return 4;
-            if (DownedBossSystem.downedSlimeGod)
+            if (EDownedBosses.downedApsychos)
                 return 3;
             if (NPC.downedBoss2)
                 return 2;
-            if (NPC.downedSlimeKing || NPC.downedBoss1 || DownedBossSystem.downedDesertScourge)
+            if (NPC.downedSlimeKing || NPC.downedBoss1)
                 return 1;
 
             return 0;
@@ -144,7 +142,7 @@ namespace CalamityEntropy.Content.Items.Donator
                 ExtraManaTime = 0;
                 return;
             }
-            if (!BossClearFlag && Main.CurrentFrameFlags.AnyActiveBossNPC && !BossRushEvent.BossRushActive)
+            if (!BossClearFlag && Main.CurrentFrameFlags.AnyActiveBossNPC)
             {
                 ExtraManaTime = 0;
                 Player.ClearBuff(ModContent.BuffType<ManaVein>());

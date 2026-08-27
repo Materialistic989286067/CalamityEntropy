@@ -5,7 +5,6 @@ using ReLogic.Content;
 namespace CalamityEntropy.Content.Particles
 {
     /// <summary>
-    /// Assets/Extra 贴图入口：本模组路径，VaultLoaden 静态加载
     /// 和 PRTSharedAssets 分开只是因为目录不同；用法一样——PreDraw 里 .Value，别 ModContent.Request
     /// 粒子 Texture 属性能认 CalamityEntropy/... 路径，但跨模组 @ 语法仍走 PRTSharedAssets
     /// </summary>

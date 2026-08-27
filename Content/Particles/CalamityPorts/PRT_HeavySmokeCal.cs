@@ -5,7 +5,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.Particles.CalamityPorts
 {
-    //照CalamityMod HeavySmokeParticle翻的,Configure对齐Cal原构造,AI数值一行没动
+    //灾厄HeavySmokeParticle的移植,Configure对齐原构造,AI数值一行没动
     //MercyShoot形体层+Solar Storm爆炸烟都spawn这粒,glowing=true走Additive桶
     public class PRT_HeavySmokeCal : BasePRT
     {
@@ -31,7 +31,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             AffectedByLight = false;
         }
 
-        //跨模组贴图走PRTSharedAssets.HeavySmoke(@CalamityMod),Texture指WhiteTexPath堵HasAsset,别改成@路径
+        //贴图走PRTSharedAssets.HeavySmoke,Texture指WhiteTexPath占位
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_HeavySmokeCal Configure(float opacity, int lifetime, float rotationSpeed = 0f,

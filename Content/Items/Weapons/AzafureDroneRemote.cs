@@ -4,11 +4,10 @@ using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,7 +42,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = ItemUseStyleID.Swing;
             Item.shoot = ModContent.ProjectileType<AzafureDroneMinion>();
             Item.shootSpeed = 2f;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(0, 5);
             Item.autoReuse = true;
             Item.UseSound = SoundID.Item8;
             Item.noMelee = true;
@@ -63,9 +62,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(6)
-                .AddIngredient<MysteriousCircuitry>()
-                .AddIngredient<AerialiteBar>(8)
-                .AddIngredient<EnergyCore>()
+                .AddIngredient<AzafureCircuitry>(2)
+                .AddIngredient(ItemID.MeteoriteBar, 8)
                 .AddIngredient(ItemID.Dynamite, 1)
                 .AddTile(TileID.Anvils)
                 .Register();
@@ -110,6 +108,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             return false;
         }
+        //待发射弹体贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Content/Items/Weapons/AzafureDroneBullet")]
+        internal static Asset<Texture2D> DroneBulletTex;
         public int ReadyToFire = -1;
         public int FireCooldown = 60;
         public override void SendExtraAI(BinaryWriter writer)
@@ -212,7 +213,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D tex = Projectile.GetTexture();
-            Texture2D bullet = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/AzafureDroneBullet");
+            Texture2D bullet = DroneBulletTex.Value;
             float offset = (10 - FireCooldown) / 10f;
             if (offset > 1)
                 offset = 1;

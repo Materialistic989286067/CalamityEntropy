@@ -1,8 +1,7 @@
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Rogue;
+using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -14,8 +13,11 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
-    public class EmberSpike : RogueWeapon
+    public class EmberSpike : ModItem, ICEChargeWeapon
     {
+        // 命中计数 6；原潜伏乘数均为 1，无释放乘数
+        public CEChargeProfile ChargeProfile => CEChargeProfile.HitCount(6);
+
         public static int MAXSTICK => 12;
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
@@ -34,11 +36,11 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.value = Item.buyPrice(gold: 1);
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<EmberSpikeThrow>();
             Item.shootSpeed = 12f;
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Ranged;
         }
         public override void AddRecipes()
         {
@@ -48,24 +50,18 @@ namespace CalamityEntropy.Content.Items.Weapons
                 .AddTile(TileID.Hellforge)
                 .Register();
         }
-        public override float StealthDamageMultiplier => 1;
-        public override float StealthVelocityMultiplier => 1;
-        public override float StealthKnockbackMultiplier => 1;
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.Calamity().StealthStrikeAvailable())
+            bool ult = CEChargeWeapon.TryConsume(player, Item);
+            if (ult)
             {
                 ReturnAllSpikes(player);
             }
             int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0);
 
-            if (player.Calamity().StealthStrikeAvailable())
+            if (ult && p >= 0 && p < Main.maxProjectiles)
             {
-                if (p.WithinBounds(Main.maxProjectiles))
-                {
-                    Main.projectile[p].Calamity().stealthStrike = true;
-                }
+                CEChargeWeapon.Empower(p);
             }
             return false;
         }
@@ -97,7 +93,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/EmberSpike";
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, true, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, true, -1);
             Projectile.width = Projectile.height = 12;
             Projectile.timeLeft = 120 * 4;
             Projectile.MaxUpdates = 3;
@@ -110,7 +106,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             if (counter == 0)
             {
-                if (Projectile.Calamity().stealthStrike)
+                if (Projectile.IsEmpowered())
                     BounceTime = 5;
                 CEUtils.PlaySound("flamethrower end", Main.rand.NextFloat(4f, 4.2f), Projectile.Center, 6, 0.3f);
             }
@@ -193,7 +189,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             }
             if (sum >= EmberSpike.MAXSTICK || Projectile.ai[0] == 1)
             {
-                if (Projectile.Calamity().stealthStrike)
+                if (Projectile.IsEmpowered())
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(0.6f, 1f), ModContent.ProjectileType<TectonicShardHoming>(), Projectile.damage, 4, Projectile.owner);
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedByRandom(0.6f) * Main.rand.NextFloat(-1, -0.5f), ModContent.ProjectileType<EmberSpikePop>(), 0, 0, Projectile.owner);
                 Projectile.Kill();
@@ -203,14 +199,13 @@ namespace CalamityEntropy.Content.Items.Weapons
                 target.AddBuff(BuffID.OnFire3, 180);
                 Projectile p = Projectile;
                 Player player = Projectile.GetOwner();
-                CEUtils.SpawnExplotionFriendly(p.GetSource_FromThis(), player, p.Center, p.damage, 120, CEUtils.RogueDC);
+                CEUtils.SpawnExplotionFriendly(p.GetSource_FromThis(), player, p.Center, p.damage, 120, Projectile.DamageType);
                 float scale = 100 / 40f;
-                //EParticle.spawnNew→PRTLoader.NewParticle,spawn点和数值迁移纪律:一个不改
                 PRTLoader.NewParticle<PRT_ShineParticle>(p.Center, Vector2.Zero, Color.OrangeRed * 0.8f, scale * 0.8f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
                 PRTLoader.NewParticle<PRT_ShineParticle>(p.Center, Vector2.Zero, Color.Firebrick * 0.8f, scale * 0.5f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
-                PRTLoader.NewParticle<PRT_CustomPulse>(p.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24);
-                PRTLoader.NewParticle<PRT_CustomPulse>(p.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 18);
-                PRTLoader.NewParticle<PRT_CustomPulse>(p.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.02f, 15);
+                PRTLoader.NewParticle<PRT_CustomPulse>(p.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24);
+                PRTLoader.NewParticle<PRT_CustomPulse>(p.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 18);
+                PRTLoader.NewParticle<PRT_CustomPulse>(p.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.02f, 15);
 
                 if (StickNPC < 0)
                 {
@@ -244,9 +239,9 @@ namespace CalamityEntropy.Content.Items.Weapons
                 float scale = 0.42f;
                 PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.OrangeRed * 0.95f, scale * 0.8f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 6);
                 PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.White * 0.95f, scale * 0.5f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 6);
-                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 230, 60), 0.005f).Configure("CalamityMod/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.04f, 12);
-                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 230, 60), 0.005f).Configure("CalamityMod/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 16);
-                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 230, 60), 0.005f).Configure("CalamityMod/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.06f, 20);
+                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 230, 60), 0.005f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.04f, 12);
+                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 230, 60), 0.005f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 16);
+                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 230, 60), 0.005f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.06f, 20);
 
                 return false;
             }
@@ -255,9 +250,9 @@ namespace CalamityEntropy.Content.Items.Weapons
                 float scale = 0.6f;
                 PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.OrangeRed * 0.95f, scale * 0.8f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 6);
                 PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.White * 0.95f, scale * 0.5f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 6);
-                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 230, 60), 0.005f).Configure("CalamityMod/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.04f, 12);
-                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 230, 60), 0.005f).Configure("CalamityMod/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 16);
-                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 230, 60), 0.005f).Configure("CalamityMod/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.06f, 20);
+                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 230, 60), 0.005f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.04f, 12);
+                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 230, 60), 0.005f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 16);
+                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(255, 230, 60), 0.005f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.06f, 20);
 
                 if (Main.myPlayer == Projectile.owner)
                 {
@@ -272,7 +267,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/EmberSpike";
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.width = Projectile.height = 12;
             Projectile.timeLeft = 60;
         }
@@ -299,7 +294,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/EmberSpike";
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.width = Projectile.height = 12;
             Projectile.timeLeft = 10000;
         }
@@ -340,8 +335,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                     {
                         Vector2 vel = (Main.MouseWorld - Projectile.GetOwner().MountedCenter).normalize() * 15;
                         int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.GetOwner().MountedCenter + vel.normalize().RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-10, 10), vel, ModContent.ProjectileType<EmberSpikeThrow>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1);
-                        p.ToProj().Calamity().stealthStrike = true;
-                        CEUtils.SyncProj(p);
+                        CEChargeWeapon.Empower(p);
                     }
                 }
             }

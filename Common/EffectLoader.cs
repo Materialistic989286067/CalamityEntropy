@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Content.Items.Books;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Donator;
 using CalamityEntropy.Content.Items.Donator.Ratziel;
 using CalamityEntropy.Content.Items.Pets;
@@ -46,32 +47,55 @@ namespace CalamityEntropy.Common
         private static Asset<Texture2D> ksc1;
         [VaultLoaden("CalamityEntropy/Assets/Extra/shockwave")]
         private static Asset<Texture2D> shockwave;
-        [VaultLoaden("CalamityEntropy/Assets/Extra/white")]
-        private static Asset<Texture2D> white;
         [VaultLoaden("CalamityEntropy/Content/Projectiles/Cruiser/VoidStar")]
         private static Asset<Texture2D> voidStar;
-        [VaultLoaden("CalamityEntropy/Assets/Extra/VoidBack")]
-        private static Asset<Texture2D> VoidBack;
+        //以下为本批次补充的私有资产字段;类上挂了目录级标签,新字段必须带字段级标签,否则会按字段名去 Effects 目录找资源
+        [VaultLoaden("CalamityEntropy/Assets/Extra/HollowCircleMask")]
+        private static Asset<Texture2D> HollowCircleMaskTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/shield")]
+        private static Asset<Texture2D> ShieldTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/cvdt")]
+        private static Asset<Texture2D> CvdtTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/BlurryPerlinNoise")]
+        private static Asset<Texture2D> BlurryPerlinNoiseTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/AwSky1")]
+        private static Asset<Texture2D> AwSky1Tex;
+        [VaultLoaden("CalamityEntropy/Assets/Effects/Pixel", AssetMode.EffectValue, "Pixel")]
+        private static Effect PixelShader;
+        [VaultLoaden("CalamityEntropy/Assets/Effects/blur", AssetMode.EffectValue, "P0")]
+        private static Effect BlurShader;
         public static Asset<Effect> PowerSFShader;
         public static Asset<Effect> KnifeRendering;
         public static Asset<Effect> StarsTrail;
         public static Asset<Effect> RTShader;
         public static Asset<Effect> WarpShader;
+        //以下这批 .fx 的 pass 名不是「文件名+Pass」,必须显式指明,
+        //否则 VaultLoaden 自动注册的 Filters.Scene 项会带一个不存在的 pass 名
+        [VaultLoaden("CalamityEntropy/Assets/Effects/Cylinder", AssetMode.Effects, "P0")]
         public static Asset<Effect> Cylinder;
+        [VaultLoaden("CalamityEntropy/Assets/Effects/kscreen", AssetMode.EffectValue, "kscreen")]
         public static Effect kscreen;
+        [VaultLoaden("CalamityEntropy/Assets/Effects/fscreen", AssetMode.EffectValue, "fscreen")]
         public static Effect fscreen;
+        [VaultLoaden("CalamityEntropy/Assets/Effects/fscreenCr", AssetMode.EffectValue, "fscreen")]
         public static Effect fscreenCr;
+        [VaultLoaden("CalamityEntropy/Assets/Effects/kscreen2", AssetMode.EffectValue, "kscreen2")]
         public static Effect kscreen2;
+        [VaultLoaden("CalamityEntropy/Assets/Effects/cvoid", AssetMode.EffectValue, "cvoid")]
         public static Effect cvoid;
+        [VaultLoaden("CalamityEntropy/Assets/Effects/cvoid2", AssetMode.EffectValue, "cvoid")]
         public static Effect cvoid2;
+        [VaultLoaden("CalamityEntropy/Assets/Effects/cvoid3", AssetMode.EffectValue, "cvoid")]
         public static Effect cvoid3;
+        [VaultLoaden("CalamityEntropy/Assets/Effects/cabyss", AssetMode.EffectValue, "cabyss")]
         public static Effect cabyss;
+        [VaultLoaden("CalamityEntropy/Assets/Effects/cblood", AssetMode.EffectValue, "cabyss")]
         public static Effect cblood;
         internal static float twistStrength = 0f;
         public const string AssetPath = "CalamityEntropy/Assets/";
         public const string AssetPath2 = "Assets/";
         public const int MaxScreenSlot = 4;
-        [VaultLoaden("CalamityEntropy/Assets/Effects/Outline")]
+        [VaultLoaden("CalamityEntropy/Assets/Effects/Outline", AssetMode.EffectValue, "Pass1")]
         public static Effect OutlineShader
         {
             get
@@ -203,7 +227,7 @@ namespace CalamityEntropy.Common
             }
             if (ScreenRotAmp > 0.001f)
             {
-                Texture2D mask = CEUtils.getExtraTex("HollowCircleMask");
+                Texture2D mask = HollowCircleMaskTex.Value;
 
                 float rotation = (float)Math.Sin(Main.GameUpdateCount * 0.02f) * 0.6f;
 
@@ -269,7 +293,7 @@ namespace CalamityEntropy.Common
                             Color cl = new Color(200, 235, 255);
                             for (int i = mp.odp.Count - 1; i >= 1; i--)
                             {
-                                CEUtils.drawLine(Main.spriteBatch, ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value, mp.odp[i], mp.odp[i - 1], cl * ((255 - p.alpha) / 255f), size * 0.25f);
+                                CEUtils.drawLine(Main.spriteBatch, CEExtraAssets.white, mp.odp[i], mp.odp[i - 1], cl * ((255 - p.alpha) / 255f), size * 0.25f);
                                 size -= sizej;
                             }
                         }
@@ -292,7 +316,7 @@ namespace CalamityEntropy.Common
                         }
                         for (int i = mp.odp.Count - 1; i >= 1; i--)
                         {
-                            CEUtils.drawLine(Main.spriteBatch, ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value, mp.odp[i], mp.odp[i - 1], cl * ((255 - p.alpha) / 255f), size * 0.25f);
+                            CEUtils.drawLine(Main.spriteBatch, CEExtraAssets.white, mp.odp[i], mp.odp[i - 1], cl * ((255 - p.alpha) / 255f), size * 0.25f);
                             size -= sizej;
                         }
                     }
@@ -311,7 +335,7 @@ namespace CalamityEntropy.Common
             {
                 if (!p.dead && p.Entropy().MagiShield > 0 && p.Entropy().visualMagiShield)
                 {
-                    Texture2D shieldTexture = CEUtils.getExtraTex("shield");
+                    Texture2D shieldTexture = ShieldTex.Value;
                     Main.spriteBatch.Draw(shieldTexture, p.Center - Main.screenPosition, null, new Color(186, 120, 255), 0, shieldTexture.Size() / 2, 0.47f, SpriteEffects.None, 0);
                 }
             }
@@ -319,7 +343,7 @@ namespace CalamityEntropy.Common
             {
                 if (p.ModProjectile != null && p.ModProjectile is MoonlightShieldBreak)
                 {
-                    Texture2D shieldTexture = CEUtils.getExtraTex("shield");
+                    Texture2D shieldTexture = ShieldTex.Value;
                     Main.spriteBatch.Draw(shieldTexture, p.Center - Main.screenPosition, null, new Color(186, 120, 255) * p.ai[2], 0, shieldTexture.Size() / 2, 0.47f * (1 + p.ai[1]), SpriteEffects.None, 0);
                 }
                 if (p.ModProjectile != null && p.ModProjectile is CruiserShadow aw)
@@ -372,7 +396,7 @@ namespace CalamityEntropy.Common
             cvoid2.CurrentTechnique = cvoid2.Techniques["Technique1"];
             cvoid2.CurrentTechnique.Passes[0].Apply();
             cvoid2.Parameters["tex0"].SetValue(Main.screenTargetSwap);
-            cvoid2.Parameters["tex1"].SetValue(VoidBack.Value);
+            cvoid2.Parameters["tex1"].SetValue(CEExtraAssets.VoidBack);
             cvoid2.Parameters["time"].SetValue(Instance.cvcount / 50f);
             cvoid2.Parameters["offset"].SetValue((Main.screenPosition + new Vector2(Instance.cvcount * 1.4f, Instance.cvcount * 1.4f)) / new Vector2(Main.screenWidth, Main.screenHeight));
             Main.spriteBatch.Draw(Screen0, Main.ScreenSize.ToVector2() / 2, null, Color.White, 0, Main.ScreenSize.ToVector2() / 2, 1, SpriteEffects.None, 0);
@@ -426,7 +450,7 @@ namespace CalamityEntropy.Common
             cblood.CurrentTechnique = cblood.Techniques["Technique1"];
             cblood.CurrentTechnique.Passes[0].Apply();
             cblood.Parameters["clr"].SetValue(new Color(100, 0, 0).ToVector4());
-            cblood.Parameters["tex1"].SetValue(ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/BlurryPerlinNoise", AssetRequestMode.ImmediateLoad).Value);
+            cblood.Parameters["tex1"].SetValue(BlurryPerlinNoiseTex.Value);
             cblood.Parameters["time"].SetValue(Instance.cvcount / 50f);
             cblood.Parameters["scrsize"].SetValue(Screen0.Size());
             cblood.Parameters["offset"].SetValue((Main.screenPosition + new Vector2(Instance.cvcount * 1.4f, Instance.cvcount * 1.4f)) / new Vector2(Main.screenWidth, Main.screenHeight));
@@ -483,7 +507,7 @@ namespace CalamityEntropy.Common
             cabyss.CurrentTechnique = cabyss.Techniques["Technique1"];
             cabyss.CurrentTechnique.Passes[0].Apply();
             cabyss.Parameters["clr"].SetValue(new Color(12, 50, 160).ToVector4());
-            cabyss.Parameters["tex1"].SetValue(ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/AwSky1", AssetRequestMode.ImmediateLoad).Value);
+            cabyss.Parameters["tex1"].SetValue(AwSky1Tex.Value);
             cabyss.Parameters["time"].SetValue(Instance.cvcount / 50f);
             cabyss.Parameters["scrsize"].SetValue(Screen0.Size());
             cabyss.Parameters["offset"].SetValue((Main.screenPosition + new Vector2(Instance.cvcount * 1.4f, Instance.cvcount * 1.4f)) / new Vector2(Main.screenWidth, Main.screenHeight));
@@ -667,7 +691,7 @@ namespace CalamityEntropy.Common
                 }
                 graphicsDevice.SetRenderTarget(Screen1);
                 graphicsDevice.Clear(Color.Transparent);
-                Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Pixel", AssetRequestMode.ImmediateLoad).Value;
+                Effect shader = PixelShader;
                 shader.CurrentTechnique = shader.Techniques["Technique1"];
                 shader.Parameters["scsize"].SetValue(Main.ScreenSize.ToVector2() / Main.GameViewMatrix.Zoom);
                 if (GameZoom)
@@ -848,7 +872,7 @@ namespace CalamityEntropy.Common
                 {
                     continue;
                 }
-                Texture2D draw = CEUtils.getExtraTex("cvdt");
+                Texture2D draw = CvdtTex.Value;
                 Main.spriteBatch.Draw(draw, pt.Position - Main.screenPosition, null, Color.White, pt.Rotation, draw.Size() / 2, 2.2f * pt.Opacity, SpriteEffects.None, 0);
             }
 
@@ -860,7 +884,7 @@ namespace CalamityEntropy.Common
             kscreen2.CurrentTechnique = kscreen2.Techniques["Technique1"];
             kscreen2.CurrentTechnique.Passes[0].Apply();
             kscreen2.Parameters["tex0"].SetValue(Screen1);
-            kscreen2.Parameters["tex1"].SetValue(CEUtils.getExtraTex("EternityStreak"));
+            kscreen2.Parameters["tex1"].SetValue(CEExtraAssets.EternityStreak);
             kscreen2.Parameters["offset"].SetValue(Main.screenPosition / Main.ScreenSize.ToVector2());
             kscreen2.Parameters["i"].SetValue(0.04f);
             Main.spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
@@ -944,11 +968,11 @@ namespace CalamityEntropy.Common
             cvoid.CurrentTechnique = cvoid.Techniques["Technique1"];
             cvoid.CurrentTechnique.Passes[0].Apply();
             cvoid.Parameters["tex1"].SetValue(planetarium_blue_base.Value);
-            cvoid.Parameters["tex2"].SetValue(CEUtils.getExtraTex("Empty"));
-            cvoid.Parameters["tex3"].SetValue(CEUtils.getExtraTex("Empty"));
-            cvoid.Parameters["tex4"].SetValue(CEUtils.getExtraTex("Empty"));
-            cvoid.Parameters["tex5"].SetValue(CEUtils.getExtraTex("Empty"));
-            cvoid.Parameters["tex6"].SetValue(CEUtils.getExtraTex("Empty"));
+            cvoid.Parameters["tex2"].SetValue(CEExtraAssets.Empty);
+            cvoid.Parameters["tex3"].SetValue(CEExtraAssets.Empty);
+            cvoid.Parameters["tex4"].SetValue(CEExtraAssets.Empty);
+            cvoid.Parameters["tex5"].SetValue(CEExtraAssets.Empty);
+            cvoid.Parameters["tex6"].SetValue(CEExtraAssets.Empty);
             cvoid.Parameters["time"].SetValue(Instance.cvcount / 50f);
             cvoid.Parameters["scsize"].SetValue(Main.ScreenSize.ToVector2());
             cvoid.Parameters["offset"].SetValue((Main.screenPosition + new Vector2(-Instance.cvcount / 6f, Instance.cvcount / 6f)) / Main.ScreenSize.ToVector2());
@@ -982,7 +1006,7 @@ namespace CalamityEntropy.Common
                     Color color = player.Entropy().VaMoving > 0 ? Color.Blue : Color.Black;
                     for (int i = 1; i < player.Entropy().daPoints.Count; i++)
                     {
-                        CEUtils.drawLine(Main.spriteBatch, white.Value, CEUtils.Entropy(player).daPoints[i - 1], CEUtils.Entropy(player).daPoints[i], color * 0.6f, 12 * sc, 0);
+                        CEUtils.drawLine(Main.spriteBatch, CEExtraAssets.white, CEUtils.Entropy(player).daPoints[i - 1], CEUtils.Entropy(player).daPoints[i], color * 0.6f, 12 * sc, 0);
                         sc += scj;
                     }
                 }
@@ -1158,7 +1182,7 @@ namespace CalamityEntropy.Common
                 DrawVoidOres(votype);
             bool startBatch = false;
             int ratzielStype = ModContent.ProjectileType<RatzielSentry>();
-            Texture2D rGlowTex = CEUtils.getExtraTex("Circle");
+            Texture2D rGlowTex = CEExtraAssets.Circle;
             foreach (Projectile p in Main.ActiveProjectiles)
             {
                 if (p.type == cruiserEnergyBallType && p.ModProjectile is CruiserEnergyBall ceb)
@@ -1203,7 +1227,7 @@ namespace CalamityEntropy.Common
             fscreen.Parameters["coordMult"].SetValue(new Vector2(1, (float)Main.screenHeight / Main.screenWidth) * 1.2f);
             graphicsDevice.Textures[0] = Screen0;
             graphicsDevice.Textures[1] = Main.screenTargetSwap;
-            graphicsDevice.Textures[2] = CEUtils.getExtraTex("VoidBack");
+            graphicsDevice.Textures[2] = CEExtraAssets.VoidBack;
             Main.spriteBatch.Draw(Screen0, Vector2.Zero, Color.White);
             Main.spriteBatch.End();
         }
@@ -1386,7 +1410,7 @@ namespace CalamityEntropy.Common
             graphicsDevice.SetRenderTarget(Main.screenTarget);
             graphicsDevice.Clear(Color.Black);
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive);
-            Effect blur = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/blur", AssetRequestMode.ImmediateLoad).Value;
+            Effect blur = BlurShader;
             blur.CurrentTechnique = blur.Techniques["GaussianBlur"];
             blur.Parameters["resolution"].SetValue(Main.ScreenSize.ToVector2());
             blur.Parameters["blurAmount"].SetValue(cutScreen * 0.036f);

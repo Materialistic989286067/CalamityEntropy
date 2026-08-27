@@ -59,7 +59,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         public override bool PreDraw(SpriteBatch spriteBatch)
         {
             Texture2D starTexture = PRTSharedAssets.Sparkle2.Value;
-            Texture2D bloomTexture = PRTSharedAssets.BloomCircle.Value;   //bloom光晕,@CalamityMod路径走VaultLoaden
+            Texture2D bloomTexture = PRTSharedAssets.BloomCircle.Value;   //bloom光晕,自制贴图走VaultLoaden
             float properBloomSize = (float)starTexture.Height / bloomTexture.Height;
 
             spriteBatch.Draw(bloomTexture, Position - Main.screenPosition, null, Bloom * opacity * 0.5f, 0f,

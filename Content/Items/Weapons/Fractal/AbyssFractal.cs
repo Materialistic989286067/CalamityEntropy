@@ -1,10 +1,8 @@
-﻿using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Melee;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -29,7 +27,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Item.useTime = Item.useAnimation = 24;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 6;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.value = Item.buyPrice(gold: 60);
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = null;
             Item.noMelee = true;
@@ -54,9 +52,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public override void AddRecipes()
         {
             CreateRecipe().AddIngredient<BrilliantFractal>()
-                .AddIngredient<AbyssBlade>()
-                .AddIngredient<Floodtide>()
-                .AddIngredient<Lumenyl>(8)
+                .AddIngredient(ItemID.DeathSickle)
+                .AddIngredient(ItemID.Frostbrand)
+                .AddIngredient(ItemID.CrystalShard, 8)
                 .AddTile(TileID.MythrilAnvil).Register();
         }
     }
@@ -73,7 +71,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -91,12 +89,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public bool shoot = true;
         public override void AI()
         {
-            bool noProj = Projectile.GetOwner().Calamity().bladeArmEnchant;
-            if (noProj)
-            {
-                spawnProj = false;
-                shoot = false;
-            }
             Player owner = Projectile.GetOwner();
             float MaxUpdateTimes = owner.itemTimeMax * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
@@ -162,10 +154,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             owner.heldProj = Projectile.whoAmI;
             owner.itemTime = 2;
             owner.itemAnimation = 2;
-            if (Projectile.GetOwner().Calamity().bladeArmEnchant)
-            {
-                owner.itemAnimation = int.Max(1, owner.itemAnimationMax - Projectile.Entropy().Lifetime);
-            }
             if (counter > MaxUpdateTimes)
             {
                 owner.itemTime = 1;
@@ -225,7 +213,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Main.EntitySpriteDraw(tex, Projectile.Center + Projectile.GetOwner().gfxOffY * Vector2.UnitY - Main.screenPosition, null, lightColor * alpha, rot, origin, Projectile.scale * scale * 1.1f, effect);
 
             Main.spriteBatch.UseBlendState(BlendState.Additive);
-            Texture2D bs = CEUtils.getExtraTex("SemiCircularSmear");
+            Texture2D bs = CEExtraAssets.SemiCircularSmear;
 
             Main.spriteBatch.Draw(bs, (Vector2)(Projectile.Center + CEUtils.GetOwner(Projectile).gfxOffY * Vector2.UnitY - Main.screenPosition), null, new Color(100, 50, 200) * (1 - ((counter / MaxUpdateTime) * (counter / MaxUpdateTime))) * 0.8f, CEUtils.RotateTowardsAngle(Projectile.rotation, Projectile.velocity.ToRotation(), 0.4f, false) + MathHelper.ToRadians(32) * -dir, bs.Size() / 2f, Projectile.scale * 1.74f * scale, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(bs, (Vector2)(Projectile.Center + CEUtils.GetOwner(Projectile).gfxOffY * Vector2.UnitY - Main.screenPosition), null, new Color(100, 50, 200) * 0.6f * (1 - ((counter / MaxUpdateTime) * (counter / MaxUpdateTime))) * 0.8f, CEUtils.RotateTowardsAngle(Projectile.rotation, Projectile.velocity.ToRotation(), 0.1f, false) + MathHelper.ToRadians(32) * -dir, bs.Size() / 2f, Projectile.scale * 2f * scale, SpriteEffects.None, 0);

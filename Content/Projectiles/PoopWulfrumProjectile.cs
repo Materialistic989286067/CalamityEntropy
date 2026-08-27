@@ -1,4 +1,4 @@
-﻿using CalamityMod;
+﻿using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
@@ -62,7 +62,7 @@ namespace CalamityEntropy.Content.Projectiles
             }
             if (shield < lastTickShield)
             {
-                SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/RoverDriveHit") { PitchVariance = 0.6f, Volume = 0.6f, MaxInstances = 0 }, Projectile.Center);
+                SoundEngine.PlaySound(new("CalamityEntropy/Assets/Sounds/RoverDriveHit") { PitchVariance = 0.6f, Volume = 0.6f, MaxInstances = 0 }, Projectile.Center);
             }
             lastTickShield = shield;
         }
@@ -86,7 +86,7 @@ namespace CalamityEntropy.Content.Projectiles
 
             float noiseScale = MathHelper.Lerp(0.4f, 0.8f, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 0.3f) * 0.5f + 0.5f);
 
-            Effect shieldEffect = Filters.Scene["CalamityMod:RoverDriveShield"].GetShader().Shader;
+            Effect shieldEffect = Filters.Scene["CalamityEntropy:RoverDriveShield"].GetShader().Shader;
             shieldEffect.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 0.24f);
             shieldEffect.Parameters["blowUpPower"].SetValue(2.5f);
             shieldEffect.Parameters["blowUpSize"].SetValue(0.5f);
@@ -99,7 +99,7 @@ namespace CalamityEntropy.Content.Projectiles
             Color blueTint = new Color(51, 102, 255);
             Color cyanTint = new Color(71, 202, 255);
             Color wulfGreen = new Color(194, 255, 67) * 0.8f;
-            Color edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, blueTint, cyanTint, wulfGreen);
+            Color edgeColor = CEUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, blueTint, cyanTint, wulfGreen);
             Color shieldColor = blueTint;
 
 
@@ -109,7 +109,6 @@ namespace CalamityEntropy.Content.Projectiles
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shieldEffect, Main.GameViewMatrix.TransformationMatrix);
 
-            NoiseTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/TechyNoise");
             Vector2 pos = Projectile.Center - Main.screenPosition;
             Texture2D tex = NoiseTex.Value;
             spriteBatch.Draw(tex, pos, null, Color.White, 0, tex.Size() / 2f, scale, 0, 0);
@@ -118,6 +117,8 @@ namespace CalamityEntropy.Content.Projectiles
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
 
         }
+        //原先在绘制里 ??= 惰性请求,改为加载期就位
+        [VaultLoaden("CalamityEntropy/Assets/Extra/Ports/TechyNoise")]
         public static Asset<Texture2D> NoiseTex;
         public override int dustType => DustID.Poop;
     }

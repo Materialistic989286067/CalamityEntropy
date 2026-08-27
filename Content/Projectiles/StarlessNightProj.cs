@@ -1,5 +1,6 @@
-﻿using CalamityEntropy.Content.Projectiles.Cruiser;
-using CalamityMod;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Projectiles.Cruiser;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
@@ -14,6 +15,9 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class StarlessNightProj : ModProjectile
     {
+        //刀光噪声贴图,加载期就位;透明变换着色器读共享基座 CEEffectAssets
+        [VaultLoaden("CalamityEntropy/Assets/Extra/GradientNoise")]
+        internal static Asset<Texture2D> GradientNoiseTex;
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/StarlessNight";
         List<float> odr = new List<float>();
         List<float> ods = new List<float>();
@@ -27,7 +31,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -187,7 +191,7 @@ namespace CalamityEntropy.Content.Projectiles
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Main.EntitySpriteDraw(CEUtils.getExtraTex("StarlessNightGlow"), Projectile.owner.ToPlayer().MountedCenter - Main.screenPosition, null, new Color(180, 180, 255) * glowalpha * 0.8f, Projectile.rotation + (float)Math.PI * 0.25f, new Vector2(32, 168), Projectile.scale * 3f * scaleD, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(CEExtraAssets.StarlessNightGlow, Projectile.owner.ToPlayer().MountedCenter - Main.screenPosition, null, new Color(180, 180, 255) * glowalpha * 0.8f, Projectile.rotation + (float)Math.PI * 0.25f, new Vector2(32, 168), Projectile.scale * 3f * scaleD, SpriteEffects.None, 0);
 
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
@@ -204,8 +208,8 @@ namespace CalamityEntropy.Content.Projectiles
             GraphicsDevice gd = Main.graphics.GraphicsDevice;
             Player player = Main.player[Projectile.owner];
 
-            Texture2D tail = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/MotionTrail2").Value;
-            Texture2D tail2 = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/GradientNoise").Value;
+            Texture2D tail = CEExtraAssets.MotionTrail2;
+            Texture2D tail2 = GradientNoiseTex.Value;
             var r = Main.rand;
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
@@ -224,7 +228,7 @@ namespace CalamityEntropy.Content.Projectiles
 
             if (ve.Count >= 3)
             {
-                Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/SlashTrans", AssetRequestMode.ImmediateLoad).Value;
+                Effect shader = CEEffectAssets.SlashTrans;
                 Main.instance.GraphicsDevice.Textures[1] = CEUtils.getExtraTex("sn_colormap");
                 shader.CurrentTechnique.Passes["EnchantedPass"].Apply();
 

@@ -6,8 +6,7 @@ using Terraria.ModLoader;
 namespace CalamityEntropy.Content.Particles
 {
     /// <summary>
-    /// 动态路径贴图缓存：CustomPulse/CustomSpark/VelChangingSpark 的 TexPath 是调用点现传的，没法 VaultLoaden
-    /// 路径格式 CalamityMod/Particles/xxx 或 ModName/AssetPath；Get 首次 Request 后字典缓存,PreDraw 里只调 Get
+    /// 路径格式 CalamityEntropy/Assets/Particles/xxx 或 ModName/AssetPath；Get 首次 Request 后字典缓存,PreDraw 里只调 Get
     /// </summary>
     internal static class PRTPathTextures
     {
@@ -27,7 +26,6 @@ namespace CalamityEntropy.Content.Particles
 
         private static Asset<Texture2D> RequestTexture(string path)
         {
-            //ModName/AssetPath 拆给 GetMod.Request,和 VaultLoaden 的@语法是两条路,都能跨模组
             int slash = path.IndexOf('/');
             if (slash > 0)
             {

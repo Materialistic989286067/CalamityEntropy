@@ -1,7 +1,8 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Dusts;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -107,7 +108,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.UseBlendState(BlendState.Additive, SamplerState.LinearWrap);
-            Texture2D tex = CEUtils.getExtraTex("Streak1");
+            Texture2D tex = CEExtraAssets.Streak1;
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, new Rectangle(-(int)(Main.GlobalTimeWrappedHourly * 900), 0, (int)(Projectile.scale * length), tex.Height), new Color(80, 60, 255), Projectile.rotation, new Vector2(0, tex.Height * 0.5f), new Vector2(1, Projectile.scale * Projectile.ai[1] * 0.37f), SpriteEffects.None, 0);
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, new Rectangle(-(int)(Main.GlobalTimeWrappedHourly * 1400), 0, (int)(Projectile.scale * length), tex.Height), new Color(160, 140, 255), Projectile.rotation, new Vector2(0, tex.Height * 0.5f), new Vector2(1, Projectile.scale * Projectile.ai[1] * 0.22f), SpriteEffects.None, 0);
             Main.spriteBatch.ExitShaderRegion();

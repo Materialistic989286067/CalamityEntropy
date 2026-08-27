@@ -1,8 +1,6 @@
 ﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Magic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -24,7 +22,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.channel = true;
             Item.knockBack = 9f;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2, gold: 80);
             Item.rare = ModContent.RarityType<AbyssalBlue>();
             Item.shoot = ModContent.ProjectileType<HadopelagicEchoIIProj>();
             Item.shootSpeed = 16f;
@@ -45,7 +43,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<EidolicWail>())
+                .AddIngredient(ItemID.LastPrism)
                 .AddIngredient(ModContent.ItemType<WyrmTooth>(), 12)
                 .AddIngredient(ModContent.ItemType<FadingRunestone>())
                 .AddTile(ModContent.TileType<AbyssalAltarTile>())

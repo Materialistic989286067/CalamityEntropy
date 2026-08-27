@@ -1,5 +1,4 @@
-﻿using CalamityMod;
-using System.IO;
+﻿using System.IO;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -17,6 +16,8 @@ namespace CalamityEntropy.Common
         public static bool downedLuminaris = false;
         public static bool downedApsychos = false;
         public static bool downedAcropolis = false;
+        //脱离灾厄:原存于灾厄DownedBossSystem,改为自有旗标(tag键与网络位序不变,旧档兼容)
+        public static bool downedPrimordialWyrm = false;
         public static Point ForbiddenArchiveCenter = new Point(-1, -1);
         public override void ClearWorld()
         {
@@ -29,7 +30,7 @@ namespace CalamityEntropy.Common
             downedAcropolis = false;
             downedApsychos = false;
             ForbiddenArchiveCenter = new Point(-1, -1);
-            DownedBossSystem.downedPrimordialWyrm = false;
+            downedPrimordialWyrm = false;
         }
 
         public override void SaveWorldData(TagCompound tag)
@@ -66,7 +67,7 @@ namespace CalamityEntropy.Common
             {
                 tag["downedAcropolis"] = true;
             }
-            if (DownedBossSystem.downedPrimordialWyrm)
+            if (downedPrimordialWyrm)
             {
                 tag["downedPrimordialWyrm"] = true;
             }
@@ -92,7 +93,7 @@ namespace CalamityEntropy.Common
             downedLuminaris = tag.ContainsKey("downedLuminaris");
             downedAcropolis = tag.ContainsKey("downedAcropolis");
             downedApsychos = tag.ContainsKey("downedApsychos");
-            DownedBossSystem.downedPrimordialWyrm = tag.ContainsKey("downedPrimordialWyrm");
+            downedPrimordialWyrm = tag.ContainsKey("downedPrimordialWyrm");
             TDR = tag.ContainsKey("TDR");
             if (tag.ContainsKey("DungeonArchiveCenterX") && tag.ContainsKey("DungeonArchiveCenterY"))
             {
@@ -114,7 +115,7 @@ namespace CalamityEntropy.Common
             flags[3] = downedProphet;
             flags[4] = downedLuminaris;
             flags[5] = downedAcropolis;
-            flags[6] = DownedBossSystem.downedPrimordialWyrm;
+            flags[6] = downedPrimordialWyrm;
             flags2[0] = EntropyMode;
             flags2[1] = TDR;
             flags2[2] = downedApsychos;
@@ -136,7 +137,7 @@ namespace CalamityEntropy.Common
             downedProphet = flags[3];
             downedLuminaris = flags[4];
             downedAcropolis = flags[5];
-            DownedBossSystem.downedPrimordialWyrm = flags[6];
+            downedPrimordialWyrm = flags[6];
             EntropyMode = flags2[0];
             TDR = flags2[1];
             downedApsychos = flags2[2];

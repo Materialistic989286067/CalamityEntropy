@@ -1,8 +1,6 @@
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod.Items;
-using CalamityMod.Items.Tools;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -36,7 +34,7 @@ namespace CalamityEntropy.Content.Items.Tools
             Item.DamageType = DamageClass.Melee;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2, gold: 80);
             Item.rare = ModContent.RarityType<AbyssalBlue>();
             Item.crit = 18;
             Item.useTurn = true;
@@ -121,8 +119,9 @@ namespace CalamityEntropy.Content.Items.Tools
 
         public override void AddRecipes()
         {
+            // 灾厄繁花矿镐换为原版夜明镐（虚空主题取旋涡）；门槛由龙牙与暗淡符石把关
             CreateRecipe().
-                AddIngredient<BlossomPickaxe>().
+                AddIngredient(ItemID.VortexPickaxe).
                 AddIngredient<FadingRunestone>().
                 AddIngredient<WyrmTooth>(5).
                 AddTile<AbyssalAltarTile>().

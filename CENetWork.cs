@@ -36,6 +36,8 @@ namespace CalamityEntropy
         AcropolisTrans,
         SyncPlayerDead,
         SyncDRShadowCrystal,
+        SyncMouseWorld,
+        SyncCooldowns,
         SyncPlayer = 255
     }
 
@@ -406,6 +408,36 @@ namespace CalamityEntropy
                     mp.Write(ch4);
                     mp.Write(ch5);
                     mp.Send(-1, plr);
+                }
+            }
+            else if (messageType == CEMessageType.SyncMouseWorld)
+            {
+                int plr = reader.ReadInt32();
+                float dx = reader.ReadInt16();
+                float dy = reader.ReadInt16();
+                //必须走真实实例写入: .Entropy()查找失败会返回一次性实例,写入被静默丢弃
+                if (plr.ToPlayer().TryGetModPlayer<EModPlayer>(out var emp))
+                    emp.mouseWorldDelta = new Vector2(dx, dy);
+                if (Main.dedServ)
+                {
+                    ModPacket packet = Instance.GetPacket();
+                    packet.Write((byte)CEMessageType.SyncMouseWorld);
+                    packet.Write(plr);
+                    packet.Write((short)dx);
+                    packet.Write((short)dy);
+                    packet.Send(-1, whoAmI);
+                }
+            }
+            else if (messageType == CEMessageType.SyncCooldowns)
+            {
+                //冷却框架加入同步(cooldown-api.md §7),序列化两端由 CECooldownPlayer 实现
+                Core.Cooldowns.CECooldownPlayer.ReceiveAllCooldowns(reader);
+                if (Main.dedServ)
+                {
+                    ModPacket packet = Instance.GetPacket();
+                    packet.Write((byte)CEMessageType.SyncCooldowns);
+                    Main.player[whoAmI].GetModPlayer<Core.Cooldowns.CECooldownPlayer>().WriteAllCooldowns(packet);
+                    packet.Send(-1, whoAmI);
                 }
             }
             else if (messageType == CEMessageType.SyncPlayer)

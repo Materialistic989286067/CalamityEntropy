@@ -1,5 +1,5 @@
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -14,7 +14,8 @@ namespace CalamityEntropy.Content.Projectiles
     {
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<RogueDamageClass>();
+            // 原盗贼职业并入原版：飞刀归远程
+            Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 26;
             Projectile.height = 26;
             Projectile.timeLeft = 120;
@@ -31,7 +32,7 @@ namespace CalamityEntropy.Content.Projectiles
         float scale = 0;
         public override void AI()
         {
-            bool stl = Projectile.Calamity().stealthStrike;
+            bool stl = Projectile.IsEmpowered();
             if (Projectile.ai[0] == 0)
             {
                 if (stl)
@@ -62,7 +63,7 @@ namespace CalamityEntropy.Content.Projectiles
                         Main.LocalPlayer.Entropy().screenPos = Projectile.Center;
                         Main.LocalPlayer.Entropy().screenShift = 1;
                         Main.LocalPlayer.Entropy().immune = 30;
-                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = 24;
+                        ScreenShaker.AddShake(new ScreenShaker.ScreenShake(Vector2.Zero, 24));
                         Main.LocalPlayer.Center = Main.MouseWorld;
 
                     }
@@ -114,7 +115,7 @@ namespace CalamityEntropy.Content.Projectiles
             {
                 owner.direction = -1;
             }
-            if (Projectile.velocity.X * (Projectile.Calamity().stealthStrike ? -1 : 1) > 0)
+            if (Projectile.velocity.X * (Projectile.IsEmpowered() ? -1 : 1) > 0)
             {
                 owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - (float)(Math.PI * 0.75f));
             }
@@ -130,16 +131,16 @@ namespace CalamityEntropy.Content.Projectiles
                 Color impactColor = Main.rand.NextBool(3) ? Color.SkyBlue : Color.White;
                 float impactParticleScale = Main.rand.NextFloat(1f, 1.75f);
 
-                //holdout装饰sparkle,GeneralParticleHandler迁过来的,数值没动
+                //holdout装饰sparkle,旧版粒子系统迁过来的,数值没动
                 PRTLoader.NewParticle<PRT_SparkleCal>(target.Center + Main.rand.NextVector2Circular(target.width * 0.75f, target.height * 0.75f), Vector2.Zero, Color.White, impactParticleScale * 1.2f).Configure(Color.Blue, 8, 0, 4.5f);
 
                 PRTLoader.NewParticle<PRT_SparkleCal>(target.Center + Main.rand.NextVector2Circular(target.width * 0.75f, target.height * 0.75f), Vector2.Zero, impactColor, impactParticleScale).Configure(Color.Blue, 8, 0, 2.5f);
             }
 
-            float sparkCount = MathHelper.Clamp(18 - Projectile.numHits * 3 + (Projectile.Calamity().stealthStrike ? 8 : 0), 0, 18);
+            float sparkCount = MathHelper.Clamp(18 - Projectile.numHits * 3 + (Projectile.IsEmpowered() ? 8 : 0), 0, 18);
             for (int i = 0; i < sparkCount; i++)
             {
-                Vector2 sparkVelocity2 = (Projectile.rotation + (Projectile.velocity.X * (Projectile.Calamity().stealthStrike ? -1 : 1) > 0 ? -MathHelper.PiOver2 : MathHelper.PiOver2)).ToRotationVector2().RotatedByRandom(0.14f) * 20 * Main.rand.NextFloat(0.5f, 1.8f);
+                Vector2 sparkVelocity2 = (Projectile.rotation + (Projectile.velocity.X * (Projectile.IsEmpowered() ? -1 : 1) > 0 ? -MathHelper.PiOver2 : MathHelper.PiOver2)).ToRotationVector2().RotatedByRandom(0.14f) * 20 * Main.rand.NextFloat(0.5f, 1.8f);
                 int sparkLifetime2 = Main.rand.Next(23, 35);
                 float sparkScale2 = Main.rand.NextFloat(0.95f, 1.8f);
                 Color sparkColor2 = Main.rand.NextBool(3) ? Color.LightBlue : Color.AliceBlue;
@@ -160,7 +161,7 @@ namespace CalamityEntropy.Content.Projectiles
                 dust2.scale = Main.rand.NextFloat(0.9f, 2.4f);
                 dust2.noGravity = true;
             }
-            if (Projectile.Calamity().stealthStrike)
+            if (Projectile.IsEmpowered())
             {
                 if (playsound)
                 {
@@ -187,7 +188,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
-            if (Projectile.velocity.X * (Projectile.Calamity().stealthStrike ? -1 : 1) > 0)
+            if (Projectile.velocity.X * (Projectile.IsEmpowered() ? -1 : 1) > 0)
             {
                 Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation - MathHelper.Pi / 2f, new Vector2(0, 0), scale * Projectile.scale, SpriteEffects.FlipVertically, 0);
             }
@@ -196,7 +197,7 @@ namespace CalamityEntropy.Content.Projectiles
                 Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation + MathHelper.Pi / 2f, new Vector2(0, tex.Height), scale * Projectile.scale, SpriteEffects.None, 0);
 
             }
-            if (Projectile.Calamity().stealthStrike)
+            if (Projectile.IsEmpowered())
             {
                 if (balpha < 1)
                 {

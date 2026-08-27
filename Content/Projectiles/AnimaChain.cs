@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityEntropy.Assets.Register;
+using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
 using System.Collections.Generic;
@@ -85,7 +87,7 @@ namespace CalamityEntropy.Content.Projectiles
                 points.Add(Projectile.Center + new Vector2(300, 0).RotatedBy(MathHelper.ToRadians(i * 120) + Projectile.rotation));
             }
             SpriteBatch sb = Main.spriteBatch;
-            Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/RedAdd", AssetRequestMode.ImmediateLoad).Value;
+            Effect shader = CEEffectAssets.RedAdd;
             float redAlpha = 0;
 
             if (Projectile.timeLeft < 180)

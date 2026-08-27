@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -14,7 +13,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             Item.damage = 540;
             Item.crit = 10;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.width = 86;
             Item.noUseGraphic = true;
             Item.height = 86;

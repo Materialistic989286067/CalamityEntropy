@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Buffs;
-using CalamityMod.Items;
 using Microsoft.Xna.Framework.Audio;
 using Terraria;
 using Terraria.ID;
@@ -21,10 +20,10 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAnimation = 1;
             Item.useStyle = -1;
             Item.damage = 460;
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Magic;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1);
             Item.rare = ItemRarityID.Red;
 
         }

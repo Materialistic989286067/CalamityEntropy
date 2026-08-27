@@ -1,14 +1,15 @@
-﻿using CalamityEntropy.Common;
-using CalamityMod;
-using CalamityMod.Graphics.Primitives;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Skies
 {
@@ -37,23 +38,19 @@ namespace CalamityEntropy.Content.Skies
         {
             skyActive = true;
         }
-        public static Effect shader;
+        //天空贴图交给 VaultLoaden 在加载期赋值,不再在绘制里懒加载(专用服务器上恒为 null,只在绘制路径读取)
+        [VaultLoaden("CalamityEntropy/Assets/Extra/CrSky")]
+        private static Asset<Texture2D> crSkyTex;
         public override Color OnTileColor(Color inColor)
         {
             return Color.Lerp(inColor, new Color(255, 255, 255, inColor.A), opacity);
         }
         public int counter = 0;
         public int awtime = 0;
-        public Effect skyEffect = null; public Effect skyEffect2 = null;
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
-            if (this.skyEffect == null)
-            {
-                this.skyEffect = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/AWSkyEffect", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-                this.skyEffect2 = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/awsky2", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-            }
             counter++;
-            Texture2D txd = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/CrSky").Value;
+            Texture2D txd = crSkyTex.Value;
             float pc = 1f;
             /*
             if (SubworldSystem.IsActive<VOIDSubworld>())
@@ -83,9 +80,7 @@ namespace CalamityEntropy.Content.Skies
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicWrap, DepthStencilState.None, RasterizerState.CullNone, null);
             Vector2 dp = new Vector2((Main.screenPosition.X * -0.5f + counter * 0.3f) % txd.Width, (Main.screenPosition.Y * -0.5f * Main.LocalPlayer.gravDir + counter * -0.1f) % txd.Height);
             spriteBatch.Draw(txd, Main.ScreenSize.ToVector2() * 0.5f, new Rectangle((int)-dp.X, (int)-dp.Y, (int)(Main.screenWidth * 2), (int)(Main.screenHeight * 2)), ocolor * opacity, 0, Main.ScreenSize.ToVector2(), 1, SpriteEffects.None, 0);
-            
-            if(shader == null)
-                shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/ColorLerp2", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+
             if (awtime > 0)
             {
                 spriteBatch.End();
@@ -163,7 +158,7 @@ namespace CalamityEntropy.Content.Skies
                 fscreen.Parameters["cNum"].SetValue(1.12f);
                 graphicsDevice.Textures[0] = EffectLoader.Screen0;
                 graphicsDevice.Textures[1] = Main.screenTargetSwap;
-                graphicsDevice.Textures[2] = CEUtils.getExtraTex("VoidBack");
+                graphicsDevice.Textures[2] = CEExtraAssets.VoidBack;
                 Main.spriteBatch.Draw(EffectLoader.Screen0, Vector2.Zero, Color.White);
                 Main.spriteBatch.End();
             }
@@ -213,9 +208,9 @@ namespace CalamityEntropy.Content.Skies
                     pointsDraw.Add(points2[i]);
                 }
                 Main.spriteBatch.EnterShaderRegion();
-                GameShaders.Misc["CalamityMod:ArtAttack"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Streak2"));
-                GameShaders.Misc["CalamityMod:ArtAttack"].Apply();
-                PrimitiveRenderer.RenderTrail(points, new PrimitiveSettings(TrailWidth, TrailColor, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityMod:ArtAttack"]), 180);
+                GameShaders.Misc["CalamityEntropy:ArtAttack"].SetShaderTexture(CEExtraAssets.Streak2Asset);
+                GameShaders.Misc["CalamityEntropy:ArtAttack"].Apply();
+                CEPrimitiveRenderer.RenderTrail(points, new CEPrimitiveSettings(TrailWidth, TrailColor, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityEntropy:ArtAttack"]), 180);
                 Main.spriteBatch.ExitShaderRegion();
                 Main.spriteBatch.UseBlendState(BlendState.Additive);
 

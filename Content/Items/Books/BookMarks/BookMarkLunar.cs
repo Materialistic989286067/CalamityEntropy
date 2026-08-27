@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Content.ILEditing;
 using CalamityEntropy.Content.Particles;
-using CalamityMod.Items;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -18,7 +17,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             base.SetDefaults();
             Item.rare = ItemRarityID.Red;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1);
         }
         public override Color tooltipColor => Color.YellowGreen;
         public override EBookProjectileEffect getEffect()

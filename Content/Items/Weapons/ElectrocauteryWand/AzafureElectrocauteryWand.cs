@@ -1,10 +1,10 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace CalamityEntropy.Content.Items.Weapons.ElectrocauteryWand
             Item.noMelee = true;
             Item.shoot = ModContent.ProjectileType<AzafureElectrocauteryWandHeld>();
             Item.knockBack = 6f;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(0, 2);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.UseSound = null;
             Item.autoReuse = false;
@@ -73,7 +73,7 @@ namespace CalamityEntropy.Content.Items.Weapons.ElectrocauteryWand
             Player player = Projectile.GetOwner();
             var proj = Projectile;
             bool Charging = player.channel;
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             proj.Center = player.GetDrawCenter();
             proj.rotation = (player.mouseWorld() + new Vector2(0, -200) - proj.Center).ToRotation();
             proj.velocity = proj.rotation.ToRotationVector2() * player.HeldItem.shootSpeed;
@@ -215,7 +215,6 @@ namespace CalamityEntropy.Content.Items.Weapons.ElectrocauteryWand
                 if (Projectile.ai[0] > 66)
                 {
                     CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromAI(), Projectile.GetOwner(), Projectile.Center, Projectile.damage, 256, Projectile.DamageType);
-                    //EParticle.spawnNew→PRTLoader.NewParticle,spawn点和数值迁移纪律:一个不改
                     PRTLoader.NewParticle<PRT_PulseRing>(Projectile.Center, Vector2.Zero, Color.Firebrick, 0.06f).Configure(2.4f, 16);
                     PRTLoader.NewParticle<PRT_PulseRing>(Projectile.Center, Vector2.Zero, Color.Firebrick, 0.06f).Configure(2.6f, 16);
                     foreach (var npc in target)
@@ -246,7 +245,7 @@ namespace CalamityEntropy.Content.Items.Weapons.ElectrocauteryWand
             }
             else
             {
-                Texture2D pulse = CEUtils.getExtraTex("HollowCircleSoftEdge");
+                Texture2D pulse = CEExtraAssets.HollowCircleSoftEdge;
                 Main.spriteBatch.End();
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
                 EffectLoader.PreparePixelShader(gd);

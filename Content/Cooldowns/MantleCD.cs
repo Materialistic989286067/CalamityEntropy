@@ -1,10 +1,10 @@
-﻿using CalamityMod.Cooldowns;
+﻿using CalamityEntropy.Core.Cooldowns;
 using Terraria.Audio;
 using Terraria.Localization;
 
 namespace CalamityEntropy.Content.Cooldowns
 {
-    public class MantleCD : CooldownHandler
+    public class MantleCD : CECooldownHandler
     {
         public static new string ID => "HolyMantleCooldown";
         public override bool ShouldDisplay => true;

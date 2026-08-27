@@ -39,7 +39,7 @@ namespace CalamityEntropy.Content.Items.Vanity
             Item.width = 22;
             Item.height = 30;
             Item.accessory = true;
-            Item.value = CalamityMod.Items.CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Green;
             Item.vanity = true;
         }
@@ -59,8 +59,9 @@ namespace CalamityEntropy.Content.Items.Vanity
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ModContent.ItemType<Voidstone>(), 4)
-                .AddIngredient(ModContent.ItemType<VoidTorch>(), 1)
+            // 灾厄虚空石/虚空火把按 bookmark-rehang §六 裁决换黑曜石与微光火把
+            CreateRecipe().AddIngredient(ItemID.Obsidian, 4)
+                .AddIngredient(ItemID.ShimmerTorch, 1)
                 .AddTile(TileID.WorkBenches)
                 .Register();
         }

@@ -1,5 +1,7 @@
 ﻿using CalamityEntropy.Content.Buffs;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -9,6 +11,9 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class LilBrimstone : ModProjectile
     {
+        //小硫火帧图集,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/LilBrimstone")]
+        internal static Asset<Texture2D> SheetTex;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
@@ -160,7 +165,7 @@ namespace CalamityEntropy.Content.Projectiles
                 ef = SpriteEffects.FlipHorizontally;
             }
             Texture2D tx;
-            tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/LilBrimstone").Value;
+            tx = SheetTex.Value;
 
             Main.spriteBatch.Draw(tx, Projectile.Center - Main.screenPosition, CEUtils.GetCutTexRect(tx, 8, (int)Projectile.ai[1]), Color.White, 0, new Vector2(46, 52) / 2, Projectile.scale, ef, 0);
             return false;

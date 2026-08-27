@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 namespace CalamityEntropy.Content.Items.Books.BookMarks
@@ -10,7 +9,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             base.SetDefaults();
             Item.rare = ItemRarityID.Orange;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Perfection");
         public override Color tooltipColor => Color.Green;

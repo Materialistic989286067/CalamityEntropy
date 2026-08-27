@@ -1,9 +1,12 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Dusts;
+using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles.AbyssalWraithProjs;
-using CalamityMod.World;
+using InnoVault;
 using InnoVault.PRT;
+using ReLogic.Content;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -14,6 +17,7 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Utilities;
@@ -53,7 +57,17 @@ namespace CalamityEntropy.Content.NPCs.AbyssalWraith
         public float wingRotRight = 0;
         public int lifeCounter = -1;
 
-        public List<Texture2D> wingflying = new List<Texture2D>();
+        //翅膀帧动画与死亡溶解贴图,加载期由 VaultLoaden 赋值;专用服务器上恒为 null,读取处都在客户端路径或带 dedServ 防护
+        [VaultLoaden("CalamityEntropy/Content/NPCs/AbyssalWraith/Wing", 1, 8, AssetMode = AssetMode.TextureValueArray)]
+        private static Texture2D[] wingflying;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/AbyssalWraith/AWDeath")]
+        private static Asset<Texture2D> awDeathTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/AbyssalWraith/WingGathering")]
+        private static Asset<Texture2D> wingGatheringTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/AbyssalWraith/WingGather")]
+        private static Asset<Texture2D> wingGatherTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/SoulVortex")]
+        private static Asset<Texture2D> soulVortexTex;
         public override void OnSpawn(IEntitySource source)
         {
             seed = Main.rand.Next(0, 10000);
@@ -106,11 +120,8 @@ namespace CalamityEntropy.Content.NPCs.AbyssalWraith
             }
             NPC.defense = 60;
             NPC.lifeMax = 5500000;
-            if (CalamityWorld.death)
-            {
-                NPC.damage += 20;
-            }
-            else if (CalamityWorld.revenge)
+            // 难度收敛:原复仇/死亡加成同值,按 difficulty-map 代入后化简为专家档(大师蕴含专家)
+            if (Main.expertMode)
             {
                 NPC.damage += 20;
             }
@@ -126,10 +137,6 @@ namespace CalamityEntropy.Content.NPCs.AbyssalWraith
             if (!Main.dedServ)
             {
 
-            }
-            for (int i = 1; i <= 8; i++)
-            {
-                wingflying.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/AbyssalWraith/Wing" + i.ToString()).Value);
             }
             NPC.Entropy().VoidTouchDR = 1f;
         }
@@ -253,7 +260,7 @@ namespace CalamityEntropy.Content.NPCs.AbyssalWraith
                     }
                 }
             }
-            Texture2D deathTex = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/AbyssalWraith/AWDeath").Value;
+            Texture2D deathTex = Main.dedServ ? null : awDeathTex.Value;
             if (deathAnm)
             {
                 NPC.dontTakeDamage = true;
@@ -908,7 +915,6 @@ namespace CalamityEntropy.Content.NPCs.AbyssalWraith
         {
             return false;
         }
-        Effect aweffect = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/aweffect").Value;
         public float addlight = 1;
 
         public void Draw()
@@ -919,7 +925,7 @@ namespace CalamityEntropy.Content.NPCs.AbyssalWraith
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-            aweffect.CurrentTechnique = aweffect.Techniques["Technique1"];
+            CEEffectAssets.aweffect.CurrentTechnique = CEEffectAssets.aweffect.Techniques["Technique1"];
             float alpha = 1;
             if (spawnAnm > 0)
             {
@@ -935,7 +941,7 @@ namespace CalamityEntropy.Content.NPCs.AbyssalWraith
 
                     }
                     anmlerp = anmlerp + (10 - anmlerp) * 0.01f;
-                    Texture2D deathTex = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/AbyssalWraith/AWDeath").Value;
+                    Texture2D deathTex = awDeathTex.Value;
 
                     sb.Draw(deathTex, NPC.Center - Main.screenPosition + new Vector2(0, deathTex.Height / 2 * deathPer), new Rectangle(0, (int)(deathTex.Height * deathPer), deathTex.Width, (int)(deathTex.Height * (1 - deathPer))), Color.White, 0, new Vector2(deathTex.Width / 2, deathTex.Height * (1 - deathPer) / 2), NPC.scale, SpriteEffects.None, 0);
                     return;
@@ -948,15 +954,15 @@ namespace CalamityEntropy.Content.NPCs.AbyssalWraith
                     }
                 }
             }
-            aweffect.Parameters["a"].SetValue(addlight);
-            aweffect.CurrentTechnique.Passes[0].Apply();
+            CEEffectAssets.aweffect.Parameters["a"].SetValue(addlight);
+            CEEffectAssets.aweffect.CurrentTechnique.Passes[0].Apply();
 
 
             if (spawnAnm > 20)
             {
                 alpha = (200f - (float)spawnAnm) / 180f;
             }
-            aweffect.Parameters["alpha"].SetValue(alpha * alphaPor);
+            CEEffectAssets.aweffect.Parameters["alpha"].SetValue(alpha * alphaPor);
             if (gatherWing <= 0)
             {
                 Texture2D wing = wingflying[wingFrame];
@@ -1017,7 +1023,7 @@ namespace CalamityEntropy.Content.NPCs.AbyssalWraith
             else if (gatherWing <= 0.8f)
             {
                 float rot = 0;
-                Texture2D wing = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/AbyssalWraith/WingGathering").Value;
+                Texture2D wing = wingGatheringTex.Value;
                 Vector2 origin = new Vector2(320, 222);
                 sb.Draw(wing, drawCenter + new Vector2(-64, 0).RotatedBy(NPC.rotation) - Main.screenPosition, null, Color.White * alpha, NPC.rotation - rot, origin, NPC.scale, SpriteEffects.None, 0);
                 origin = new Vector2(wing.Width - origin.X, origin.Y);
@@ -1026,7 +1032,7 @@ namespace CalamityEntropy.Content.NPCs.AbyssalWraith
             }
             else if (gatherWing <= 0.9f)
             {
-                Texture2D wing = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/AbyssalWraith/WingGather").Value;
+                Texture2D wing = wingGatherTex.Value;
                 Vector2 origin = wing.Size() / 2;
                 origin.Y = 222;
                 sb.Draw(wing, drawCenter - Main.screenPosition, null, Color.White * alpha, NPC.rotation, origin, NPC.scale * new Vector2(1 - (gatherWing - 0.8f) * 10f * 0.5f, 1), SpriteEffects.None, 0);
@@ -1034,7 +1040,7 @@ namespace CalamityEntropy.Content.NPCs.AbyssalWraith
             }
             else
             {
-                Texture2D wing = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/AbyssalWraith/WingGather").Value;
+                Texture2D wing = wingGatherTex.Value;
                 Vector2 origin = wing.Size() / 2;
                 origin.Y = 222;
                 sb.Draw(wing, drawCenter - Main.screenPosition, null, Color.White * alpha, NPC.rotation, origin, NPC.scale * new Vector2(0.5f + (gatherWing - 0.9f) * 10f * 0.5f, 1), SpriteEffects.None, 0);
@@ -1043,7 +1049,7 @@ namespace CalamityEntropy.Content.NPCs.AbyssalWraith
 
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-            Texture2D htx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/lightball").Value;
+            Texture2D htx = CEExtraAssets.lightball;
 
             Main.spriteBatch.Draw(htx, NPC.Center - Main.screenPosition, null, Color.White, 0, htx.Size() / 2, 1f * lbsize, SpriteEffects.None, 0);
 
@@ -1079,7 +1085,7 @@ namespace CalamityEntropy.Content.NPCs.AbyssalWraith
         }
         public void DrawPortal(Vector2 pos, Color color, float size, float xmul = 0.3f, float aj = 0)
         {
-            Texture2D tx = CEUtils.getExtraTex("SoulVortex");
+            Texture2D tx = soulVortexTex.Value;
             float angle = MathHelper.ToDegrees(counter * 0.2f + aj);
             Vector2 lu = new Vector2(size, 0).RotatedBy(MathHelper.ToRadians(angle - 135));
             Vector2 ru = new Vector2(size, 0).RotatedBy(MathHelper.ToRadians(angle - 45));
@@ -1141,7 +1147,10 @@ namespace CalamityEntropy.Content.NPCs.AbyssalWraith
         public bool deathAnm = false;
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-
+            // 扶正掉落表(bookmark-rehang §三):幽渊魂髓 15-25 必掉;玩偶 1/25 趣味掉落
+            // 书签重挂(BookmarkCosmic/BookMarkAbyss/Nothing)已在 EGlobalNPC 统一登记,此处不重复
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<WraithSoulEssence>(), 1, 15, 25));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<AbyssalWraithPlush>(), 25));
         }
 
 

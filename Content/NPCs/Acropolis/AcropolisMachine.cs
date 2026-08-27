@@ -7,12 +7,11 @@ using CalamityEntropy.Content.Items.Tools;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.BiomeManagers;
-using CalamityMod.Items.Materials;
-using CalamityMod.World;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,6 +28,29 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
     [AutoloadBossHead]
     public class AcropolisMachine : ModNPC
     {
+        //harpoonOutlineTex 设为 internal 供同目录 Harpoon 复用
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/Leg1")]
+        private static Asset<Texture2D> leg1Tex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/Leg2")]
+        private static Asset<Texture2D> leg2Tex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/Foot")]
+        private static Asset<Texture2D> footTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/CannonConnect")]
+        private static Asset<Texture2D> cannonConnectTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/Cannon")]
+        private static Asset<Texture2D> cannonTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/HarpoonArm")]
+        private static Asset<Texture2D> harpoonArmTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/HarpoonLauncher")]
+        private static Asset<Texture2D> harpoonLauncherTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/Harpoon")]
+        private static Asset<Texture2D> harpoonTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/HarpoonOutline")]
+        internal static Asset<Texture2D> harpoonOutlineTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/Shoulder")]
+        private static Asset<Texture2D> shoulderTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/cloudNoise")]
+        private static Asset<Texture2D> cloudNoiseTex;
         public class AcropolisLeg
         {
             public Vector2 StandPoint = Vector2.Zero;
@@ -216,6 +238,8 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
+                // 群系迁移:原灾厄硫火之崖图鉴背景改原版地狱(biome-map)
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheUnderworld,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityEntropy.Acropolis")
             });
         }
@@ -283,10 +307,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                 NPC.scale += 0.8f;
             }
             NPC.boss = false;
-            NPC.Calamity().VulnerableToHeat = false;
-            NPC.Calamity().VulnerableToCold = true;
-            NPC.Calamity().VulnerableToWater = true;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<BrimstoneCragsBiome>().Type };
+            // 灾厄元素易伤体系不移植(debuff-map:等效取基准值);原硫火之崖群系归属改原版地狱层(biome-map)
         }
         public override bool CheckActive()
         {
@@ -294,7 +315,8 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return (spawnInfo.Player.Calamity().ZoneCalamity && !NPC.AnyNPCs(Type) && EModSys.AcropolisDontSpawn <= 0) ? (NPC.downedMoonlord ? 0.04f : (Main.hardMode ? 0.07f : 0.18f)) : 0f;
+            // 生成条件:原灾厄硫火之崖改地狱层自然生成,频率照搬(biome-map)
+            return (spawnInfo.Player.ZoneUnderworldHeight && !NPC.AnyNPCs(Type) && EModSys.AcropolisDontSpawn <= 0) ? (NPC.downedMoonlord ? 0.04f : (Main.hardMode ? 0.07f : 0.18f)) : 0f;
         }
         public static bool CanStandOn(Vector2 pos)
         {
@@ -370,7 +392,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                 if (NPC.netSpam >= 10)
                     NPC.netSpam = 9;
                 int d = 1;
-                if (CalamityWorld.death)
+                if (Main.masterMode)
                     if (Main.GameUpdateCount % 2 == 0)
                         d++;
                 if (Main.zenithWorld)
@@ -635,11 +657,12 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             {
                 enrange += 0.07f;
             }
-            if (CalamityWorld.revenge)
+            // 难度映射:复仇→专家、死亡→大师(difficulty-map)
+            if (Main.expertMode)
             {
                 enrange += 0.1f;
             }
-            if (CalamityWorld.death)
+            if (Main.masterMode)
             {
                 enrange += 0.1f;
             }
@@ -934,7 +957,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             UnifiedRandom random = new UnifiedRandom((NPC.type + NPC.whoAmI * 47));
-            Texture2D noise = CEUtils.getExtraTex("cloudNoise");
+            Texture2D noise = cloudNoiseTex.Value;
             float cAlpha = random.NextBool(6) ? random.NextFloat(0.6f, 1f) : random.NextFloat(0.8f, 1f);
             void prepareShader(Texture2D texture)
             {
@@ -960,9 +983,9 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                     CEUtils.DrawGlow(l.offset + NPC.Center, Color.Blue, 0.2f, false);
                 }
             }*/
-            Texture2D t1 = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Acropolis/Leg1");
-            Texture2D t2 = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Acropolis/Leg2");
-            Texture2D t3 = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Acropolis/Foot");
+            Texture2D t1 = leg1Tex.Value;
+            Texture2D t2 = leg2Tex.Value;
+            Texture2D t3 = footTex.Value;
 
             if (legs == null)
                 return false;
@@ -987,14 +1010,14 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                 //CEUtils.DrawLines(points, Color.Blue, 4);
             }
             NPC npc = NPC;
-            Texture2D cannon1 = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Acropolis/CannonConnect");
-            Texture2D cannon2 = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Acropolis/Cannon");
-            Texture2D harpoon1 = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Acropolis/HarpoonArm");
-            Texture2D harpoon2 = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Acropolis/HarpoonLauncher");
-            Texture2D harpoon3 = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Acropolis/Harpoon");
-            Texture2D harpoonOutline = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Acropolis/HarpoonOutline");
+            Texture2D cannon1 = cannonConnectTex.Value;
+            Texture2D cannon2 = cannonTex.Value;
+            Texture2D harpoon1 = harpoonArmTex.Value;
+            Texture2D harpoon2 = harpoonLauncherTex.Value;
+            Texture2D harpoon3 = harpoonTex.Value;
+            Texture2D harpoonOutline = harpoonOutlineTex.Value;
 
-            Texture2D shoulder = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Acropolis/Shoulder");
+            Texture2D shoulder = shoulderTex.Value;
 
             prepareShader(harpoon1);
             Main.EntitySpriteDraw(harpoon1, (harpoon.offset * new Vector2(dir, 1) * NPC.scale).RotatedBy(((AcropolisMachine)npc.ModNPC).dir > 0 ? npc.rotation : (npc.rotation + MathHelper.Pi)) + NPC.Center - Main.screenPosition, null, drawColor, harpoon.Seg1Rot, new Vector2(6, harpoon1.Height / 2f), NPC.scale, SpriteEffects.None);
@@ -1152,7 +1175,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             int dmg = 40;
             if (Main.expertMode)
                 dmg *= 2;
-            if (Main.masterMode || CalamityWorld.death)
+            if (Main.masterMode)
                 dmg *= 2;
             dmg = (int)(dmg * NPC.scale);
             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -1165,12 +1188,23 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<HellIndustrialComponents>(), 1, 24, 30));
-            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<DubiousPlating>(), 1, 18, 36));
-            npcLoot.Add(ModContent.ItemType<MottledSpear>(), new Fraction(2, 5));
-            npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<AcropolisRelic>());
-            npcLoot.Add(ModContent.ItemType<AcropolisTrophy>(), 10);
-            npcLoot.Add(ModContent.ItemType<AzafurePhonograph>(), 8);
-            npcLoot.AddConditionalPerPlayer(() => !EDownedBosses.downedAcropolis, ModContent.ItemType<LoreAcropolis>());
+            // 掉落自有化:灾厄可疑镀层→阿扎弗镀层,数量照搬(material-map §一)
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<AzafurePlating>(), 1, 18, 36));
+            npcLoot.Add(new CommonDrop(ModContent.ItemType<MottledSpear>(), 5, 1, 1, 2));
+            // 遗物:原灾厄复仇/大师条件对齐原版大师掉落惯例(difficulty-map)
+            npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsMasterMode(), ModContent.ItemType<AcropolisRelic>()));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<AcropolisTrophy>(), 10));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<AzafurePhonograph>(), 8));
+            // 首杀传记:承接原灾厄按人实例掉落语义
+            npcLoot.Add(new DropPerPlayerOnThePlayer(ModContent.ItemType<LoreAcropolis>(), 1, 1, 1, new LoreFirstKill()));
+        }
+
+        // 首杀传记条件:对应 downed 旗标未置位时每名玩家各掉一份
+        private class LoreFirstKill : IItemDropRuleCondition, IProvideItemConditionDescription
+        {
+            public bool CanDrop(DropAttemptInfo info) => !EDownedBosses.downedAcropolis;
+            public bool CanShowItemDropInUI() => true;
+            public string GetConditionDescription() => null;
         }
     }
 }

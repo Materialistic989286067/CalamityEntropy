@@ -1,11 +1,13 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles.Cruiser;
+using CalamityEntropy.Core.Graphics;
 using CalamityEntropy.Utilities;
-using CalamityMod;
-using CalamityMod.Graphics.Primitives;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
@@ -17,6 +19,13 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class NetherRiftBlade : ModProjectile
     {
+        //拖尾与锁链贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/NetherRiftHandle")]
+        internal static Asset<Texture2D> HandleTex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/NetherChain")]
+        internal static Asset<Texture2D> ChainTex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/NetherChainWhite")]
+        internal static Asset<Texture2D> ChainWhiteTex;
         public List<Vector2> odp = new List<Vector2>();
         public override void SetDefaults()
         {
@@ -281,13 +290,13 @@ namespace CalamityEntropy.Content.Projectiles
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:ArtAttack"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Streak2"));
-            GameShaders.Misc["CalamityMod:ArtAttack"].Apply();
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].SetShaderTexture(CEExtraAssets.Streak2Asset);
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].Apply();
             odp.Add(Projectile.Center);
 
-            PrimitiveRenderer.RenderTrail(odp, new PrimitiveSettings(TrailWidth, TrailColor, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityMod:ArtAttack"]), 180);
-            GameShaders.Misc["CalamityMod:ArtAttack"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/SylvestaffStreak"));
-            PrimitiveRenderer.RenderTrail(odp, new PrimitiveSettings(TrailWidth, TrailColor2, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityMod:ArtAttack"]), 180);
+            CEPrimitiveRenderer.RenderTrail(odp, new CEPrimitiveSettings(TrailWidth, TrailColor, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityEntropy:ArtAttack"]), 180);
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].SetShaderTexture(CEExtraAssets.SylvestaffStreakAsset);
+            CEPrimitiveRenderer.RenderTrail(odp, new CEPrimitiveSettings(TrailWidth, TrailColor2, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityEntropy:ArtAttack"]), 180);
 
             odp.RemoveAt(odp.Count - 1);
             Main.spriteBatch.ExitShaderRegion();
@@ -321,7 +330,7 @@ namespace CalamityEntropy.Content.Projectiles
                         GraphicsDevice gd = Main.graphics.GraphicsDevice;
                         if (ve.Count >= 3)
                         {
-                            Texture2D tx = CEUtils.getExtraTex("AbyssalCircle2");
+                            Texture2D tx = CEExtraAssets.AbyssalCircle2;
                             gd.Textures[0] = tx;
                             gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                         }
@@ -345,7 +354,7 @@ namespace CalamityEntropy.Content.Projectiles
                         GraphicsDevice gd = Main.graphics.GraphicsDevice;
                         if (ve.Count >= 3)
                         {
-                            Texture2D tx = CEUtils.getExtraTex("AbyssalCircle2");
+                            Texture2D tx = CEExtraAssets.AbyssalCircle2;
                             gd.Textures[0] = tx;
                             gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                         }
@@ -358,7 +367,7 @@ namespace CalamityEntropy.Content.Projectiles
                 List<Vector2> points = new List<Vector2>();
                 points = rope.GetPoints();
 
-                Texture2D handle = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/NetherRiftHandle").Value;
+                Texture2D handle = HandleTex.Value;
                 Main.spriteBatch.Draw(handle, (chainToMouse ? mousePos : Projectile.owner.ToPlayer().Center) + player.gfxOffY * Vector2.UnitY - Main.screenPosition, null, Color.White, chainToMouse ? (Projectile.Center - mousePos).ToRotation() : (points[1] - points[0]).ToRotation(), new Vector2(28, handle.Height / 2), Projectile.scale, SpriteEffects.None, 0);
                 Main.spriteBatch.End();
 
@@ -397,17 +406,17 @@ namespace CalamityEntropy.Content.Projectiles
                     GraphicsDevice gd = Main.graphics.GraphicsDevice;
                     if (ve.Count >= 3)
                     {
-                        gd.Textures[0] = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/NetherChain").Value;
+                        gd.Textures[0] = ChainTex.Value;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
 
-                        gd.Textures[0] = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/NetherChainWhite").Value;
+                        gd.Textures[0] = ChainWhiteTex.Value;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve2.ToArray(), 0, ve2.Count - 2);
                     }
                 }
                 else
                 {
-                    Texture2D c = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/NetherChain").Value;
-                    Texture2D c2 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/NetherChainWhite").Value;
+                    Texture2D c = ChainTex.Value;
+                    Texture2D c2 = ChainWhiteTex.Value;
                     Main.EntitySpriteDraw(c, mousePos - Main.screenPosition, new Rectangle(0, 0, (int)CEUtils.getDistance(Projectile.Center, mousePos), c.Height), Color.White, (Projectile.Center - mousePos).ToRotation(), new Vector2(0, c.Height / 2), 1, SpriteEffects.None, 0);
                     Main.EntitySpriteDraw(c2, mousePos - Main.screenPosition, new Rectangle(0, 0, (int)CEUtils.getDistance(Projectile.Center, mousePos), c.Height), Color.White * Projectile.localAI[1], (Projectile.Center - mousePos).ToRotation(), new Vector2(0, c.Height / 2), 1, SpriteEffects.None, 0);
 

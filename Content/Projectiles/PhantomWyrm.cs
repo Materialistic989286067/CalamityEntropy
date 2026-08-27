@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Buffs.Wyrm;
-using CalamityMod;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;

@@ -1,7 +1,8 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -34,7 +35,7 @@ namespace CalamityEntropy.Content.Projectiles
         {
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-            Texture2D tex = CEUtils.getExtraTex("StarTexture");
+            Texture2D tex = CEExtraAssets.StarTexture;
             float num = 0.82f * (float)Math.Sin(Main.GameUpdateCount / 10f);
             float num2 = 0.82f * (float)Math.Sin(Main.GameUpdateCount / 10f + MathHelper.PiOver4);
             Vector2 pos = points[points.Count - 1];
@@ -155,7 +156,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D tex = Projectile.GetTexture();
-            Texture2D c = CEUtils.getExtraTex("Circle");
+            Texture2D c = CEExtraAssets.Circle;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             for (float i = 0; i < 1; i += 0.2f)
             {
@@ -242,7 +243,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override bool PreDraw(ref Color lightColor)
         {
             counter++;
-            Texture2D tex = CEUtils.getExtraTex("DeathRay2");
+            Texture2D tex = CEExtraAssets.DeathRay2;
             Main.spriteBatch.UseBlendState(BlendState.NonPremultiplied, SamplerState.LinearWrap);
 
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, new Rectangle(-counter * 18, 0, length, tex.Height), Color.Yellow, Projectile.rotation, new Vector2(0, tex.Height / 2), new Vector2(1, width * 0.8f), SpriteEffects.None, 0);
@@ -250,7 +251,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, new Rectangle(-counter * 40, 0, length, tex.Height), Color.White, Projectile.rotation, new Vector2(0, tex.Height / 2), new Vector2(1, width * 0.5f), SpriteEffects.None, 0);
             Main.spriteBatch.UseBlendState(BlendState.Additive, SamplerState.LinearWrap);
 
-            Texture2D star = CEUtils.getExtraTex("StarTexture");
+            Texture2D star = CEExtraAssets.StarTexture;
             float num = 0.5f * (float)Math.Sin(Main.GameUpdateCount / 10f);
             float num2 = 0.5f * (float)Math.Sin(Main.GameUpdateCount / 10f + MathHelper.PiOver4);
             Vector2 pos = Projectile.Center;

@@ -33,6 +33,16 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             }
         }
 
+        // 原灾厄 NPCUtils.HideFromBestiary 的自有等价实现：图鉴中隐藏该 NPC
+        public static void HideFromBestiary(this ModNPC nPC)
+        {
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
+            {
+                Hide = true
+            };
+            NPCID.Sets.NPCBestiaryDrawOffset.Add(nPC.Type, value);
+        }
+
         public static void applyCollisionDamage(this ModNPC npc)
         {
             if (npc.NPC.Entropy().friendFinderOwner == Main.myPlayer)

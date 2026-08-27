@@ -1,5 +1,7 @@
 using CalamityEntropy.Common.LoreReworks;
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Core.Cooldowns;
 using CalamityEntropy.Content.Cooldowns;
 using CalamityEntropy.Content.ILEditing;
 using CalamityEntropy.Content.Items.Accessories;
@@ -29,6 +31,7 @@ using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Prefixes;
 using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.Weapons;
 using CalamityEntropy.Content.Projectiles.HBProj;
 using CalamityEntropy.Content.Projectiles.SamsaraCasket;
 using CalamityEntropy.Content.Projectiles.VoidEchoProj;
@@ -36,14 +39,10 @@ using CalamityEntropy.Content.Tiles;
 using CalamityEntropy.Content.UI;
 using CalamityEntropy.Content.UI.Poops;
 using CalamityEntropy.Utilities;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Graphics;
-using CalamityMod.Items.LoreItems;
-using CalamityMod.Projectiles.Typeless;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Audio;
+using ReLogic.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -60,6 +59,9 @@ namespace CalamityEntropy.Common
 {
     public class EModPlayer : ModPlayer
     {
+        //虚寂之绳贴图在加载期就位,只在客户端绘制路径读取,专用服务器上恒为 null
+        [VaultLoaden("CalamityEntropy/Content/NPCs/NihilityTwin/NihRope")]
+        internal static Asset<Texture2D> NihRopeTex;
         public float GetPressure()
         {
             float p = 1;
@@ -172,7 +174,6 @@ namespace CalamityEntropy.Common
         public int CruiserAntiGravTime = 0;
         public int gravAddTime = 0;
         public bool plagueEngine = false;
-        public int bloodBoiling = 0;
         public int UsingItemCounter = 0;
         public float VanityTailRot = 0;
         public float FlagRot = 0;
@@ -336,10 +337,7 @@ namespace CalamityEntropy.Common
         public bool respawnsnd = false;
         public override void OnHitByNPC(NPC npc, Player.HurtInfo hurtInfo)
         {
-            if (SCrown)
-            {
-                Player.Calamity().defenseDamageRatio = SilvasCrown.DDR;
-            }
+            //脱离灾厄:SilvasCrown 原有的灾厄防御损伤(defenseDamageRatio)联动已退役
             if (Thorn > 0)
             {
                 Player.ApplyDamageToNPC(npc, (int)(hurtInfo.Damage * Thorn), 0, 0, false);
@@ -347,10 +345,7 @@ namespace CalamityEntropy.Common
         }
         public override void OnHitByProjectile(Projectile proj, Player.HurtInfo hurtInfo)
         {
-            if (SCrown)
-            {
-                Player.Calamity().defenseDamageRatio = SilvasCrown.DDR;
-            }
+            //脱离灾厄:SilvasCrown 原有的灾厄防御损伤(defenseDamageRatio)联动已退役
             if (CELists.CruiserSpecificDeathProjs.Contains(proj.whoAmI))
                 Player.AddBuff(ModContent.BuffType<VoidTouch>(), 200);
         }
@@ -477,12 +472,7 @@ namespace CalamityEntropy.Common
         public List<McAttributeRecord> McAttributes = null;
         public bool BaitCharging = false;
         public bool devouringCard = false;
-        public bool NoNaturalStealthRegen = false;
-        public bool ExtraStealthBar = false;
-        public float ExtraStealth = 0;
-        public bool worshipRelic = false;
-        public int worshipStealthRegenTime = 0;
-        public bool shadowPact = false;
+        //脱离灾厄:潜行退役惰性字段(NoNaturalStealthRegen/ExtraStealthBar/ExtraStealth/worshipRelic/worshipStealthRegenTime/shadowPact)已裁删
         public bool shadowRune = false;
         public float ManaExtraHeal = 0f;
         public int ManaRegenPer30Tick = 0;
@@ -549,7 +539,7 @@ namespace CalamityEntropy.Common
             DriverScale = float.Lerp(DriverScale, Equiped ? (DriverShield > 0 ? 2.5f : 1.9f) : 0, 0.05f);
             if (Equiped)
             {
-                if (Player.Calamity().cooldowns.TryGetValue(DriverCoreCooldown.ID, out var value4))
+                if (Player.EntropyCooldowns().cooldowns.TryGetValue(DriverCoreCooldown.ID, out var value4))
                 {
                     value4.timeLeft = DriverShield > 0 ? (AzafureDriverCore.MaxShield - DriverShield) : AzafureDriverCore.RechargeTime - DriverRecharge;
                     if (DriverShield > 0)
@@ -609,7 +599,7 @@ namespace CalamityEntropy.Common
             NihShieldScale = float.Lerp(NihShieldScale, Equiped ? (NihilityShield > 0 ? (0.6f + 0.4f * ((float)NihilityShield / VoidEaterHelmet.MaxShield)) : 0.5f) : 0, 0.05f);
             if (Equiped)
             {
-                if (Player.Calamity().cooldowns.TryGetValue(NihilityShieldCD.ID, out var value4))
+                if (Player.EntropyCooldowns().cooldowns.TryGetValue(NihilityShieldCD.ID, out var value4))
                 {
                     value4.timeLeft = NihilityShield > 0 ? (VoidEaterHelmet.MaxShield - NihilityShield) : VoidEaterHelmet.ShieldRecharge - NihilityRecharge;
                     if (NihilityShield > 0)
@@ -639,7 +629,7 @@ namespace CalamityEntropy.Common
                     if (Main.myPlayer == Player.whoAmI)
                     {
                         int lifeToShield = 80;
-                        if (CalamityKeybinds.ArmorSetBonusHotKey.JustPressed && NihilityShield < VoidEaterHelmet.MaxShield && Player.statLife > lifeToShield)
+                        if (ArmorSetBonusHotKey.JustPressed && NihilityShield < VoidEaterHelmet.MaxShield && Player.statLife > lifeToShield)
                         {
                             if (CECooldowns.CheckCD("NihilitySet", 60))
                             {
@@ -667,7 +657,7 @@ namespace CalamityEntropy.Common
                     if (Main.myPlayer == Player.whoAmI)
                     {
                         int lifeToShield = 80;
-                        if (CalamityKeybinds.ArmorSetBonusHotKey.JustPressed && Player.statLife > lifeToShield)
+                        if (ArmorSetBonusHotKey.JustPressed && Player.statLife > lifeToShield)
                         {
                             if (CECooldowns.CheckCD("NihilitySet", 60))
                             {
@@ -703,7 +693,7 @@ namespace CalamityEntropy.Common
             Scale = float.Lerp(Scale, Equiped ? (shieldCount > 0 ? (0.6f + 0.4f * ((float)Scale / MaxShield)) : 0.5f) : 0, 0.05f);
             if (Equiped)
             {
-                if (Player.Calamity().cooldowns.TryGetValue(CooldownID, out var value4))
+                if (Player.EntropyCooldowns().cooldowns.TryGetValue(CooldownID, out var value4))
                 {
                     value4.timeLeft = shieldCount > 0 ? (MaxShield - shieldCount) : RechargeTime - rechargeCounter;
                     if (shieldCount > 0)
@@ -760,7 +750,7 @@ namespace CalamityEntropy.Common
             Scale = float.Lerp(Scale, Equiped ? (shieldCount > 0 ? (0.6f + 0.4f * ((float)Scale / MaxShield)) : 0.5f) : 0, 0.05f);
             if (Equiped)
             {
-                if (Player.Calamity().cooldowns.TryGetValue(CooldownID, out var value4))
+                if (Player.EntropyCooldowns().cooldowns.TryGetValue(CooldownID, out var value4))
                 {
                     value4.timeLeft = shieldCount > 0 ? (MaxShield - shieldCount) : RechargeTime - rechargeCounter;
                     if (shieldCount > 0)
@@ -814,12 +804,58 @@ namespace CalamityEntropy.Common
         }
         public void RemoveCooldown(string id)
         {
-            Player p = Player;
-            if (p.HasCooldown(id))
-            {
-                p.Calamity().cooldowns.Remove(id);
-            }
+            Player.RemoveCooldown(id);
         }
+
+        #region 自研玩家设施(脱离灾厄): 键位/鼠标世界坐标/冲刺ID
+        /// <summary>盔甲套装技能键(默认Y),替代灾厄 CalamityKeybinds.ArmorSetBonusHotKey。</summary>
+        public static ModKeybind ArmorSetBonusHotKey;
+        /// <summary>冲刺键(默认F),替代灾厄 CalamityKeybinds.DashHotkey。双击方向键仍然有效。</summary>
+        public static ModKeybind DashHotkey;
+        /// <summary>饰品主动技能键(默认V),替代灾厄 FindAccessory().GetDynamicModHotkey()。</summary>
+        public static ModKeybind AccessoryAbilityHotKey;
+
+        //冷却:统一走自研冷却框架(Player.AddCooldown/HasCooldown/TryGetCooldown/EntropyCooldowns())
+
+        /// <summary>本次冲刺的ID(自研,替代灾厄 LastUsedDashID)。空串=无。由 EPlayerDash/各冲刺饰品写入。</summary>
+        public string LastUsedDashID = "";
+
+        /// <summary>鼠标世界坐标相对 MountedCenter 的偏移(网络同步的最小载荷)。</summary>
+        public Vector2 mouseWorldDelta;
+        /// <summary>各端可见的玩家鼠标世界坐标(自研,替代灾厄 mouseWorld)。本地玩家每帧自动写入。</summary>
+        public Vector2 MouseWorld
+        {
+            get => Player.MountedCenter + mouseWorldDelta;
+            set => mouseWorldDelta = value - Player.MountedCenter;
+        }
+        /// <summary>本帧是否有武器/弹幕需要各端读取鼠标坐标。每帧自动复位,调用方(如 CEUtils.mouseWorld)每帧置位。</summary>
+        public bool MouseWorldListener;
+        private Vector2 lastSyncedMouseDelta = new(float.MinValue, float.MinValue);
+        private int mouseSyncTimer;
+
+        private void UpdateSelfOwnedFacilities()
+        {
+            //自研mouseWorld:本地玩家每帧写入;仅在有监听者且位移超阈值时节流发包(参考灾厄:5px阈值+2tick节流)
+            if (Player.whoAmI == Main.myPlayer && !Main.dedServ)
+            {
+                MouseWorld = Main.MouseWorld;
+                mouseSyncTimer++;
+                if (Main.netMode == NetmodeID.MultiplayerClient && MouseWorldListener
+                    && mouseSyncTimer >= 2 && (mouseWorldDelta - lastSyncedMouseDelta).Length() > 5f)
+                {
+                    mouseSyncTimer = 0;
+                    lastSyncedMouseDelta = mouseWorldDelta;
+                    ModPacket packet = Mod.GetPacket();
+                    packet.Write((byte)CEMessageType.SyncMouseWorld);
+                    packet.Write(Player.whoAmI);
+                    packet.Write((short)mouseWorldDelta.X);
+                    packet.Write((short)mouseWorldDelta.Y);
+                    packet.Send();
+                }
+            }
+            MouseWorldListener = false;
+        }
+        #endregion
 
         public void DriverShieldHit(ref Player.HurtInfo info)
         {
@@ -827,8 +863,6 @@ namespace CalamityEntropy.Common
             {
                 int reduceDmg = 0;
                 int DamageToShield = int.Max(1, (int)(info.Damage * (Player.AzafureEnhance() ? 0.6f : 1)));
-                if (Player.Calamity().chaliceOfTheBloodGod)
-                    DamageToShield = DriverShield + 1;
                 if (DriverShield >= DamageToShield)
                 {
                     DriverShield -= DamageToShield;
@@ -861,8 +895,6 @@ namespace CalamityEntropy.Common
             {
                 int reduceDmg = 0;
                 int DamageToShield = int.Max(1, (int)(info.Damage * 1));
-                if (Player.Calamity().chaliceOfTheBloodGod)
-                    DamageToShield = NihilityShield + 1;
                 if (NihilityShield >= DamageToShield)
                 {
                     NihilityShield -= DamageToShield;
@@ -895,8 +927,6 @@ namespace CalamityEntropy.Common
             {
                 int reduceDmg = 0;
                 int DamageToShield = int.Max(1, (int)(info.Damage * 1));
-                if (Player.Calamity().chaliceOfTheBloodGod)
-                    DamageToShield = shield + 1;
                 if (shield >= DamageToShield)
                 {
                     shield -= DamageToShield;
@@ -929,8 +959,6 @@ namespace CalamityEntropy.Common
             {
                 int reduceDmg = 0;
                 int DamageToShield = int.Max(1, (int)(info.Damage * 1));
-                if (Player.Calamity().chaliceOfTheBloodGod)
-                    DamageToShield = shield + 1;
                 if (shield >= DamageToShield)
                 {
                     shield -= DamageToShield;
@@ -991,7 +1019,6 @@ namespace CalamityEntropy.Common
             oathBanner = false;
             oathBannerVisual = false;
             MeleeScale = 1;
-            EquipedAnyRogueAcc = false;
             if (RatzielShieldTime > 0)
                 RatzielShieldTime--;
             AbyssalLight = 0;
@@ -1021,12 +1048,6 @@ namespace CalamityEntropy.Common
             CritDamage = new Dictionary<DamageClass, float>();
             ManaExtraHeal = 0;
             shadowRune = false;
-            shadowPact = false;
-            worshipRelic = false;
-            ExtraStealthBar = false;
-            RogueStealthRegen = 0;
-            NoNaturalStealthRegen = false;
-            WeaponsNoCostRogueStealth = false;
             vanityWing = null;
             wing = null;
             ilmeranAsylum = false;
@@ -1043,7 +1064,6 @@ namespace CalamityEntropy.Common
             HitCooldown = 0;
             voidResistance = 0;
             plagueEngine = false;
-            RogueStealthRegenMult = 1;
             if (Player.whoAmI == Main.myPlayer)
             {
                 if (foreseeOrbLast && foreseeOrbItem == null && Player.HasBuff<ShatteredOrb>())
@@ -1177,16 +1197,27 @@ namespace CalamityEntropy.Common
         {
             wingData = new SpecialWingDrawingData();
             drCrystals = null;
+            //自研键位注册(替代灾厄 CalamityKeybinds)。三条键位名文案见 hjson 的 Mods.CalamityEntropy.Keybinds.*
+            if (!Main.dedServ)
+            {
+                ArmorSetBonusHotKey = KeybindLoader.RegisterKeybind(Mod, "ArmorSetBonus", "Y");
+                DashHotkey = KeybindLoader.RegisterKeybind(Mod, "Dash", "F");
+                AccessoryAbilityHotKey = KeybindLoader.RegisterKeybind(Mod, "AccessoryAbility", "V");
+            }
         }
         public override void Unload()
         {
             wingData = null;
             drCrystals = null;
+            ArmorSetBonusHotKey = null;
+            DashHotkey = null;
+            AccessoryAbilityHotKey = null;
         }
 
         public float BaitCharge = 0;
         public override void PreUpdate()
         {
+            UpdateSelfOwnedFacilities();
             if (SunriseScene > 0)
                 SunriseScene--;
             if (drCrystals == null && Main.myPlayer == Player.whoAmI && !Main.dedServ)
@@ -1617,20 +1648,18 @@ namespace CalamityEntropy.Common
             }
             if (maliciousCode)
             {
-                Player.maxRunSpeed *= MaliciousCode.CALAMITY__OVERHAUL ? 0.8f : 0.85f;
+                Player.maxRunSpeed *= 0.85f;
             }
             if (maliciousCode)
             {
-                //恶意代码debuff
-                //加了大修增加一些效果强度
-                //那很恶意了
-                Player.GetDamage(DamageClass.Generic) *= MaliciousCode.CALAMITY__OVERHAUL ? 0.75f : 0.8f;
-                Player.GetAttackSpeed(DamageClass.Generic) *= MaliciousCode.CALAMITY__OVERHAUL ? 0.75f : 0.8f;
-                Player.statLifeMax2 = (int)(Player.statLifeMax2 * (MaliciousCode.CALAMITY__OVERHAUL ? 0.75f : 0.8f));
+                //恶意代码debuff(脱离灾厄:原CWR大修联动的加强档已随恒假属性坍缩删除)
+                Player.GetDamage(DamageClass.Generic) *= 0.8f;
+                Player.GetAttackSpeed(DamageClass.Generic) *= 0.8f;
+                Player.statLifeMax2 = (int)(Player.statLifeMax2 * 0.8f);
                 Player.lifeRegen /= 2;
                 lifeRegenPerSec /= 2;
-                Player.statDefense *= MaliciousCode.CALAMITY__OVERHAUL ? 0.75f : 0.8f;
-                Player.maxRunSpeed *= (MaliciousCode.CALAMITY__OVERHAUL ? 0.85f : 0.88f);
+                Player.statDefense *= 0.8f;
+                Player.maxRunSpeed *= 0.88f;
             }
 
             if (VFSet)
@@ -1668,7 +1697,8 @@ namespace CalamityEntropy.Common
             {
                 Player.lifeRegen /= 2;
             }
-            if ((UsingItemCounter > 0 && bloodBoiling > 1) || Player.HasBuff<VoidTouch>())
+            //脱离灾厄:血沸附魔已删除,bloodBoiling无写入点,条件只留VoidTouch半支
+            if (Player.HasBuff<VoidTouch>())
             {
                 Player.lifeRegenTime = 0;
                 Player.lifeRegen = int.Min(0, Player.lifeRegen);
@@ -1685,13 +1715,7 @@ namespace CalamityEntropy.Common
                     Player.maxMinions--;
                 }
             }
-            if (LoreReworkSystem.Enabled<LoreHiveMind>())
-            {
-                if (hitTimeCount < LEHiveCorrupt.TimeSec * 60)
-                {
-                    Player.GetDamage(DamageClass.Generic) += LEHiveCorrupt.DamageAddition;
-                }
-            }
+            //脱离灾厄:腐化巢心Lore增伤随灾厄Lore下线删除
             if (shadowRune)
             {
                 Player.GetAttackSpeed(DamageClass.SummonMeleeSpeed) += ShadowRune.WhipAtkSpeedAddition;
@@ -1784,24 +1808,7 @@ namespace CalamityEntropy.Common
             }
 
 
-            if (bloodBoiling > 0)
-            {
-                bloodBoiling--;
-                float AttackSpeedAddition = (float)Math.Sqrt(this.UsingItemCounter) * 0.006f;
-                if (Main.GameUpdateCount % 4 == 0)
-                {
-                    int LifeLossing = (int)Math.Round(this.UsingItemCounter * 0.002f);
-                    Player.statLife -= LifeLossing;
-                    if (Player.statLife <= 0)
-                    {
-                        for (int i = 0; i < Player.hurtCooldowns.Length; i++)
-                            Player.hurtCooldowns[i] = 0;
-                        Player.Hurt(PlayerDeathReason.ByCustomReason(Mod.GetLocalization("KilledByBloodBoiling").ToNetworkText(Player.name)), 66666, 0);
-                    }
-                }
-                Player.GetAttackSpeed(DamageClass.Generic) += AttackSpeedAddition;
-
-            }
+            //脱离灾厄:血沸附魔(bloodBoiling)触发链断死,自伤/攻速/死亡播报块一并裁删
             /*if (SubworldSystem.IsActive<VOIDSubworld>())
             {
                 Player.gravity = 0;
@@ -1820,10 +1827,8 @@ namespace CalamityEntropy.Common
             }
             if (hasAcc(LurkersCharm.ID))
             {
-                if ((Player.Calamity().rogueStealth) > (Player.Calamity().rogueStealthMax * 0.8))
-                {
-                    Player.Entropy().damageReduce += LurkersCharm.endurance;
-                }
+                //脱离灾厄:原为潜行值>80%时生效,潜行系统退役后改为常驻(后续按武器大招体系重做)
+                Player.Entropy().damageReduce += LurkersCharm.endurance;
             }
             float d = damageReduce - 1;
             if (Player.Entropy().enduranceCard)
@@ -1868,7 +1873,8 @@ namespace CalamityEntropy.Common
                     Player.lifeRegen = 0;
                     lifeRegenPerSec = 0;
                 }
-                List<DamageClass> dmgClasses = new List<DamageClass>() { ModContent.GetInstance<AverageDamageClass>(), ModContent.GetInstance<DefaultDamageClass>(), ModContent.GetInstance<GenericDamageClass>(), ModContent.GetInstance<MagicDamageClass>(), ModContent.GetInstance<MagicSummonHybridDamageClass>(), ModContent.GetInstance<MeleeDamageClass>(), ModContent.GetInstance<MeleeNoSpeedDamageClass>(), ModContent.GetInstance<MeleeRangedHybridDamageClass>(), ModContent.GetInstance<NoneTypeDamageClass>(), ModContent.GetInstance<RangedDamageClass>(), ModContent.GetInstance<RogueDamageClass>(), ModContent.GetInstance<StealthDamageClass>(), ModContent.GetInstance<SummonDamageClass>(), ModContent.GetInstance<SummonMeleeSpeedDamageClass>(), ModContent.GetInstance<ThrowingDamageClass>(), ModContent.GetInstance<TrueMeleeDamageClass>(), ModContent.GetInstance<TrueMeleeNoSpeedDamageClass>() };
+                //脱离灾厄:伤害类遍历表收敛为原版+自有类(原灾厄17类)
+                List<DamageClass> dmgClasses = new List<DamageClass>() { DamageClass.Generic, DamageClass.Default, DamageClass.Melee, DamageClass.MeleeNoSpeed, DamageClass.Ranged, DamageClass.Magic, DamageClass.Summon, DamageClass.SummonMeleeSpeed, DamageClass.Throwing, ModContent.GetInstance<Content.DamageClasses.NoDRMelee>(), ModContent.GetInstance<NoneTypeDamageClass>() };
                 for (int i = 0; i < dmgClasses.Count; i++)
                 {
                     DamageClass dc = dmgClasses[i];
@@ -1941,7 +1947,7 @@ namespace CalamityEntropy.Common
             Player.maxFallSpeed *= float.Lerp(Scale, 1, 0.4f);
         }
 
-        public bool EquipedAnyRogueAcc = false;
+        //脱离灾厄:潜行退役惰性字段EquipedAnyRogueAcc已裁删
         public int manaNorm = 0;
         public int deusCoreAdd = 0;
         public float ShieldAlphaAdd = 0;
@@ -1950,7 +1956,6 @@ namespace CalamityEntropy.Common
             deusCoreAdd = 0;
 
             modifiers.ModifyHurtInfo += EPHurtModifier;
-            modifiers.ModifyHurtInfo += EPHurtModifier2;
             if (AzureShield > 0)
             {
                 modifiers.SourceDamage *= 0.75f;
@@ -2017,7 +2022,7 @@ namespace CalamityEntropy.Common
                         {
                             if (Player.ownedProjectileCounts[type] < ChaoticHelmet.MaxCells)
                             {
-                                Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, CEUtils.randomRot().ToRotationVector2() * 15, type, ((int)Player.GetTotalDamage<AverageDamageClass>().ApplyTo(ChaoticCellMinion.BaseDamage)).ApplyAccArmorDamageBonus(Player), 2, Player.whoAmI);
+                                Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, CEUtils.randomRot().ToRotationVector2() * 15, type, ((int)Player.GetTotalDamage(DamageClass.Generic).ApplyTo(ChaoticCellMinion.BaseDamage)).ApplyAccArmorDamageBonus(Player), 2, Player.whoAmI);
                             }
                         }
                     }
@@ -2041,13 +2046,7 @@ namespace CalamityEntropy.Common
             HitTCounter = 600;
             hitTimeCount = 0;
             JustHit = true;
-            if (LoreReworkSystem.Enabled<LorePerforators>())
-            {
-                if (Main.rand.NextFloat() < LEHiveCrimson.chance)
-                {
-                    Player.Heal(LEHiveCrimson.HealAmount);
-                }
-            }
+            //脱离灾厄:血肉巢穴Lore受击回血随灾厄Lore下线删除
         }
         public bool JustHit = false;
         public override bool FreeDodge(Player.HurtInfo info)
@@ -2125,20 +2124,7 @@ namespace CalamityEntropy.Common
         }
 
         public bool noCsDodge = false;
-        private void EPHurtModifier2(ref Player.HurtInfo info)
-        {
-            if (info.Damage > 10 && !info.Cancelled)
-            {
-                if (LoreReworkSystem.Enabled<LoreWallofFlesh>())
-                {
-                    if (!Player.HasCooldown(DamageReduceCD.ID))
-                    {
-                        Player.AddCooldown(DamageReduceCD.ID, LEWof.Cooldown * 60);
-                        info.Damage = (int)(info.Damage * (1 - LEWof.DmgReduce));
-                    }
-                }
-            }
-        }
+        //脱离灾厄:EPHurtModifier2(血肉墙Lore减伤)随灾厄Lore下线,连同注册点一并裁删
         private void EPHurtModifier(ref Player.HurtInfo info)
         {
             if (AzureRapierBlock > 0)
@@ -2153,7 +2139,7 @@ namespace CalamityEntropy.Common
                 }
                 else
                 {
-                    info.Damage = (int)(info.Damage * (Player.Calamity().cooldowns[BlockingCooldown.ID].timeLeft / 600f));
+                    info.Damage = (int)(info.Damage * (Player.EntropyCooldowns().cooldowns[BlockingCooldown.ID].timeLeft / 600f));
                 }
                 Entity source = null;
                 if (info.DamageSource.TryGetCausingEntity(out Entity ent))
@@ -2209,10 +2195,6 @@ namespace CalamityEntropy.Common
             }
             info.Damage = (int)(info.Damage * (1 - EDamageReduce));
             noCsDodge = false;
-            if (SCrown)
-            {
-                Player.Calamity().defenseDamageRatio = SilvasCrown.DDR;
-            }
             if (HolyShield && info.Damage > 120)
             {
                 return;
@@ -2241,7 +2223,7 @@ namespace CalamityEntropy.Common
                     SulphurousBubbleRecharge = 0;
                     SulphurousBubble = false;
                     if (BookMarkLoader.GetPlayerHeldEntropyBook(Player, out var ebk))
-                        ((CommonExplotionFriendly)CEUtils.SpawnExplotionFriendly(Player.GetSource_FromThis(), Player, Player.Center, ebk.CauculateProjectileDamage(12), 580, DamageClass.Magic).ModProjectile).onHitAction = (target, hit, dmg) => { target.AddBuff<SulphuricPoisoning>(600); };
+                        ((CommonExplotionFriendly)CEUtils.SpawnExplotionFriendly(Player.GetSource_FromThis(), Player, Player.Center, ebk.CauculateProjectileDamage(12), 580, DamageClass.Magic).ModProjectile).onHitAction = (target, hit, dmg) => { target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 600); }; //debuff-map:硫磺中毒已自研移植(PortsDoT)
                     PRTLoader.NewParticle<PRT_PulseRing>(Player.Center, Vector2.Zero, new Color(10, 190, 10), 0.2f).Configure(5.45f, 16);
                     PRTLoader.NewParticle<PRT_PulseRing>(Player.Center, Vector2.Zero, new Color(10, 190, 10), 0.2f).Configure(5.8f, 16);
                     if (!Main.dedServ)
@@ -2362,13 +2344,7 @@ namespace CalamityEntropy.Common
         public PRT_ProminenceTrail runeDashTrail = null;   //RuneDash冲刺轨迹,AddPoint+Lifetime续命
         public int UICJ = 0;
         public int ilVortexType = -1;
-        public bool WeaponsNoCostRogueStealth = false;
-        public float RogueStealthRegen = 0;
-        public int GaleWristbladeCharge = 0;
-        public float LastStealth = 0;
-        public bool LastStealthStrikeAble = false;
-        public bool ResetStealth = false;
-        public float shadowStealth = 0;
+        //脱离灾厄:潜行退役惰性字段(WeaponsNoCostRogueStealth/RogueStealthRegen/LastStealth/LastStealthStrikeAble/ResetStealth/shadowStealth/GaleWristbladeCharge)已裁删
         public int BrambleBarAdd = 0;
         public float BrambleBarCharge = 0;
         public int BBarNoDecrease = 0;
@@ -2378,8 +2354,7 @@ namespace CalamityEntropy.Common
         public bool ResetRot = false;
         public int TDeckTime = 0;
         public int SDeckTime = 0;
-        public float StealthMaxLast = -1;
-        public bool RstStealth = false;
+        //脱离灾厄:潜行退役惰性字段(StealthMaxLast/RstStealth)已裁删
         public int DmgAdd20 = 0;
         public bool accAzureAbyss = false;
         public int NihTwinArmorConnetPlayer = -1;
@@ -2436,7 +2411,7 @@ namespace CalamityEntropy.Common
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-                gd.Textures[0] = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/NihilityTwin/NihRope").Value;
+                gd.Textures[0] = NihRopeTex.Value;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
@@ -2581,7 +2556,7 @@ namespace CalamityEntropy.Common
             }
             if (AbyssalLight + MariviumLight > 0.02f)
             {
-                EnhancedDarknessSystem.lights.Add(new(center: Player.Center, scale: 36 * (AbyssalLight + MariviumLight)));
+                //脱离灾厄:灾厄深渊黑暗系统(EnhancedDarknessSystem)光源登记随灾厄移除,保留自有发光
                 if (MariviniumSet || accAzureAbyss)
                 {
                     CEUtils.AddLight(Player.Center, Color.LightBlue * MariviumLight, 12f);
@@ -2590,7 +2565,8 @@ namespace CalamityEntropy.Common
             BloodthirstyEffect *= 0.974f;
             if (CalamityEntropy.EntropyMode)
             {
-                List<DamageClass> dmgClasses = new List<DamageClass>() { ModContent.GetInstance<AverageDamageClass>(), ModContent.GetInstance<DefaultDamageClass>(), ModContent.GetInstance<GenericDamageClass>(), ModContent.GetInstance<MagicDamageClass>(), ModContent.GetInstance<MagicSummonHybridDamageClass>(), ModContent.GetInstance<MeleeDamageClass>(), ModContent.GetInstance<MeleeNoSpeedDamageClass>(), ModContent.GetInstance<MeleeRangedHybridDamageClass>(), ModContent.GetInstance<NoneTypeDamageClass>(), ModContent.GetInstance<RangedDamageClass>(), ModContent.GetInstance<RogueDamageClass>(), ModContent.GetInstance<StealthDamageClass>(), ModContent.GetInstance<SummonDamageClass>(), ModContent.GetInstance<SummonMeleeSpeedDamageClass>(), ModContent.GetInstance<ThrowingDamageClass>(), ModContent.GetInstance<TrueMeleeDamageClass>(), ModContent.GetInstance<TrueMeleeNoSpeedDamageClass>() };
+                //脱离灾厄:伤害类遍历表收敛为原版+自有类(原灾厄17类)
+                List<DamageClass> dmgClasses = new List<DamageClass>() { DamageClass.Generic, DamageClass.Default, DamageClass.Melee, DamageClass.MeleeNoSpeed, DamageClass.Ranged, DamageClass.Magic, DamageClass.Summon, DamageClass.SummonMeleeSpeed, DamageClass.Throwing, ModContent.GetInstance<Content.DamageClasses.NoDRMelee>(), ModContent.GetInstance<NoneTypeDamageClass>() };
                 for (int i = 0; i < dmgClasses.Count; i++)
                 {
                     DamageClass dc = dmgClasses[i];
@@ -2617,10 +2593,6 @@ namespace CalamityEntropy.Common
                 }
             }
             FallSpeedUP--;
-            if (NoAdrenaline)
-            {
-                Player.Calamity().adrenaline = 0;
-            }
             DmgAdd20--;
             ShieldAlphaAdd *= 0.95f;
             if (NihilitySet)
@@ -2694,7 +2666,7 @@ namespace CalamityEntropy.Common
                 {
                     Vector2 tpos = lastHitTarget.Center + lastHitTarget.velocity * 4;
                     Vector2 spos = Player.Center + CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(70, 120);
-                    Projectile.NewProjectile(Player.GetSource_FromThis(), spos, (tpos - spos).normalize() * 16, ModContent.ProjectileType<VENihilityLaser>(), ((int)Player.GetTotalDamage<AverageDamageClass>().ApplyTo(VoidEaterHelmet.LaserDamage)).ApplyAccArmorDamageBonus(Player), 8, Player.whoAmI);
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), spos, (tpos - spos).normalize() * 16, ModContent.ProjectileType<VENihilityLaser>(), ((int)Player.GetTotalDamage(DamageClass.Generic).ApplyTo(VoidEaterHelmet.LaserDamage)).ApplyAccArmorDamageBonus(Player), 8, Player.whoAmI);
                     if (CECooldowns.CheckCD("NihLaserSound", 1))
                         CEUtils.PlaySound("void_laser", 2.4f, spos, 6, 0.2f);
                 }
@@ -2737,7 +2709,7 @@ namespace CalamityEntropy.Common
             }
             if (SpawnChaoticCellOnHurt && Main.myPlayer == Player.whoAmI)
             {
-                if (CalamityKeybinds.ArmorSetBonusHotKey.JustPressed && Player.statLife > 90)
+                if (ArmorSetBonusHotKey.JustPressed && Player.statLife > 90)
                 {
                     if (CECooldowns.CheckCD("SummonCells", 120))
                     {
@@ -2749,7 +2721,7 @@ namespace CalamityEntropy.Common
                         {
                             if (Player.ownedProjectileCounts[type] < ChaoticHelmet.MaxCells)
                             {
-                                Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, CEUtils.randomRot().ToRotationVector2() * 15, type, ((int)Player.GetTotalDamage<AverageDamageClass>().ApplyTo(ChaoticCellMinion.BaseDamage)).ApplyAccArmorDamageBonus(Player), 2, Player.whoAmI);
+                                Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, CEUtils.randomRot().ToRotationVector2() * 15, type, ((int)Player.GetTotalDamage(DamageClass.Generic).ApplyTo(ChaoticCellMinion.BaseDamage)).ApplyAccArmorDamageBonus(Player), 2, Player.whoAmI);
                             }
                         }
                     }
@@ -2761,19 +2733,6 @@ namespace CalamityEntropy.Common
             UpdateVoidShield(VoidCoreItem != null, VoidCoreShield.ID, ref VoidCoreShieldScale, ref VoidShield, ref VoidRegenDelay, ref VoidRecharge, VoidCore.MaxShield, VoidCore.ShieldRecharge);
             float s_ = 1;
             UpdateRatzielShield(RatzielShieldTime > 0, RatizelShieldCD.ID, ref s_, ref RatzielShield, ref RatzielRegenDelay, ref RatzielRecharge, Ratziel.MaxShield(Ratziel.Level()), 20 * 60);
-            if (StealthMaxLast == -1)
-                StealthMaxLast = Player.Calamity().rogueStealthMax;
-            if (ModContent.GetInstance<ServerConfig>().ClearStealthWhenChangeEquipSet)
-            {
-                if (StealthMaxLast != Player.Calamity().rogueStealthMax)
-                {
-                    Player.Calamity().rogueStealth = 0;
-                    RstStealth = true;
-                }
-            }
-
-            StealthMaxLast = Player.Calamity().rogueStealthMax;
-
             if (hasAcc(HungryLantern.ID))
             {
                 if (Player.ownedProjectileCounts[HungryLantern.ProjType] < 1)
@@ -2943,19 +2902,8 @@ namespace CalamityEntropy.Common
                     }
                     if (hasAcc(ShadeCloak.ID))
                     {
+                        //脱离灾厄:灾厄WulfrumHook钩爪特判随灾厄移除,原版钩爪由RemoveAllGrapplingHooks统一收回
                         Player.RemoveAllGrapplingHooks();
-                        int whtype = ModContent.ProjectileType<WulfrumHook>();
-                        if (Player.ownedProjectileCounts[whtype] > 0)
-                        {
-                            foreach (var p in Main.ActiveProjectiles)
-                            {
-                                if (p.owner == Player.whoAmI && p.type == whtype)
-                                {
-                                    p.active = false;
-                                    break;
-                                }
-                            }
-                        }
                         if (Player.Entropy().immune < 6)
                             Player.Entropy().immune = 6;
                         Player.velocity *= 1.25f;
@@ -3054,95 +3002,7 @@ namespace CalamityEntropy.Common
                 Player.velocity.Y *= 0.996f;
             }
 
-            if (shadowPact)
-            {
-                if (Player.Calamity().wearingRogueArmor)
-                {
-                    Player.Calamity().rogueStealth = 0.01f;
-                    if (shadowStealth < 1)
-                    {
-                        shadowStealth += 0.004f;
-                        if (shadowStealth >= 1)
-                        {
-                            shadowStealth = 1;
-                            if (Main.myPlayer == Player.whoAmI)
-                            {
-                                CEUtils.PlaySound("shadowStealth");
-                            }
-                        }
-                    }
-                }
-            }
-            if (!RstStealth)
-            {
-                if (WeaponsNoCostRogueStealth && Player.Calamity().rogueStealth == 0 && LastStealth > 0 && !LastStealthStrikeAble)
-                {
-                    Player.Calamity().rogueStealth = LastStealth;
-                }
-            }
-            RstStealth = false;
-            LastStealth = Player.Calamity().rogueStealth;
-            LastStealthStrikeAble = Player.Calamity().StealthStrikeAvailable();
-            if (worshipStealthRegenTime > 0 && !worshipRelic && !(Player.HeldItem.ModItem is AzafureLightMachineGun))
-            {
-                worshipStealthRegenTime = 0;
-            }
-            if (ResetStealth)
-            {
-                ResetStealth = false;
-                Player.Calamity().rogueStealth = 0;
-            }
-            if (worshipStealthRegenTime-- > 0)
-            {
-                Player.Calamity().rogueStealth += ((Player.AzafureEnhance() && Player.HeldItem.ModItem is AzafureLightMachineGun) ? 0.2f : 0.1f) / 30f * Player.Calamity().rogueStealthMax;
-                if (Player.Calamity().rogueStealth > Player.Calamity().rogueStealthMax)
-                {
-                    Player.Calamity().rogueStealth = Player.Calamity().rogueStealthMax;
-                }
-            }
-            if (!hasAcc(GaleWristblades.ID))
-            {
-                GaleWristbladeCharge = 0;
-            }
-
-            if (ExtraStealthBar)
-            {
-                if (Player.Calamity().rogueStealth >= Player.Calamity().rogueStealthMax)
-                {
-                    if (ExtraStealth < Player.Calamity().rogueStealthMax)
-                    {
-                        ExtraStealth += Player.Calamity().rogueStealthMax * ((float)EModILEdit.updateStealthGenMethod.Invoke(Player.Calamity(), null) / 120f);
-                        if (ExtraStealth >= Player.Calamity().rogueStealthMax && Player.whoAmI == Main.myPlayer)
-                        {
-                            CEUtils.PlaySound("EclipseStealth");
-                        }
-                    }
-                }
-                else
-                {
-                    if (ExtraStealth > 0)
-                    {
-                        if (ExtraStealth > Player.Calamity().rogueStealthMax - Player.Calamity().rogueStealth)
-                        {
-                            ExtraStealth -= Player.Calamity().rogueStealthMax - Player.Calamity().rogueStealth;
-                            Player.Calamity().rogueStealth = Player.Calamity().rogueStealthMax;
-                        }
-                        else
-                        {
-                            Player.Calamity().rogueStealth += ExtraStealth;
-                            ExtraStealth = 0;
-                        }
-                    }
-                }
-                if (ExtraStealth > Player.Calamity().rogueStealthMax)
-                {
-                    ExtraStealth = Player.Calamity().rogueStealthMax;
-                }
-            }
-            else
-            {
-                ExtraStealth = 0;
-            }
+            //脱离灾厄:shadowPact蓄影与潜行维护逻辑已随盗贼系统退役,字段与复位一并裁删
             if (ilVortexType == -1)
                 ilVortexType = ModContent.ProjectileType<IlmeranVortex>();
             if (ilmeranAsylum && Main.myPlayer == Player.whoAmI)
@@ -3239,15 +3099,15 @@ namespace CalamityEntropy.Common
             }
             if (DashFlag && Main.LocalPlayer.dashDelay > 0)
             {
-                if (Main.LocalPlayer.Calamity().LastUsedDashID == AzafureShieldDash.ID)
+                if (Main.LocalPlayer.Entropy().LastUsedDashID == AzafureShieldDash.ID)
                 {
                     Main.LocalPlayer.dashDelay = AzafureChargeShield.DashDelay;
                 }
-                if (Main.LocalPlayer.Calamity().LastUsedDashID == AzafureDriverDash.ID)
+                if (Main.LocalPlayer.Entropy().LastUsedDashID == AzafureDriverDash.ID)
                 {
                     Main.LocalPlayer.dashDelay = AzafureDriverCore.DashDelay;
                 }
-                if (Main.LocalPlayer.Calamity().LastUsedDashID == VoidCoreDash.ID)
+                if (Main.LocalPlayer.Entropy().LastUsedDashID == VoidCoreDash.ID)
                 {
                     Main.LocalPlayer.dashDelay = VoidCore.DashDelay;
                 }
@@ -3487,18 +3347,13 @@ namespace CalamityEntropy.Common
                     {
                         if (wos.hitCd[Player.whoAmI] <= 0)
                         {
-                            float s = Player.Calamity().adrenaline;
                             if (Player.whoAmI == Main.myPlayer)
                             {
                                 Player.Hurt(PlayerDeathReason.ByPlayerItem(p.owner, p.owner.ToPlayer().HeldItem), p.owner.ToPlayer().HeldItem.damage, 0, true, false);
                             }
                             serviceWhipDamageBonus += 0.07f;
                             wos.hitCd[Player.whoAmI] = 1000;
-                            Player.Calamity().rage += Player.Calamity().rageMax / 20f;
-                            if (Player.Calamity().rage > Player.Calamity().rageMax)
-                            {
-                                Player.Calamity().rage = Player.Calamity().rageMax;
-                            }
+                            //脱离灾厄:原被鞭击时返还灾厄怒气(rage)的联动已退役
                         }
 
                     }
@@ -3624,14 +3479,15 @@ namespace CalamityEntropy.Common
                 if (!VSoundsPlayed && voidcharge >= 1)
                 {
                     VSoundsPlayed = true;
-                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/PhantomHeartUse"));
+                    //音效:原灾厄 PhantomHeartUse,按 sound-map 换自有 soulshine
+                    SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/soulshine"));
                 }
             }
             if (VoidInspire <= 0 && voidcharge < 1)
             {
                 VSoundsPlayed = false;
             }
-            if (!Main.dedServ && VoidCharge >= 1 && CalamityKeybinds.ArmorSetBonusHotKey.JustPressed)
+            if (!Main.dedServ && VoidCharge >= 1 && ArmorSetBonusHotKey.JustPressed)
             {
                 if (VoidInspire <= 0)
                 {
@@ -3702,7 +3558,7 @@ namespace CalamityEntropy.Common
                         localPlayerMaxShield = magiShieldAddCount;
                     }
                 }
-                if (Player.Calamity().cooldowns.TryGetValue(MoonlightShield.ID, out var value4))
+                if (Player.EntropyCooldowns().cooldowns.TryGetValue(MoonlightShield.ID, out var value4))
                 {
                     value4.timeLeft = MagiShieldMax - MagiShield;
 
@@ -3719,13 +3575,7 @@ namespace CalamityEntropy.Common
             }
             if (MagiShield <= 0)
             {
-                if (Player.Calamity().cooldowns.TryGetValue(MoonlightShield.ID, out var value4))
-                {
-                    for (int i = 0; i < Player.Calamity().cooldowns.Count; i++)
-                    {
-                        Player.Calamity().cooldowns.Remove(MoonlightShield.ID);
-                    }
-                }
+                Player.RemoveCooldown(MoonlightShield.ID);
             }
             List<Point> EdgeTiles = new List<Point>();
             Collision.GetEntityEdgeTiles(EdgeTiles, Player);
@@ -3742,10 +3592,12 @@ namespace CalamityEntropy.Common
 
                     var yeetVec = Vector2.Normalize(Player.Center - touchedTile.ToWorldCoordinates());
                     Player.velocity += yeetVec * auricRejectionKB;
-                    Player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AuricRejection").ToNetworkText(Player.name)), 460, 0);
+                    //死亡播报文案键 Mods.CalamityEntropy.Status.Death.AuricRejection 已在 hjson 登记
+                    Player.Hurt(PlayerDeathReason.ByCustomReason(CEUtils.GetText("Status.Death.AuricRejection").ToNetworkText(Player.name)), 460, 0);
                     Player.AddBuff(BuffID.Electrified, 300);
 
-                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"));
+                    //音效:原灾厄 TeslaShoot1,按 sound-map 换自有 shockBlast
+                    SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/shockBlast"));
                 }
             }
             if (VaMoving > 0)
@@ -3754,7 +3606,8 @@ namespace CalamityEntropy.Common
                 {
                     if (n.Hitbox.Intersects(Player.Hitbox) && n.active)
                     {
-                        Player.ApplyDamageToNPC(n, (int)Player.GetTotalDamage(DamageClass.Melee).ApplyTo(1200), 0, 0, false, CEUtils.RogueDC);
+                        //脱离灾厄:原盗贼类连带伤害无新职业裁定,按通用类结算(与DarkArts一致)
+                        Player.ApplyDamageToNPC(n, (int)Player.GetTotalDamage(DamageClass.Melee).ApplyTo(1200), 0, 0, false, DamageClass.Generic);
 
                     }
                 }
@@ -3780,7 +3633,8 @@ namespace CalamityEntropy.Common
             {
                 OracleDeckHealCd--;
             }
-            if (Player.whoAmI == Main.myPlayer && !Player.HasBuff(ModContent.BuffType<NOU>()))
+            //脱离灾厄:灾厄NOU减益判定随灾厄移除(该减益已无施加源)
+            if (Player.whoAmI == Main.myPlayer)
             {
                 if (!Player.HeldItem.IsAir && Player.HeldItem.type == ModContent.ItemType<VoidEcho>())
                 {
@@ -3843,11 +3697,9 @@ namespace CalamityEntropy.Common
                             npc.Entropy().daTarget = false;
                             int od = npc.defense;
                             npc.defense = 0;
-                            float or = npc.Calamity().DR;
-                            npc.Calamity().DR = 0;
-                            Player.ApplyDamageToNPC(npc, (int)Player.GetTotalDamage(CEUtils.RogueDC).ApplyTo(460 + 50 * daCount), 0, 0, false, CEUtils.RogueDC);
+                            //脱离灾厄:灾厄DR清零联动退役,盗贼类改通用类
+                            Player.ApplyDamageToNPC(npc, (int)Player.GetTotalDamage(DamageClass.Generic).ApplyTo(460 + 50 * daCount), 0, 0, false, DamageClass.Generic);
                             npc.defense = od;
-                            npc.Calamity().DR = or;
                             daLastP = npc.Center;
                         }
                         else
@@ -3877,16 +3729,13 @@ namespace CalamityEntropy.Common
                                 {
                                     int od = n.defense;
                                     n.defense = 0;
-                                    float or = n.Calamity().DR;
-                                    n.Calamity().DR = 0;
                                     int dmg = 0;
                                     for (int i = daCount; i > 0; i--)
                                     {
                                         dmg += 460 + 50 * i;
                                     }
-                                    Player.ApplyDamageToNPC(n, (int)Player.GetTotalDamage(CEUtils.RogueDC).ApplyTo(dmg), 0, 0, false, CEUtils.RogueDC);
+                                    Player.ApplyDamageToNPC(n, (int)Player.GetTotalDamage(DamageClass.Generic).ApplyTo(dmg), 0, 0, false, DamageClass.Generic);
                                     n.defense = od;
-                                    n.Calamity().DR = or;
                                 }
                             }
                             daCount = 0;
@@ -3932,8 +3781,7 @@ namespace CalamityEntropy.Common
         public int MariviniumShieldCount = 0;
         public int MariviniumShieldCd = 12 * 60;
         public bool visualMagiShield = false;
-        public float RogueStealthRegenMult = 1;
-        public int WindPressureTime = 0;
+        //脱离灾厄:潜行退役惰性字段RogueStealthRegenMult已裁删(Vigorous词缀已改走充能速度)
         public int baitHeldType = -1;
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
@@ -3941,14 +3789,14 @@ namespace CalamityEntropy.Common
                 return;
             if (reincarnationBadge)
             {
-                if (!Player.HasBuff<NOU>() && Player.ownedProjectileCounts[ModContent.ProjectileType<RbCircle>()] < 1)
+                if (Player.ownedProjectileCounts[ModContent.ProjectileType<RbCircle>()] < 1)
                 {
                     if (Main.myPlayer == Player.whoAmI)
                     {
                         Projectile.NewProjectile(Player.GetSource_FromAI(), Player.Center, Vector2.Zero, ModContent.ProjectileType<RbCircle>(), 0, 0, Player.whoAmI);
                     }
                 }
-                if (!Main.dedServ && Player.Calamity().FindAccessory<ReincarnationBadge>().GetDynamicModHotkey().JustPressed || (rBadgeActive && (Player.controlJump || rBadgeCharge <= 0)))
+                if (!Main.dedServ && AccessoryAbilityHotKey.JustPressed || (rBadgeActive && (Player.controlJump || rBadgeCharge <= 0)))
                 {
                     rBadgeActive = !rBadgeActive;
                     if (rBadgeActive)
@@ -4005,14 +3853,14 @@ namespace CalamityEntropy.Common
                 rBadgeActive = false;
             }
 
-            if (!Main.dedServ && hasAcc(ShadowMantle.ID) && Player.whoAmI == Main.myPlayer && Player.Calamity().FindAccessory<ShadowMantle>().JustPressedKeybind())
+            //脱离灾厄:暗影斗篷原按潜行值加成并清空潜行,潜行系统退役后改为固定基础伤害+冷却门槛
+            if (!Main.dedServ && hasAcc(ShadowMantle.ID) && Player.whoAmI == Main.myPlayer && AccessoryAbilityHotKey.JustPressed)
             {
-                if (Player.Calamity().rogueStealth > 0 && !Player.HasCooldown(ShadowDashCD.ID))
+                if (!Player.HasCooldown(ShadowDashCD.ID))
                 {
                     Player.AddCooldown(ShadowDashCD.ID, ShadowMantle.CooldownTicks);
                     immune = 16;
-                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, (Main.MouseWorld - Player.Center).normalize() * 800, ModContent.ProjectileType<ShadowMantleSlash>(), (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(((int)(1 + ShadowMantle.BaseDamage * Player.Calamity().rogueStealth)).ApplyAccArmorDamageBonus(Player)), 0, Player.whoAmI);
-                    Player.Calamity().rogueStealth = 0;
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, (Main.MouseWorld - Player.Center).normalize() * 800, ModContent.ProjectileType<ShadowMantleSlash>(), (int)Player.GetTotalDamage(DamageClass.Generic).ApplyTo(((int)(1 + ShadowMantle.BaseDamage)).ApplyAccArmorDamageBonus(Player)), 0, Player.whoAmI);
                 }
             }
         }
@@ -4040,11 +3888,7 @@ namespace CalamityEntropy.Common
             }
             if (exquisiteCrown && rottenFangs)
                 Player.maxMinions++;
-            if (Player.Calamity().chaliceOfTheBloodGod && holyMoonlight)
-            {
-                holyMoonlight = false;
-                visualMagiShield = false;
-            }
+            //脱离灾厄:血神圣杯(chaliceOfTheBloodGod)与月光护盾互斥的灾厄联动已退役
             if (DmgAdd20 > 0)
                 Player.GetDamage(DamageClass.Generic) += 0.25f;
 
@@ -4064,39 +3908,23 @@ namespace CalamityEntropy.Common
                     Player.endurance += 0.05f;
                 }
             }
-            if (worshipRelic || shadowPact)
-            {
-                Player.Calamity().stealthStrike75Cost = false;
-                //Player.Calamity().stealthStrike90Cost = false;
-                Player.Calamity().stealthStrikeHalfCost = false;
-            }
-            if (hasAcc(ShadowMantle.ID))
-            {
-                RogueStealthRegen += float.Min(0.016f * Player.velocity.Length(), 0.2f);
-            }
+            //脱离灾厄:潜伏攻击消耗减免(stealthStrike75Cost/HalfCost)已随盗贼系统退役
+            //脱离灾厄:ShadowMantle 的惰性 RogueStealthRegen 写入已删(该饰品已自研突进增伤窗口)
             if (soulDisorder)
             {
                 Player.statDefense -= 16;
             }
             if (Player.HeldItem.prefix == ModContent.PrefixType<Echo>())
             {
-                Player.Calamity().rogueStealthMax += 0.12f;
+                //脱离灾厄:回响词缀原+12%潜行上限,潜行退役后改为+6%通用伤害(后续按武器大招体系重做)
+                Player.GetDamage(DamageClass.Generic) += 0.06f;
             }
             if (Player.HeldItem.prefix == ModContent.PrefixType<Vigorous>())
             {
-                Player.Entropy().RogueStealthRegenMult += 0.15f;
+                //脱离灾厄:原+15%潜行回复,按rogue-weapons通用换算(x1.5)改为大招充能速度+22.5%
+                Player.GetModPlayer<CEChargePlayer>().ChargeRateMult += 0.225f;
             }
-            Player.GetDamage(DamageClass.Generic) += GaleWristbladeCharge * 0.03f;
-            Player.GetAttackSpeed<RogueDamageClass>() += GaleWristbladeCharge * 0.03f;
-            WindPressureTime--;
-            if (WindPressureTime <= 0)
-            {
-                GaleWristbladeCharge = 0;
-            }
-            if (GaleWristbladeCharge > 0)
-            {
-                Player.AddBuff(ModContent.BuffType<WindPressure>(), 10);
-            }
+            //脱离灾厄:疾风腕刃旧充能链(GaleWristbladeCharge/WindPressureTime/WindPressure buff)全仓无写入点,已裁删;新效果在GaleWristbladesPlayer
             foreach (Projectile p in Main.ActiveProjectiles)
             {
                 if (p.ModProjectile is WispLanternProj wl)
@@ -4142,10 +3970,7 @@ namespace CalamityEntropy.Common
                 dodgeChance += 0.5f;
             }
             Player.manaCost *= ManaCost;
-            if (Player.Entropy().SCrown)
-            {
-                Player.Calamity().defenseDamageRatio = SilvasCrown.DDR;
-            }
+            //脱离灾厄:SilvasCrown 原有的灾厄防御损伤(defenseDamageRatio)联动已退役
             if (Player.Entropy().wisdomCard)
             {
                 Player.manaCost *= 0.8f;
@@ -4169,7 +3994,8 @@ namespace CalamityEntropy.Common
             if (VoidInspire > 0)
             {
                 Player.GetDamage(DamageClass.Generic) += 0.4f;
-                Player.Calamity().infiniteFlight = true;
+                //脱离灾厄:原灾厄infiniteFlight,改为每帧回满飞行时间的自研等价
+                Player.wingTime = Player.wingTimeMax;
             }
             if (ArchmagesMirror)
             {
@@ -4184,10 +4010,7 @@ namespace CalamityEntropy.Common
             {
                 Player.maxMinions += (int)((Player.GetDamage(DamageClass.Summon).Additive - 1.0f) * ShadowRune.SummonDmgToMinionSlot);
             }
-            if (worshipRelic)
-            {
-                Player.Calamity().rogueStealthMax *= 0.5f;
-            }
+            //脱离灾厄:worshipRelic 原-50%潜行上限的代价已随盗贼系统退役
             if (hasAcc(AmuletOfSanctuary.ID))
             {
                 int defence = AmuletOfSanctuary.GetDefence(Player.maxMinions);
@@ -4198,15 +4021,7 @@ namespace CalamityEntropy.Common
                 int regen = AmuletOfHealing.GetRegen(Player.maxMinions);
                 Player.lifeRegen += regen;
             }
-            if (ServerConfig.Instance.RogueAccessoriesProvide40Stealth)
-            {
-                if (EquipedAnyRogueAcc)
-                {
-                    if (Player.Calamity().rogueStealthMax < 0.4f)
-                        Player.Calamity().rogueStealthMax = 0.4f;
-                    Player.Calamity().wearingRogueArmor = true;
-                }
-            }
+            //脱离灾厄:RogueAccessoriesProvide40Stealth 配置及潜行上限赠予已随盗贼系统退役
         }
         public override void ModifyScreenPosition()
         {
@@ -4307,27 +4122,53 @@ namespace CalamityEntropy.Common
 
         public override void CatchFish(FishingAttempt attempt, ref int itemDrop, ref int npcSpawn, ref AdvancedPopupRequest sonar, ref Vector2 sonarPosition)
         {
-            if (Player.Calamity().ZoneAstral)
+            // 群系判定按 biome-map.md（GreedCard→发光蘑菇；灾厄 Voidstone 词条整体删除；FetalDream→血月海洋）。
+            // 词条为先命中先得的优先级结构：命中即返回，替代旧的顺序赋值互相覆盖（2026-08-27 修正）。
+            if (Player.ZoneGlowshroom && attempt.uncommon && Main.rand.NextBool(18))
             {
-                if (Main.rand.NextBool(18) && attempt.uncommon)
-                {
-                    itemDrop = ModContent.ItemType<GreedCard>();
-                }
+                // 最终期望：发光蘑菇 uncommon 渔获 1/18
+                itemDrop = ModContent.ItemType<GreedCard>();
+                return;
             }
-            if (Player.Calamity().ZoneSulphur)
+            if (!Player.ZoneBeach)
+                return;
+            // 血月稀有档最高优先（沿用原裁定）。最终期望：血月海洋 rare 渔获 1/8
+            if (Main.bloodMoon && attempt.rare && Main.rand.NextBool(8))
             {
-                if (attempt.common && Main.rand.NextBool(10))
-                {
-                    itemDrop = ModContent.ItemType<Voidstone>();
+                itemDrop = ModContent.ItemType<FetalDream>();
+                return;
+            }
+            // 沉沦海书签：最终期望 = 标称 1/20，仅血月 rare 被 FetalDream 命中时抢占
+            if (Main.rand.NextBool(20))
+            {
+                itemDrop = ModContent.ItemType<BookMarkSunkenSea>();
+                return;
+            }
+            // 增补段（bookmark-rehang §五）：困难海洋，标称 1/20。最终期望 ≈ 19/20 × 1/20 = 4.75%
+            if (Main.hardMode && Main.rand.NextBool(20))
+            {
+                itemDrop = ModContent.ItemType<AbyssalPiercer>();
+                return;
+            }
+            // 增补段（bookmark-rehang §五）：海洋，标称 1/25。最终期望前困难 ≈ 19/20 × 1/25 = 3.8%，困难 ≈ 19/20 × 19/20 × 1/25 ≈ 3.6%
+            if (Main.rand.NextBool(25))
+            {
+                itemDrop = ModContent.ItemType<TerrorOfAbyss>();
+            }
+        }
 
-                }
-            }
-            if (Player.Calamity().ZoneAbyssLayer4)
+        // 熵之馈赠一次性发放旗标（misc-map §五增补段），随 EntropyBoosts 列表存档
+        public bool starterBagReceived = false;
+        public override void OnEnterWorld()
+        {
+            if (starterBagReceived || !ModContent.GetInstance<ServerConfig>().ExtraItemsInStarterBag)
+                return;
+            // 礼包本体（EntropyStarterBag）按名字松耦合查找，类型存在即生效；
+            // 发放成功才置旗标，老角色可在礼包实装后进世界补领
+            if (Mod.TryFind<ModItem>("EntropyStarterBag", out ModItem starterBag))
             {
-                if (attempt.rare && Main.rand.NextBool(8))
-                {
-                    itemDrop = ModContent.ItemType<FetalDream>();
-                }
+                Player.QuickSpawnItem(Player.GetSource_GiftOrReward(), starterBag.Type);
+                starterBagReceived = true;
             }
         }
 
@@ -4341,6 +4182,7 @@ namespace CalamityEntropy.Common
             boost.AddWithCondition("CruiserLore", CruiserLoreBonus);
             boost.AddWithCondition("NihTwinLore", NihilityTwinLoreBonus);
             boost.AddWithCondition("ProphetLore", ProphetLoreBonus);
+            boost.AddWithCondition("StarterBagGot", starterBagReceived);
 
             tag["EntropyBoosts"] = boost;
             tag["LoreEnabled"] = enabledLoreItems;
@@ -4389,6 +4231,12 @@ namespace CalamityEntropy.Common
                 mp.Write(item);
             }
             mp.Send();
+
+            //冷却框架加入同步接线(见 cooldown-api.md §7):序列化由 CECooldownPlayer 提供
+            var cdPack = Mod.GetPacket();
+            cdPack.Write((byte)CEMessageType.SyncCooldowns);
+            Player.GetModPlayer<CECooldownPlayer>().WriteAllCooldowns(cdPack);
+            cdPack.Send(toWho, fromWho);
         }
         public void SyncBookmarks()
         {
@@ -4415,6 +4263,7 @@ namespace CalamityEntropy.Common
             CruiserLoreBonus = boost.Contains("CruiserLore");
             NihilityTwinLoreBonus = boost.Contains("NihTwinLore");
             ProphetLoreBonus = boost.Contains("ProphetLore");
+            starterBagReceived = boost.Contains("StarterBagGot");
             enabledLoreItems = [.. tag.GetList<int>("LoreEnabled")];
             EBookStackItems = new List<Item>();
             if (tag.TryGet<bool>("yuzuCheck", out bool yz))

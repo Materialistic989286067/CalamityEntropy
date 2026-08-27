@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Particles;
-using CalamityMod;
 using InnoVault.PRT;
 using Terraria;
 using Terraria.ModLoader;
@@ -48,7 +47,7 @@ public class EPlayerDash : ModPlayer
 
     public override void PreUpdateMovement()
     {
-        if (!Main.dedServ && CalamityKeybinds.DashHotkey.JustPressed)
+        if (!Main.dedServ && EModPlayer.DashHotkey.JustPressed)
         {
             if (Player.direction == 1)
             {
@@ -67,7 +66,7 @@ public class EPlayerDash : ModPlayer
                 DashDir = DashRight;
             }
         }
-        if (!Main.dedServ && CanUseDash() && (DashDir != -1 || CalamityKeybinds.DashHotkey.JustPressed) && DashDelay == 0)
+        if (!Main.dedServ && CanUseDash() && (DashDir != -1 || EModPlayer.DashHotkey.JustPressed) && DashDelay == 0)
         {
             DashDirLast = DashDir;
             Player.wingTime -= 20;

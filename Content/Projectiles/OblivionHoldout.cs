@@ -1,7 +1,9 @@
-﻿using CalamityEntropy.Content.Items.Weapons;
-using CalamityMod;
-using CalamityMod.Graphics.Primitives;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Items.Weapons;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
@@ -12,6 +14,9 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class OblivionHoldout : ModProjectile
     {
+        //拖尾贴图,加载期就位,绘制时不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Assets/Extra/wohslash3")]
+        internal static Asset<Texture2D> WohSlash3Tex;
         public class Vpoint
         {
             public Vector2 pos = Vector2.Zero;
@@ -206,7 +211,7 @@ namespace CalamityEntropy.Content.Projectiles
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
                 if (ve.Count >= 3)
                 {
-                    Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/wohslash3").Value;
+                    Texture2D tx = WohSlash3Tex.Value;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }
@@ -223,9 +228,9 @@ namespace CalamityEntropy.Content.Projectiles
             Vector2 position = base.Projectile.Center - Main.screenPosition + Vector2.UnitY * base.Projectile.gfxOffY;
             Vector2 origin = value.Size() * 0.5f;
             Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:ArtAttack"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-            GameShaders.Misc["CalamityMod:ArtAttack"].Apply();
-            PrimitiveRenderer.RenderTrail(mp, new PrimitiveSettings(TrailWidth, TrailColor, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityMod:ArtAttack"]), 180);
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].SetShaderTexture(CEExtraAssets.SylvestaffStreakAsset);
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].Apply();
+            CEPrimitiveRenderer.RenderTrail(mp, new CEPrimitiveSettings(TrailWidth, TrailColor, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityEntropy:ArtAttack"]), 180);
             Main.spriteBatch.ExitShaderRegion();
 
         }

@@ -5,7 +5,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.Particles.CalamityPorts
 {
-    //PlasmaExplosion,GeneralParticleHandler搬来,和DetailedExplosion同属脉冲爆炸类,曲线照搬
+    //PlasmaExplosion,旧版粒子系统搬来,和DetailedExplosion同属脉冲爆炸类,曲线照搬
     public class PRT_PlasmaExplosionCal : BasePRT
     {
         public float OriginalScale;
@@ -15,7 +15,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
         private float opacity;
 
-        //@CalamityMod/Particles/PlasmaExplosion → PRTSharedAssets,Texture指白图占位
+        //Assets/Particles/PlasmaExplosion → PRTSharedAssets,Texture指白图占位
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_PlasmaExplosionCal Configure(Vector2 squish, float rotation, float finalScale, int lifetime)

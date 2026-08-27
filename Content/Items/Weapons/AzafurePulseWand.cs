@@ -1,14 +1,11 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Tools;
-using CalamityMod.Items.Weapons.Magic;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -37,7 +34,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.noMelee = true;
             Item.shoot = ModContent.ProjectileType<AzafurePulseWandHeld>();
             Item.knockBack = 9f;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(0, 2);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.UseSound = null;
             Item.autoReuse = false;
@@ -50,9 +47,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<PlasmaRod>()
+                .AddIngredient(ItemID.DemonScythe)
                 .AddIngredient<HellIndustrialComponents>(4)
-                .AddIngredient<AerialiteBar>(5)
+                .AddIngredient(ItemID.MeteoriteBar, 5)
                 .AddTile(TileID.Anvils)
                 .Register();
         }
@@ -81,14 +78,15 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             if (Projectile.localAI[2]++ == 0)
             {
-                SoundEngine.PlaySound(WulfrumTreasurePinger.ScanBeepSound, Projectile.Center);
+                // 原灾厄 WulfrumTreasurePinger.ScanBeepSound（WulfrumPing 变体），按 sound-map 换自有
+                SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/WulfrumPingReady") { PitchVariance = 0.1f }, Projectile.Center);
             }
             Player player = Projectile.GetOwner();
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             Projectile.Center = player.GetDrawCenter();
             if (Helding)
             {
-                Projectile.rotation = (player.Calamity().mouseWorld - Projectile.Center).ToRotation();
+                Projectile.rotation = (player.Entropy().MouseWorld - Projectile.Center).ToRotation();
                 Projectile.velocity = Projectile.rotation.ToRotationVector2() * 16;
                 player.SetHandRot(Projectile.rotation);
                 player.heldProj = Projectile.whoAmI;
@@ -107,8 +105,6 @@ namespace CalamityEntropy.Content.Items.Weapons
                                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), topPos, Vector2.Zero, ModContent.ProjectileType<TeslaLightningRed>(), Projectile.damage, 0, Projectile.owner, npc.Center.X, npc.Center.Y).ToProj().DamageType = Projectile.DamageType; ;
                                 for (int i = 0; i < 8; i++)
                                 {
-                                    //VFX接线从自研EParticle换InnoVault PRT,调用形状尽量跟旧的一样
-                                    //EParticle.spawnNew→PRTLoader.NewParticle,spawn点和数值迁移纪律:一个不改
                                     PRTLoader.NewParticle<PRT_AltSpark>(npc.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(16, 24), new Color(240, 240, 255), Main.rand.NextFloat(0.9f, 2)).Configure(false, Main.rand.Next(6, 10));
                                 }
                                 npc.AddBuff<MechanicalTrauma>(360);
@@ -167,7 +163,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 
 
 
-            Texture2D pulse = CEUtils.getExtraTex("HollowCircleSoftEdge");
+            Texture2D pulse = CEExtraAssets.HollowCircleSoftEdge;
 
             Main.spriteBatch.End();
             GraphicsDevice gd = Main.graphics.GraphicsDevice;

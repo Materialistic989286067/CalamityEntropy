@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -142,7 +143,7 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
                 if (ve.Count >= 3)
                 {
-                    Texture2D tx = CEUtils.getExtraTex("AbyssalCircle3");
+                    Texture2D tx = CEExtraAssets.AbyssalCircle3;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }
@@ -166,7 +167,7 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
                 if (ve.Count >= 3)
                 {
-                    Texture2D tx = CEUtils.getExtraTex("AbyssalCircle3");
+                    Texture2D tx = CEExtraAssets.AbyssalCircle3;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }
@@ -190,7 +191,7 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
                 if (ve.Count >= 3)
                 {
-                    Texture2D tx = CEUtils.getExtraTex("AbyssalCircle4");
+                    Texture2D tx = CEExtraAssets.AbyssalCircle4;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }

@@ -5,10 +5,10 @@ using Terraria;
 
 namespace CalamityEntropy.Content.Particles.CalamityPorts
 {
-    //GeneralParticleHandler.CustomPulse搬来的,129处调用,Configure对齐原构造(texPath/squish/scale等)
+    //旧版粒子系统.CustomPulse搬来的,129处调用,Configure对齐原构造(texPath/squish/scale等)
     public class PRT_CustomPulse : BasePRT
     {
-        public string TexPath = "CalamityMod/Particles/BloomCircle";
+        public string TexPath = "CalamityEntropy/Assets/Particles/BloomCircle";
         public Vector2 Squish = Vector2.One;
         public float OriginalScale;
         public float FinalScale;
@@ -25,7 +25,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         public override void Reset()
         {
             base.Reset();
-            TexPath = "CalamityMod/Particles/BloomCircle";
+            TexPath = "CalamityEntropy/Assets/Particles/BloomCircle";
             Squish = Vector2.One;
             OriginalScale = 0f;
             FinalScale = 0f;
@@ -37,7 +37,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             opacity = 0f;
         }
 
-        //TexPath每次spawn现传,Texture属性走不了@CalamityMod,HasAsset给占位图,真图在PreDraw里拿
+        //TexPath每次spawn现传,Texture属性只挂占位白图,真图在PreDraw里拿
         public override string Texture => CEUtils.WhiteTexPath;
 
         public override int InGame_World_MaxCount => 8000;

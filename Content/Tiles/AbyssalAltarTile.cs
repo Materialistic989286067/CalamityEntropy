@@ -1,8 +1,5 @@
 ﻿using CalamityEntropy.Content.Items;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.NPCs.PrimordialWyrm;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityEntropy.Content.NPCs.Cruiser;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -23,25 +20,24 @@ namespace CalamityEntropy.Content.Tiles
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop, 4, 0);
             TileObjectData.addTile(Type);
             Main.tileFrameImportant[(int)base.Type] = true;
-            AddMapEntry(new Color(134, 180, 240), CalamityUtils.GetItemName<AbyssalAltar>());
+            AddMapEntry(new Color(134, 180, 240), CEUtils.GetItemName<AbyssalAltar>());
 
-            DustType = (int)CalamityDusts.PurpleCosmilite;
+            // 脱离灾厄:原用灾厄紫色宇宙尘,改原版紫炬光尘
+            DustType = DustID.PurpleTorch;
 
+            // 脱离灾厄:灾厄合成站邻接(宇宙砧/嘉登熔炉/SCal祭坛)移除,远古操纵机已覆盖对应职能
             AdjTiles = new int[] {
                 TileID.WorkBenches,
                 TileID.Chairs,
                 TileID.Tables,
                 TileID.Anvils,
                 TileID.MythrilAnvil,
-                ModContent.TileType<CosmicAnvil>(),
                 TileID.Furnaces,
                 TileID.Hellforge,
                 TileID.AdamantiteForge,
                 TileID.TinkerersWorkbench,
                 TileID.LunarCraftingStation,
-                TileID.DemonAltar,
-                ModContent.TileType<DraedonsForge>(),
-                ModContent.TileType<SCalAltarLarge>()
+                TileID.DemonAltar
             };
         }
 
@@ -49,8 +45,9 @@ namespace CalamityEntropy.Content.Tiles
         {
             if (Main.LocalPlayer.HeldItem.type == ModContent.ItemType<WyrmTooth>())
             {
+                // 脱离灾厄:原召唤灾厄渊海灾虫,其进度槽位已并入自有巡游者(progression-map)
                 Player player = Main.LocalPlayer;
-                int type = ModContent.NPCType<PrimordialWyrmHead>();
+                int type = ModContent.NPCType<CruiserHead>();
                 if (NPC.AnyNPCs(type))
                 {
                     return false;

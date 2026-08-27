@@ -1,6 +1,4 @@
-﻿using CalamityEntropy.Content.Projectiles.Chainsaw;
-using CalamityMod;
-using CalamityMod.Items.Materials;
+using CalamityEntropy.Content.Projectiles.Chainsaw;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,7 +10,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
         public override void SetDefaults()
         {
             Item.damage = 5;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.width = 42;
             Item.height = 42;
             Item.noUseGraphic = true;
@@ -35,13 +33,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<DubiousPlating>(5).
+                AddIngredient<AzafurePlating>(5).
                 AddIngredient(ItemID.IronBar, 10).
                 AddIngredient(ItemID.Chain, 1).
                 AddTile(TileID.Anvils).
                 Register();
             CreateRecipe().
-                AddIngredient<DubiousPlating>(5).
+                AddIngredient<AzafurePlating>(5).
                 AddIngredient(ItemID.LeadBar, 10).
                 AddIngredient(ItemID.Chain, 1).
                 AddTile(TileID.Anvils).

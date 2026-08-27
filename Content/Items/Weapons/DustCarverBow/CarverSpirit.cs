@@ -1,6 +1,8 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -152,14 +154,14 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
                     }
                 case Mode.Shooting:
                     {
-                        player.Calamity().mouseWorldListener = true;
+                        player.Entropy().MouseWorldListener = true;
                         Vector2 tpos = player.Center + (player.heldProj.ToProj().rotation.ToRotationVector2() * -200).RotatedBy((id - count / 2f) * 0.22f);
 
                         Projectile.velocity += (tpos - Projectile.Center) * float.Min(0.1f, CEUtils.getDistance(Projectile.Center, tpos) / 300f);
                         Projectile.velocity *= 0.6f;
                         Projectile.pushByOther(0.6f);
 
-                        Projectile.rotation = ((target == null ? player.Calamity().mouseWorld : target.Center) - Projectile.Center).ToRotation();
+                        Projectile.rotation = ((target == null ? player.Entropy().MouseWorld : target.Center) - Projectile.Center).ToRotation();
                         if (target != null && Projectile.owner == Main.myPlayer)
                         {
                             if (Delay <= 0)
@@ -242,7 +244,7 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
             {
                 if (white > 0)
                 {
-                    Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/WhiteTrans", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                    Effect shader = CEEffectAssets.WhiteTrans;
                     Main.spriteBatch.EnterShaderRegion();
                     shader.CurrentTechnique.Passes[0].Apply();
                     shader.Parameters["strength"].SetValue(0.5f + 0.5f * ((float)Math.Cos(Main.GlobalTimeWrappedHourly * 18)));

@@ -1,9 +1,6 @@
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -30,7 +27,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             Item.knockBack = 0;
             Item.shootSpeed = 25;
             Item.useAnimation = Item.useTime = 18;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Green;
             Item.width = 46;
             Item.height = 46; 
@@ -95,7 +92,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                 npc.GetGlobalNPC<WhipDebuffNPC>().BaitStick = 2;
                 if (IsActive)
                 {
-                    Projectile.GetOwner().Calamity().mouseWorldListener = true;
+                    Projectile.GetOwner().Entropy().MouseWorldListener = true;
                     npc.GetGlobalNPC<WhipDebuffNPC>().ClearBaitTags();
                     npc.GetGlobalNPC<WhipDebuffNPC>().Tags.Add(new WhipTag(this.GetType().Name, 5, this.TagDamage, 1, 0, this.GetType().Name) { IsABaitTag = true });
                 }
@@ -253,7 +250,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                     {
                         Vector2 velj = CEUtils.CalculateSourceVel(Projectile.Center, acornPos + new Vector2(0, -16), int.Clamp((int)((Projectile.Distance(acornPos) / 38f) / Projectile.scale), 3, 30), 2f * Projectile.scale);
                         Projectile.velocity = velj;
-                        PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(60, 60, 255), 0.01f).Configure("CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 0.36f, 13);
+                        PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(60, 60, 255), 0.01f).Configure("CalamityEntropy/Assets/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, Projectile.scale * 0.36f, 13);
                         SoundEngine.PlaySound(SoundID.Item56 with { Volume = 1f, Pitch = Main.rand.NextFloat(-0.4f, 0.4f) }, Projectile.Center);
                     }
                     if(Jump-- <= 0)

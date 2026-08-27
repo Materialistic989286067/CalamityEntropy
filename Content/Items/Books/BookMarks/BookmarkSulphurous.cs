@@ -1,6 +1,4 @@
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -13,7 +11,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             base.SetDefaults();
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Sulphurous");
         public override EBookProjectileEffect getEffect()
@@ -24,8 +22,8 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override Color tooltipColor => Color.LimeGreen;
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient<SulphuricScale>(4)
-                .AddIngredient<SulphurousSand>(40)
+            CreateRecipe().AddIngredient(ItemID.SharkFin, 4)
+                .AddIngredient(ItemID.SandBlock, 40)
                 .AddTile(TileID.Bookcases)
                 .Register();
         }

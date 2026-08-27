@@ -1,5 +1,8 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -11,6 +14,15 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
 {
     public class SacredJudge : SamsaraSword
     {
+        //虚影与护盾贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/SamsaraCasket/SacredJudgePhantom")]
+        internal static Asset<Texture2D> PhantomTex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/SamsaraCasket/SacredJudgePhantom0")]
+        internal static Asset<Texture2D> Phantom0Tex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/SamsaraCasket/SacredJudgePhantom1")]
+        internal static Asset<Texture2D> Phantom1Tex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/SamsaraCasket/SacredJudgeShield")]
+        internal static Asset<Texture2D> ShieldTex;
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -192,39 +204,39 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
             }
             Player player = Projectile.owner.ToPlayer();
             EModPlayer modPlayer = player.Entropy();
-            Texture2D phantom = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/SacredJudgePhantom").Value;
+            Texture2D phantom = PhantomTex.Value;
             float yoffset = (float)Math.Cos((++Projectile.ai[2]) / 28f) * 10;
             float yoffset2 = (float)Math.Cos((30 + Projectile.ai[2]) / 28f) * 10;
             if (phantom0 > 0)
             {
                 if (phantom0 < 9)
                 {
-                    phantom = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/SacredJudgePhantom0").Value;
+                    phantom = Phantom0Tex.Value;
                 }
                 if (phantom0 < 5)
                 {
-                    phantom = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/SacredJudgePhantom1").Value;
+                    phantom = Phantom1Tex.Value;
                 }
                 Main.spriteBatch.Draw(phantom, player.Center + new Vector2(-80, -100 + yoffset2) - Main.screenPosition, null, Color.White * 0.7f, MathHelper.PiOver2 + MathHelper.PiOver4, phantom.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
 
             }
-            phantom = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/SacredJudgePhantom").Value;
+            phantom = PhantomTex.Value;
             if (phantom1 > 0)
             {
                 if (phantom1 < 9)
                 {
-                    phantom = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/SacredJudgePhantom0").Value;
+                    phantom = Phantom0Tex.Value;
                 }
                 if (phantom1 < 5)
                 {
-                    phantom = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/SacredJudgePhantom1").Value;
+                    phantom = Phantom1Tex.Value;
                 }
                 Main.spriteBatch.Draw(phantom, player.MountedCenter + new Vector2(80, -100 + yoffset2) - Main.screenPosition, null, Color.White * 0.7f, MathHelper.PiOver2 + MathHelper.PiOver4, phantom.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
             }
 
             if (modPlayer.SacredJudgeShields > 0)
             {
-                Texture2D shield = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/SacredJudgeShield").Value;
+                Texture2D shield = ShieldTex.Value;
                 Main.spriteBatch.Draw(shield, player.MountedCenter - Main.screenPosition, null, lightColor * (modPlayer.SacredJudgeShields > 1 ? 0.7f : 0.4f), 0, shield.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
 
             }
@@ -232,7 +244,7 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
             {
                 yoffset = 0;
             }
-            Texture2D tex = CEUtils.getExtraTex("CircularSmear");
+            Texture2D tex = CEExtraAssets.CircularSmear;
             SpriteBatch sb = Main.spriteBatch;
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);

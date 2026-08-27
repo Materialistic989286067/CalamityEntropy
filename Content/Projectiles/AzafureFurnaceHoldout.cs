@@ -1,8 +1,10 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -15,6 +17,9 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class AzafureFurnaceHoldout : ModProjectile
     {
+        //描边贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/AzafureFurnaceOutline")]
+        internal static Asset<Texture2D> OutlineTex;
         public override void SetStaticDefaults()
         {
         }
@@ -87,7 +92,7 @@ namespace CalamityEntropy.Content.Projectiles
                     owner.velocity += Projectile.velocity.normalize() * -6f * owner.Entropy().GetPressure();
                     if (Main.myPlayer == Projectile.owner)
                     {
-                        owner.Calamity().GeneralScreenShakePower = 4;
+                        CEUtils.SetShake(Projectile.Center, 4);
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.Zero) * 64 * Projectile.scale, Projectile.velocity.SafeNormalize(Vector2.Zero) * 5f, ModContent.ProjectileType<AzafureFurnaceEnergyBall>(), (int)(Projectile.damage * (Projectile.ai[0] >= maxTime ? 5f : 1)), Projectile.knockBack, Projectile.owner, 0, (Projectile.ai[0] >= maxTime ? 1 : 0));
                     }
                     eRotSpeed = owner.direction * -0.3f;
@@ -188,7 +193,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             List<Vector2> v2ss = new List<Vector2>() { new Vector2(-2, -2), new Vector2(-2, 2), new Vector2(2, -2), new Vector2(2, 2), new Vector2(2, 0), new Vector2(-2, 0), new Vector2(0, 2), new Vector2(0, -2) };
-            Texture2D to = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/AzafureFurnaceOutline").Value;
+            Texture2D to = OutlineTex.Value;
             if (EAnmTime == -1)
             {
                 foreach (Vector2 v in v2ss)
@@ -206,7 +211,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             if (EAnmTime == -1)
             {
-                Texture2D light = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Glow").Value;
+                Texture2D light = CEExtraAssets.Glow;
                 Main.spriteBatch.Draw(light, Projectile.Center - Main.screenPosition + Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedBy(0.1f) * 60 * Projectile.scale * Projectile.scale, null, (Projectile.ai[0] >= maxTime ? Color.Lerp(Color.White, Color.Red, (0.5f + (float)Math.Cos((counter) * 0.1f) * 0.5f)) : Color.White) * (Projectile.ai[0] / (float)maxTime), 0, light.Size() / 2, 0.2f * Projectile.scale * (1 + (float)Math.Cos((counter) * 0.1f) * 0.2f), SpriteEffects.None, 0);
                 Main.spriteBatch.Draw(light, Projectile.Center - Main.screenPosition + Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedBy(0.1f) * 60 * Projectile.scale * Projectile.scale, null, (Projectile.ai[0] >= maxTime ? Color.Lerp(Color.White, Color.Red, (0.5f + (float)Math.Cos((counter) * 0.1f) * 0.5f)) : Color.White) * (Projectile.ai[0] / (float)maxTime), 0, light.Size() / 2, 0.2f * Projectile.scale * (1 + (float)Math.Cos((counter) * 0.1f) * 0.2f), SpriteEffects.None, 0);
             }

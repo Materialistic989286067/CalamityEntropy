@@ -1,4 +1,6 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Donator.RocketLauncher;
 using CalamityEntropy.Content.Particles.CalamityPorts;
@@ -6,13 +8,12 @@ using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
 using CalamityEntropy.Content.UI.EntropyBookUI;
+using CalamityEntropy.Core.Graphics;
 using CalamityEntropy.Utilities;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Intrinsics.Arm;
@@ -35,7 +36,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Thalassian
             Item.crit = 10;
             Item.mana = 5;
             Item.shootSpeed = 15;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
         }
         public override Texture2D BookMarkTexture => CEUtils.pixelTex;
         public override int HeldProjectileType => ModContent.ProjectileType<ThalassianGleamHeld>();
@@ -213,30 +214,26 @@ namespace CalamityEntropy.Content.Items.Weapons.Thalassian
                 width *= 2.4f * scale;
                 sets.Add(new CEUtils.VertexPointSets(points[i] + center, Color.White * alpha, width, 0));
             }
-            ThalassianWaterBolt.DrawTrail(sets, Color.Lerp(Color.Aqua, Color.Yellow, outlineAlpha), new Color(60, 255, 255), CEUtils.getExtraTex("VoronoiShapes"), CEUtils.getExtraTex("StreakSolid"), true);
+            ThalassianWaterBolt.DrawTrail(sets, Color.Lerp(Color.Aqua, Color.Yellow, outlineAlpha), new Color(60, 255, 255), CEExtraAssets.VoronoiShapes, CEExtraAssets.StreakSolid, true);
 
             return false;
         }
         #endregion
         public static int Level()
         {
-            if (DownedBossSystem.downedExoMechs && DownedBossSystem.downedCalamitas)
+            // 成长阶梯按 progression-map 重排：原灾厄 downed 门槛映射到自有 Boss 线与原版节点
+            // 原 14(Exo/SCal 单杀)、13(Yharon)、10(Providence) 档并入相邻节点，成为不可达档位
+            if (EDownedBosses.downedCruiser)
                 return 15;
-            if (DownedBossSystem.downedExoMechs || DownedBossSystem.downedCalamitas)
-                return 14;
-            if (DownedBossSystem.downedYharon)
-                return 13;
-            if (DownedBossSystem.downedDoG)
+            if (EDownedBosses.downedAbyssalWraith)
                 return 12;
-            if ((DownedBossSystem.downedStormWeaver || DownedBossSystem.downedCeaselessVoid || DownedBossSystem.downedSignus) && DownedBossSystem.downedPolterghast)
+            if (EDownedBosses.downedNihilityTwin)
                 return 11;
-            if (DownedBossSystem.downedProvidence)
-                return 10;
             if (NPC.downedMoonlord)
                 return 9;
-            if (NPC.downedGolemBoss || NPC.downedAncientCultist || DownedBossSystem.downedRavager || DownedBossSystem.downedAstrumDeus)
+            if (NPC.downedGolemBoss || NPC.downedAncientCultist)
                 return 8;
-            if (NPC.downedPlantBoss && DownedBossSystem.downedCalamitasClone)
+            if (NPC.downedPlantBoss && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
                 return 7;
             if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
                 return 6;
@@ -246,9 +243,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Thalassian
                 return 4;
             if (NPC.downedQueenBee || NPC.downedBoss3)
                 return 3;
-            if (NPC.downedBoss2 || DownedBossSystem.downedPerforator || DownedBossSystem.downedHiveMind)
+            if (NPC.downedBoss2)
                 return 2;
-            if (NPC.downedBoss1 || DownedBossSystem.downedDesertScourge || NPC.downedSlimeKing)
+            if (NPC.downedBoss1 || NPC.downedSlimeKing)
                 return 1;
             return 0;
         }
@@ -261,6 +258,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Thalassian
     { }
     public class ThalassianGleamHeld : EntropyBookDrawingAlt
     {
+        //闪光贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Extra/BrightFlash")]
+        internal static Asset<Texture2D> BrightFlashTex;
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/Thalassian/ThalassianGleam";
         public override string OpenAnimationPath => CEUtils.WhiteTexPath;
         public override string PageAnimationPath => CEUtils.WhiteTexPath;
@@ -457,7 +457,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Thalassian
                 float sa = float.Min(1, UIOpenAnmSCount / 16f);
                 float sine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 12) * 0.2f;
                 Vector2 pos = Projectile.Center + Projectile.rotation.ToRotationVector2() * 50 * Projectile.scale;
-                Texture2D shine = CEUtils.getExtraTex("BrightFlash");
+                Texture2D shine = BrightFlashTex.Value;
                 Main.spriteBatch.Draw(shine, pos - Main.screenPosition, null, new Color(90, 160, 255) * sa, Main.GlobalTimeWrappedHourly * 6, shine.Size().Half(), Projectile.scale * 0.4f * (1 + sine), SpriteEffects.None, 0);
                 Main.spriteBatch.Draw(shine, pos - Main.screenPosition, null, new Color(90, 160, 255) * sa, Main.GlobalTimeWrappedHourly * -6, shine.Size().Half(), Projectile.scale * 0.4f * (1 - sine), SpriteEffects.FlipHorizontally, 0);
                 Main.spriteBatch.ExitShaderRegion();
@@ -521,11 +521,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Thalassian
         }
         public static void DrawTrail(List<CEUtils.VertexPointSets> sets, Color a, Color b)
         {
-            DrawTrail(sets, a, b, CEUtils.getExtraTex("Streak1"), CEUtils.getExtraTex("Streak2"));
+            DrawTrail(sets, a, b, CEExtraAssets.Streak1, CEExtraAssets.Streak2);
         }
         public static void DrawTrail(List<CEUtils.VertexPointSets> sets, Color a, Color b, bool UI)
         {
-            DrawTrail(sets, a, b, CEUtils.getExtraTex("Streak1"), CEUtils.getExtraTex("Streak2"), UI);
+            DrawTrail(sets, a, b, CEExtraAssets.Streak1, CEExtraAssets.Streak2, UI);
         }
         public static void DrawTrail(List<CEUtils.VertexPointSets> sets, Color a, Color b, Texture2D trail1, Texture2D trail2, bool UI = false, float innerWidth = 1)
         {
@@ -554,7 +554,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Thalassian
                 else
                     Main.spriteBatch.UseAdditive();
 
-                Texture2D trail3 = CEUtils.getExtraTex("MegaStreakBacking2");
+                Texture2D trail3 = CEExtraAssets.MegaStreakBacking2;
                 List<ColoredVertex> lt;
                 lt = sets1.GetVertexesList(false, !UI);
                 gd.Textures[0] = trail1;

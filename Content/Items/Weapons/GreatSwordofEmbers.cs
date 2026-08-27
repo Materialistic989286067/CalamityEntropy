@@ -1,11 +1,12 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.NPCs.Apsychos;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,14 +24,14 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void SetDefaults()
         {
             Item.damage = 146;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.width = 70;
             Item.height = 72;
             Item.useTime = 40;
             Item.useAnimation = 40;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 8;
-            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+            Item.value = Item.buyPrice(gold: 10);
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = null;
             Item.noMelee = true;
@@ -54,10 +55,13 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class EmberSwordHoldout : ModProjectile
     {
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/GreatSwordofEmbers";
+        //挥砍拖影贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Particles/VerticalSmearRagged")]
+        internal static Asset<Texture2D> SmearRaggedTex;
 
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -127,9 +131,9 @@ namespace CalamityEntropy.Content.Items.Weapons
                     flag2 = false;
                     Dir = Projectile.velocity.X > 0 ? -1 : 1;
                 }
-                player.Calamity().mouseWorldListener = true;
+                player.Entropy().MouseWorldListener = true;
                 Projectile.Center = Projectile.GetOwner().MountedCenter;
-                float rot = (player.Calamity().mouseWorld - Projectile.Center).ToRotation();
+                float rot = (player.Entropy().MouseWorld - Projectile.Center).ToRotation();
                 float targetRot = rot + Dir * 2.4f;
                 if (Projectile.localAI[1]++ == 0)
                     Projectile.rotation = rot + Dir * 1.2f;
@@ -173,7 +177,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                     vsAlpha = 0;
                 if (!(Breaked >= 0))
                 {
-                    player.SetHandRotWithDir(Projectile.rotation, Math.Sign(player.Calamity().mouseWorld.X - player.Center.X));
+                    player.SetHandRotWithDir(Projectile.rotation, Math.Sign(player.Entropy().MouseWorld.X - player.Center.X));
                 }
                 else
                 {
@@ -216,9 +220,9 @@ namespace CalamityEntropy.Content.Items.Weapons
                 //CustomPulse贴图路径Configure现传,Texture属性填白图应付框架
                 PRTLoader.NewParticle<PRT_ShineParticle>(target.Center, Vector2.Zero, Color.Red * 0.8f, scale * 0.8f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
                 PRTLoader.NewParticle<PRT_ShineParticle>(target.Center, Vector2.Zero, Color.White * 0.8f, scale * 0.5f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
-                PRTLoader.NewParticle<PRT_CustomPulse>(target.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24);
-                PRTLoader.NewParticle<PRT_CustomPulse>(target.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 18);
-                PRTLoader.NewParticle<PRT_CustomPulse>(target.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.02f, 15);
+                PRTLoader.NewParticle<PRT_CustomPulse>(target.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24);
+                PRTLoader.NewParticle<PRT_CustomPulse>(target.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 18);
+                PRTLoader.NewParticle<PRT_CustomPulse>(target.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.02f, 15);
                 NumHits++;
                 if (NumHits > 3)
                 {
@@ -243,7 +247,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 return false;
             lightColor = Color.White;
             Texture2D tex = Projectile.GetTexture();
-            Texture2D c = CEUtils.RequestTex("CalamityMod/Particles/VerticalSmearRagged");
+            Texture2D c = SmearRaggedTex.Value;
             int dir = Dir;
             Vector2 origin = dir > 0 ? new Vector2(0, tex.Height) : new Vector2(tex.Width, tex.Height);
             SpriteEffects effect = dir > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
@@ -309,9 +313,9 @@ namespace CalamityEntropy.Content.Items.Weapons
 
             float scale = 50 / 40f;
             //光效走AdditiveBlend,Configure尾参lifetime对齐旧timeLeft
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 16);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 13);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.02f, 11);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 16);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 13);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.02f, 11);
 
         }
         public override void SetDefaults()
@@ -380,7 +384,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
                 if (ve.Count >= 3)
                 {
-                    Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/wohslash").Value;
+                    Texture2D tx = CEExtraAssets.wohslash;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
 
@@ -401,7 +405,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                               b * a));
                         lr = (mp.odp[i] - mp.odp[i - 1]).ToRotation();
                     }
-                    tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/wohslash").Value;
+                    tx = CEExtraAssets.wohslash;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }
@@ -412,9 +416,9 @@ namespace CalamityEntropy.Content.Items.Weapons
             tofs++;
 
             Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:ArtAttack"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Streak1"));
-            GameShaders.Misc["CalamityMod:ArtAttack"].Apply();
-            PrimitiveRenderer.RenderTrail(odp, new PrimitiveSettings(TrailWidth, TrailColor, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityMod:ArtAttack"]), 180);
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].SetShaderTexture(CEExtraAssets.Streak1Asset);
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].Apply();
+            CEPrimitiveRenderer.RenderTrail(odp, new CEPrimitiveSettings(TrailWidth, TrailColor, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityEntropy:ArtAttack"]), 180);
             Main.spriteBatch.ExitShaderRegion();
             if (odp.Count > 1)
             {

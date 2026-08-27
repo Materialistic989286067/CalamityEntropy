@@ -1,3 +1,4 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Lores;
@@ -5,9 +6,8 @@ using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles.ApsychosProjs;
-using CalamityMod;
-using CalamityMod.Events;
-using CalamityMod.World;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -169,10 +169,6 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
             NPC.damage = 54;
             NPC.defense = 10;
             NPC.lifeMax = 10000;
-            if (BossRushEvent.BossRushActive)
-            {
-                NPC.lifeMax += 360000;
-            }
             NPC.HitSound = null;
             NPC.DeathSound = SoundID.NPCDeath25;
             NPC.value = 1000f;
@@ -236,7 +232,7 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
             }
             NPC.netUpdate = true;
             NPC.TargetClosest(false);
-            if (NPC.HasValidTarget && (NPC.target.ToPlayer().Distance(NPC.Center) < 5000 || BossRushEvent.BossRushActive))
+            if (NPC.HasValidTarget && NPC.target.ToPlayer().Distance(NPC.Center) < 5000)
             {
                 deactiveCount = 160;
                 AttackPlayer(NPC.target.ToPlayer());
@@ -269,11 +265,12 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
             {
                 enrange += 0.1f;
             }
-            if (CalamityWorld.revenge)
+            // 难度映射:复仇→专家、死亡→大师(difficulty-map)
+            if (Main.expertMode)
             {
                 enrange += 0.15f;
             }
-            if (CalamityWorld.death)
+            if (Main.masterMode)
             {
                 enrange += 0.15f;
             }
@@ -289,8 +286,6 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
             {
                 enrange *= 0.85f;
             }
-            if (BossRushEvent.BossRushActive)
-                enrange *= 1.4f;
             bool OutlineFlag = true;
             bool TailSpeedMultFlag = true;
             bool TailLightFlag = true;
@@ -303,7 +298,7 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
                 NPC.rotation = CEUtils.RotateTowardsAngle(NPC.rotation, targetRot, 0.06f, false);
                 NPC.velocity *= 0.9f;
                 float distance = player.Distance(NPC.Center);
-                float spd = BossRushEvent.BossRushActive ? Utils.Remap(distance, 200, 14000, 0.4f, 10f) : Utils.Remap(distance, 200, 900, 0.4f, 1f);
+                float spd = Utils.Remap(distance, 200, 900, 0.4f, 1f);
                 NPC.velocity += NPC.rotation.ToRotationVector2() * spd * enrange;
                 if (NPC.Distance(player.Center) < 400)
                     AIChangeCounter++;
@@ -743,9 +738,9 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
                 //死亡CustomPulse三层ShatteredExplosion+双Shine,scale=360/40是贴图原尺寸比
                 PRTLoader.NewParticle<PRT_ShineParticle>(NPC.Center, Vector2.Zero, Color.Red * 0.8f, scale * 0.8f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
                 PRTLoader.NewParticle<PRT_ShineParticle>(NPC.Center, Vector2.Zero, Color.White * 0.8f, scale * 0.5f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
-                PRTLoader.NewParticle<PRT_CustomPulse>(NPC.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24);
-                PRTLoader.NewParticle<PRT_CustomPulse>(NPC.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 18);
-                PRTLoader.NewParticle<PRT_CustomPulse>(NPC.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.02f, 15);
+                PRTLoader.NewParticle<PRT_CustomPulse>(NPC.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24);
+                PRTLoader.NewParticle<PRT_CustomPulse>(NPC.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 18);
+                PRTLoader.NewParticle<PRT_CustomPulse>(NPC.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.02f, 15);
                 if (tail != null && segs != null)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), tail.Center, CEUtils.randomPointInCircle(6), Mod.Find<ModGore>("ApsychosGore1").Type);
@@ -759,33 +754,39 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
         public float HighLight = 1;
         public float p2lerp = 0;
         #region Drawing
-        public static Effect shader = null;
+        //身体贴图由 VaultLoaden 在加载期赋值,白化着色器读共享基座 CEEffectAssets(专用服务器上恒 null,只在绘制路径读取)
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Apsychos/ApsychosSeg")]
+        private static Asset<Texture2D> segTexAsset;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Apsychos/ApsychosTail")]
+        private static Asset<Texture2D> tailTexAsset;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Apsychos/Apsychos2")]
+        private static Asset<Texture2D> body2TexAsset;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Apsychos/ApsychosSeg2")]
+        private static Asset<Texture2D> seg2TexAsset;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Apsychos/ApsychosTail2")]
+        private static Asset<Texture2D> tail2TexAsset;
         public static Effect WhiteTransShader()
         {
-            if (shader == null)
-                shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/WhiteTrans", AssetRequestMode.ImmediateLoad).Value;
-            return shader;
+            return CEEffectAssets.WhiteTrans;
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (Outline > 0.01f)
                 DrawOutLine(Outline);
             drawColor = Color.White;
-            if (shader == null)
-                shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/WhiteTrans", AssetRequestMode.ImmediateLoad).Value;
 
-            shader.Parameters["strength"].SetValue(HighLight);
+            CEEffectAssets.WhiteTrans.Parameters["strength"].SetValue(HighLight);
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shader, Main.GameViewMatrix.TransformationMatrix);
-            shader.CurrentTechnique.Passes[0].Apply();
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, CEEffectAssets.WhiteTrans, Main.GameViewMatrix.TransformationMatrix);
+            CEEffectAssets.WhiteTrans.CurrentTechnique.Passes[0].Apply();
             Texture2D bodyTex = NPC.getTexture();
-            Texture2D segTex = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Apsychos/ApsychosSeg");
-            Texture2D tailTex = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Apsychos/ApsychosTail");
+            Texture2D segTex = segTexAsset.Value;
+            Texture2D tailTex = tailTexAsset.Value;
             if (phase == 2)
             {
-                bodyTex = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Apsychos/Apsychos2");
-                segTex = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Apsychos/ApsychosSeg2");
-                tailTex = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Apsychos/ApsychosTail2");
+                bodyTex = body2TexAsset.Value;
+                segTex = seg2TexAsset.Value;
+                tailTex = tail2TexAsset.Value;
             }
             Main.EntitySpriteDraw(bodyTex, NPC.Center - Main.screenPosition, null, drawColor, NPC.rotation, bodyTex.Size() * 0.5f, NPC.scale, SpriteEffects.None);
 
@@ -805,7 +806,7 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
                 {
                     float p = 110;
                     Main.spriteBatch.UseBlendState(BlendState.Additive);
-                    Texture2D ray = CEUtils.getExtraTex("Ray");
+                    Texture2D ray = CEExtraAssets.Ray;
                     Main.spriteBatch.Draw(ray, tail.Center + tail.rotation.ToRotationVector2() * p * NPC.scale - Main.screenPosition, null, (phase == 1 ? new Color(255, 200, 160) : new Color(160, 160, 255)) * TailLight, Main.GlobalTimeWrappedHourly * 3, ray.Size() * 0.5f, new Vector2(1, 0.3f) * NPC.scale, SpriteEffects.None, 0);
                     Main.spriteBatch.Draw(ray, tail.Center + tail.rotation.ToRotationVector2() * p * NPC.scale - Main.screenPosition, null, (phase == 1 ? new Color(255, 200, 160) : new Color(160, 160, 255)) * TailLight, Main.GlobalTimeWrappedHourly * 3, ray.Size() * 0.5f, new Vector2(0.3f, 1) * NPC.scale, SpriteEffects.None, 0);
                     Color c1 = phase == 1 ? Color.OrangeRed : Color.Blue;
@@ -820,20 +821,18 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
         }
         public void DrawOutLine(float alpha)
         {
-            if (shader == null)
-                shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/WhiteTrans", AssetRequestMode.ImmediateLoad).Value;
-            if (shader == null)
+            if (CEEffectAssets.WhiteTrans == null)
                 return;
             Color drawColor = new Color(255, 80, 40) * alpha;
             if (phase == 2)
                 drawColor = new Color(70, 70, 255) * alpha;
             Texture2D bodyTex = NPC.getTexture();
-            Texture2D segTex = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Apsychos/ApsychosSeg");
-            Texture2D tailTex = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Apsychos/ApsychosTail");
+            Texture2D segTex = segTexAsset.Value;
+            Texture2D tailTex = tailTexAsset.Value;
             Main.spriteBatch.End();
-            shader.Parameters["strength"].SetValue(1);
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shader, Main.GameViewMatrix.TransformationMatrix);
-            shader.CurrentTechnique.Passes[0].Apply();
+            CEEffectAssets.WhiteTrans.Parameters["strength"].SetValue(1);
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, CEEffectAssets.WhiteTrans, Main.GameViewMatrix.TransformationMatrix);
+            CEEffectAssets.WhiteTrans.CurrentTechnique.Passes[0].Apply();
             for (int ir = 0; ir < 4; ir++)
             {
                 float r = ir * MathHelper.PiOver2 + Main.GlobalTimeWrappedHourly * 10;
@@ -867,22 +866,42 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<ApsychosBag>()));
-            npcLoot.DefineConditionalDropSet(() => true).Add(DropHelper.PerPlayer(ItemID.HealingPotion, 1, 5, 15), hideLootReport: true);
+            // 治疗药水按人 5-15 瓶,隐藏图鉴条目(承接原灾厄 PerPlayer 语义)
+            npcLoot.Add(new DropPerPlayerOnThePlayer(ItemID.HealingPotion, 1, 5, 15, new HiddenDropCondition()));
 
-            var normalOnly = npcLoot.DefineNormalOnlyDropSet();
+            LeadingConditionRule normalOnly = new LeadingConditionRule(new Conditions.NotExpert());
             {
-                normalOnly.Add(ModContent.ItemType<TectonicShard>(), 1, 24, 28);
-                normalOnly.Add(ModContent.ItemType<GreatSwordofEmbers>(), new Fraction(2, 5));
-                normalOnly.Add(ModContent.ItemType<ScorchingChakram>(), new Fraction(2, 5));
-                normalOnly.Add(ModContent.ItemType<AshesBow>(), new Fraction(2, 5));
-                normalOnly.Add(ModContent.ItemType<EmberBolt>(), new Fraction(2, 5));
-                normalOnly.Add(ItemID.Hellstone, 1, 32, 40);
+                normalOnly.OnSuccess(ItemDropRule.Common(ModContent.ItemType<TectonicShard>(), 1, 24, 28));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<GreatSwordofEmbers>(), 5, 1, 1, 2));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<ScorchingChakram>(), 5, 1, 1, 2));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<AshesBow>(), 5, 1, 1, 2));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<EmberBolt>(), 5, 1, 1, 2));
+                normalOnly.OnSuccess(ItemDropRule.Common(ItemID.Hellstone, 1, 32, 40));
             }
-            npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<ApsychosRelic>());
+            npcLoot.Add(normalOnly);
+            // 遗物:原灾厄复仇/大师条件对齐原版大师掉落惯例(difficulty-map)
+            npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsMasterMode(), ModContent.ItemType<ApsychosRelic>()));
 
-            npcLoot.Add(ModContent.ItemType<ApsychosTrophy>(), 10);
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<ApsychosTrophy>(), 10));
 
-            npcLoot.AddConditionalPerPlayer(() => !EDownedBosses.downedApsychos, ModContent.ItemType<LoreApsychos>());
+            // 首杀传记:承接原灾厄按人实例掉落语义
+            npcLoot.Add(new DropPerPlayerOnThePlayer(ModContent.ItemType<LoreApsychos>(), 1, 1, 1, new LoreFirstKill()));
+        }
+
+        // 恒真但隐藏图鉴条目的条件:对应原 hideLootReport 语义
+        private class HiddenDropCondition : IItemDropRuleCondition, IProvideItemConditionDescription
+        {
+            public bool CanDrop(DropAttemptInfo info) => true;
+            public bool CanShowItemDropInUI() => false;
+            public string GetConditionDescription() => null;
+        }
+
+        // 首杀传记条件:对应 downed 旗标未置位时每名玩家各掉一份
+        private class LoreFirstKill : IItemDropRuleCondition, IProvideItemConditionDescription
+        {
+            public bool CanDrop(DropAttemptInfo info) => !EDownedBosses.downedApsychos;
+            public bool CanShowItemDropInUI() => true;
+            public string GetConditionDescription() => null;
         }
     }
 }

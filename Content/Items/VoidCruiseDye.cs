@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items.Dyes;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Graphics.Shaders;
@@ -8,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items
 {
-    public class VoidCruiseDye : BaseDye
+    public class VoidCruiseDye : CEBaseDye
     {
         public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Assets/Effects/VoidCruiserDye"), "DyePass").
             UseColor(new Color(160, 150, 255)).UseSecondaryColor(new Color(210, 200, 255));

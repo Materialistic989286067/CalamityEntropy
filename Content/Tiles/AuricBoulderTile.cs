@@ -1,7 +1,6 @@
 ﻿using CalamityEntropy.Content.Projectiles;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -23,7 +22,8 @@ namespace CalamityEntropy.Content.Tiles
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.newTile.LavaDeath = false;
             TileObjectData.addTile((int)base.Type);
-            base.HitSound = new SoundStyle?(new("CalamityMod/Sounds/Custom/AuricMine", 3));
+            // 脱离灾厄:原灾厄 AuricMine,按 sound-map 替换
+            base.HitSound = SoundID.Tink with { Pitch = 0.3f, PitchVariance = 0.25f };
             base.DustType = 291;
             AddMapEntry(new Color(255, 200, 0), CreateMapEntryName());
             MineResist = 0.01f;

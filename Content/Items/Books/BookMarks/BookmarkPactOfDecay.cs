@@ -1,7 +1,7 @@
-﻿using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items;
-using CalamityMod.Rarities;
+﻿using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Particles.CalamityPorts;
+using CalamityEntropy.Content.Rarities;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -18,8 +18,8 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override void SetDefaults()
         {
             base.SetDefaults();
-            Item.rare = ModContent.RarityType<CalamityRed>();
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<VoidPurple>();
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("PactOfDecay");
         public override Color tooltipColor => new Color(160, 6, 6);
@@ -71,6 +71,13 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             base.ReceiveExtraAI(reader);
             targetPos = reader.ReadVector2();
         }
+        //漩涡三层贴图,加载期就位,不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Assets/Extra/Ports/ScreamyFace")]
+        internal static Texture2D ScreamTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/Ports/SoulVortex")]
+        internal static Texture2D VortexTex;
+        [VaultLoaden("CalamityEntropy/Assets/Particles/LargeBloom")]
+        internal static Texture2D CenterBloomTex;
         NPC target = null;
         Vector2 targetPos = Vector2.Zero;
         public override float DamageMult => 0.5f;
@@ -120,7 +127,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             {
                 base.OnHitNPC(target, hit, damageDone);
             }
-            SoundStyle burn = new("CalamityMod/Sounds/Item/WeldingBurn");
+            SoundStyle burn = new("CalamityEntropy/Assets/Sounds/steam") { PitchVariance = 0.2f };
             SoundEngine.PlaySound(burn with { Volume = 0.25f, Pitch = 0.4f }, target.Center);
 
             //GlowOrbCal CalamityPorts,Configure(false,lifetime)跟Calamity glow orb原构造对齐
@@ -142,10 +149,10 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override bool PreDraw(ref Color lightColor)
         {
             CEUtils.DrawGlow(Projectile.Center, Color.Black * Projectile.Opacity, Projectile.scale * 10 * Projectile.Opacity, false);
-            Texture2D screamTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/ScreamyFace", AssetRequestMode.ImmediateLoad).Value;
+            Texture2D screamTex = ScreamTex;
             lightColor.R = (byte)(255 * Projectile.Opacity);
             Main.spriteBatch.End();
-            Effect shieldEffect = Filters.Scene["CalamityMod:HellBall"].GetShader().Shader;
+            Effect shieldEffect = Filters.Scene["CalamityEntropy:HellBall"].GetShader().Shader;
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shieldEffect, Main.GameViewMatrix.TransformationMatrix);
 
             float noiseScale = 0.6f;
@@ -172,8 +179,8 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D vortexTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/SoulVortex").Value;
-            Texture2D centerTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/LargeBloom").Value;
+            Texture2D vortexTexture = VortexTex;
+            Texture2D centerTexture = CenterBloomTex;
             for (int i = 0; i < 10; i++)
             {
                 float angle = MathHelper.TwoPi * i / 3f + Main.GlobalTimeWrappedHourly * MathHelper.TwoPi;

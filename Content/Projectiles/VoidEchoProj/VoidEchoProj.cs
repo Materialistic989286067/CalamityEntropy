@@ -1,5 +1,8 @@
-﻿using CalamityEntropy.Content.Items.Weapons;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Items.Weapons;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.ModLoader;
@@ -8,6 +11,13 @@ namespace CalamityEntropy.Content.Projectiles.VoidEchoProj
 {
     public class VoidEchoProj : ModProjectile
     {
+        //回响组件贴图,加载期就位,绘制时不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/VoidEchoProj/part1")]
+        internal static Asset<Texture2D> Part1Tex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/VoidEchoProj/part2")]
+        internal static Asset<Texture2D> Part2Tex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/VoidEchoProj/VoidEcho")]
+        internal static Asset<Texture2D> MarkTex;
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Magic;
@@ -59,7 +69,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidEchoProj
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/lightball").Value;
+            Texture2D tx = CEExtraAssets.lightball;
             Main.spriteBatch.Draw(tx, drawpos + ep * 0.4f - Main.screenPosition, null, new Color(230, 150, 250) * 0.6f, Projectile.rotation, new Vector2(tx.Width, tx.Height) / 2, 0.8f * fs, SpriteEffects.None, 0);
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
@@ -67,9 +77,9 @@ namespace CalamityEntropy.Content.Projectiles.VoidEchoProj
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D part1 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/VoidEchoProj/part1").Value;
-            Texture2D part2 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/VoidEchoProj/part2").Value;
-            Texture2D mark = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/VoidEchoProj/VoidEcho").Value;
+            Texture2D part1 = Part1Tex.Value;
+            Texture2D part2 = Part2Tex.Value;
+            Texture2D mark = MarkTex.Value;
 
 
             int scl = (int)(230 + 25 * Math.Cos(counter / 6));

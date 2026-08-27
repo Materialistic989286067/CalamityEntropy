@@ -4,10 +4,8 @@ using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.UI.Rippers;
+using CalamityEntropy.Core.Cooldowns;
+using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -27,7 +25,7 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
         {
             Item.width = 28;
             Item.height = 30;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1);
             Item.defense = 22;
             Item.rare = ItemRarityID.Red;
         }
@@ -39,14 +37,10 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = Mod.GetLocalization("AzafureSet3").Value.Replace("[KEY]", CEKeybinds.AcropolisMechTransformation.TooltipHotkeyString());
+            player.setBonus = Mod.GetLocalization("AzafureSet3").Value.Replace("[KEY]", CEKeybinds.AcropolisMechTransformation.TooltipKeyHint());
             player.GetModPlayer<AcropolisArmorPlayer>().ArmorSetBonus = true;
-            if (!ModContent.GetInstance<Config>().MariviumArmorSetOnlyProvideStealthBarWhenHoldingRogueWeapons || player.HeldItem.DamageType.CountsAsClass(CEUtils.RogueDC))
-            {
-                player.Calamity().wearingRogueArmor = true;
-                player.Calamity().rogueStealthMax += 1.2f;
-            }
-            player.Entropy().NoAdrenalineTime = 1;
+            // 潜行体系退役:原潜行条(上限1.2)按容量×10%换算为大招充能速度;灾厄肾上腺素抑制随 ripper 系统退役删除
+            player.GetModPlayer<CEChargePlayer>().ChargeRateMult += 0.12f;
 
             player.maxMinions += 1;
             player.noKnockback = true;
@@ -85,7 +79,7 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
             CreateRecipe()
                 .AddIngredient<AzafureSteamKnightHelmet>()
                 .AddIngredient(ItemID.LunarBar, 10)
-                .AddIngredient<UnholyEssence>(5)
+                .AddIngredient<NihilityFragments>(5)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
@@ -307,14 +301,15 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
             }
             cannon.Update();
             harpoon.Update();
-            Vector2 vec = Player.Calamity().mouseWorld;
-            Player.Calamity().mouseRotationListener = true;
+            // 脱离灾厄:跨端鼠标坐标改自研 MouseWorld(player-api.md §1),监听开关每帧置位
+            Vector2 vec = Player.Entropy().MouseWorld;
+            Player.Entropy().MouseWorldListener = true;
             if (SlashP != 0)
             {
-                vec = Player.Center + (Player.Calamity().mouseWorld - Player.Center).RotatedBy(3 * slashDir * (SlashP - 0.5f));
+                vec = Player.Center + (Player.Entropy().MouseWorld - Player.Center).RotatedBy(3 * slashDir * (SlashP - 0.5f));
             }
             cannon.PointAPos(vec, SlashP == 0 ? 0.06f : 1);
-            harpoon.PointAPos(Player.Calamity().mouseWorld);
+            harpoon.PointAPos(Player.Entropy().MouseWorld);
             foreach (var l in legs)
             {
                 if (l.Update())
@@ -415,7 +410,7 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
             Texture2D leg3 = CEUtils.RequestTex($"{folder}Leg3");
             Color drawColor = Lighting.GetColor((Player.Center / 16).ToPoint());
 
-            int drawDir = (Player.Calamity().mouseWorld.X - Player.Center.X) > 0 ? 1 : -1;
+            int drawDir = (Player.Entropy().MouseWorld.X - Player.Center.X) > 0 ? 1 : -1;
 
             if (legs != null)
             {
@@ -523,7 +518,7 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
                 else
                 {
                     Player.gravity = 0;
-                    Player.direction = (Player.Calamity().mouseWorld.X - Player.Center.X) > 0 ? 1 : -1;
+                    Player.direction = (Player.Entropy().MouseWorld.X - Player.Center.X) > 0 ? 1 : -1;
                     int s = 0;
                     float y = 0;
                     foreach (var leg in legs)
@@ -614,7 +609,7 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
                             if (HarpoonDelay <= 0 && Player.ownedProjectileCounts[ModContent.ProjectileType<AcropolisHarpoon>()] == 0)
                             {
                                 HarpoonDelay = 32;
-                                harpoon.PointAPos(Player.Calamity().mouseWorld, 1);
+                                harpoon.PointAPos(Player.Entropy().MouseWorld, 1);
                                 int damage = ((int)(Player.GetTotalDamage(Player.GetBestClass()).ApplyTo(1500))).ApplyAccArmorDamageBonus(Player);
                                 Projectile.NewProjectile(Player.GetSource_FromThis(), harpoon.TopPos, harpoon.Seg2Rot.ToRotationVector2() * 48, ModContent.ProjectileType<AcropolisHarpoon>(), damage, 12, Player.whoAmI);
                             }
@@ -633,7 +628,7 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
                                         for (int i = 0; i < 12; i++)
                                             PRTLoader.NewParticle<PRT_LineCal>(cannon.TopPos, cannon.Seg2Rot.ToRotationVector2().RotatedByRandom(0.3f) * 46 * Main.rand.NextFloat(), new Color(255, 100, 100), Main.rand.NextFloat(0.4f, 1)).Configure(false, 12);
                                         MechSync();
-                                        cannon.PointAPos(Player.Calamity().mouseWorld, 1);
+                                        cannon.PointAPos(Player.Entropy().MouseWorld, 1);
                                         CEUtils.PlaySound("AcropolisShoot", Main.rand.NextFloat(0.8f, 1.2f), cannon.TopPos);
                                         ShootDelay = (int)(5f / Player.GetTotalAttackSpeed(Player.GetBestClass()));
                                         int damage = ((int)(Player.GetTotalDamage(Player.GetBestClass()).ApplyTo(400))).ApplyAccArmorDamageBonus(Player);
@@ -946,11 +941,8 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
         public static void DrawDuraBar(float dura)
         {
             Main.spriteBatch.UseSampleState_UI(SamplerState.PointClamp);
-            Vector2 pos = new Vector2(CalamityClientConfig.Instance.AdrenalineMeterPosX, CalamityClientConfig.Instance.AdrenalineMeterPosY);
-            if (pos.X < 0f || pos.X > 100f)
-                pos.X = RipperUI.DefaultAdrenPosX;
-            if (pos.Y < 0f || pos.Y > 100f)
-                pos.Y = RipperUI.DefaultAdrenPosY;
+            // 脱离灾厄:灾厄客户端配置不可用,耐久条固定挂在原肾上腺素条默认屏幕位
+            Vector2 pos = new Vector2(35.77f, 8.85f);
             pos.X = (int)(pos.X * 0.01f * Main.screenWidth);
             pos.Y = (int)(pos.Y * 0.01f * Main.screenHeight);
 
@@ -963,12 +955,12 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
                 Center += new Vector2(Main.rand.NextFloat() * ((0.32f - dura) * 20), Main.rand.NextFloat() * ((0.32f - dura) * 20));
             }
             string folder = "CalamityEntropy/Content/Items/Armor/AzafureT3/";
-            Texture2D tex1 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Items/Armor/Azafure/DurabilityBarA").Value;
+            Texture2D tex1 = AzafureHeavyArmorPlayer.DuraBarFrontTex.Value;
             if (Main.LocalPlayer.TryGetModPlayer<AcropolisArmorPlayer>(out var mp) && mp.MechTrans)
             {
                 tex1 = CEUtils.RequestTex($"{folder}MechDura");
             }
-            Texture2D tex2 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Items/Armor/Azafure/DurabilityBarB").Value;
+            Texture2D tex2 = AzafureHeavyArmorPlayer.DuraBarBackTex.Value;
             Main.spriteBatch.Draw(tex2, Center, null, color, 0, tex2.Size() / 2f, 1, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(tex1, Center, new Rectangle(0, 0, (int)(tex1.Width * dura), tex1.Height), color2, 0, tex1.Size() / 2f, 1, SpriteEffects.None, 0);
             bool hover = Center.getRectCentered(100, 40).Intersects(Main.MouseScreen.getRectCentered(2, 2));

@@ -1,9 +1,8 @@
-﻿using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -16,7 +15,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         {
             Item.width = 52;
             Item.height = 52;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1);
             Item.rare = ModContent.RarityType<SkyBlue>();
             Item.accessory = true;
         }
@@ -131,7 +130,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.End();
-            Effect effect = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Vortex", AssetRequestMode.ImmediateLoad).Value;
+            Effect effect = CEEffectAssets.Vortex;
             effect.Parameters["Center"].SetValue(new Vector2(0.5f, 0.5f));
             effect.Parameters["Strength"].SetValue(16);
             effect.Parameters["AspectRatio"].SetValue(1);
@@ -143,7 +142,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             effect.Parameters["enhanceLightAlpha"].SetValue(0.8f);
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             effect.CurrentTechnique.Passes[0].Apply();
-            Main.spriteBatch.Draw(CEUtils.getExtraTex("VoronoiShapes"), Projectile.Center - Main.screenPosition, null, new Color(220, 220, 255), Main.GlobalTimeWrappedHourly * 2, CEUtils.getExtraTex("VoronoiShapes").Size() / 2f, 0.2f * Projectile.scale, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(CEExtraAssets.VoronoiShapes, Projectile.Center - Main.screenPosition, null, new Color(220, 220, 255), Main.GlobalTimeWrappedHourly * 2, CEExtraAssets.VoronoiShapes.Size() / 2f, 0.2f * Projectile.scale, SpriteEffects.None, 0);
             CEUtils.DrawGlow(Projectile.Center, Color.White * 0.7f, 0.9f);
             Main.EntitySpriteDraw(Projectile.getDrawData(lightColor));
 

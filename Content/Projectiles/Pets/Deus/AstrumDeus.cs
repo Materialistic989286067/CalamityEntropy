@@ -1,7 +1,7 @@
 ﻿using CalamityEntropy.Content.Buffs.Pets;
-using CalamityMod;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,6 +10,15 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Deus
 {
     public class AstrumDeus : ModProjectile
     {
+        //首帧文件名不带序号(AstrumDeus.png 同时是弹幕主贴图),数组标签只认「路径+数字」,首帧单独加载
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Deus/AstrumDeus")]
+        internal static Asset<Texture2D> Frame1;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Deus/AstrumDeus", 2, 4, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] FramesRest;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Deus/s/AstrumDeus")]
+        internal static Asset<Texture2D> HatFrame1;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Deus/s/AstrumDeus", 2, 4, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] HatFramesRest;
         public int counter = 0;
         public override void SetStaticDefaults()
         {
@@ -32,29 +41,15 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Deus
             bool hat = Projectile.owner.ToPlayer().Entropy().PetsHat;
             if (Main.gameMenu)
             {
-                Texture2D txd = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Deus/AstrumDeus").Value;
+                Texture2D txd = Frame1.Value;
                 Main.EntitySpriteDraw(txd, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, new Vector2(txd.Width, txd.Height) / 2, Projectile.scale, SpriteEffects.FlipHorizontally, 0);
 
                 return false;
             }
-            List<Texture2D> list = new List<Texture2D>();
-            if (hat)
-            {
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Deus/s/AstrumDeus").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Deus/s/AstrumDeus2").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Deus/s/AstrumDeus3").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Deus/s/AstrumDeus4").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Deus/s/AstrumDeus5").Value);
-            }
-            else
-            {
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Deus/AstrumDeus").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Deus/AstrumDeus2").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Deus/AstrumDeus3").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Deus/AstrumDeus4").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Deus/AstrumDeus5").Value);
-            }
-            Texture2D tx = list[(counter / 6) % list.Count];
+            //共 5 帧:首帧 + 后 4 帧,按下标拼回原来的取帧顺序
+            Texture2D[] rest = hat ? HatFramesRest : FramesRest;
+            int frame = (counter / 6) % (rest.Length + 1);
+            Texture2D tx = frame == 0 ? (hat ? HatFrame1 : Frame1).Value : rest[frame - 1];
             if (Projectile.velocity.X > -2 && Projectile.velocity.X < 2f)
             {
                 if (Main.player[Projectile.owner].Center.X > Projectile.Center.X)
@@ -149,7 +144,7 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Deus
             Player player = Main.player[Projectile.owner];
 
             player.zephyrfish = false;
-            if (DownedBossSystem.downedAstrumDeus)
+            if (NPC.downedAncientCultist)
             {
                 Lighting.AddLight(Projectile.Center, 1.2f, 1f, 1.2f);
             }
@@ -181,7 +176,7 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Deus
             shotCd--;
             if (n != null && shotCd < 0)
             {
-                if (Projectile.owner == Main.myPlayer && DownedBossSystem.downedAstrumDeus)
+                if (Projectile.owner == Main.myPlayer && NPC.downedAncientCultist)
                 {
                     shotCd = 400;
 

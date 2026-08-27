@@ -1,12 +1,14 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Dusts;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Projectiles
@@ -117,10 +119,10 @@ namespace CalamityEntropy.Content.Projectiles
                 CEUtils.PlaySound("energyImpact", Main.rand.NextFloat(0.9f, 1.2f), Projectile.Center, 8, 0.6f);
 
                 //CustomPulse贴图路径现传,走PRTPathTextures缓存,Configure第一个string是TexPath
-                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed, 0.02f).Configure("CalamityMod/Particles/ShineExplosion1", Vector2.One, CEUtils.randomRot(), 0.02f, 0.16f, 16);  //LargeBloom/FlameExplosion那些Calamity路径字符串原样保留
-                //三连CustomPulse旧GeneralParticleHandler ShineExplosion+FlameExplosion叠层,TexPath字符串没动
-                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed, 0.02f).Configure("CalamityMod/Particles/ShineExplosion2", Vector2.One, CEUtils.randomRot(), 0.02f, 0.16f, 16);
-                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed, 0.02f).Configure("CalamityMod/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.02f, 0.14f, 16);
+                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed, 0.02f).Configure("CalamityEntropy/Assets/Particles/ShineExplosion1", Vector2.One, CEUtils.randomRot(), 0.02f, 0.16f, 16);  //LargeBloom/FlameExplosion那些Calamity路径字符串原样保留
+                //三连CustomPulse旧版粒子系统 ShineExplosion+FlameExplosion叠层,TexPath字符串没动
+                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed, 0.02f).Configure("CalamityEntropy/Assets/Particles/ShineExplosion2", Vector2.One, CEUtils.randomRot(), 0.02f, 0.16f, 16);
+                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed, 0.02f).Configure("CalamityEntropy/Assets/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.02f, 0.14f, 16);
 
             }
         }
@@ -170,7 +172,7 @@ namespace CalamityEntropy.Content.Projectiles
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
                 if (ve.Count >= 3)
                 {
-                    Texture2D tx = CEUtils.getExtraTex("AbyssalCircle3");
+                    Texture2D tx = CEExtraAssets.AbyssalCircle3;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }
@@ -194,7 +196,7 @@ namespace CalamityEntropy.Content.Projectiles
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
                 if (ve.Count >= 3)
                 {
-                    Texture2D tx = CEUtils.getExtraTex("AbyssalCircle3");
+                    Texture2D tx = CEExtraAssets.AbyssalCircle3;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }
@@ -218,7 +220,7 @@ namespace CalamityEntropy.Content.Projectiles
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
                 if (ve.Count >= 3)
                 {
-                    Texture2D tx = CEUtils.getExtraTex("AbyssalCircle4");
+                    Texture2D tx = CEExtraAssets.AbyssalCircle4;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }

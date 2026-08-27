@@ -1,7 +1,7 @@
 ﻿using CalamityEntropy.Content.Items.PrefixItem;
-using CalamityMod.Tiles.Ores;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Tiles
@@ -16,7 +16,8 @@ namespace CalamityEntropy.Content.Tiles
             Main.tileLighted[base.Type] = true;
             Main.tileSpelunker[base.Type] = true;
             base.MineResist = 6f;
-            base.HitSound = AuricOre.MineSound;
+            // 脱离灾厄:原灾厄 AuricMine,按 sound-map 替换
+            base.HitSound = SoundID.Tink with { Pitch = 0.3f, PitchVariance = 0.25f };
             AddMapEntry(new Color(150, 0, 0));
             RegisterItemDrop(ModContent.ItemType<BlessingHeatDeath>());
         }

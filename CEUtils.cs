@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content;
 using CalamityEntropy.Content.ArmorPrefixes;
 using CalamityEntropy.Content.Items.Armor.Azafure;
@@ -7,13 +8,13 @@ using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.PrefixItem;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Items.Potions.Alcohol;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ReLogic.Content;
+using ReLogic.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -89,6 +90,13 @@ namespace CalamityEntropy
     }
     public static class CEUtils
     {
+        //绘制助手用到的贴图在加载期就位;这些字段只在客户端绘制路径读,专用服务器上恒为 null
+        [VaultLoaden("CalamityEntropy/Assets/GenericBarBack")]
+        private static Asset<Texture2D> GenericBarBackTex;
+        [VaultLoaden("CalamityEntropy/Assets/GenericBarFront")]
+        private static Asset<Texture2D> GenericBarFrontTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/BasicTrailThin")]
+        private static Asset<Texture2D> BasicTrailThinTex;
         public static Vector2 CalculateSourceVel(Vector2 shootPos, Vector2 target, int frame, float gravity)
         {
             Vector2 displacement = target - shootPos;
@@ -276,13 +284,10 @@ namespace CalamityEntropy
         {
             return npc.damage == 0 ? 60 : npc.damage / 3;
         }
+        //脱离灾厄:OldFashioned(灾厄酒)乘区已删,恒等返回;方法保留避免炸调用点,后续可整体删调用
         public static int ApplyAccArmorDamageBonus(this int origDmg, Player player = null)
         {
-            if (player == null)
-            {
-                player = Main.LocalPlayer;
-            }
-            return (int)(origDmg * (player.Calamity().oldFashioned ? OldFashioned.DamageBoostMultiplier : 1));
+            return origDmg;
         }
         public static int GetPriceFromRecipe(this ModItem item, Recipe recipe)
         {
@@ -347,24 +352,6 @@ namespace CalamityEntropy
                 }
             }
         }
-        public static void CostStealthForPlr(Player player)
-        {
-            if (player.Calamity().StealthStrikeAvailable())
-            {
-                float cost = 1;
-                if (player.Calamity().stealthStrike90Cost)
-                    cost = 0.9f;
-                if (player.Calamity().stealthStrike75Cost)
-                    cost = 0.75f;
-                if (player.Calamity().stealthStrikeHalfCost)
-                    cost = 0.5f;
-                player.Calamity().rogueStealth -= player.Calamity().rogueStealthMax * cost;
-            }
-            else
-            {
-                player.Calamity().rogueStealth = 0;
-            }
-        }
         public static void ProjTrailData(this Projectile proj, int length, int mode)
         {
             ProjectileID.Sets.TrailCacheLength[proj.type] = length;
@@ -377,7 +364,7 @@ namespace CalamityEntropy
         public static void StickToPlayer(this Projectile proj)
         {
             Player player = proj.GetOwner();
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             proj.Center = player.GetDrawCenter();
             proj.rotation = (player.mouseWorld() - proj.Center).ToRotation();
             proj.velocity = proj.rotation.ToRotationVector2() * player.HeldItem.shootSpeed;
@@ -386,17 +373,24 @@ namespace CalamityEntropy
         public static void StickToPlayer(this Projectile proj, float RotLerp = 0.1f)
         {
             Player player = proj.GetOwner();
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             proj.Center = player.GetDrawCenter();
             proj.rotation = CEUtils.RotateTowardsAngle(proj.rotation, (player.mouseWorld() - proj.Center).ToRotation(), RotLerp, false);
             proj.velocity = proj.rotation.ToRotationVector2() * player.HeldItem.shootSpeed;
             player.heldProj = proj.whoAmI;
         }
+        /// <summary>
+        /// 各端可见的玩家鼠标世界坐标(自研,替代灾厄mouseWorld)。调用即开启本帧联机同步监听。
+        /// </summary>
         public static Vector2 mouseWorld(this Player player)
         {
-            player.Calamity().mouseWorldListener = true;
-            return player.Calamity().mouseWorld;
+            player.Entropy().MouseWorldListener = true;
+            return player.Entropy().MouseWorld;
         }
+        /// <summary>
+        /// 同 <see cref="mouseWorld(Player)"/> 的静态写法。
+        /// </summary>
+        public static Vector2 MouseWorld(Player player) => player.mouseWorld();
         public static void CheckAndSpawnHeldProj(this Player player, int type)
         {
             if (player.ownedProjectileCounts[type] < 1 && Main.myPlayer == player.whoAmI)
@@ -759,7 +753,6 @@ namespace CalamityEntropy
                 return num;
             return (int)Math.Round(limit + Math.Sqrt(num - limit));
         }
-        public static DamageClass RogueDC => ModContent.GetInstance<CalamityMod.RogueDamageClass>();
         public static void SpawnExplotionHostile(IEntitySource source, Vector2 position, int damage, float r, bool alsoFriendly = false)
         {
             int p = Projectile.NewProjectile(source, position, Vector2.Zero, ModContent.ProjectileType<CommonExplotion>(), damage, 0, 0, r, alsoFriendly ? 1 : 0);
@@ -783,8 +776,6 @@ namespace CalamityEntropy
         {
             float s = Utils.Remap(Main.LocalPlayer.Distance(center), MaxDist, 800, 0f, strength * 1);
             ScreenShaker.AddShake((Main.LocalPlayer.Center - center).normalize(), s);
-            //if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < s)
-            //Main.LocalPlayer.Calamity().GeneralScreenShakePower = s;
         }
         public static List<Vector2> WrapPoints(List<Vector2> points, int d)
         {
@@ -1075,8 +1066,8 @@ namespace CalamityEntropy
                 return; 
             if (float.IsNaN(progress) || float.IsInfinity(progress))
                 progress = 0f;
-            var barBG = ModContent.Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarBack", AssetRequestMode.ImmediateLoad).Value;
-            var barFG = ModContent.Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarFront", AssetRequestMode.ImmediateLoad).Value;
+            var barBG = GenericBarBackTex.Value;
+            var barFG = GenericBarFrontTex.Value;
             if (barBG == null || barFG == null || barBG.Width <= 0 || barFG.Width <= 0)
                 return;
             Vector2 barOrigin = barBG.Size() * 0.5f;
@@ -1098,7 +1089,8 @@ namespace CalamityEntropy
             GameShaders.Armor.Apply(id, player);
         }
         public static string WhiteTexPath = "CalamityEntropy/Assets/Extra/white";
-        public static Texture2D pixelTex => ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value;
+        //优先读共享基座;基座字段在 PostSetupContent 才赋值,加载期访问走 Request 兜底
+        public static Texture2D pixelTex => CEExtraAssets.white ?? ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value;
         public static Texture2D GetTexture(this Projectile p)
         {
             return TextureAssets.Projectile[p.type].Value;
@@ -1134,7 +1126,7 @@ namespace CalamityEntropy
         }
         public static void DrawRotatedGlow(Vector2 worldPos, Color color, float scale, float rot, bool additive = true, Texture2D tex = null, bool setState = true)
         {
-            Texture2D glow = tex == null ? getExtraTex("Glow2") : tex;
+            Texture2D glow = tex == null ? CEExtraAssets.Glow2 : tex;
             SpriteBatch sb = Main.spriteBatch;
             var blend = BlendState.AlphaBlend;
             var sample = sb.GraphicsDevice.SamplerStates[0];
@@ -1157,7 +1149,7 @@ namespace CalamityEntropy
         //收尾批次跟PRT桶对不上,调用方还得sb.End()+BeginDrawingWithMode接回去
         public static void DrawGlow(Vector2 worldPos, Color color, float scale, bool additive = true, Texture2D tex = null, bool setState = true)
         {
-            Texture2D glow = tex == null ? getExtraTex("Glow2") : tex;
+            Texture2D glow = tex == null ? CEExtraAssets.Glow2 : tex;
             SpriteBatch sb = Main.spriteBatch;
             var blend = BlendState.AlphaBlend;
             var sample = sb.GraphicsDevice.SamplerStates[0];
@@ -1288,7 +1280,7 @@ namespace CalamityEntropy
         {
             for (int i = 1; i < points.Count; i++)
             {
-                drawLine(Main.spriteBatch, ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value, points[i - 1], points[i], color, width, wa, true);
+                drawLine(Main.spriteBatch, CEExtraAssets.white, points[i - 1], points[i], color, width, wa, true);
             }
         }
         public static void DrawLinesBetter(List<Vector2> points, Color color, float width, int wa = 2)
@@ -1729,11 +1721,11 @@ namespace CalamityEntropy
         }
         public static void drawLine(Vector2 start, Vector2 end, Color color, float width, int wa = 0, bool worldpos = true)
         {
-            Main.spriteBatch.Draw(getExtraTex("white"), start - (worldpos ? Main.screenPosition : Vector2.Zero), null, color, (end - start).ToRotation(), new Vector2(0, 0.5f), new Vector2(getDistance(start, end) + wa, width), SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(CEExtraAssets.white, start - (worldpos ? Main.screenPosition : Vector2.Zero), null, color, (end - start).ToRotation(), new Vector2(0, 0.5f), new Vector2(getDistance(start, end) + wa, width), SpriteEffects.None, 0);
         }
         public static void drawLineBetter(Vector2 start, Vector2 end, Color color, float width, int wa = 0, bool worldpos = true)
         {
-            var tex = getExtraTex("BasicTrailThin");
+            var tex = BasicTrailThinTex.Value;
             Main.spriteBatch.Draw(tex, start - (worldpos ? Main.screenPosition : Vector2.Zero), null, color, (end - start).ToRotation(), new Vector2(0, tex.Height / 2), new Vector2((getDistance(start, end) + wa) / 200f, width / 40f), SpriteEffects.None, 0);
         }
         public static void drawTextureToPoint(SpriteBatch sb, Texture2D texture, Color color, Vector2 lu, Vector2 ru, Vector2 ld, Vector2 rd)
@@ -2164,7 +2156,8 @@ namespace CalamityEntropy
             DropRateInfoChainFeed ratesInfo = new(1f);
             foreach (var rule in rulesForNPCID)
             {
-                if (rule is LeadingConditionRule lcr && lcr.condition == DropHelper.GFB)
+                //脱离灾厄:天顶世界掉落条件改原版判定(原灾厄DropHelper.GFB;原版类型名为ZenithSeedIsUp)
+                if (rule is LeadingConditionRule lcr && lcr.condition is Conditions.ZenithSeedIsUp)
                     continue;
                 rule.ReportDroprates(list2, ratesInfo);
             }
@@ -2179,7 +2172,7 @@ namespace CalamityEntropy
                     List<DropRateInfo> list3 = [];
                     foreach (var rule in baglist)
                     {
-                        if (rule is LeadingConditionRule lcr && lcr.condition == DropHelper.GFB) continue;
+                        if (rule is LeadingConditionRule lcr && lcr.condition is Conditions.ZenithSeedIsUp) continue;
                         rule.ReportDroprates(list3, ratesInfo);
                     }
                     bagdrops.AddRange(list3.Where(i => IsNotMaterial(ContentSamples.ItemsByType[i.itemId], mod, includeMaterial)).Select(i3 => i3.itemId));
@@ -2548,6 +2541,814 @@ namespace CalamityEntropy
 
             return false;
         }
+        #endregion
+
+        //冷却:统一走自研冷却框架(CalamityEntropy.Core.Cooldowns),用法见 Doc/decouple/cooldown-api.md
+
+        #region Zone等价判定(已按biome-map.md表外补充规则落实)
+        /// <summary>原灾厄 ZoneAstral(星辉瘟疫)的自有等价:发光蘑菇群系。</summary>
+        public static bool ZoneAstralPlaceholder(Player player) => player.ZoneGlowshroom;
+        /// <summary>原灾厄 ZoneSulphur(硫磺海)的自有等价:海滩。</summary>
+        public static bool ZoneSulphurPlaceholder(Player player) => player.ZoneBeach;
+        /// <summary>原灾厄 ZoneAbyss 系的自有等价:洞穴层海侧。</summary>
+        public static bool ZoneAbyssPlaceholder(Player player) => player.ZoneRockLayerHeight && player.ZoneBeach;
+        #endregion
+
+        #region 灾厄工具函数同名移植(脱离灾厄自研等效实现,签名与原版灾厄一致,供既有调用点机械替换)
+        /// <summary>
+        /// NPC 是否为有机体(移植自灾厄 NPCUtils.Organic,自写等价),用于命中音效/吸血类逻辑分流。
+        /// 判定依据受击音效:金属(NPCHit4/41/42)、幽灵(NPCHit36/49/52/53/54)、史莱姆(NPCHit1以外的凝胶系,
+        /// 见NPCHit2/5/11/30/34)与无受击音效者判为非有机,其余为有机。
+        /// 灾厄对 Providence/ScornEater/Yharon 的三个白名单特例为其自有NPC,脱离灾厄后不适用,已裁剪;
+        /// 原以 IL 钩令木桩(SuperDummy)视为有机的语义,内置为原版训练假人(TargetDummy)特判。
+        /// </summary>
+        public static bool Organic(this NPC target)
+        {
+            //原语义保留:木桩视为有机(替代已删的 SuperDummy IL 钩,落到原版训练假人)
+            if (target.type == NPCID.TargetDummy)
+                return true;
+            return target.HitSound != SoundID.NPCHit4 && target.HitSound != SoundID.NPCHit41 && target.HitSound != SoundID.NPCHit2 &&
+                   target.HitSound != SoundID.NPCHit5 && target.HitSound != SoundID.NPCHit11 && target.HitSound != SoundID.NPCHit30 &&
+                   target.HitSound != SoundID.NPCHit34 && target.HitSound != SoundID.NPCHit36 && target.HitSound != SoundID.NPCHit42 &&
+                   target.HitSound != SoundID.NPCHit49 && target.HitSound != SoundID.NPCHit52 && target.HitSound != SoundID.NPCHit53 &&
+                   target.HitSound != SoundID.NPCHit54 && target.HitSound != null;
+        }
+        // —— 编译门补批:以下为灾厄扩展同名移植(签名与灾厄一致),供全仓既有调用点直接接轨 ——
+
+        /// <summary>实体指向目标的安全单位向量(移植自灾厄 SafeDirectionTo)。</summary>
+        public static Vector2 SafeDirectionTo(this Entity entity, Vector2 destination, Vector2? fallback = null)
+        {
+            return (destination - entity.Center).SafeNormalize(fallback ?? Vector2.Zero);
+        }
+
+        /// <summary>下标越界判定(移植自灾厄 WithinBounds)。</summary>
+        public static bool WithinBounds(this int index, int cap) => index >= 0 && index < cap;
+
+        /// <summary>条件成立才加入列表(移植自灾厄 AddWithCondition)。</summary>
+        public static void AddWithCondition<T>(this List<T> list, T type, bool condition)
+        {
+            if (condition)
+                list.Add(type);
+        }
+
+        /// <summary>物块是否为实心地面(移植自灾厄 IsTileSolid,不含平台)。</summary>
+        public static bool IsTileSolid(this Tile tile) => tile.HasUnactuatedTile && Main.tileSolid[tile.TileType] && !Main.tileSolidTop[tile.TileType];
+
+        /// <summary>NPC 是否算作 Boss(移植自灾厄 IsABoss;灾厄史莱姆之神分裂体特例随灾厄裁剪)。</summary>
+        public static bool IsABoss(this NPC npc)
+        {
+            if (npc is null || !npc.active)
+                return false;
+            if (npc.boss && npc.type != NPCID.MartianSaucerCore)
+                return true;
+            return npc.type == NPCID.EaterofWorldsBody || npc.type == NPCID.EaterofWorldsHead || npc.type == NPCID.EaterofWorldsTail;
+        }
+
+        /// <summary>找出指定范围内最近的可追踪 NPC(移植自灾厄 ClosestNPCAt)。</summary>
+        public static NPC ClosestNPCAt(this Vector2 origin, float maxDistanceToCheck, bool ignoreTiles = true, bool bossPriority = false)
+        {
+            NPC closestTarget = null;
+            float distance = maxDistanceToCheck;
+            if (bossPriority)
+            {
+                bool bossFound = false;
+                for (int index = 0; index < Main.npc.Length; index++)
+                {
+                    if (bossFound && !(Main.npc[index].boss || Main.npc[index].type == NPCID.WallofFleshEye))
+                        continue;
+
+                    if (Main.npc[index].CanBeChasedBy(null, false))
+                    {
+                        float extraDistance = (Main.npc[index].width / 2) + (Main.npc[index].height / 2);
+
+                        bool canHit = true;
+                        if (extraDistance < distance && !ignoreTiles)
+                            canHit = Collision.CanHit(origin, 1, 1, Main.npc[index].Center, 1, 1);
+
+                        if (Vector2.Distance(origin, Main.npc[index].Center) < distance && canHit)
+                        {
+                            if (Main.npc[index].boss || Main.npc[index].type == NPCID.WallofFleshEye)
+                                bossFound = true;
+
+                            distance = Vector2.Distance(origin, Main.npc[index].Center);
+                            closestTarget = Main.npc[index];
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int index = 0; index < Main.npc.Length; index++)
+                {
+                    if (Main.npc[index].CanBeChasedBy(null, false))
+                    {
+                        float extraDistance = (Main.npc[index].width / 2) + (Main.npc[index].height / 2);
+
+                        bool canHit = true;
+                        if (extraDistance < distance && !ignoreTiles)
+                            canHit = Collision.CanHit(origin, 1, 1, Main.npc[index].Center, 1, 1);
+
+                        if (Vector2.Distance(origin, Main.npc[index].Center) < distance && canHit)
+                        {
+                            distance = Vector2.Distance(origin, Main.npc[index].Center);
+                            closestTarget = Main.npc[index];
+                        }
+                    }
+                }
+            }
+            return closestTarget;
+        }
+
+        /// <summary>保持中心不变地重设弹幕碰撞箱(移植自灾厄 ExpandHitboxBy 四个重载)。</summary>
+        public static void ExpandHitboxBy(this Projectile projectile, int width, int height)
+        {
+            projectile.position = projectile.Center;
+            projectile.width = width;
+            projectile.height = height;
+            projectile.position -= projectile.Size * 0.5f;
+        }
+        public static void ExpandHitboxBy(this Projectile projectile, int newSize) => projectile.ExpandHitboxBy(newSize, newSize);
+        public static void ExpandHitboxBy(this Projectile projectile, Vector2 newSize) => projectile.ExpandHitboxBy((int)newSize.X, (int)newSize.Y);
+        public static void ExpandHitboxBy(this Projectile projectile, float expandRatio) => projectile.ExpandHitboxBy((int)(projectile.width * expandRatio), (int)(projectile.height * expandRatio));
+
+        /// <summary>弹幕是否处于本 tick 最后一次额外更新(移植自灾厄 FinalExtraUpdate)。</summary>
+        public static bool FinalExtraUpdate(this Projectile proj) => proj.numUpdates == -1;
+
+        /// <summary>0~1 进度转手臂伸展档位(移植自灾厄 ToStretchAmount)。</summary>
+        public static Player.CompositeArmStretchAmount ToStretchAmount(this float percent)
+        {
+            if (percent < 0.25f)
+                return Player.CompositeArmStretchAmount.None;
+            if (percent < 0.5f)
+                return Player.CompositeArmStretchAmount.Quarter;
+            if (percent < 0.75f)
+                return Player.CompositeArmStretchAmount.ThreeQuarters;
+
+            return Player.CompositeArmStretchAmount.Full;
+        }
+
+        /// <summary>前手位置(移植自灾厄 GetFrontHandPositionImproved,自动处理重力翻转)。</summary>
+        public static Vector2 GetFrontHandPositionImproved(this Player player, Player.CompositeArmData arm)
+        {
+            Vector2 position = player.GetFrontHandPosition(arm.stretch, arm.rotation * player.gravDir).Floor();
+
+            if (player.gravDir == -1f)
+            {
+                position.Y = player.position.Y + (float)player.height + (player.position.Y - position.Y);
+            }
+
+            return position;
+        }
+
+        /// <summary>后手位置(移植自灾厄 GetBackHandPositionImproved,自动处理重力翻转)。</summary>
+        public static Vector2 GetBackHandPositionImproved(this Player player, Player.CompositeArmData arm)
+        {
+            Vector2 position = player.GetBackHandPosition(arm.stretch, arm.rotation * player.gravDir).Floor();
+
+            if (player.gravDir == -1f)
+            {
+                position.Y = player.position.Y + (float)player.height + (player.position.Y - position.Y);
+            }
+
+            return position;
+        }
+
+        /// <summary>
+        /// 玩家当前最强职业(移植自灾厄 GetBestClass)。
+        /// 按 player-api DamageClass 收敛裁定:检查原版近战/远程/魔法/召唤(召唤按灾厄同款 0.75 折算),盗贼类已随退役剔除。
+        /// </summary>
+        public static DamageClass GetBestClass(this Player player)
+        {
+            float bestDamage = 1f;
+            DamageClass bestClass = DamageClass.Generic;
+
+            float melee = player.GetTotalDamage(DamageClass.Melee).Additive;
+            if (melee > bestDamage)
+            {
+                bestDamage = melee;
+                bestClass = DamageClass.Melee;
+            }
+            float ranged = player.GetTotalDamage(DamageClass.Ranged).Additive;
+            if (ranged > bestDamage)
+            {
+                bestDamage = ranged;
+                bestClass = DamageClass.Ranged;
+            }
+            float magic = player.GetTotalDamage(DamageClass.Magic).Additive;
+            if (magic > bestDamage)
+            {
+                bestDamage = magic;
+                bestClass = DamageClass.Magic;
+            }
+            //召唤全职业折算系数与灾厄一致(0.75):召唤无暴击,裸伤害普遍偏高
+            float summon = player.GetTotalDamage(DamageClass.Summon).Additive * 0.75f;
+            if (summon > bestDamage)
+            {
+                bestDamage = summon;
+                bestClass = DamageClass.Summon;
+            }
+            return bestClass;
+        }
+
+        /// <summary>
+        /// 玩家最强职业伤害修正(移植自灾厄 GetBestClassDamage)。
+        /// 无类型加成沿用 Generic;比较范围按收敛裁定为原版四职业(召唤 0.75 折算),盗贼项剔除。
+        /// </summary>
+        public static StatModifier GetBestClassDamage(this Player player)
+        {
+            StatModifier ret = StatModifier.Default;
+            StatModifier classless = player.GetTotalDamage(DamageClass.Generic);
+
+            ret.Base = classless.Base;
+            ret *= classless.Multiplicative;
+            ret.Flat = classless.Flat;
+
+            float best = 1f;
+
+            float melee = player.GetTotalDamage(DamageClass.Melee).Additive;
+            if (melee > best) best = melee;
+            float ranged = player.GetTotalDamage(DamageClass.Ranged).Additive;
+            if (ranged > best) best = ranged;
+            float magic = player.GetTotalDamage(DamageClass.Magic).Additive;
+            if (magic > best) best = magic;
+            float summon = player.GetTotalDamage(DamageClass.Summon).Additive * 0.75f;
+            if (summon > best) best = summon;
+
+            ret += best - 1f;
+            return ret;
+        }
+
+        /// <summary>键位的提示文本(移植自灾厄 TooltipHotkeyString;未绑定时取文案键 Misc.HotkeyNotBound)。</summary>
+        public static string TooltipHotkeyString(this ModKeybind mhk)
+        {
+            if (Main.dedServ || mhk is null)
+                return "";
+
+            //灾厄GetAssignedKeysOrEmpty的原生等价:GetAssignedKeys无绑定时本就返回空表
+            List<string> keys = mhk.GetAssignedKeys();
+            if (keys.Count == 0)
+                return GetText("Misc.HotkeyNotBound").Value;
+            return string.Join(" / ", keys);
+        }
+
+        /// <summary>把 Tooltip 中首个 [KEY] 占位符替换为实际键名(移植自灾厄 IntegrateHotkey/FindAndReplace)。</summary>
+        public static void IntegrateHotkey(this List<TooltipLine> tooltips, ModKeybind mhk)
+        {
+            if (Main.dedServ || mhk is null)
+                return;
+
+            string finalKey = mhk.TooltipHotkeyString();
+            TooltipLine line = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Text.Contains("[KEY]"));
+            if (line != null)
+                line.Text = line.Text.Replace("[KEY]", finalKey);
+        }
+
+        /// <summary>立即以指定混合模式重开画批(移植自灾厄 SetBlendState)。</summary>
+        public static void SetBlendState(this SpriteBatch spriteBatch, BlendState blendState)
+        {
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, blendState, Main.DefaultSamplerState, DepthStencilState.None,
+                RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+        }
+
+        /// <summary>
+        /// 手持物品姿态整理(移植自灾厄CleanHoldStyle,自写等效)。
+        /// </summary>
+        public static void CleanHoldStyle(Player player, float desiredRotation, Vector2 desiredPosition, Vector2 spriteSize, Vector2? rotationOriginFromCenter = null, bool noSandstorm = false, bool flipAngle = false, bool stepDisplace = true)
+        {
+            if (noSandstorm)
+                player.sandStorm = false;
+
+            if (rotationOriginFromCenter == null)
+                rotationOriginFromCenter = Vector2.Zero;
+
+            Vector2 origin = rotationOriginFromCenter.Value;
+            origin.X *= player.direction;
+            origin.Y *= player.gravDir;
+
+            player.itemRotation = desiredRotation;
+
+            if (flipAngle)
+                player.itemRotation *= player.direction;
+            else if (player.direction < 0)
+                player.itemRotation += MathHelper.Pi;
+
+            //锚定到贴图中心旋转,再按自定义原点偏移
+            Vector2 consistentCenterAnchor = player.itemRotation.ToRotationVector2() * (spriteSize.X / -2f - 10f) * player.direction;
+            Vector2 consistentAnchor = consistentCenterAnchor - origin.RotatedBy(player.itemRotation);
+            Vector2 offsetAgain = spriteSize * -0.5f;
+            Vector2 finalPosition = desiredPosition + offsetAgain + consistentAnchor;
+
+            //走路动画抬高帧补偿
+            if (stepDisplace)
+            {
+                int frame = player.bodyFrame.Y / player.bodyFrame.Height;
+                if ((frame > 6 && frame < 10) || (frame > 13 && frame < 17))
+                {
+                    finalPosition -= Vector2.UnitY * 2f;
+                }
+            }
+
+            player.itemLocation = finalPosition + new Vector2(spriteSize.X * 0.5f, 0);
+        }
+
+        /// <summary>
+        /// 残影绘制(移植自灾厄DrawAfterimagesCentered)。mode: 0标准/1帕拉丁锤式/2带旋转。
+        /// </summary>
+        public static void DrawAfterimagesCentered(Projectile proj, int mode, Color lightColor, int typeOneIncrement = 1, Texture2D texture = null, bool drawCentered = true, bool shrink = false, int armorShaderToUse = 0)
+        {
+            if (texture is null)
+                texture = TextureAssets.Projectile[proj.type].Value;
+
+            int frameHeight = texture.Height / Main.projFrames[proj.type];
+            int frameY = frameHeight * proj.frame;
+            float scale = proj.scale;
+            float rotation = proj.rotation;
+
+            Rectangle rectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
+            Vector2 origin = rectangle.Size() / 2f;
+
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (proj.spriteDirection == -1)
+                spriteEffects = SpriteEffects.FlipHorizontally;
+
+            bool failedToDrawAfterimages = false;
+            Vector2 centerOffset = drawCentered ? proj.Size / 2f : Vector2.Zero;
+            Color alphaColor = proj.GetAlpha(lightColor);
+            switch (mode)
+            {
+                case 0:
+                    for (int i = 0; i < proj.oldPos.Length; ++i)
+                    {
+                        Vector2 drawPos = proj.oldPos[i] + centerOffset - Main.screenPosition + new Vector2(0f, proj.gfxOffY);
+                        float interpolant = ((float)(proj.oldPos.Length - i) / (float)proj.oldPos.Length);
+                        Color color = alphaColor * interpolant;
+                        var drawData = new Terraria.DataStructures.DrawData(texture, drawPos, rectangle, color)
+                        {
+                            rotation = rotation,
+                            origin = origin,
+                            effect = spriteEffects
+                        };
+                        GameShaders.Armor.Apply(armorShaderToUse, proj, drawData);
+                        Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), color, rotation, origin, shrink ? scale * interpolant : scale, spriteEffects, 0f);
+                    }
+                    break;
+
+                case 1:
+                    int increment = Math.Max(1, typeOneIncrement);
+                    Color drawColor = alphaColor;
+                    int afterimageCount = ProjectileID.Sets.TrailCacheLength[proj.type];
+                    float afterimageColorCount = (float)afterimageCount * 1.5f;
+                    int k = 0;
+                    while (k < afterimageCount)
+                    {
+                        Vector2 drawPos = proj.oldPos[k] + centerOffset - Main.screenPosition + new Vector2(0f, proj.gfxOffY);
+                        float interpolant = ((float)(proj.oldPos.Length - k) / (float)proj.oldPos.Length);
+                        if (k > 0)
+                        {
+                            float colorMult = (float)(afterimageCount - k);
+                            drawColor *= colorMult / afterimageColorCount;
+                        }
+                        var drawData = new Terraria.DataStructures.DrawData(texture, drawPos, rectangle, drawColor)
+                        {
+                            rotation = rotation,
+                            origin = origin,
+                            effect = spriteEffects
+                        };
+                        GameShaders.Armor.Apply(armorShaderToUse, proj, drawData);
+                        Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), drawColor, rotation, origin, shrink ? scale * interpolant : scale, spriteEffects, 0f);
+                        k += increment;
+                    }
+                    break;
+
+                case 2:
+                    for (int i = 0; i < proj.oldPos.Length; ++i)
+                    {
+                        float afterimageRot = proj.oldRot[i];
+                        SpriteEffects sfxForThisAfterimage = proj.oldSpriteDirection[i] == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+                        Vector2 drawPos = proj.oldPos[i] + centerOffset - Main.screenPosition + new Vector2(0f, proj.gfxOffY);
+                        float interpolant = ((float)(proj.oldPos.Length - i) / (float)proj.oldPos.Length);
+                        Color color = alphaColor * interpolant;
+                        var drawData = new Terraria.DataStructures.DrawData(texture, drawPos, rectangle, color)
+                        {
+                            rotation = rotation,
+                            origin = origin,
+                            effect = spriteEffects
+                        };
+                        GameShaders.Armor.Apply(armorShaderToUse, proj, drawData);
+                        Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), color, afterimageRot, origin, shrink ? scale * interpolant : scale, sfxForThisAfterimage, 0f);
+                    }
+                    break;
+
+                default:
+                    failedToDrawAfterimages = true;
+                    break;
+            }
+
+            //无残影缓存或mode非法时,保底画本体
+            if (ProjectileID.Sets.TrailCacheLength[proj.type] <= 0 || failedToDrawAfterimages)
+            {
+                Vector2 startPos = drawCentered ? proj.Center : proj.position;
+                Vector2 drawPos2 = startPos - Main.screenPosition + new Vector2(0f, proj.gfxOffY);
+                var drawData2 = new Terraria.DataStructures.DrawData(texture, drawPos2, rectangle, proj.GetAlpha(lightColor));
+                GameShaders.Armor.Apply(armorShaderToUse, proj, drawData2);
+                Main.spriteBatch.Draw(texture, drawPos2, rectangle, proj.GetAlpha(lightColor), rotation, origin, scale, spriteEffects, 0f);
+            }
+        }
+
+        /// <summary>
+        /// 边缘锚定残影(移植自灾厄DrawAfterimagesFromEdge,子弹类用)。仅支持mode 0/2。
+        /// </summary>
+        public static void DrawAfterimagesFromEdge(Projectile proj, int mode, Color lightColor, Texture2D texture = null)
+        {
+            if (texture is null)
+                texture = TextureAssets.Projectile[proj.type].Value;
+
+            int frameHeight = texture.Height / Main.projFrames[proj.type];
+            int frameY = frameHeight * proj.frame;
+            float scale = proj.scale;
+            float rotation = proj.rotation;
+
+            Rectangle rectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
+
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (proj.spriteDirection == -1)
+                spriteEffects = SpriteEffects.FlipHorizontally;
+
+            Vector2 drawOrigin = new Vector2(texture.Width * 0.5f, proj.height * 0.5f);
+
+            switch (mode)
+            {
+                default:
+                    return;
+                case 0:
+                    for (int i = 0; i < proj.oldPos.Length; ++i)
+                    {
+                        Vector2 drawPos = proj.oldPos[i] + drawOrigin - Main.screenPosition + new Vector2(0f, proj.gfxOffY);
+                        Color color = proj.GetAlpha(lightColor) * ((float)(proj.oldPos.Length - i) / (float)proj.oldPos.Length);
+                        Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), color, rotation, drawOrigin, scale, spriteEffects, 0f);
+                    }
+                    return;
+                case 2:
+                    for (int i = 0; i < proj.oldPos.Length; ++i)
+                    {
+                        float afterimageRot = proj.oldRot[i];
+                        SpriteEffects sfxForThisAfterimage = proj.oldSpriteDirection[i] == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+                        Vector2 drawPos = proj.oldPos[i] + drawOrigin - Main.screenPosition + new Vector2(0f, proj.gfxOffY);
+                        Color color = proj.GetAlpha(lightColor) * ((float)(proj.oldPos.Length - i) / (float)proj.oldPos.Length);
+                        Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), color, afterimageRot, drawOrigin, scale, sfxForThisAfterimage, 0f);
+                    }
+                    return;
+            }
+        }
+
+        /// <summary>
+        /// 多色插值(移植自灾厄MulticolorLerp)。
+        /// </summary>
+        public static Color MulticolorLerp(float increment, params Color[] colors)
+        {
+            increment %= 0.999f;
+            int currentColorIndex = (int)(increment * colors.Length);
+            Color currentColor = colors[currentColorIndex];
+            Color nextColor = colors[(currentColorIndex + 1) % colors.Length];
+            return Color.Lerp(currentColor, nextColor, increment * colors.Length % 1f);
+        }
+
+        /// <summary>
+        /// 越界安全取物块(移植自灾厄ParanoidTileRetrieval)。
+        /// </summary>
+        public static Tile ParanoidTileRetrieval(int x, int y)
+        {
+            if (!WorldGen.InWorld(x, y))
+                return new Tile();
+            return Main.tile[x, y];
+        }
+
+        private const float WorldInsertionOffset = 15f;
+        /// <summary>
+        /// 物品出界时拉回世界边界内(移植自灾厄ForceItemIntoWorld)。
+        /// </summary>
+        public static bool ForceItemIntoWorld(Item item, float desiredDist = WorldInsertionOffset)
+        {
+            if (item is null || !item.active)
+                return false;
+
+            float worldEdge = Main.offLimitBorderTiles * 16f;
+            float dist = worldEdge + desiredDist;
+
+            float maxPosX = Main.maxTilesX * 16f;
+            float maxPosY = Main.maxTilesY * 16f;
+            bool moved = false;
+            if (item.position.X < worldEdge)
+            {
+                item.position.X = dist;
+                moved = true;
+            }
+            else if (item.position.X + item.width > maxPosX - worldEdge)
+            {
+                item.position.X = maxPosX - item.width - dist;
+                moved = true;
+            }
+            if (item.position.Y < worldEdge)
+            {
+                item.position.Y = dist;
+                moved = true;
+            }
+            else if (item.position.Y + item.height > maxPosY - worldEdge)
+            {
+                item.position.Y = maxPosY - item.height - dist;
+                moved = true;
+            }
+            return moved;
+        }
+
+        /// <summary>
+        /// 宝袋世界内脉冲绘制(移植自灾厄DrawTreasureBagInWorld)。
+        /// </summary>
+        public static bool DrawTreasureBagInWorld(Item item, SpriteBatch spriteBatch, ref float rotation, ref float scale, int whoAmI)
+        {
+            Texture2D texture = TextureAssets.Item[item.type].Value;
+            Rectangle frame = texture.Frame();
+
+            if (Main.itemAnimations[item.type] != null)
+                frame = Main.itemAnimations[item.type].GetFrame(texture, Main.itemFrameCounter[whoAmI]);
+
+            Vector2 frameOrigin = frame.Size() * 0.5f;
+            Vector2 offset = new Vector2(item.width / 2 - frameOrigin.X, item.height - frame.Height);
+            Vector2 drawPos = item.position - Main.screenPosition + frameOrigin + offset;
+
+            float localTime = item.timeSinceItemSpawned / 240f + Main.GlobalTimeWrappedHourly * 0.04f;
+
+            //全局时间转0-1三角波
+            float time = Main.GlobalTimeWrappedHourly % 4f / 2f;
+            if (time >= 1f)
+                time = 2f - time;
+            time = time * 0.5f + 0.5f;
+
+            for (int i = 0; i < 4; i++)
+            {
+                Vector2 pulseOffset = Vector2.UnitY.RotatedBy((i / 4f + localTime) * MathHelper.TwoPi) * time * 8f;
+                spriteBatch.Draw(texture, drawPos + pulseOffset, frame, new Color(90, 70, 255, 50), rotation, frameOrigin, scale, 0, 0);
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                Vector2 pulseOffset = Vector2.UnitY.RotatedBy((i / 3f + localTime) * MathHelper.TwoPi) * time * 4f;
+                spriteBatch.Draw(texture, drawPos + pulseOffset, frame, new Color(140, 120, 255, 77), rotation, frameOrigin, scale, 0, 0);
+            }
+
+            return true;
+        }
+
+        public static int SecondsToFrames(int seconds) => seconds * 60;
+        public static int SecondsToFrames(float seconds) => (int)MathF.Round(seconds * 60);
+
+        /// <summary>
+        /// 0-1输入映射为0-1-0正弦(移植自灾厄Convert01To010)。
+        /// </summary>
+        public static float Convert01To010(float value) => (float)Math.Sin(MathHelper.Pi * MathHelper.Clamp(value, 0f, 1f));
+
+        /// <summary>
+        /// 库存物品自定义缩放绘制(移植自灾厄DrawInventoryCustomScale)。
+        /// </summary>
+        public static void DrawInventoryCustomScale(SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale, float wantedScale = 1f, Vector2 drawOffset = default, SpriteEffects spriteEffects = SpriteEffects.None, float rotation = 0f)
+        {
+            wantedScale = Math.Max(scale, wantedScale * Main.inventoryScale);
+            position += drawOffset * wantedScale;
+            if (itemColor == Color.Transparent) itemColor = Color.White;
+            spriteBatch.Draw(texture, position, frame, itemColor.MultiplyRGB(drawColor), 0f, origin, wantedScale, SpriteEffects.None, 0);
+        }
+
+        /// <summary>
+        /// 库存物品右下角启停圆点(移植自灾厄DrawInventoryDot,用原版Extra_20贴图)。
+        /// </summary>
+        public static void DrawInventoryDot(SpriteBatch spriteBatch, Vector2 itemPosition, Vector2 dotOffset, bool enabled)
+        {
+            var tex = RequestTex("Terraria/Images/Extra_20");
+            var dotFrame = tex.Frame(1, 4, frameY: enabled ? 1 : 2);
+            spriteBatch.Draw(tex, itemPosition + dotOffset, dotFrame, Color.White, 0, dotFrame.Size() * 0.5f, Main.inventoryScale, SpriteEffects.None, 0);
+        }
+
+        /// <summary>
+        /// 八向描边文本(移植自灾厄DrawBorderStringEightWay)。
+        /// </summary>
+        public static void DrawBorderStringEightWay(SpriteBatch sb, DynamicSpriteFont font, string text, Vector2 baseDrawPosition, Color main, Color border, float scale = 1f)
+        {
+            for (int x = -1; x <= 1; x++)
+            {
+                for (int y = -1; y <= 1; y++)
+                {
+                    if (x == 0 && y == 0)
+                        continue;
+                    Vector2 drawPosition = baseDrawPosition + new Vector2(x, y);
+                    sb.DrawString(font, text, drawPosition, border, 0f, default, scale, SpriteEffects.None, 0f);
+                }
+            }
+            sb.DrawString(font, text, baseDrawPosition, main, 0f, default, scale, SpriteEffects.None, 0f);
+        }
+
+        /// <summary>
+        /// 圆形碰撞箱与矩形求交(移植自灾厄CircularHitboxCollision)。
+        /// </summary>
+        public static bool CircularHitboxCollision(Vector2 centerCheckPosition, float radius, Rectangle targetHitbox)
+        {
+            if (radius <= 0f)
+                return false;
+
+            float closestX = MathHelper.Clamp(centerCheckPosition.X, targetHitbox.Left, targetHitbox.Right);
+            float closestY = MathHelper.Clamp(centerCheckPosition.Y, targetHitbox.Top, targetHitbox.Bottom);
+
+            float dx = centerCheckPosition.X - closestX;
+            float dy = centerCheckPosition.Y - closestY;
+
+            return (dx * dx + dy * dy) <= (radius * radius);
+        }
+
+        /// <summary>
+        /// 追踪最近敌怪(移植自灾厄HomeInOnNPC)。锁定时+1额外更新,失锁还原(暂存于EGlobalProjectile.StoredEU)。
+        /// </summary>
+        public static void HomeInOnNPC(Projectile projectile, bool ignoreTiles, float distanceRequired, float homingVelocity, float inertia, bool respectIFrames = false)
+        {
+            if (!projectile.friendly)
+                return;
+
+            var gp = projectile.Entropy();
+            if (gp.StoredEU == -1)
+                gp.StoredEU = projectile.extraUpdates;
+
+            Vector2 destination = projectile.Center;
+            float maxDistance = distanceRequired;
+            bool locatedTarget = false;
+
+            float npcDistCompare = 25000f;
+            int index = -1;
+            foreach (NPC n in Main.ActiveNPCs)
+            {
+                float extraDistance = (n.width / 2) + (n.height / 2);
+                if (!n.CanBeChasedBy(projectile, false) || !projectile.WithinRange(n.Center, maxDistance + extraDistance) || (respectIFrames && (projectile.localNPCImmunity[n.whoAmI] > 0 || projectile.localNPCImmunity[n.whoAmI] == -1 || n.immune[projectile.owner] > 0)))
+                    continue;
+
+                float currentNPCDist = Vector2.Distance(n.Center, projectile.Center);
+                //带iframe的目标降权但不排除
+                if (respectIFrames && Projectile.perIDStaticNPCImmunity[projectile.type][n.whoAmI] > Main.GameUpdateCount)
+                    currentNPCDist += 1600;
+                if ((currentNPCDist < npcDistCompare) && (ignoreTiles || Collision.CanHit(projectile.Center, 1, 1, n.Center, 1, 1)))
+                {
+                    npcDistCompare = currentNPCDist;
+                    index = n.whoAmI;
+                }
+            }
+            if (index != -1)
+            {
+                destination = Main.npc[index].Center;
+                locatedTarget = true;
+            }
+
+            if (locatedTarget)
+            {
+                projectile.extraUpdates = gp.StoredEU + 1;
+                Vector2 homeDirection = (destination - projectile.Center).SafeNormalize(Vector2.UnitY);
+                projectile.velocity = (projectile.velocity * inertia + homeDirection * homingVelocity) / (inertia + 1f);
+            }
+            else
+            {
+                projectile.extraUpdates = gp.StoredEU;
+            }
+        }
+
+        /// <summary>
+        /// 欧拉法预判弹道(移植自灾厄CalculatePredictiveAimToTargetMaxUpdates)。
+        /// </summary>
+        public static Vector2 CalculatePredictiveAimToTargetMaxUpdates(Vector2 startingPosition, Vector2 targetPosition, Vector2 targetVelocity, float shootSpeed, int projMaxUpdates, int iterations = 4)
+        {
+            float previousTimeToReachDestination = 0f;
+            Vector2 currentTargetPosition = targetPosition;
+            for (int i = 0; i < iterations; i++)
+            {
+                float timeToReachDestination = Vector2.Distance(startingPosition, currentTargetPosition) / shootSpeed / projMaxUpdates;
+                currentTargetPosition += targetVelocity * (timeToReachDestination - previousTimeToReachDestination);
+                previousTimeToReachDestination = timeToReachDestination;
+            }
+            return (currentTargetPosition - startingPosition).SafeNormalize(Vector2.UnitY) * shootSpeed;
+        }
+        public static Vector2 CalculatePredictiveAimToTargetMaxUpdates(Vector2 startingPosition, Entity target, float shootSpeed, int projMaxUpdates, int iterations = 4)
+        {
+            return CalculatePredictiveAimToTargetMaxUpdates(startingPosition, target.Center, target.velocity, shootSpeed, projMaxUpdates, iterations);
+        }
+
+        /// <summary>
+        /// 随机方向随机速度(移植自灾厄RandomVelocity)。
+        /// </summary>
+        public static Vector2 RandomVelocity(float directionMult, float speedLowerLimit, float speedCap, float speedMult = 0.1f)
+        {
+            Vector2 velocity = new Vector2(Main.rand.NextFloat(-directionMult, directionMult), Main.rand.NextFloat(-directionMult, directionMult));
+            while (velocity.X == 0f && velocity.Y == 0f)
+            {
+                velocity = new Vector2(Main.rand.NextFloat(-directionMult, directionMult), Main.rand.NextFloat(-directionMult, directionMult));
+            }
+            velocity.Normalize();
+            velocity *= Main.rand.NextFloat(speedLowerLimit, speedCap) * speedMult;
+            return velocity;
+        }
+
+        /// <summary>
+        /// 木箭类弹药判定(移植自灾厄CheckWoodenAmmo)。
+        /// </summary>
+        public static bool CheckWoodenAmmo(int type, Player player)
+        {
+            if (player.hasMoltenQuiver && type == ProjectileID.FireArrow)
+                return true;
+            return type == ProjectileID.WoodenArrowFriendly;
+        }
+
+        /// <summary>
+        /// NPC平滑移动(移植自灾厄SmoothMovement)。
+        /// </summary>
+        public static void SmoothMovement(NPC npc, float movementDistanceGateValue, Vector2 distanceFromDestination, float baseVelocity, float acceleration, bool useSimpleFlyMovement)
+        {
+            float lerpValue = Utils.GetLerpValue(movementDistanceGateValue, 2400f, distanceFromDestination.Length(), true);
+
+            float minVelocity = distanceFromDestination.Length();
+            float minVelocityCap = baseVelocity;
+            if (minVelocity > minVelocityCap)
+                minVelocity = minVelocityCap;
+
+            Vector2 maxVelocity = distanceFromDestination / 24f;
+            float maxVelocityCap = minVelocityCap * 3f;
+            if (maxVelocity.Length() > maxVelocityCap)
+                maxVelocity = distanceFromDestination.SafeNormalize(Vector2.Zero) * maxVelocityCap;
+
+            Vector2 desiredVelocity = Vector2.Lerp(distanceFromDestination.SafeNormalize(Vector2.Zero) * minVelocity, maxVelocity, lerpValue);
+            if (useSimpleFlyMovement)
+                npc.SimpleFlyMovement(desiredVelocity, acceleration);
+            else
+                npc.velocity = desiredVelocity;
+        }
+
+        public static void SetMerge(int type1, int type2, bool merge = true)
+        {
+            if (type1 != type2)
+            {
+                Main.tileMerge[type1][type2] = merge;
+                Main.tileMerge[type2][type1] = merge;
+            }
+        }
+        public static void MergeWithSet(int myType, params int[] otherTypes)
+        {
+            for (int i = 0; i < otherTypes.Length; ++i)
+                SetMerge(myType, otherTypes[i]);
+        }
+        /// <summary>
+        /// 与常见世代物块合并(移植自灾厄MergeWithGeneral,灾厄星幻/硫海物块条目已去除)。
+        /// </summary>
+        public static void MergeWithGeneral(int type) => MergeWithSet(type, new int[] {
+            TileID.Dirt,
+            TileID.Mud,
+            TileID.ClayBlock,
+            TileID.Stone,
+            TileID.Ebonstone,
+            TileID.Crimstone,
+            TileID.Pearlstone,
+            TileID.Sand,
+            TileID.Ebonsand,
+            TileID.Crimsand,
+            TileID.Pearlsand,
+            TileID.SnowBlock,
+        });
+
+        /// <summary>
+        /// 取本模组本地化文本(移植自灾厄GetText,前缀Mods.CalamityEntropy.)。
+        /// </summary>
+        public static LocalizedText GetText(string key)
+        {
+            return Language.GetOrRegister("Mods.CalamityEntropy." + key);
+        }
+        /// <summary>
+        /// 取本模组本地化字符串(移植自灾厄GetTextValue,前缀Mods.CalamityEntropy.)。
+        /// </summary>
+        public static string GetTextValue(string key)
+        {
+            return Language.GetTextValue("Mods.CalamityEntropy." + key);
+        }
+        /// <summary>
+        /// 取物品名本地化(移植自灾厄GetItemName)。
+        /// </summary>
+        public static LocalizedText GetItemName(int itemID)
+        {
+            if (itemID < ItemID.Count)
+            {
+                return Language.GetText("ItemName." + ItemID.Search.GetName(itemID));
+            }
+            return GetTextFromModItem(itemID, "DisplayName");
+        }
+        public static LocalizedText GetItemName<T>() where T : ModItem => GetTextFromModItem(ModContent.ItemType<T>(), "DisplayName");
+        public static LocalizedText GetTextFromModItem(int itemID, string suffix)
+        {
+            var modItem = ItemLoader.GetItem(itemID);
+            return modItem.GetLocalization(suffix);
+        }
+        public static LocalizedText GetTextFromModItem<T>(string suffix) where T : ModItem => GetTextFromModItem(ModContent.ItemType<T>(), suffix);
+        public static string GetTextValueFromModItem(int itemID, string suffix) => GetTextFromModItem(itemID, suffix).ToString();
+        public static string GetTextValueFromModItem<T>(string suffix) where T : ModItem => GetTextFromModItem(ModContent.ItemType<T>(), suffix).ToString();
         #endregion
     }
 }

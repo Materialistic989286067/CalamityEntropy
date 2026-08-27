@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,7 +15,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
         {
             Item.DefaultToWhip(ModContent.ProjectileType<CrystedgeWhipSpawner>(), 48, 3, 5, 72);
             Item.rare = ItemRarityID.Pink;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.autoReuse = true;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = null;

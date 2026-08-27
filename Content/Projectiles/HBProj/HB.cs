@@ -1,5 +1,7 @@
 ﻿using CalamityEntropy.Content.Items.Weapons;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.ModLoader;
@@ -8,6 +10,11 @@ namespace CalamityEntropy.Content.Projectiles.HBProj
 {
     public class HB : ModProjectile
     {
+        //本体与眼睛贴图,加载期就位,绘制时不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/HBProj/HB")]
+        internal static Asset<Texture2D> BodyTex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/HBProj/iMark")]
+        internal static Asset<Texture2D> EyeTex;
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Magic;
@@ -57,8 +64,8 @@ namespace CalamityEntropy.Content.Projectiles.HBProj
             }
 
 
-            Texture2D part1 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/HBProj/HB").Value;
-            Texture2D eye = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/HBProj/iMark").Value;
+            Texture2D part1 = BodyTex.Value;
+            Texture2D eye = EyeTex.Value;
 
 
             int scl = (int)(230 + 25 * Math.Cos(counter / 6));

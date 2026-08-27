@@ -1,5 +1,6 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items.Weapons;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
@@ -9,6 +10,9 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
 {
     public class ZeratosFireball0 : ModProjectile
     {
+        //帧动画数组(ZeratosFireball0~4),加载期就位,PreDraw 不再拼接路径逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/SamsaraCasket/ZeratosFireball", 0, 5, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] Frames;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
@@ -58,7 +62,7 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
         {
 
             lightColor = Color.White;
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/ZeratosFireball" + frame.ToString()).Value;
+            Texture2D tex = Frames[frame];
             SpriteBatch sb = Main.spriteBatch;
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);

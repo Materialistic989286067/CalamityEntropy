@@ -3,10 +3,7 @@ using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Rogue;
+using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -18,25 +15,24 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
-    public class AzafureAirReaper : RogueWeapon, IAzafureEnhancable
+    public class AzafureAirReaper : ModItem, ICEChargeWeapon, IAzafureEnhancable
     {
-        public override float StealthDamageMultiplier => 0.8f;
-        public override float StealthVelocityMultiplier => 1.2f;
-        public override float StealthKnockbackMultiplier => 2f;
+        // 充能条 5 秒；原潜伏乘数 伤害0.8/弹速1.2/击退2 并入释放乘数
+        public CEChargeProfile ChargeProfile => CEChargeProfile.ChargeBar(5f, 0.8f, 1.2f, 2f);
 
         public override void SetDefaults()
         {
             Item.width = 78;
             Item.height = 78;
             Item.damage = 9;
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Melee;
             Item.useTime = 32;
             Item.useAnimation = 32;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.UseSound = null;
             Item.autoReuse = true;
@@ -51,22 +47,18 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(5)
-                .AddIngredient<MysteriousCircuitry>(4)
+                .AddIngredient<AzafureCircuitry>(4)
                 .AddRecipeGroup(CERecipeGroups.IronBar, 8)
                 .AddTile(TileID.Anvils)
                 .Register();
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            bool empowered = CEChargeWeapon.TryConsume(player, Item);
             int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
-            if (player.Calamity().StealthStrikeAvailable())
+            if (empowered && p >= 0 && p < Main.maxProjectiles)
             {
-                if (p.WithinBounds(Main.maxProjectiles))
-                {
-                    Main.projectile[p].Calamity().stealthStrike = true;
-                    p.ToProj().netUpdate = true;
-                }
-                return false;
+                CEChargeWeapon.Empower(p);
             }
             return false;
         }
@@ -77,7 +69,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/AzafureAirReaper";
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 6;
             Projectile.width = Projectile.height = 80;
@@ -145,7 +137,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             if (counter == 0)
             {
-                CEUtils.PlaySound("scytheswing", Main.rand.NextFloat(1.3f, 1.5f) + (Projectile.Calamity().stealthStrike ? 0.2f : 0), Projectile.Center, 4, CEUtils.WeapSound);
+                CEUtils.PlaySound("scytheswing", Main.rand.NextFloat(1.3f, 1.5f) + (Projectile.IsEmpowered() ? 0.2f : 0), Projectile.Center, 4, CEUtils.WeapSound);
             }
             Player player = Projectile.GetOwner();
             counter++;
@@ -160,13 +152,13 @@ namespace CalamityEntropy.Content.Items.Weapons
                 }
                 StickTime++;
 
-                if (StickTime > (Projectile.Calamity().stealthStrike ? 180 : 20) * (player.AzafureEnhance() ? 1.6f : 1))
+                if (StickTime > (Projectile.IsEmpowered() ? 180 : 20) * (player.AzafureEnhance() ? 1.6f : 1))
                 {
                     backing = true;
                 }
                 else
                 {
-                    if (Projectile.Calamity().stealthStrike)
+                    if (Projectile.IsEmpowered())
                     {
                         if (CEUtils.getDistance(Projectile.Center, stick.Center) > 90)
                         {

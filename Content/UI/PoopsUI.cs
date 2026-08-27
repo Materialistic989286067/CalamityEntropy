@@ -1,13 +1,19 @@
 ﻿using CalamityEntropy.Content.UI.Poops;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.UI
 {
     public static class PoopsUI
     {
+        //槽位框与持握图标,加载期由 VaultLoaden 赋值,只在 UI 绘制里读取
+        [VaultLoaden("CalamityEntropy/Content/UI/frame")]
+        private static Asset<Texture2D> frameTex;
+        [VaultLoaden("CalamityEntropy/Content/UI/hold")]
+        private static Asset<Texture2D> holdTex;
         public static float holdAnmj = 0;
         public static float holdAnm = 0;
         public static void Draw()
@@ -15,7 +21,7 @@ namespace CalamityEntropy.Content.UI
             Vector2 pos = new Vector2(880, 40);
             int maxShow = 9;
             Vector2 drawPos = pos;
-            Texture2D frame = ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/frame").Value;
+            Texture2D frame = frameTex.Value;
             List<Poop> poops = Main.LocalPlayer.Entropy().poops;
             for (int i = 0; i < maxShow; i++)
             {
@@ -41,7 +47,7 @@ namespace CalamityEntropy.Content.UI
                 Texture2D texpoop = Main.LocalPlayer.Entropy().PoopHold.getTexture();
                 Main.spriteBatch.Draw(texpoop, pos + new Vector2(24 + maxShow * 48, 24) + new Vector2(0, 8).RotatedBy(hrot), null, Color.White, hrot, texpoop.Size() / 2, 1 * scale, SpriteEffects.None, 0);
             }
-            Texture2D hold = ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/hold").Value;
+            Texture2D hold = holdTex.Value;
             Main.spriteBatch.Draw(hold, pos + new Vector2(24 + maxShow * 48, 24), null, Color.White, hrot, hold.Size() / 2, 2 * scale, SpriteEffects.None, 0);
             Main.spriteBatch.UseBlendState_UI(BlendState.AlphaBlend);
             holdAnm += holdAnmj;

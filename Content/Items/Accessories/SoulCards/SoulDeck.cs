@@ -1,5 +1,3 @@
-﻿using CalamityMod.Items;
-using CalamityMod.Items.Materials;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -14,7 +12,7 @@ namespace CalamityEntropy.Content.Items.Accessories.SoulCards
         {
             Item.width = 22;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1);
             Item.rare = ItemRarityID.Red;
             Item.accessory = true;
         }
@@ -64,7 +62,7 @@ namespace CalamityEntropy.Content.Items.Accessories.SoulCards
                 .AddIngredient<RequiemCard>()
                 .AddIngredient<WisperCard>()
                 .AddIngredient<CursedThread>()
-                .AddIngredient<CoreofCalamity>()
+                .AddIngredient(ItemID.ChlorophyteBar)
                 .AddTile(TileID.Bookcases)
                 .Register();
         }

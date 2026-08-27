@@ -1,8 +1,10 @@
-﻿using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -15,6 +17,11 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
 
     public class CruiserBlackhole : ModProjectile
     {
+        //黑洞主体与吸积盘贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Cruiser/Blackhole_p1")]
+        internal static Asset<Texture2D> BlackholeP1Tex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Cruiser/Blackhole_p2")]
+        internal static Asset<Texture2D> BlackholeP2Tex;
         public List<Vector2> tp1 = new List<Vector2>();
         public List<Vector2> tp2 = new List<Vector2>();
 
@@ -90,7 +97,7 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
                     {
                         SoundStyle s = new("CalamityEntropy/Assets/Sounds/blackholeEnd");
                         SoundEngine.PlaySound(s, Projectile.Center);
-                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = Utils.Remap(Main.LocalPlayer.Distance(Projectile.Center), 1800f, 1000f, 0f, 4.5f) * 8;
+                        CEUtils.SetShake(Projectile.Center, 36, 1800);
 
                     }
                     for (int i = 0; i < 64; i++)
@@ -137,9 +144,9 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
         {
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-            Texture2D htx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/lightball").Value;
-            Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Cruiser/Blackhole_p1").Value;
-            Texture2D tx2 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Cruiser/Blackhole_p2").Value;
+            Texture2D htx = CEExtraAssets.lightball;
+            Texture2D tx = BlackholeP1Tex.Value;
+            Texture2D tx2 = BlackholeP2Tex.Value;
             Projectile.ai[0] += 6;
             Main.spriteBatch.Draw(htx, Projectile.Center - Main.screenPosition, null, Color.Black, 0, htx.Size() / 2, 2f + (float)(1f + Math.Cos(Projectile.ai[0] / 60f) * 0.3f) * scale2, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(htx, Projectile.Center - Main.screenPosition, null, Color.Black, 0, htx.Size() / 2, 2f + (float)(1f + Math.Cos(Projectile.ai[0] / 60f) * 0.3f) * scale2, SpriteEffects.None, 0);

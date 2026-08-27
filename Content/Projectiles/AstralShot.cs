@@ -1,6 +1,4 @@
-﻿using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.NPCs.AstrumDeus;
+﻿using CalamityEntropy.Content.Buffs.PortsDoT;
 using System;
 using Terraria;
 using Terraria.Audio;
@@ -37,7 +35,7 @@ namespace CalamityEntropy.Content.Projectiles
             if (playsound)
             {
                 playsound = false;
-                SoundEngine.PlaySound(AstrumDeusHead.LaserSound, Projectile.Center);
+                SoundEngine.PlaySound(new Terraria.Audio.SoundStyle("CalamityEntropy/Assets/Sounds/lasershoot") { Volume = 0.35f }, Projectile.Center);
             }
             Projectile.extraUpdates = 2;
             float maxVelocity = 10f;
@@ -80,7 +78,7 @@ namespace CalamityEntropy.Content.Projectiles
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CEUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
             return false;
         }
     }

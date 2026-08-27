@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -6,6 +8,9 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class Lcircle : ModProjectile
     {
+        //光圈贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Lcircle")]
+        internal static Asset<Texture2D> CircleTex;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
@@ -39,7 +44,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override bool PreDraw(ref Color lightColor)
         {
 
-            Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Lcircle").Value;
+            Texture2D tx = CircleTex.Value;
             Main.spriteBatch.Draw(tx, Projectile.Center - Main.screenPosition, null, Color.White * ((float)Projectile.timeLeft / 20f), Projectile.rotation, new Vector2(tx.Width, tx.Height) / 2, 1 + ((float)(60 - Projectile.timeLeft)) / 120f, SpriteEffects.None, 0);
 
             return false;

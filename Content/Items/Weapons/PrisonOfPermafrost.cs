@@ -1,11 +1,8 @@
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.Rarities;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons
@@ -24,7 +21,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.channel = true;
             Item.knockBack = 5;
             Item.value = 145000;
-            Item.rare = ModContent.RarityType<HotPink>();
+            Item.rare = ModContent.RarityType<VoidPurple>();
             Item.UseSound = null;
             Item.shoot = ModContent.ProjectileType<PrisonOfPermafrostCircle>();
             Item.shootSpeed = 1f;
@@ -56,11 +53,11 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             Recipe recipe = CreateRecipe();
-            recipe.AddIngredient(ModContent.ItemType<IceBarrage>(), 1);
-            recipe.AddIngredient(ModContent.ItemType<GlacialEmbrace>(), 1);
-            recipe.AddIngredient(ModContent.ItemType<AuricBar>(), 5);
-            recipe.AddIngredient(ModContent.ItemType<AscendantSpiritEssence>(), 2);
-            recipe.AddTile(ModContent.TileType<CosmicAnvil>());
+            recipe.AddIngredient(ItemID.LastPrism, 1);
+            recipe.AddIngredient(ItemID.OpticStaff, 1);
+            recipe.AddIngredient(ModContent.ItemType<VoidBar>(), 5);
+            recipe.AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 2);
+            recipe.AddTile(TileID.LunarCraftingStation);
             recipe.Register();
         }
     }

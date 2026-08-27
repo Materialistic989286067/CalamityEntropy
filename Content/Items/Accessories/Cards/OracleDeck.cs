@@ -1,7 +1,4 @@
-﻿using CalamityEntropy.Common;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using CalamityEntropy.Common;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -17,13 +14,14 @@ namespace CalamityEntropy.Content.Items.Accessories.Cards
             Item.width = 22;
             Item.defense = 8;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1);
             Item.rare = ItemRarityID.Red;
             Item.accessory = true;
 
         }
         public static int CRIT = 15;
-        public static float STEALTH = 0.1f;
+        // 原+10%潜行上限,潜行退役后按 Echo 前缀先例减半转通用伤害
+        public static float DAMAGE = 0.05f;
         public static int MINIONADD = 1;
         public static int ArmorPenet = 15;
         public static float MELEEAS = 0.1f;
@@ -32,7 +30,7 @@ namespace CalamityEntropy.Content.Items.Accessories.Cards
         {
             player.Entropy().oracleDeckInInv = true;
             player.GetCritChance(DamageClass.Generic) += CRIT;
-            player.Calamity().rogueStealthMax += STEALTH;
+            player.GetDamage(DamageClass.Generic) += DAMAGE;
             player.maxMinions += MINIONADD;
             player.GetArmorPenetration(DamageClass.Generic) += ArmorPenet;
             player.GetAttackSpeed(DamageClass.Melee) += MELEEAS;
@@ -42,7 +40,7 @@ namespace CalamityEntropy.Content.Items.Accessories.Cards
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             tooltips.Replace("[CR]", CRIT);
-            tooltips.Replace("[ST]", STEALTH.ToPercent());
+            tooltips.Replace("[ST]", DAMAGE.ToPercent());
             tooltips.Replace("[MN]", MINIONADD);
             tooltips.Replace("[AP]", ArmorPenet);
             tooltips.Replace("[ATS]", MELEEAS.ToPercent());
@@ -70,7 +68,7 @@ namespace CalamityEntropy.Content.Items.Accessories.Cards
                 .AddIngredient<TemperanceCard>()
                 .AddIngredient<EnduranceCard>()
                 .AddIngredient<ThreadOfFate>()
-                .AddIngredient<CoreofCalamity>()
+                .AddIngredient(ItemID.ChlorophyteBar)
                 .AddTile(TileID.Bookcases)
                 .Register();
         }

@@ -1,5 +1,7 @@
-﻿using CalamityEntropy.Content.Items.Weapons;
-using CalamityMod;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Items.Weapons;
+using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Weapons;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
@@ -16,7 +18,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = CEUtils.RogueDC;
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 24;
             Projectile.height = 24;
             Projectile.friendly = true;
@@ -159,7 +161,7 @@ namespace CalamityEntropy.Content.Projectiles
                 homing = true;
             }
             CEUtils.PlaySound("bne_hit2", pos: Projectile.Center);
-            if (!hited && Projectile.Calamity().stealthStrike)
+            if (!hited && Projectile.IsEmpowered())
             {
                 CEUtils.PlaySound("crystalShieldBreak", pos: Projectile.Center);
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<AmethystExplosion>(), Projectile.damage, 1, Projectile.owner);
@@ -245,9 +247,9 @@ namespace CalamityEntropy.Content.Projectiles
                 if (vep.Count >= 3)
                 {
                     Main.spriteBatch.UseBlendState(BlendState.Additive, SamplerState.LinearWrap);
-                    gd.Textures[0] = CEUtils.getExtraTex("Streak2");
+                    gd.Textures[0] = CEExtraAssets.Streak2;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, vep.ToArray(), 0, vep.Count - 2);
-                    gd.Textures[0] = CEUtils.getExtraTex("Streak1");
+                    gd.Textures[0] = CEExtraAssets.Streak1;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, vew.ToArray(), 0, vew.Count - 2);
                     Main.spriteBatch.ExitShaderRegion();
                 }

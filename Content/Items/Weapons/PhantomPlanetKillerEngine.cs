@@ -2,8 +2,6 @@
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
-using CalamityMod.Items.Weapons.Summon;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -52,8 +50,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<CosmicViperEngine>())
-                .AddIngredient(ModContent.ItemType<PoleWarper>())
+                .AddIngredient(ItemID.StardustDragonStaff)
+                .AddIngredient(ItemID.StardustCellStaff)
                 .AddIngredient(ModContent.ItemType<VoidBar>(), 5)
                 .AddTile(ModContent.TileType<VoidWellTile>()).Register();
         }

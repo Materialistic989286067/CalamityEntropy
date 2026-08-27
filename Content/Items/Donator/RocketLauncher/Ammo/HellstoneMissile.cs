@@ -66,12 +66,12 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
             //PRT_ShineParticle FollowOwner等字段spawn后赋,Configure只管Additive
             PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.Red * 0.3f, scale * 0.8f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
             PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.White * 0.3f, scale * 0.5f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Firebrick * 1.6f, 0.005f).Configure("CalamityMod/Particles/SmokeExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Firebrick * 1.6f, 0.005f).Configure("CalamityMod/Particles/SmokeExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.045f, 22);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Firebrick * 1.6f, 0.005f).Configure("CalamityMod/Particles/SmokeExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.04f, 20);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Firebrick * 1.6f, 0.005f).Configure("CalamityMod/Particles/SmokeExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 18);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Firebrick * 1.6f, 0.005f).Configure("CalamityMod/Particles/SmokeExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.03f, 16);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Firebrick * 1.6f, 0.005f).Configure("CalamityMod/Particles/SmokeExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.025f, 14);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Firebrick * 1.6f, 0.005f).Configure("CalamityEntropy/Assets/Particles/SmokeExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Firebrick * 1.6f, 0.005f).Configure("CalamityEntropy/Assets/Particles/SmokeExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.045f, 22);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Firebrick * 1.6f, 0.005f).Configure("CalamityEntropy/Assets/Particles/SmokeExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.04f, 20);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Firebrick * 1.6f, 0.005f).Configure("CalamityEntropy/Assets/Particles/SmokeExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 18);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Firebrick * 1.6f, 0.005f).Configure("CalamityEntropy/Assets/Particles/SmokeExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.03f, 16);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Firebrick * 1.6f, 0.005f).Configure("CalamityEntropy/Assets/Particles/SmokeExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.025f, 14);
 
         }
         public override void SpawnParticle(Vector2 vel)

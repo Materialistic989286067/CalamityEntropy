@@ -10,9 +10,7 @@ namespace CalamityEntropy.Common
         public override ConfigScope Mode => ConfigScope.ServerSide;
         [Header("Misc")]
 
-        [DefaultValue(true)]
-        public bool ClearStealthWhenChangeEquipSet { get; set; }
-
+        //脱离灾厄:ClearStealthWhenChangeEquipSet 已随盗贼潜行系统退役删除
         [DefaultValue(false)]
         public bool BramblecleaveAlwaysUnlockAllSkill { get; set; }
 
@@ -27,9 +25,7 @@ namespace CalamityEntropy.Common
         [Increment(0.5f)]
         public float LeastDamageSufferedBasedOnMaxHealth { get; set; }
 
-        [DefaultValue(true)]
-        public bool RogueAccessoriesProvide40Stealth { get; set; }
-
+        //脱离灾厄:RogueAccessoriesProvide40Stealth 已随盗贼潜行系统退役删除
         [DefaultValue(true)]
         [ReloadRequired]
         public bool EnableArmorPrefix { get; set; }

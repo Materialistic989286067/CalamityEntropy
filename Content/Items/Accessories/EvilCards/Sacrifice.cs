@@ -1,6 +1,4 @@
-﻿using CalamityEntropy.Common;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using CalamityEntropy.Common;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,7 +12,7 @@ namespace CalamityEntropy.Content.Items.Accessories.EvilCards
         {
             Item.width = 22;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
 
@@ -29,8 +27,8 @@ namespace CalamityEntropy.Content.Items.Accessories.EvilCards
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<EssenceofHavoc>(), 6)
-                .AddIngredient(ModContent.ItemType<PerennialBar>(), 2)
+                .AddIngredient(ItemID.SoulofNight, 6)
+                .AddIngredient(ItemID.ChlorophyteBar, 2)
                 .Register();
         }
     }

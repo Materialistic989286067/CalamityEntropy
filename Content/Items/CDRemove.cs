@@ -1,4 +1,4 @@
-﻿using CalamityMod;
+﻿using CalamityEntropy.Core.Cooldowns;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -27,7 +27,7 @@ namespace CalamityEntropy.Content.Items
 
         public override bool? UseItem(Player player)
         {
-            player.Calamity().cooldowns.Clear();
+            player.ClearCooldowns();
             return true;
         }
 

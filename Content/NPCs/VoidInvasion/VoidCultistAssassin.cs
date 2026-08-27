@@ -1,5 +1,6 @@
-﻿using CalamityMod.World;
+﻿using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
@@ -10,6 +11,19 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
 {
     public class VoidCultistAssassin : VoidCultist
     {
+        //注意 SetDefaults 里往 walking 加帧的写法不能改读这些字段:SetDefaults 在加载期与服务器上都会跑
+        [VaultLoaden("CalamityEntropy/Content/NPCs/VoidInvasion/Assassin/preatk", 1, 9, AssetMode = AssetMode.TextureValueArray)]
+        private static Texture2D[] preAtkFrames;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/VoidInvasion/Assassin/postatk", 1, 8, AssetMode = AssetMode.TextureValueArray)]
+        private static Texture2D[] postAtkFrames;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/VoidInvasion/Assassin/atk")]
+        private static Asset<Texture2D> atkTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/VoidInvasion/Assassin/body")]
+        private static Asset<Texture2D> bodyTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/VoidInvasion/Assassin/handLeft")]
+        private static Asset<Texture2D> leftHandTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/VoidInvasion/Assassin/handRight")]
+        private static Asset<Texture2D> rightHandTex;
         public List<Vector2> oldPos = new List<Vector2>();
         public override void SetDefaults()
         {
@@ -18,9 +32,9 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             this.walking.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/VoidInvasion/Assassin/walk2").Value);
         }
 
-        public override Texture2D BodyTex => ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/VoidInvasion/Assassin/body").Value;
-        public override Texture2D LeftHandTex => ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/VoidInvasion/Assassin/handLeft").Value;
-        public override Texture2D RightHandTex => ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/VoidInvasion/Assassin/handRight").Value;
+        public override Texture2D BodyTex => bodyTex.Value;
+        public override Texture2D LeftHandTex => leftHandTex.Value;
+        public override Texture2D RightHandTex => rightHandTex.Value;
         public int attackAnmStyle = 0;
         public int attackFrameCounter = 0;
         public int attackFrame = 0;
@@ -112,15 +126,16 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                 {
                     aiStyle = AIStyle.Avoid;
                     AvoidTime = 80;
+                    // 难度轴按裁定表收敛：复仇→专家、死亡→大师（组合判定按代入后化简）
                     if (Main.masterMode)
                     {
                         AvoidTime -= 23;
                     }
-                    if (CalamityWorld.revenge)
+                    if (Main.expertMode)
                     {
                         AvoidTime -= 23;
                     }
-                    if (Main.masterMode && CalamityWorld.death)
+                    if (Main.masterMode)
                     {
                         if (Main.rand.NextBool(3))
                         {
@@ -135,8 +150,8 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                 }
             }
         }
-        public override int CloseTime => (Main.masterMode && CalamityWorld.death ? 20 : base.CloseTime);
-        public override int maxAtkDist => (Main.masterMode && CalamityWorld.death ? 800 : base.maxAtkDist);
+        public override int CloseTime => (Main.masterMode ? 20 : base.CloseTime);
+        public override int maxAtkDist => (Main.masterMode ? 800 : base.maxAtkDist);
 
         public override void PostAI()
         {
@@ -166,16 +181,16 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             {
                 if (attackAnmStyle == 0)
                 {
-                    return ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/VoidInvasion/Assassin/preatk" + (attackFrame + 1).ToString()).Value;
+                    return preAtkFrames[attackFrame];
                 }
                 if (attackAnmStyle == 1)
                 {
-                    return ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/VoidInvasion/Assassin/atk").Value;
+                    return atkTex.Value;
 
                 }
                 if (attackAnmStyle == 2)
                 {
-                    return ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/VoidInvasion/Assassin/postatk" + (attackFrame + 1).ToString()).Value;
+                    return postAtkFrames[attackFrame];
                 }
             }
             return base.getTex();

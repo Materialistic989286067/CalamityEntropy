@@ -1,9 +1,6 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Ranged;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -24,7 +21,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 8f;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
             Item.rare = ModContent.RarityType<VoidPurple>();
             Item.UseSound = null;
             Item.autoReuse = false;
@@ -54,8 +51,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<AstrealDefeat>(), 1)
-                .AddIngredient(ModContent.ItemType<DarkPlasma>(), 8)
+                .AddIngredient(ItemID.Phantasm, 1)
+                .AddIngredient(ModContent.ItemType<NihilityFragments>(), 8)
                 .AddIngredient(ModContent.ItemType<VoidBar>(), 5)
                 .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();

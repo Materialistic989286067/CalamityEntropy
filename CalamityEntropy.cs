@@ -1,8 +1,4 @@
-﻿global using CalamityMod.Items.Placeables.Abyss;
-global using CalamityMod.Items.Placeables.Furniture;
-global using CalamityMod.Items.Placeables.SunkenSea;
-global using Microsoft.Xna.Framework;
-using AlchemistNPCLite.NPCs;
+﻿global using Microsoft.Xna.Framework;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.ArmorPrefixes;
 using CalamityEntropy.Content.Buffs;
@@ -41,50 +37,6 @@ using CalamityEntropy.Content.UI;
 using CalamityEntropy.Content.UI.EntropyBookUI;
 using CalamityEntropy.Content.UI.Poops;
 using CalamityEntropy.Utilities;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.CalPlayer.Dashes;
-using CalamityMod.Events;
-using CalamityMod.Items.LoreItems;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Pets;
-using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.NPCs.AquaticScourge;
-using CalamityMod.NPCs.AstrumAureus;
-using CalamityMod.NPCs.AstrumDeus;
-using CalamityMod.NPCs.BrimstoneElemental;
-using CalamityMod.NPCs.Bumblebirb;
-using CalamityMod.NPCs.CalClone;
-using CalamityMod.NPCs.CeaselessVoid;
-using CalamityMod.NPCs.Crabulon;
-using CalamityMod.NPCs.Cryogen;
-using CalamityMod.NPCs.DesertScourge;
-using CalamityMod.NPCs.DevourerofGods;
-using CalamityMod.NPCs.ExoMechs.Apollo;
-using CalamityMod.NPCs.ExoMechs.Ares;
-using CalamityMod.NPCs.ExoMechs.Artemis;
-using CalamityMod.NPCs.ExoMechs.Thanatos;
-using CalamityMod.NPCs.GreatSandShark;
-using CalamityMod.NPCs.HiveMind;
-using CalamityMod.NPCs.Leviathan;
-using CalamityMod.NPCs.OldDuke;
-using CalamityMod.NPCs.Perforator;
-using CalamityMod.NPCs.PlaguebringerGoliath;
-using CalamityMod.NPCs.Polterghast;
-using CalamityMod.NPCs.PrimordialWyrm;
-using CalamityMod.NPCs.ProfanedGuardians;
-using CalamityMod.NPCs.Providence;
-using CalamityMod.NPCs.Ravager;
-using CalamityMod.NPCs.Signus;
-using CalamityMod.NPCs.SlimeGod;
-using CalamityMod.NPCs.StormWeaver;
-using CalamityMod.NPCs.SunkenSea;
-using CalamityMod.NPCs.SupremeCalamitas;
-using CalamityMod.NPCs.Yharon;
-using CalamityMod.UI;
-using CalamityMod.UI.CalamitasEnchants;
 using InnoVault;
 using InnoVault.Actors;
 using InnoVault.PRT;
@@ -112,6 +64,11 @@ namespace CalamityEntropy
 {
     public partial class CalamityEntropy : Mod
     {
+        //玩家护壳贴图在加载期就位,只在客户端绘制钩子里读取
+        [VaultLoaden("CalamityEntropy/Assets/Extra/shell")]
+        internal static Asset<Texture2D> ShellTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/MariviniumShield")]
+        internal static Asset<Texture2D> MariviniumShieldTex;
         internal static List<ICELoader> ILoaders { get; private set; }
         public static CESpawnConditionBestiaryInfoElement theVoid_SCBIE;
         public static ref bool EntropyMode => ref EDownedBosses.EntropyMode;
@@ -192,15 +149,12 @@ namespace CalamityEntropy
             armorForgingStationUI.Activate();
             userInterface = new UserInterface();
             userInterface.SetState(armorForgingStationUI);
-            EnchantmentManager.ItemUpgradeRelationship[ModContent.ItemType<VoidEcho>()] = ModContent.ItemType<Mercy>();
             ets = true;
             pixel = CEUtils.getExtraTex("white");
 
             AbyssalWraith.loadHead();
             CruiserHead.loadHead();
 
-            BossHealthBarManager.BossExclusionList.Add(ModContent.NPCType<CruiserBody>());
-            BossHealthBarManager.BossExclusionList.Add(ModContent.NPCType<CruiserTail>());
             EntropySkies.setUpSkies();
 
             On_MapHeadRenderer.DrawPlayerHead += drawPlayerHeadHook;
@@ -235,16 +189,10 @@ namespace CalamityEntropy
             On_Player.Hurt_HurtInfo_bool += on_player_hurt;
             On_Player.Update_NPCCollision += update_npc_collision;
             On_Player.WaterCollision += waterCollisionHook;
-            On_SoundPlayer.Play += playSnd;
             On_Player.ApplyEquipFunctional += apply_equip_func;
             On_Player.ApplyMeleeScale += apply_melee_scale;
             
             EModSys.timer = 0;
-            BossRushEvent.Bosses.Insert(34, new BossRushEvent.Boss(ModContent.NPCType<NihilityActeriophage>(), permittedNPCs: new int[] { ModContent.NPCType<ChaoticCell>() }));
-            BossRushEvent.Bosses.Insert(42, new BossRushEvent.Boss(ModContent.NPCType<CruiserHead>(), permittedNPCs: new int[] { ModContent.NPCType<CruiserBody>(), ModContent.NPCType<CruiserTail>() }));
-            BossRushEvent.Bosses.Insert(28, new BossRushEvent.Boss(ModContent.NPCType<TheProphet>(), permittedNPCs: new int[] { ModContent.NPCType<TheProphet>() }));
-            BossRushEvent.Bosses.Insert(22, new BossRushEvent.Boss(ModContent.NPCType<Luminaris>(), permittedNPCs: new int[] { ModContent.NPCType<Luminaris>() }));
-            BossRushEvent.Bosses.Insert(12, new BossRushEvent.Boss(ModContent.NPCType<Apsychos>(), permittedNPCs: new int[] { ModContent.NPCType<Apsychos>(), ModContent.NPCType<ApsychosTail>() }));
             EModILEdit.load();
 
 
@@ -282,15 +230,6 @@ namespace CalamityEntropy
             }
         }
 
-        private SlotId playSnd(On_SoundPlayer.orig_Play orig, SoundPlayer self, ref SoundStyle style, Vector2? position, SoundUpdateCallback updateCallback)
-        {
-            if (Main.dedServ || Main.gameMenu || !Main.LocalPlayer.TryGetModPlayer<PGetPlayer>(out var pp) || !pp.accVanity || !Main.LocalPlayer.HasBuff<AdrenalineMode>() || pp.count == 0)
-                return orig(self, ref style, position, updateCallback);
-
-            var newStyle = ChargingYuzu.cialloSnd[Main.rand.Next(ChargingYuzu.cialloSnd.Count)];
-            return orig(self, ref newStyle, position, updateCallback);
-        }
-
         private void waterCollisionHook(On_Player.orig_WaterCollision orig, Player self, bool fallThrough, bool ignorePlats)
         {
             if (self.Entropy().MariviniumSet)
@@ -300,7 +239,6 @@ namespace CalamityEntropy
                 self.velocity = Collision.TileCollision(self.position, self.velocity + new Vector2(0, self.controlDown ? (self.controlJump ? -self.velocity.Y : 5) : 0), self.width, num, fallThrough, ignorePlats, (int)self.gravDir);
                 Vector2 vector2 = self.velocity;
                 self.position += vector2;
-                self.Calamity().infiniteFlight = true;
                 if (self.wingTime < self.wingTimeMax)
                     self.wingTime = self.wingTimeMax;
             }
@@ -519,14 +457,12 @@ namespace CalamityEntropy
         {
             CommonEffects.Unload();
             CELists.Unload();
-            Apsychos.shader = null;
             Typer.activeTypers = null;
             ScreenShaker.Unload();
             VanityDisplaySys.VanityItems = null;
             CEUtils.SoundStyles = null;
             theVoid_SCBIE = null;
             StartBagGItem.items = null;
-            EModILEdit.edgeTex = null;
             ShadowCrystalDeltarune.Reset();
             EBookUI.shader = null;
             if (ILoaders != null)
@@ -580,7 +516,6 @@ namespace CalamityEntropy
             On_Projectile.FillWhipControlPoints -= fill_whip_ctrl_points_hook;
             On_Projectile.GetWhipSettings -= get_whip_settings_hook;
             On_Player.WaterCollision -= waterCollisionHook;
-            On_SoundPlayer.Play -= playSnd;
             //On_Player.ApplyDamageToNPC -= applydamagetonpc;
             On_Player.GetTotalCritChance -= gettotalcrit;
             On_Main.DrawCursor -= draw_cursor_hook;
@@ -627,8 +562,8 @@ namespace CalamityEntropy
         {
             orig(self);
             Main.spriteBatch.begin_();
-            Texture2D shell = CEUtils.getExtraTex("shell");
-            Texture2D crystalShield = CEUtils.getExtraTex("MariviniumShield");
+            Texture2D shell = ShellTex.Value;
+            Texture2D crystalShield = MariviniumShieldTex.Value;
             foreach (Player player in Main.ActivePlayers)
             {
                 if (player.Entropy().nihShellCount > 0)
@@ -681,8 +616,8 @@ namespace CalamityEntropy
             screen3 = null;
             screen3 = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth, Main.screenHeight);*/
 
-            Texture2D shell = CEUtils.getExtraTex("shell");
-            Texture2D crystalShield = CEUtils.getExtraTex("MariviniumShield");
+            Texture2D shell = ShellTex.Value;
+            Texture2D crystalShield = MariviniumShieldTex.Value;
             if (Main.LocalPlayer.Entropy().AzafureChargeShieldItem != null || Main.LocalPlayer.Entropy().AzafureDriverShieldItem != null)
             {
                 float charge = 0;
@@ -871,27 +806,14 @@ namespace CalamityEntropy
                         spawn.netSpam = 0;
                         npc.active = false;
                     }
-                    if (npc.type != NPCID.DukeFishron && npc.type != ModContent.NPCType<OldDuke>() && npc.type != NPCID.Golem && npc.type != ModContent.NPCType<Dragonfolly>() && npc.type != NPCID.SkeletronHead)
+                    if (npc.type != NPCID.DukeFishron && npc.type != NPCID.Golem && npc.type != NPCID.SkeletronHead)
                     {
                         orig(self, i);
-                        if (npc.type != NPCID.EyeofCthulhu && npc.type != NPCID.QueenBee && npc.type != NPCID.Retinazer && npc.type != NPCID.Spazmatism && npc.type != ModContent.NPCType<Yharon>() && npc.type != NPCID.MoonLordCore && npc.type != ModContent.NPCType<PrimordialWyrmHead>())
+                        if (npc.type != NPCID.EyeofCthulhu && npc.type != NPCID.QueenBee && npc.type != NPCID.Retinazer && npc.type != NPCID.Spazmatism && npc.type != NPCID.MoonLordCore)
                         {
                             orig(self, i);
                         }
                     }
-                }
-                if (EntropyMode && (self.ModNPC != null && (self.ModNPC is GiantClam || (self.ModNPC is PerforatorHive))))
-                {
-                    orig(self, i);
-                }
-                if (self.ModNPC is TheProphet && self.Calamity().CurrentlyEnraged)
-                {
-                    orig(self, i);
-                }
-                if (EntropyMode && self.ModNPC != null && (self.ModNPC is BrimstoneElemental || self.ModNPC is AquaticScourgeHead || self.ModNPC is AquaticScourgeTail || self.ModNPC is AquaticScourgeBodyAlt || self.ModNPC is AquaticScourgeBody || self.ModNPC is Cataclysm || self.ModNPC is Catastrophe || (self.ModNPC is CalamitasClone && !self.dontTakeDamage) || self.ModNPC is Leviathan || self.ModNPC is Anahita || self.ModNPC is AstrumAureus || self.ModNPC is PlaguebringerGoliath || self.ModNPC is RavagerBody || self.ModNPC is RavagerHead || self.ModNPC is RavagerHead2 || self.ModNPC is Dragonfolly || self.ModNPC is Polterghast))
-                {
-                    orig(self, i);
-                    self.position -= self.velocity * 0.85f;
                 }
                 if (EntropyMode)
                 {
@@ -1084,28 +1006,25 @@ namespace CalamityEntropy
         {
             if (self.Entropy().hasAcc("VastLV4"))
             {
-                if (type == BuffID.ManaSickness || type == ModContent.BuffType<ManaBurn>())
+                if (type == BuffID.ManaSickness)
                 {
                     timeToAdd /= 2;
                 }
             }
-            if (type != ModContent.BuffType<AdrenalineMode>() && type != ModContent.BuffType<RageMode>())
+            if (Main.debuff[type])
             {
-                if (Main.debuff[type])
+                if (Main.rand.NextDouble() < self.Entropy().DebuffImmuneChance)
                 {
-                    if (Main.rand.NextDouble() < self.Entropy().DebuffImmuneChance)
-                    {
-                        return;
-                    }
+                    return;
                 }
-                if (cooldownBuffs.Contains(type))
-                {
-                    timeToAdd = (int)(timeToAdd * self.Entropy().CooldownTimeMult);
-                }
-                if (Main.debuff[type] && !cooldownBuffs.Contains(type))
-                {
-                    timeToAdd = (int)(timeToAdd * self.Entropy().DebuffTime);
-                }
+            }
+            if (cooldownBuffs.Contains(type))
+            {
+                timeToAdd = (int)(timeToAdd * self.Entropy().CooldownTimeMult);
+            }
+            if (Main.debuff[type] && !cooldownBuffs.Contains(type))
+            {
+                timeToAdd = (int)(timeToAdd * self.Entropy().DebuffTime);
             }
             orig(self, type, timeToAdd, quiet, foodHack);
         }
@@ -1150,8 +1069,6 @@ namespace CalamityEntropy
                 float Value = 1;
                 if (Main.LocalPlayer.Entropy().oracleDeck) { Value = OracleDeckBrilValue; }
                 else if (BrilEnable) { Value = BrillianceCardValue; }
-                if (LoreReworkSystem.Enabled<LoreBloodMoon>())
-                    Value += 0.3f;
                 return Value;
             }
         }
@@ -1440,105 +1357,6 @@ namespace CalamityEntropy
             mbRegs = null;
         }
         public static List<int> cooldownBuffs;
-        public static void CalEnchantsRegistry()
-        {
-            EnchantmentManager.EnchantmentList.Add(new Enchantment(Instance.GetLocalization("BloodBoiling"), Instance.GetLocalization("BloodBoilingDescr"),
-                    903,
-                    "CalamityEntropy/Assets/UI/CalamitasEnchantments/CurseIcon_BloodBoiling",
-                    null,
-                    player => player.Entropy().bloodBoiling = 3,
-                    item => item.IsEnchantable() && item.damage > 0 && item.DamageType != DamageClass.MeleeNoSpeed));
-        }
-        public void initializeIntro(int type, Color c1, Color c2, string Name, int colorMode = 0)
-        {
-            Mod infernum;
-            if (ModLoader.TryGetMod("InfernumMode", out infernum))
-            {
-                try
-                {
-                    Color fc1(float f1, float f2)
-                    {
-                        return Color.Lerp(c1, c2, f1) * f2;
-                    }
-                    Color fc2(float f1, float f2)
-                    {
-                        return Color.Lerp(c1, c2, ((float)Math.Cos((f1 * MathHelper.TwoPi) - MathHelper.Pi) + 1) * 0.5f) * f2;
-                    }
-                    Func<float, float, Color> func;
-                    func = colorMode == 0 ? fc1 : fc2;
-                    object obj = infernum.Call(new object[]
-                    {
-                        "InitializeIntroScreen",
-                        Language.GetText("Mods.CalamityEntropy.InfernumIntros." + Name),
-                        150,
-                        true,
-                        () => NPC.AnyNPCs(type) && (bool)infernum.Call(new object[]
-                        {
-                            "GetInfernumActive"
-                        }),
-                        func
-                    });
-                    Mod infernum6 = infernum;
-                    object[] array = new object[3];
-                    array[0] = "SetupCompletionEffects";
-                    array[1] = obj;
-                    array[2] = delegate ()
-                    {
-                    };
-                    infernum6.Call(array);
-                    Mod infernum2 = infernum;
-                    object[] array2 = new object[3];
-                    array2[0] = "SetupLetterAdditionSound";
-                    array2[1] = obj;
-                    array2[2] = (() => SoundID.Run);
-                    infernum2.Call(array2);
-                    Mod infernum3 = infernum;
-                    object[] array3 = new object[3];
-                    array3[0] = "SetupLetterDisplayCompletionRatio";
-                    array3[1] = obj;
-                    array3[2] = ((int at) => (float)at / 120f);
-                    infernum3.Call(array3);
-                    Mod infernum4 = infernum;
-                    object[] array4 = new object[4];
-                    array4[0] = "SetupMainSound";
-                    array4[1] = obj;
-                    array4[2] = ((int atr, int at, float tdi, float ldcr) => false);
-                    array4[3] = (() => SoundID.NPCDeath56);
-                    infernum4.Call(array4);
-                    infernum.Call(new object[]
-                    {
-                        "SetupScreenCovering",
-                        obj,
-                        Color.Transparent
-                    });
-                    infernum.Call(new object[]
-                    {
-                        "SetupTextScale",
-                        obj,
-                        1.1f
-                    });
-                    infernum.Call(new object[]
-                    {
-                        "RegisterIntroScreen",
-                        obj
-                    });
-                    Mod infernum5 = infernum;
-                    object[] array5 = new object[4];
-                    array5[0] = "RegisterBossBarPhaseInfo";
-                    array5[1] = type;
-                    int num = 2;
-                    List<float> list = new List<float>();
-                    list.Add(1f);
-                    list.Add(0.25f);
-                    array5[num] = list;
-                    array5[3] = ModContent.Request<Texture2D>(ModContent.GetModNPC(type).BossHeadTexture, AssetRequestMode.AsyncLoad).Value;
-                    infernum5.Call(array5);
-                }
-                catch
-                {
-                }
-            }
-        }
         public override void PostSetupContent()
         {
             CommonEffects.Load();
@@ -1548,18 +1366,6 @@ namespace CalamityEntropy
             Typer.activeTypers = new();
             StartBagGItem.items = new List<int>();
             VanityDisplaySys.SetupVanities();
-            Type baseType = typeof(PlayerDashEffect);
-            Type[] types = AssemblyManager.GetLoadableTypes(this.Code);
-            foreach (Type type in types)
-            {
-                if (!type.IsSubclassOf(baseType) || type.IsAbstract)
-                    continue;
-
-                string id = (string)type.GetProperty("ID").GetValue(null);
-
-                PlayerDashEffect dashEffect = (PlayerDashEffect)Activator.CreateInstance(type);
-                PlayerDashManager.TryAddDash(dashEffect);
-            }
 
             void bookUpdateDirt(Projectile projectile, bool ownerClient)
             {
@@ -1595,15 +1401,6 @@ namespace CalamityEntropy
                     StartBagGItem.items.Add(i);
                 }
             }
-            if (ModLoader.TryGetMod("InfernumMode", out var _) && !Main.dedServ)
-            {
-                InfFont.InfernumFont.SetFont();
-                initializeIntro(ModContent.NPCType<CruiserHead>(), Color.Purple, Color.LightBlue, "Cruiser");
-                initializeIntro(ModContent.NPCType<NihilityActeriophage>(), Color.Blue, Color.LightBlue, "NihilityTwin");
-                initializeIntro(ModContent.NPCType<TheProphet>(), Color.LightBlue, Color.SkyBlue, "Prophet", 1);
-                initializeIntro(ModContent.NPCType<Luminaris>(), new Color(190, 180, 220), Color.Purple, "Luminaris", 1);
-                initializeIntro(ModContent.NPCType<Apsychos>(), Color.Yellow, Color.Firebrick, "Apsychos", 1);
-            }
             if (ModLoader.TryGetMod("MoreObtainingTooltips", out Mod moreObtainingTooltips))
             {
                 this.Logger.Info("MOT Support:" + moreObtainingTooltips.Call(
@@ -1633,9 +1430,7 @@ namespace CalamityEntropy
                     new int[1] { ModContent.ItemType<GreedCard>() });
 
             }
-            CalEnchantsRegistry();
             cooldownBuffs = new List<int>() { BuffID.PotionSickness, BuffID.ChaosState, ModContent.BuffType<DivineShieldCooldown>(), ModContent.BuffType<ShatteredOrb>() };
-            RegistryDraedonDialogs();
             foreach (ICELoader setup in ILoaders)
             {
                 setup.SetupData();
@@ -1659,15 +1454,6 @@ namespace CalamityEntropy
             {
                 NPCID.Sets.SpecificDebuffImmunity[i][ModContent.BuffType<Content.Buffs.HeatDeath>()] = false;
                 NPCID.Sets.SpecificDebuffImmunity[i][ModContent.BuffType<LifeOppress>()] = false;
-            }
-            List<int> specBuffs = new() { ModContent.BuffType<VoidVirus>(), ModContent.BuffType<SoulDisorder>(), ModContent.BuffType<Deceive>() };
-            List<int> specNpcs = new() { ModContent.NPCType<DesertScourgeHead>(), ModContent.NPCType<DevourerofGodsHead>(), ModContent.NPCType<AstrumDeusHead>(), ModContent.NPCType<AquaticScourgeHead>(), ModContent.NPCType<AstrumAureus>(), ModContent.NPCType<BrimstoneElemental>(), ModContent.NPCType<Dragonfolly>(), ModContent.NPCType<CalamitasClone>(), ModContent.NPCType<CeaselessVoid>(), ModContent.NPCType<Crabulon>(), ModContent.NPCType<Cryogen>(), ModContent.NPCType<CryogenShield>(), ModContent.NPCType<AresBody>(), ModContent.NPCType<Artemis>(), ModContent.NPCType<Apollo>(), ModContent.NPCType<ThanatosHead>(), ModContent.NPCType<GreatSandShark>(), ModContent.NPCType<HiveMind>(), ModContent.NPCType<PerforatorHive>(), ModContent.NPCType<Leviathan>(), ModContent.NPCType<Anahita>(), ModContent.NPCType<PlaguebringerGoliath>(), ModContent.NPCType<Polterghast>(), ModContent.NPCType<PrimordialWyrmHead>(), ModContent.NPCType<Providence>(), ModContent.NPCType<RavagerBody>(), ModContent.NPCType<Signus>(), ModContent.NPCType<StormWeaverHead>(), ModContent.NPCType<Yharon>(), ModContent.NPCType<SupremeCalamitas>() };
-            foreach (int i in specBuffs)
-            {
-                foreach (int j in specNpcs)
-                {
-                    NPCID.Sets.SpecificDebuffImmunity[j][i] = false;
-                }
             }
 
             string MyGameFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games");
@@ -1831,6 +1617,20 @@ namespace CalamityEntropy
                             });
                         }
                         {
+                            // 深渊亡魂扶正为月后二阶（progression-map §四），召唤物为虚空祭印 AbyssalSigil
+                            string entryName = "AbyssalWraith";
+                            List<int> collection = new List<int>() { ModContent.ItemType<AbyssalWraithPlush>() };
+                            Func<bool> awDowned = () => EDownedBosses.downedAbyssalWraith;
+                            AddBoss(bossChecklist, Instance, entryName, 20.8f, awDowned, ModContent.NPCType<AbyssalWraith>(), new Dictionary<string, object>()
+                            {
+                                ["displayName"] = Language.GetText("Mods.CalamityEntropy.NPCs.AbyssalWraith.BossChecklistIntegration.EntryName"),
+                                ["spawnInfo"] = Language.GetText("Mods.CalamityEntropy.NPCs.AbyssalWraith.BossChecklistIntegration.SpawnInfo"),
+                                ["despawnMessage"] = Language.GetText("Mods.CalamityEntropy.NPCs.AbyssalWraith.BossChecklistIntegration.DespawnMessage"),
+                                ["spawnItems"] = ModContent.ItemType<AbyssalSigil>(),
+                                ["collectibles"] = collection
+                            });
+                        }
+                        {
                             string entryName = "Cruiser";
                             List<int> segments = new List<int>() { ModContent.NPCType<CruiserHead>(), ModContent.NPCType<CruiserBody>(), ModContent.NPCType<CruiserTail>() };
                             List<int> collection = new List<int>() { ModContent.ItemType<CruiserBag>(), ModContent.ItemType<CruiserTrophy>(), ModContent.ItemType<VoidScales>(), ModContent.ItemType<VoidMonolith>(), ModContent.ItemType<CruiserRelic>(), ModContent.ItemType<VoidRelics>(), ModContent.ItemType<VoidAnnihilate>(), ModContent.ItemType<VoidElytra>(), ModContent.ItemType<VoidEcho>(), ModContent.ItemType<Content.Items.Weapons.Silence>(), ModContent.ItemType<WingsOfHush>(), ModContent.ItemType<WindOfUndertaker>(), ModContent.ItemType<VoidToy>(), ModContent.ItemType<TheocracyPearlToy>(), ModContent.ItemType<CruiserPlush>() };
@@ -1850,26 +1650,6 @@ namespace CalamityEntropy
                                 ["customPortrait"] = portrait
                             });
                         }
-                        if (!ModLoader.TryGetMod("InfernumMode", out _))
-                        {
-                            List<int> segments2 = new List<int>() { ModContent.NPCType<PrimordialWyrmHead>(), ModContent.NPCType<PrimordialWyrmBody>(), ModContent.NPCType<PrimordialWyrmBodyAlt>(), ModContent.NPCType<PrimordialWyrmTail>() };
-
-                            List<int> collection2 = new List<int>() { ModContent.ItemType<EidolicWail>(), ModContent.ItemType<VoidEdge>(), ModContent.ItemType<AbyssShellFossil>(), ModContent.ItemType<Voidstone>(), ModContent.ItemType<Lumenyl>(), ModContent.ItemType<EidolicWail>(), 1508 };
-                            Func<bool> wyd = () => DownedBossSystem.downedPrimordialWyrm;
-                            Action<SpriteBatch, Rectangle, Color> portrait2 = (SpriteBatch sb, Rectangle rect, Color color) =>
-                            {
-                                Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/PrimordialWyrm/PrimordialWyrm_BossChecklist").Value;
-                                sb.Draw(texture, rect.Center.ToVector2(), null, color, 0, texture.Size() / 2, 0.8f, SpriteEffects.None, 0);
-                            };
-                            string entryName = "PrimordialWyrm";
-                            AddBoss(bossChecklist, ModContent.GetInstance<CalamityMod.CalamityMod>(), entryName, 24.5f, wyd, segments2, new Dictionary<string, object>()
-                            {
-                                ["displayName"] = Language.GetText("Mods.CalamityMod.NPCs.PrimordialWyrmHead.DisplayName"),
-                                ["spawnInfo"] = this.GetLocalization("PWSpawnInfo"),
-                                ["collectibles"] = collection2,
-                                ["customPortrait"] = portrait2
-                            });
-                        }
                     }
 
                 }
@@ -1877,25 +1657,16 @@ namespace CalamityEntropy
             #endregion
             #region Bossbar Colors
             EntropyBossbar.bossbarColor[NPCID.KingSlime] = new Color(90, 160, 255);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<DesertScourgeHead>()] = new Color(216, 210, 175);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<GiantClam>()] = new Color(128, 255, 255);
             EntropyBossbar.bossbarColor[NPCID.EyeofCthulhu] = new Color(255, 40, 40);
             EntropyBossbar.bossbarColor[NPCID.EaterofWorldsBody] = new Color(80, 40, 255);
             EntropyBossbar.bossbarColor[NPCID.EaterofWorldsHead] = new Color(80, 40, 255);
             EntropyBossbar.bossbarColor[NPCID.EaterofWorldsTail] = new Color(80, 40, 255);
             EntropyBossbar.bossbarColor[NPCID.BrainofCthulhu] = new Color(255, 40, 40);
             EntropyBossbar.bossbarColor[NPCID.QueenBee] = new Color(242, 242, 145);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<Crabulon>()] = new Color(133, 255, 237);
             EntropyBossbar.bossbarColor[NPCID.DD2DarkMageT1] = new Color(180, 230, 255);
             EntropyBossbar.bossbarColor[NPCID.DD2DarkMageT3] = new Color(180, 230, 255);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<HiveMind>()] = new Color(140, 60, 255);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<PerforatorHive>()] = new Color(155, 60, 60);
             EntropyBossbar.bossbarColor[NPCID.SkeletronHead] = new Color(221, 221, 188);
             EntropyBossbar.bossbarColor[NPCID.Deerclops] = new Color(220, 200, 200);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<CrimulanPaladin>()] = new Color(255, 60, 75);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<SplitCrimulanPaladin>()] = new Color(255, 60, 75);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<EbonianPaladin>()] = new Color(160, 170, 220);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<SplitEbonianPaladin>()] = new Color(160, 170, 220);
             EntropyBossbar.bossbarColor[NPCID.WallofFlesh] = new Color(255, 40, 40);
             EntropyBossbar.bossbarColor[NPCID.Retinazer] = new Color(190, 190, 190);
             EntropyBossbar.bossbarColor[NPCID.Spazmatism] = new Color(190, 190, 190);
@@ -1903,15 +1674,7 @@ namespace CalamityEntropy
             EntropyBossbar.bossbarColor[NPCID.SkeletronPrime] = new Color(190, 190, 190);
             EntropyBossbar.bossbarColor[491] = new Color(180, 120, 80);
             EntropyBossbar.bossbarColor[NPCID.QueenSlimeBoss] = new Color(200, 160, 240);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<Cryogen>()] = new Color(140, 255, 255);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<AquaticScourgeHead>()] = new Color(215, 195, 155);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<BrimstoneElemental>()] = new Color(255, 145, 115);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<CalamitasClone>()] = new Color(255, 145, 115);
             EntropyBossbar.bossbarColor[NPCID.Plantera] = new Color(255, 170, 255);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<GreatSandShark>()] = new Color(225, 190, 130);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<Anahita>()] = new Color(180, 180, 230);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<Leviathan>()] = new Color(80, 235, 140);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<AstrumAureus>()] = new Color(130, 130, 160);
             EntropyBossbar.bossbarColor[NPCID.Golem] = new Color(225, 106, 9);
             EntropyBossbar.bossbarColor[NPCID.GolemHead] = new Color(225, 106, 9);
             EntropyBossbar.bossbarColor[325] = new Color(255, 206, 106);
@@ -1921,41 +1684,20 @@ namespace CalamityEntropy
             EntropyBossbar.bossbarColor[345] = new Color(200, 244, 246);
             EntropyBossbar.bossbarColor[392] = new Color(150, 250, 255);
             EntropyBossbar.bossbarColor[NPCID.DukeFishron] = new Color(80, 146, 255);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<PlaguebringerGoliath>()] = new Color(60, 160, 30);
             EntropyBossbar.bossbarColor[636] = Color.White;
             EntropyBossbar.bossbarColor[551] = new Color(180, 75, 80);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<RavagerBody>()] = new Color(190, 180, 155);
             EntropyBossbar.bossbarColor[NPCID.CultistBoss] = new Color(0, 60, 255);
             EntropyBossbar.bossbarColor[422] = new Color(208, 255, 235);
             EntropyBossbar.bossbarColor[493] = new Color(14, 155, 230);
             EntropyBossbar.bossbarColor[507] = new Color(255, 30, 170);
             EntropyBossbar.bossbarColor[517] = new Color(255, 100, 46);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<AstrumDeusHead>()] = new Color(96, 230, 190);
             EntropyBossbar.bossbarColor[NPCID.MoonLordCore] = new Color(213, 194, 156);
             EntropyBossbar.bossbarColor[NPCID.MoonLordLeechBlob] = new Color(213, 194, 156);
             EntropyBossbar.bossbarColor[NPCID.MoonLordHead] = new Color(213, 194, 156);
             EntropyBossbar.bossbarColor[NPCID.MoonLordHand] = new Color(213, 194, 156);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<ProfanedGuardianCommander>()] = new Color(255, 255, 120);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<ProfanedGuardianDefender>()] = new Color(255, 255, 120);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<ProfanedGuardianHealer>()] = new Color(255, 255, 120);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<Providence>()] = new Color(255, 255, 120);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<Dragonfolly>()] = new Color(200, 180, 100);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<CeaselessVoid>()] = new Color(180, 210, 220);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<StormWeaverHead>()] = new Color(120, 145, 180);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<Signus>()] = new Color(223, 75, 170);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<Polterghast>()] = new Color(100, 255, 255);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<OldDuke>()] = new Color(190, 170, 130);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<DevourerofGodsHead>()] = new Color(121, 230, 255);
             EntropyBossbar.bossbarColor[ModContent.NPCType<CruiserHead>()] = new Color(150, 60, 255);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<Yharon>()] = new Color(255, 220, 100);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<AresBody>()] = new Color(242, 112, 73);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<Apollo>()] = new Color(146, 200, 130);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<Artemis>()] = new Color(146, 200, 130);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<ThanatosHead>()] = new Color(135, 220, 240);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<SupremeCalamitas>()] = new Color(255, 145, 115);
             EntropyBossbar.bossbarColor[ModContent.NPCType<AbyssalWraith>()] = new Color(200, 40, 255);
             EntropyBossbar.bossbarColor[ModContent.NPCType<VoidPope>()] = new Color(200, 40, 255);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<PrimordialWyrmHead>()] = new Color(255, 255, 80);
             EntropyBossbar.bossbarColor[ModContent.NPCType<NihilityActeriophage>()] = new Color(255, 155, 248);
             EntropyBossbar.bossbarColor[ModContent.NPCType<ChaoticCell>()] = new Color(255, 155, 248);
             EntropyBossbar.bossbarColor[ModContent.NPCType<TheProphet>()] = new Color(180, 233, 255);
@@ -1967,30 +1709,6 @@ namespace CalamityEntropy
             {
                 if (!Main.dedServ)
                 {
-                    if (ModLoader.TryGetMod("CatalystMod", out Mod catalyst))
-                    {
-                        AddBossbarColor(catalyst, "Astrageldon", new Color(220, 94, 210));
-                    }
-                    if (ModLoader.TryGetMod("NoxusBoss", out Mod nxb))
-                    {
-                        AddBossbarColor(nxb, "AvatarRift", new Color(194, 60, 50));
-                        AddBossbarColor(nxb, "AvatarOfEmptiness", new Color(194, 60, 50));
-                        AddBossbarColor(nxb, "NamelessDeityBoss", new Color(255, 255, 255));
-                    }
-                    if (ModLoader.TryGetMod("CalamityHunt", out Mod calHunt))
-                    {
-                        AddBossbarColor(calHunt, "Goozma", new Color(94, 76, 99));
-                    }
-                    if (ModLoader.TryGetMod("CalamityFables", out Mod cf))
-                    {
-                        AddBossbarColor(cf, "Crabulon", new Color(86, 191, 255));
-                        AddBossbarColor(cf, "DesertScourge", new Color(172, 154, 146));
-                        AddBossbarColor(cf, "SirNautilus", new Color(155, 133, 99));
-                    }
-                    if (ModLoader.TryGetMod("InfernumMode", out Mod infernum))
-                    {
-                        EntropyBossbar.bossbarColor[infernum.Find<ModNPC>("BereftVassal").Type] = new Color(225, 190, 130);
-                    }
                     if (ModLoader.TryGetMod("SOTS", out Mod sots))
                     {
                         AddBossbarColor(sots, "SubspaceSerpentHead", new Color(115, 114, 160));

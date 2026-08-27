@@ -1,9 +1,10 @@
 using CalamityEntropy.Common;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -13,9 +14,12 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class LightWisperFlame : ModProjectile
     {
+        //薄雾贴图,加载期就位,绘制时不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Assets/Particles/MediumMist")]
+        internal static Asset<Texture2D> MistTex;
         public int MistType = -1;
 
-        public override string Texture => "CalamityMod/Projectiles/FireProj";
+        public override string Texture => "CalamityEntropy/Assets/Extra/Ports/FireProj";
 
         public static int Lifetime => 96;
 
@@ -118,7 +122,7 @@ namespace CalamityEntropy.Content.Projectiles
         public bool draw()
         {
             Texture2D fire = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            Texture2D mist = ModContent.Request<Texture2D>("CalamityMod/Particles/MediumMist").Value;
+            Texture2D mist = MistTex.Value;
 
             Color color1 = new Color(160, 100, 255, 200);
             Color color2 = new Color(160, 50, 255, 70);
@@ -153,11 +157,11 @@ Color.Lerp(color4, Color.Transparent, Utils.GetLerpValue(0.85f, 1f, timeRatio)))
 
                 if (MistType > 2 || MistType < 0)
                     return false;
-                Main.spriteBatch.SetBlendState(BlendState.Additive);
+                Main.spriteBatch.UseBlendState(BlendState.Additive);
                 Rectangle frame = mist.Frame(1, 3, 0, MistType);
                 Main.EntitySpriteDraw(mist, firePos, frame, Color.Lerp(fireColor, Color.White, 0.3f), mainRot, frame.Size() * 0.5f, fireSize, SpriteEffects.None);
                 Main.EntitySpriteDraw(mist, firePos, frame, fireColor, mainRot, frame.Size() * 0.5f, fireSize * 3f, SpriteEffects.None);
-                Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+                Main.spriteBatch.UseBlendState(BlendState.AlphaBlend);
             }
             return false;
         }

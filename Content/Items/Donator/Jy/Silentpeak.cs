@@ -1,11 +1,12 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles.LuminarisShoots;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Graphics.PackedVector;
@@ -42,7 +43,7 @@ namespace CalamityEntropy.Content.Items.Donator.Jy
             Item.useStyle = ItemUseStyleID.Swing;
             Item.shoot = ModContent.ProjectileType<SilentpeakSword>();
             Item.shootSpeed = 2f;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.autoReuse = true;
             Item.UseSound = SoundID.Item8;
             Item.noMelee = true;
@@ -84,17 +85,18 @@ namespace CalamityEntropy.Content.Items.Donator.Jy
         };
         public static int Level()
         {
-            if (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs)
+            // 成长阶梯按 progression-map.md 重排：原版节点 + 自有 Boss 线
+            if (EDownedBosses.downedCruiser)
                 return 11;
-            if (DownedBossSystem.downedYharon)
+            if (EDownedBosses.downedCruiser)
                 return 10;
-            if (DownedBossSystem.downedDoG)
+            if (EDownedBosses.downedAbyssalWraith)
                 return 9;
-            if (DownedBossSystem.downedProvidence)
+            if (EDownedBosses.downedNihilityTwin)
                 return 8;
             if (NPC.downedMoonlord)
                 return 7;
-            if (NPC.downedPlantBoss && DownedBossSystem.downedCalamitasClone)
+            if (NPC.downedPlantBoss && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
                 return 6;
             if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
                 return 5;
@@ -102,9 +104,9 @@ namespace CalamityEntropy.Content.Items.Donator.Jy
                 return 4;
             if (NPC.downedQueenBee || NPC.downedBoss3)
                 return 3;
-            if (NPC.downedBoss2 || DownedBossSystem.downedPerforator || DownedBossSystem.downedHiveMind)
+            if (NPC.downedBoss2)
                 return 2;
-            if (NPC.downedBoss1 || DownedBossSystem.downedDesertScourge || NPC.downedSlimeKing)
+            if (NPC.downedBoss1 || NPC.downedSlimeKing)
                 return 1;
             return 0;
         }
@@ -416,7 +418,7 @@ namespace CalamityEntropy.Content.Items.Donator.Jy
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D trail = CEUtils.getExtraTex("PatchyTallNoise");
+            Texture2D trail = CEExtraAssets.PatchyTallNoise;
             Texture2D tex = Projectile.GetTexture();
             if (oldPos.Count > 2)
             {
@@ -444,7 +446,7 @@ namespace CalamityEntropy.Content.Items.Donator.Jy
 
                     gd.Textures[0] = trail;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-                    trail = CEUtils.getExtraTex("Perlin");
+                    trail = CEExtraAssets.Perlin;
                     gd.Textures[0] = trail;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                     Main.spriteBatch.ExitShaderRegion();
@@ -460,7 +462,7 @@ namespace CalamityEntropy.Content.Items.Donator.Jy
             if(csAlpha > 0.016f)
             {
                 Main.spriteBatch.UseAdditive();
-                Texture2D cs = CEUtils.getExtraTex("CircularSmear");
+                Texture2D cs = CEExtraAssets.CircularSmear;
                 Main.spriteBatch.Draw(cs, Projectile.Center - Main.screenPosition, null, new Color(204, 255, 196) * csAlpha, Projectile.rotation + MathHelper.PiOver4, cs.Size() / 2, Projectile.scale * 0.66f, SpriteEffects.None, 0);
                 Main.spriteBatch.ExitShaderRegion();
             }

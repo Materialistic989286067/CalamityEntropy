@@ -1,6 +1,4 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -22,7 +20,7 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
             Item.knockBack = 4f;
             Item.UseSound = CEUtils.GetSound("soulshine");
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(0, 2);
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<EyeOfIlmerisHoldout>();
             Item.shootSpeed = 16f;
@@ -32,8 +30,8 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<PearlShard>(), 2)
-                .AddIngredient(ModContent.ItemType<SeaPrism>(), 5)
+                .AddIngredient(ItemID.WhitePearl, 2)
+                .AddIngredient(ItemID.Coral, 5)
                 .AddIngredient(ItemID.Glass, 10)
                 .AddTile(TileID.WorkBenches)
                 .Register();

@@ -1,12 +1,12 @@
 ﻿using CalamityEntropy.Common;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Rarities;
+using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Weapons;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -16,8 +16,11 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
-    public class TheDeadCut : RogueWeapon
+    public class TheDeadCut : ModItem, ICEChargeWeapon
     {
+        // 充能条 6 秒；原潜伏乘数 伤害0.25/弹速1/击退1 并入释放乘数
+        public CEChargeProfile ChargeProfile => CEChargeProfile.ChargeBar(6f, 0.25f, 1f, 1f);
+
         public override void SetDefaults()
         {
             Item.width = 98;
@@ -31,11 +34,11 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<CosmicPurple>();
+            Item.value = Item.buyPrice(platinum: 2);
+            Item.rare = ModContent.RarityType<AbyssalBlue>();
             Item.shoot = ModContent.ProjectileType<TheDeadCutProjectile>();
             Item.shootSpeed = 16f;
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Melee;
             Item.ArmorPenetration = 50;
             Item.Entropy().tooltipStyle = 3;
             Item.Entropy().NameColor = new Color(110, 0, 140);
@@ -44,18 +47,13 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.Entropy().HasCustomStrokeColor = true;
             Item.Entropy().HasCustomNameColor = true;
         }
-        public override float StealthDamageMultiplier => 0.25f;
-        public override float StealthVelocityMultiplier => 1f;
-        public override float StealthKnockbackMultiplier => 1f;
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            bool stealth = player.Calamity().StealthStrikeAvailable();
+            bool ult = CEChargeWeapon.TryConsume(player, Item);
             int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            if (stealth)
+            if (ult)
             {
-                p.ToProj().Calamity().stealthStrike = true;
-                CEUtils.SyncProj(p);
+                CEChargeWeapon.Empower(p);
             }
             return false;
         }
@@ -63,7 +61,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             Recipe recipe = CreateRecipe();
             recipe.AddIngredient(ModContent.ItemType<Revelation>());
-            recipe.AddIngredient<TwistingNether>(5);
+            recipe.AddIngredient<WraithSoulEssence>(5);
             recipe.AddTile(TileID.LunarCraftingStation);
             recipe.Register();
         }
@@ -73,7 +71,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => base.Texture;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.width = Projectile.height = 70;
             Projectile.MaxUpdates = 4;
             Projectile.localNPCHitCooldown = -1;
@@ -93,7 +91,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AI()
         {
-            if (Projectile.Entropy().FirstFrames && Projectile.Calamity().stealthStrike)
+            if (Projectile.Entropy().FirstFrames && Projectile.IsEmpowered())
             {
                 Projectile.localNPCHitCooldown = 4;
             }
@@ -118,7 +116,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 int BackTime = 4 * 12;
                 if (Counter > flyTime)
                 {
-                    if (Projectile.Calamity().stealthStrike)
+                    if (Projectile.IsEmpowered())
                     {
                         NPC homing = CEUtils.FindTarget_HomingProj(Projectile, player.Center, 2000);
                         if (homing != null)
@@ -152,7 +150,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 }
                 Projectile.ai[1]++;
                 Projectile.velocity *= 0.88f;
-                if (Projectile.Calamity().stealthStrike)
+                if (Projectile.IsEmpowered())
                 {
                     Projectile.velocity += (npc.Center - Projectile.Center) * 0.006f;
                     Projectile.velocity += (npc.Center - Projectile.Center).normalize() * 1.6f;
@@ -163,7 +161,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 }
                 if (Projectile.ai[1] > 80)
                 {
-                    if (Projectile.Calamity().stealthStrike)
+                    if (Projectile.IsEmpowered())
                     {
                     }
                     else
@@ -193,14 +191,14 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override bool? CanDamage()
         {
-            return (Counter <= 4 * 22 || Projectile.Calamity().stealthStrike) && HitCooldown <= 0;
+            return (Counter <= 4 * 22 || Projectile.IsEmpowered()) && HitCooldown <= 0;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             CEUtils.PlaySound("DemonSwordImpact2", Main.rand.NextFloat(1.4f, 1.8f), target.Center, 8, 0.5f);
             SpawnVParticles(6, 2);
             OnHit = target.whoAmI;
-            if (Projectile.Calamity().stealthStrike)
+            if (Projectile.IsEmpowered())
             {
                 if (Projectile.numHits > 10)
                     Projectile.Kill();
@@ -275,9 +273,12 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class TheDeadCutSlash : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
+        //光罩贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Extra/lightmask")]
+        internal static Asset<Texture2D> LightMaskTex;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.timeLeft = 10;
             Projectile.localNPCHitCooldown = -1;
         }
@@ -307,7 +308,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = CEUtils.getExtraTex("lightmask");
+            Texture2D tex = LightMaskTex.Value;
             if (Projectile.ai[0] > 0)
             {
                 Vector2 c = Projectile.Center + Projectile.velocity / 2;

@@ -1,10 +1,10 @@
 ﻿using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.IO;
 using Terraria;
 using Terraria.DataStructures;
@@ -30,7 +30,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Malign
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 0;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<MalignHeld>();
             Item.shootSpeed = 16f;
@@ -57,13 +57,16 @@ namespace CalamityEntropy.Content.Items.Weapons.Malign
             CreateRecipe()
                 .AddIngredient(ItemID.CrystalSerpent)
                 .AddIngredient(ItemID.Ectoplasm, 6)
-                .AddIngredient<AshesofCalamity>(4)
+                .AddIngredient<TectonicShard>(4)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
     }
     public class MalignHeld : ModProjectile
     {
+        //咬合贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Particles/Jaws")]
+        internal static Asset<Texture2D> JawsTex;
         public override void SetDefaults()
         {
             Projectile.FriendlySetDefaults(DamageClass.Magic, false, -1);
@@ -165,7 +168,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Malign
             CEUtils.DrawGlow(Projectile.Center + Projectile.rotation.ToRotationVector2() * 94 * Projectile.scale, new Color(255, 200, 255) * 0.66f * (ActiveProgress * ActiveProgress * ActiveProgress), 1.2f);
 
             /*Main.spriteBatch.UseBlendState(BlendState.Additive);
-            Texture2D jaw = ModContent.Request<Texture2D>("CalamityMod/Particles/Jaws").Value;
+            Texture2D jaw = JawsTex.Value;
             Main.spriteBatch.Draw(jaw, top - Main.screenPosition + Projectile.rotation.ToRotationVector2() * 12, null, Color.MediumPurple * ActiveProgress, Projectile.rotation + MathHelper.PiOver2, jaw.Size() / 2f, 0.42f, SpriteEffects.None, 0);
             Main.spriteBatch.ExitShaderRegion();*/
 

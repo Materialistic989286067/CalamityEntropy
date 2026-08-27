@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Common.LoreReworks;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common.LoreReworks;
 using CalamityEntropy.Content.ArmorPrefixes;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items;
@@ -27,16 +28,9 @@ using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.TwistedTwin;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.UI.EntropyBookUI;
-using CalamityMod;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Fishing.SulphurCatches;
-using CalamityMod.Items.LoreItems;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.TreasureBags;
-using CalamityMod.Items.TreasureBags.MiscGrabBags;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.World;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using ReLogic.Graphics;
 using System;
 using System.Collections.Generic;
@@ -57,6 +51,9 @@ namespace CalamityEntropy.Common
 {
     public class S3Particle
     {
+        //粒子贴图在加载期就位,不再每帧 Request
+        [VaultLoaden("CalamityEntropy/Assets/Extra/style3")]
+        internal static Asset<Texture2D> Style3Tex;
         public Vector2 velocity = Vector2.Zero;
         public Vector2 position;
         public void update()
@@ -68,7 +65,7 @@ namespace CalamityEntropy.Common
         {
             SpriteBatch sb = Main.spriteBatch;
             Color b = color * alpha;
-            Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/style3").Value;
+            Texture2D tx = Style3Tex.Value;
             sb.Draw(tx, this.position + offset, null, b, this.velocity.ToRotation(), new Vector2(tx.Width, tx.Height) / 2, 0.3f, SpriteEffects.None, 0);
             sb.Draw(tx, this.position + offset, null, b, this.velocity.ToRotation(), new Vector2(tx.Width, tx.Height) / 2, 0.3f, SpriteEffects.None, 0);
         }
@@ -77,6 +74,9 @@ namespace CalamityEntropy.Common
 
     public class EGlobalItem : GlobalItem
     {
+        //工具提示辉光贴图在加载期就位,不再每帧走 getExtraTex 查表
+        [VaultLoaden("CalamityEntropy/Assets/Extra/Soulight")]
+        internal static Asset<Texture2D> SoulightTex;
         public bool Legend = false;
         public int tooltipStyle = 0;
         public bool stroke = false;
@@ -87,17 +87,7 @@ namespace CalamityEntropy.Common
         public bool HasCustomStrokeColor = false;
         public List<S3Particle> particles1 = new List<S3Particle>();
         public float[] wispColor = null;
-        public override bool CanBeConsumedAsAmmo(Item ammo, Item weapon, Player player)
-        {
-            if (LoreReworkSystem.Enabled<LoreSkeletron>())
-            {
-                if (ammo.stack >= LESkeletron.AmountLimit && Main.rand.NextFloat() < LESkeletron.Perc)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
+        //脱离灾厄:骷髅王Lore的弹药省耗效果随灾厄Lore下线删除(原CanBeConsumedAsAmmo覆写)
         public readonly static Dictionary<int, int> GemItemIDToTileIDMap = new() {
             {ItemID.Ruby, TileID.Ruby },
             {ItemID.Sapphire, TileID.Sapphire },
@@ -120,10 +110,6 @@ namespace CalamityEntropy.Common
         };
         public override void SetDefaults(Item entity)
         {
-            if (entity.type == ModContent.ItemType<StarblightSoot>())
-            {
-                //entity.ammo = 3728;
-            }
             if (entity.type == ItemID.ChainKnife)
             {
                 entity.damage = 32;
@@ -145,55 +131,10 @@ namespace CalamityEntropy.Common
             NewName = origName;
             return false;
         }
-        public List<int> RogueAccs = null;
+        // 盗贼饰品标记体系（RogueAccs / EquipedAnyRogueAcc）已随潜行系统整体退役，
+        // 自有 7 件盗贼饰品（护符与怀表同链两级）的新效果已按 rogue-weapons.md 实装
         public override void UpdateAccessory(Item item, Player player, bool hideVisual)
         {
-            if (RogueAccs == null)
-            {
-                int IT<T>() where T : ModItem
-                {
-                    return ModContent.ItemType<T>();
-                }
-                RogueAccs = new List<int>()
-                {
-                    IT<ScuttlersJewel>(),
-                    IT<CoinofDeceit>(),
-                    IT<RaidersTalisman>(),
-                    IT<RottenDogtooth>(),
-                    IT<InkBomb>(),
-                    IT<SandCloak>(),
-                    IT<SilencingSheath>(),
-                    IT<BloodstainedGlove>(),
-                    IT<FilthyGlove>(),
-                    IT<MirageMirror>(),
-                    IT<RogueEmblem>(),
-                    IT<CorrosiveSpine>(),
-                    IT<ElectriciansGlove>(),
-                    IT<RuinMedallion>(),
-                    IT<VampiricTalisman>(),
-                    IT<GloveOfPrecision>(),
-                    IT<GloveOfRecklessness>(),
-                    IT<AbyssalMirror>(),
-                    IT<EtherealExtorter>(),
-                    IT<PlaguedFuelPack>(),
-                    IT<DarkMatterSheath>(),
-                    IT<BlunderBooster>(),
-                    IT<SpectralVeil>(),
-                    IT<VeneratedLocket>(),
-                    IT<EclipseMirror>(),
-                    IT<Nanotech>(),
-                    IT<DragonScales>(),
-                    IT<MineBox>(),
-                    IT<GaleWristblades>(),
-                    IT<ShadowPact>(),
-                    IT<ShadowMantle>(),
-                    IT<LurkersCharm>(),
-                    IT<WorshipRelic>(),
-                    IT<ThiefsPocketwatchOfEclipse>()
-                };
-            }
-            if (RogueAccs.Contains(item.type))
-                player.Entropy().EquipedAnyRogueAcc = true;
             if (item.wingSlot != -1)
             {
                 player.Entropy().wing = item;
@@ -511,17 +452,14 @@ namespace CalamityEntropy.Common
             {
                 return Mod.GetLocalization("AmmoBoulders").Value;
             }
-            if (type == 3728)
+            // 原灾厄星耀煤灰弹药组（3728）按 material-map/misc-map 定稿改指自有星辉鳞尘，文案键复用
+            if (type == ModContent.ItemType<StarlitScaleDust>())
             {
                 return Mod.GetLocalization("AmmoStarblightSoot").Value;
             }
             if (type == 5809)
             {
                 return Mod.GetLocalization("AmmoBloodrune").Value;
-            }
-            if (type == 6259 || type == 8584)
-            {
-                return CalamityUtils.GetItemName<WulfrumMetalScrap>().Value;
             }
             if (type == BaseMissileProj.AmmoType)
             {
@@ -545,7 +483,7 @@ namespace CalamityEntropy.Common
                 }
                 if (item.ModItem is ExquisiteCrown || item.ModItem is RottenFangs)
                 {
-                    LocalizedText itemName = item.ModItem is ExquisiteCrown ? CalamityUtils.GetItemName<RottenFangs>() : CalamityUtils.GetItemName<ExquisiteCrown>();
+                    LocalizedText itemName = item.ModItem is ExquisiteCrown ? ModContent.GetInstance<RottenFangs>().DisplayName : ModContent.GetInstance<ExquisiteCrown>().DisplayName;
                     TooltipLine lineExtra = new TooltipLine(Mod, "Desc2", Mod.GetLocalization("MinionAccDescCrownFangs").Value.Replace("[ITEM]", itemName.Value));
                     lineExtra.OverrideColor = (Main.LocalPlayer.Entropy().exquisiteCrown && Main.LocalPlayer.Entropy().rottenFangs) ? Color.Yellow : Color.Gray;
                     tooltips.Add(lineExtra);
@@ -675,10 +613,7 @@ namespace CalamityEntropy.Common
                 tl.OverrideColor = new Microsoft.Xna.Framework.Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
                 tooltips.Add(tl);
             }
-            if (MaliciousCode.CALAMITY__OVERHAUL)
-            {
-                CWRWeakRef.CWRRef.CheckTooltips(item, tooltips);
-            }
+            // 灾厄家族软集成（灾厄重制弱引用 tooltip 注入）已随脱钩整体移除
         }
 
         public override GlobalItem Clone(Item from, Item to)
@@ -696,36 +631,9 @@ namespace CalamityEntropy.Common
             return obj;
         }
 
-        public override void UpdateInventory(Item item, Player player)
-        {
-            if (item.type == ModContent.ItemType<CalamityMod.Items.Placeables.FurnitureAuric.AuricToilet>())
-            {
-                Item ai = new Item(ModContent.ItemType<AuricToilet>(), item.stack, 0);
-                item.stack = 0;
-                for (int i = 0; i < player.inventory.Count(); i++)
-                {
-                    if (player.inventory[i] == item)
-                    {
-                        player.inventory[i] = ai;
-                        break;
-                    }
-                }
-
-            }
-        }
-
         public override bool CanUseItem(Item item, Player player)
         {
-            if (ModContent.GetInstance<ServerConfig>().ClearStealthWhenChangeEquipSet)
-            {
-                var mp = player.Entropy();
-                if (mp.StealthMaxLast != player.Calamity().rogueStealthMax)
-                {
-                    player.Calamity().rogueStealth = 0;
-                    mp.RstStealth = true;
-                    return false;
-                }
-            }
+            // 潜行系统退役：原「换装清空灾厄潜行值」拦截已移除（ServerConfig.ClearStealthWhenChangeEquipSet 已一并删除）
             if (player.GetModPlayer<AtbmPlayer>().Active && item.ModItem is not AzafureTBMTerminal)
                 return false;
             if ((player.HasBuff<VoidVirus>() || (CalamityEntropy.EntropyMode && player.Entropy().HitTCounter > 0)) && item.healLife > 0)
@@ -740,25 +648,7 @@ namespace CalamityEntropy.Common
         }
         public override bool Shoot(Item item, Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-
-            if (player.Entropy().shadowPact && item.DamageType.CountsAsClass<ThrowingDamageClass>())
-            {
-                if (player.Entropy().shadowStealth >= 1)
-                {
-                    CEUtils.PlaySound("shadowKnife");
-                    player.Entropy().shadowStealth = 0; Projectile.NewProjectile(source, position, velocity.normalize() * 12, ModContent.ProjectileType<ShadowShoot>(), (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(ShadowPact.BaseDamage), 2, player.whoAmI);
-                }
-            }
-            if (player.Entropy().worshipRelic && item.DamageType.CountsAsClass<ThrowingDamageClass>() && player.Calamity().StealthStrikeAvailable())
-            {
-                Projectile.NewProjectile(source, position, Vector2.Zero, ModContent.ProjectileType<SolarArrowSpawner>(), (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(WorshipRelic.ArrowDamage), 2, player.whoAmI);
-                player.Entropy().ResetStealth = true;
-            }
-            if (player.Entropy().GaleWristbladeCharge >= 5)
-            {
-                player.Entropy().GaleWristbladeCharge = 0;
-                Projectile.NewProjectile(source, position, velocity.normalize() * 8, ModContent.ProjectileType<WristTornado>(), (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(GaleWristblades.BaseDamage), 2, player.whoAmI);
-            }
+            // 影约/疾风腕刃/崇拜圣物的旧潜行接线已整体退役，新效果由饰品文件自含实现
             if (type == ModContent.ProjectileType<RockBulletShot>())
             {
                 if (Main.rand.NextBool(6))
@@ -846,30 +736,12 @@ namespace CalamityEntropy.Common
 
         public override void OnHitNPC(Item item, Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (player.Entropy().plagueEngine && item.DamageType.CountsAsClass<TrueMeleeDamageClass>())
+            // 灾厄真近战伤害类型退役，物品直挥本身即为真近战，改按近战伤害类型判定
+            if (player.Entropy().plagueEngine && item.DamageType.CountsAsClass(DamageClass.Melee))
             {
                 PlagueInternalCombustionEngine.ApplyTrueMeleeEffect(player);
             }
-            if (item.type == ModContent.ItemType<StellarStriker>())
-            {
-                IEntitySource source_ItemUse = player.GetSource_ItemUse(item);
-                SoundEngine.PlaySound(in SoundID.Item88, player.Center);
-                int myPlayer = Main.myPlayer;
-                float shootSpeed = item.shootSpeed;
-                Vector2 vector = player.RotatedRelativePoint(player.MountedCenter, reverseRotation: true);
-                for (int i = 0; i < player.Entropy().WeaponBoost; i++)
-                {
-                    vector = new Vector2(player.Center.X + (float)Main.rand.Next(201) * (0f - (float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
-                    vector.X = (vector.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
-                    vector.Y -= 100 * i;
-                    Vector2 velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(vector, target, shootSpeed, 6);
-                    int num = Projectile.NewProjectile(source_ItemUse, vector, velocity, 645, damageDone, player.GetWeaponKnockback(item), myPlayer, 0f, Main.rand.Next(3));
-                    if (num.WithinBounds(Main.maxProjectiles))
-                    {
-                        Main.projectile[num].DamageType = DamageClass.Melee;
-                    }
-                }
-            }
+            // 原对灾厄「星流brand」的 WeaponBoost 强化（追加星辰弹幕）已随灾厄脱钩移除
         }
 
         public override bool PreDrawTooltipLine(Item item, DrawableTooltipLine line, ref int yOffset)
@@ -891,12 +763,12 @@ namespace CalamityEntropy.Common
                     if (item.type == ModContent.ItemType<TheFilthyContractWithMammon>())
                     {
                         float p = 1;
-                        Main.spriteBatch.Draw(CEUtils.getExtraTex("T1"), new Vector2(line.X, line.Y - 4) + new Vector2(p, p), Color.Red); Main.spriteBatch.Draw(CEUtils.getExtraTex("T1"), new Vector2(line.X, line.Y - 4), Color.Red);
-                        Main.spriteBatch.Draw(CEUtils.getExtraTex("T1"), new Vector2(line.X, line.Y - 4) + new Vector2(-p, p), Color.Red);
-                        Main.spriteBatch.Draw(CEUtils.getExtraTex("T1"), new Vector2(line.X, line.Y - 4) + new Vector2(p, -p), Color.Red);
-                        Main.spriteBatch.Draw(CEUtils.getExtraTex("T1"), new Vector2(line.X, line.Y - 4) + new Vector2(-p, -p), Color.Red);
+                        Main.spriteBatch.Draw(CEExtraAssets.T1, new Vector2(line.X, line.Y - 4) + new Vector2(p, p), Color.Red); Main.spriteBatch.Draw(CEExtraAssets.T1, new Vector2(line.X, line.Y - 4), Color.Red);
+                        Main.spriteBatch.Draw(CEExtraAssets.T1, new Vector2(line.X, line.Y - 4) + new Vector2(-p, p), Color.Red);
+                        Main.spriteBatch.Draw(CEExtraAssets.T1, new Vector2(line.X, line.Y - 4) + new Vector2(p, -p), Color.Red);
+                        Main.spriteBatch.Draw(CEExtraAssets.T1, new Vector2(line.X, line.Y - 4) + new Vector2(-p, -p), Color.Red);
 
-                        Main.spriteBatch.Draw(CEUtils.getExtraTex("T1"), new Vector2(line.X, line.Y - 4), Color.Black);
+                        Main.spriteBatch.Draw(CEExtraAssets.T1, new Vector2(line.X, line.Y - 4), Color.Black);
 
 
                         return false;
@@ -937,7 +809,7 @@ namespace CalamityEntropy.Common
                         SpriteBatch sb = Main.spriteBatch;
                         sb.End();
                         sb.Begin(0, BlendState.Additive, sb.GraphicsDevice.SamplerStates[0], sb.GraphicsDevice.DepthStencilState, sb.GraphicsDevice.RasterizerState, null, Main.UIScaleMatrix);
-                        Texture2D glow = CEUtils.getExtraTex("Glow");
+                        Texture2D glow = CEExtraAssets.Glow;
                         sb.Draw(glow, new Vector2(line.X + xa / 2, line.Y + h / 4), null, new Color(255, 255, 255) * 0.6f, 0, glow.Size() / 2, new Vector2((32 + xa * 2.4f) / glow.Width, 0.34f), SpriteEffects.None, 0);
                         sb.End();
                         sb.Begin(0, BlendState.AlphaBlend, sb.GraphicsDevice.SamplerStates[0], sb.GraphicsDevice.DepthStencilState, sb.GraphicsDevice.RasterizerState, null, Main.UIScaleMatrix);
@@ -980,7 +852,7 @@ namespace CalamityEntropy.Common
                         SpriteBatch sb = Main.spriteBatch;
                         sb.End();
                         sb.Begin(0, BlendState.Additive, sb.GraphicsDevice.SamplerStates[0], sb.GraphicsDevice.DepthStencilState, sb.GraphicsDevice.RasterizerState, null, Main.UIScaleMatrix);
-                        Texture2D glow = CEUtils.getExtraTex("Glow");
+                        Texture2D glow = CEExtraAssets.Glow;
                         sb.Draw(glow, new Vector2(line.X + xa / 2, line.Y + h / 4), null, Color.Orange * 0.8f, 0, glow.Size() / 2, new Vector2((32 + xa * 2.6f) / glow.Width, 0.34f), SpriteEffects.None, 0);
                         sb.End();
                         sb.Begin(0, BlendState.AlphaBlend, sb.GraphicsDevice.SamplerStates[0], sb.GraphicsDevice.DepthStencilState, sb.GraphicsDevice.RasterizerState, null, Main.UIScaleMatrix);
@@ -1093,7 +965,7 @@ namespace CalamityEntropy.Common
                 if (item.rare == ModContent.RarityType<VoidPurple>())
                 {
                     var font = FontAssets.MouseText.Value;
-                    Texture2D glow = CEUtils.getExtraTex("Glow");
+                    Texture2D glow = CEExtraAssets.Glow;
                     Main.spriteBatch.UseBlendState_UI(BlendState.Additive);
                     Vector2 origin = font.MeasureString(line.Text) * new Vector2(1, 0.6f) * 0.5f;
                     Main.spriteBatch.Draw(glow, new Vector2(line.X, line.Y) + origin, null, Color.AliceBlue * 0.6f, 0, glow.Size() * 0.5f, origin * 0.02f * new Vector2(1, 0.6f), SpriteEffects.None, 0);
@@ -1164,7 +1036,7 @@ namespace CalamityEntropy.Common
                     SpriteBatch sb = Main.spriteBatch;
                     sb.End();
                     sb.Begin(0, BlendState.Additive, sb.GraphicsDevice.SamplerStates[0], sb.GraphicsDevice.DepthStencilState, sb.GraphicsDevice.RasterizerState, null, Main.UIScaleMatrix);
-                    Texture2D glow = CEUtils.getExtraTex("Soulight");
+                    Texture2D glow = SoulightTex.Value;
                     sb.Draw(glow, new Vector2(line.X + xa / 2 + 1, line.Y + xy / 3), null, new Color(255, 255, 255) * 0.8f, 0, new Vector2(glow.Width / 2, glow.Height / 2), new Vector2((xa + 14) / glow.Width, (xy - 8) / glow.Height), SpriteEffects.None, 0);
                     sb.End();
                     sb.Begin(0, BlendState.AlphaBlend, sb.GraphicsDevice.SamplerStates[0], sb.GraphicsDevice.DepthStencilState, sb.GraphicsDevice.RasterizerState, null, Main.UIScaleMatrix);
@@ -1237,7 +1109,7 @@ namespace CalamityEntropy.Common
                     SpriteBatch sb = Main.spriteBatch;
                     sb.End();
                     sb.Begin(0, BlendState.Additive, sb.GraphicsDevice.SamplerStates[0], sb.GraphicsDevice.DepthStencilState, sb.GraphicsDevice.RasterizerState, null, Main.UIScaleMatrix);
-                    Texture2D glow = CEUtils.getExtraTex("Glow");
+                    Texture2D glow = CEExtraAssets.Glow;
                     sb.Draw(glow, new Vector2(line.X + xa / 2, line.Y + h / 4), null, NameLightColor, 0, glow.Size() / 2, new Vector2((32 + xa * 2.4f) / glow.Width, 0.34f), SpriteEffects.None, 0);
                     sb.End();
                     sb.Begin(0, BlendState.AlphaBlend, sb.GraphicsDevice.SamplerStates[0], sb.GraphicsDevice.DepthStencilState, sb.GraphicsDevice.RasterizerState, null, Main.UIScaleMatrix);
@@ -1263,7 +1135,7 @@ namespace CalamityEntropy.Common
                     SpriteBatch sb = Main.spriteBatch;
                     sb.End();
                     sb.Begin(0, BlendState.Additive, sb.GraphicsDevice.SamplerStates[0], sb.GraphicsDevice.DepthStencilState, sb.GraphicsDevice.RasterizerState, null, Main.UIScaleMatrix);
-                    Texture2D glow = CEUtils.getExtraTex("Glow");
+                    Texture2D glow = CEExtraAssets.Glow;
                     float ey = CELists.tooltipNameUpList.Contains(Language.ActiveCulture.Name) ? 0 : 3;
                     sb.Draw(glow, new Vector2(line.X + xa / 2, line.Y + h / 4 + ey), null, new Color(255, 0, 0), 0, glow.Size() / 2, new Vector2((32 + xa * 2.4f) / glow.Width, 0.26f), SpriteEffects.None, 0);
                     sb.End();
@@ -1303,8 +1175,8 @@ namespace CalamityEntropy.Common
                 }
                 if (item.rare == ModContent.RarityType<AbyssalBlue>())
                 {
-                    Texture2D glow = CEUtils.getExtraTex("Glow");
-                    Texture2D star = CEUtils.getExtraTex("StarTexture");
+                    Texture2D glow = CEExtraAssets.Glow;
+                    Texture2D star = CEExtraAssets.StarTexture;
                     var font = FontAssets.MouseText.Value;
                     float xa = 0;
                     float h = 0;
@@ -1388,7 +1260,7 @@ namespace CalamityEntropy.Common
                     SpriteBatch sb = Main.spriteBatch;
                     sb.End();
                     sb.Begin(0, BlendState.Additive, sb.GraphicsDevice.SamplerStates[0], sb.GraphicsDevice.DepthStencilState, sb.GraphicsDevice.RasterizerState, null, Main.UIScaleMatrix);
-                    Texture2D glow = CEUtils.getExtraTex("Glow");
+                    Texture2D glow = CEExtraAssets.Glow;
                     sb.Draw(glow, new Vector2(line.X + xa / 2, line.Y + h / 4), null, new Color(255, 0, 0) * 0.8f, 0, glow.Size() / 2, new Vector2((32 + xa * 2.4f) / glow.Width, 0.34f), SpriteEffects.None, 0);
                     sb.End();
                     sb.Begin(0, BlendState.AlphaBlend, sb.GraphicsDevice.SamplerStates[0], sb.GraphicsDevice.DepthStencilState, sb.GraphicsDevice.RasterizerState, null, Main.UIScaleMatrix);
@@ -1461,7 +1333,7 @@ namespace CalamityEntropy.Common
                     SpriteBatch sb = Main.spriteBatch;
                     sb.End();
                     sb.Begin(0, BlendState.Additive, sb.GraphicsDevice.SamplerStates[0], sb.GraphicsDevice.DepthStencilState, sb.GraphicsDevice.RasterizerState, null, Main.UIScaleMatrix);
-                    Texture2D glow = CEUtils.getExtraTex("Glow");
+                    Texture2D glow = CEExtraAssets.Glow;
                     float ey = CELists.tooltipNameUpList.Contains(Language.ActiveCulture.Name) ? 0 : 4;
                     sb.Draw(glow, new Vector2(line.X + xa / 2, line.Y + h / 4 + ey), null, new Color(210, 180, 120) * 0.8f, 0, glow.Size() / 2, new Vector2((32 + xa * 2.4f) / glow.Width, 0.34f), SpriteEffects.None, 0);
                     sb.End();
@@ -1702,22 +1574,22 @@ namespace CalamityEntropy.Common
         public override void ModifyItemLoot(Item item, ItemLoot itemLoot)
         {
             if (item.type == ItemID.DeerclopsBossBag)
-                itemLoot.Add(ModContent.ItemType<BookmarkSnowgrave>(), 5, 1, 1);
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkSnowgrave>(), 5));
             if (item.type == ItemID.KingSlimeBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<ExquisiteCrown>(), 2);
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<ExquisiteCrown>(), 2));
             }
             if (item.type == ItemID.EaterOfWorldsBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<CursedTorch>(), 2);
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<CursedTorch>(), 2));
             }
             if (item.type == ItemID.BrainOfCthulhuBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<CreeperWand>(), 2);
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<CreeperWand>(), 2));
             }
             if (item.type == ItemID.EyeOfCthulhuBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<RottenFangs>(), 2);
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<RottenFangs>(), 2));
             }
             if (item.type == ItemID.FishronBossBag)
             {
@@ -1725,237 +1597,101 @@ namespace CalamityEntropy.Common
             }
             if (item.type == ItemID.FloatingIslandFishingCrate)
             {
-                itemLoot.Add(ModContent.ItemType<IndigoCard>(), 5);
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<IndigoCard>(), 5));
             }
             if (item.type == ItemID.FloatingIslandFishingCrateHard)
             {
-                itemLoot.Add(ModContent.ItemType<IndigoCard>(), 5);
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<IndigoCard>(), 5));
             }
             if (item.type == ItemID.GolemBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<MourningCard>(), 1);
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<MourningCard>()));
             }
             if (item.type == 3203 || item.type == 3204 || item.type == 3983 || item.type == 3982)
             {
-                itemLoot.Add(ModContent.ItemType<ObscureCard>(), 5);
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<ObscureCard>(), 5));
             }
-            if (item.Is<CeaselessVoidBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<BottleDarkMatter>(), 4);
-            }
-            if (item.Is<DevourerofGodsBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<BookmarkCosmic>(), 2);
-            }
-            if (item.Is<PlaguebringerGoliathBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<PlagueInternalCombustionEngine>(), 4);
-            }
-            if (item.Is<CalamitasCloneBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<FriendBox>(), 5);
-            }
-            if (item.type == ModContent.ItemType<HiveMindBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<MindCorruptor>(), 3);
-            }
-            if (item.type == ModContent.ItemType<PerforatorBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<SinewLash>(), 3);
-            }
-            if (item.type == ModContent.ItemType<HiveMindBag>() || item.type == ModContent.ItemType<PerforatorBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<BookMarkAerialite>(), new Fraction(1, 2));
-            }
-            if (item.Is<LeviathanBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<BookMarkAquarius>(), new Fraction(1, 2));
-            }
+            // 灾厄宝袋掉落注入已整体拆除，按 bookmark-rehang.md 重挂（见本方法末尾重挂段）
             if (item.type == ItemID.QueenSlimeBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<Crystedge>(), new Fraction(1, 3));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<Crystedge>(), 3));
             }
             if (item.type == ItemID.SkeletronBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<BookMarkAries>(), new Fraction(1, 1));
-                itemLoot.Add(ModContent.ItemType<OblivionSkull>(), new Fraction(1, 1));
-            }
-            if (item.Is<AstrumDeusBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<BookMarkAstral>(), new Fraction(1, 2));
-            }
-            if (item.Is<YharonBag>())
-            {
-                bool l(DropAttemptInfo info)
-                {
-                    return info.player.name == "仙萤流光" || info.player.name == "五彩斑斓的黑";
-                }
-                itemLoot.AddIf(l, ModContent.ItemType<FlowingLight>(), 1);
-                itemLoot.Add(ModContent.ItemType<BookMarkAuric>(), 4);
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAries>()));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<OblivionSkull>()));
             }
             if (item.type == ItemID.QueenBeeBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<BookMarkBee>(), new Fraction(1, 1));
-            }
-            if (item.Is<BrimstoneElementalBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<BookMarkBrimstone>(), new Fraction(1, 2));
-            }
-            if (item.Is<CrabulonBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<WisperCard>(), 2);
-                itemLoot.Add(ModContent.ItemType<BookMarkCancer>(), new Fraction(2, 5));
-                itemLoot.Add(ModContent.ItemType<BookmarkSpore>(), new Fraction(2, 5));
-                itemLoot.Add(ModContent.ItemType<BlueFlatTopMushroom>(), new Fraction(2, 5));
-            }
-            if (item.Is<AquaticScourgeBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<BookMarkCapricorn>(), new Fraction(1, 2));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkBee>()));
             }
             if (item.type == ItemID.EaterOfWorldsBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<BookMarkCorrupt>(), new Fraction(1, 2));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkCorrupt>(), 2));
             }
             if (item.type == ItemID.BrainOfCthulhuBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<BookMarkCrimson>(), new Fraction(1, 2));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkCrimson>(), 2));
             }
             if (item.type == ItemID.WallOfFleshBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<BookMarkFlesh>(), new Fraction(1, 1));
-                itemLoot.Add(ModContent.ItemType<HungryLantern>(), new Fraction(1, 3));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkFlesh>()));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<HungryLantern>(), 3));
             }
             if (item.Is<NihilityTwinBag>())
             {
-                itemLoot.Add(ModContent.ItemType<BookMarkGemini>(), new Fraction(1, 1));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkGemini>()));
             }
-            if (ModLoader.TryGetMod("CalamityHunt", out Mod ch) && (item.type == ch.Find<ModItem>("TreasureTrunk").Type || item.type == ch.Find<ModItem>("TreasureBucket").Type))
-            {
-                itemLoot.Add(ModContent.ItemType<BookMarkGoozma>(), new Fraction(1, 1));
-            }
-            if (ModLoader.TryGetMod("CatalystMod", out Mod cl) && item.type == cl.Find<ModItem>("AstrageldonBag").Type)
-            {
-                itemLoot.Add(ModContent.ItemType<BookMarkIntergelactic>(), new Fraction(1, 2));
-            }
-            if (item.Is<CryogenBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<BookMarkIce>(), new Fraction(1, 2));
-                itemLoot.Add(ModContent.ItemType<FrostboundCage>(), new Fraction(2, 5));
-            }
-            if (item.Is<DesertScourgeBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<BookMarkLeo>(), new Fraction(1, 2));
-                itemLoot.Add(ModContent.ItemType<AntlionShell>(), new Fraction(1, 3));
-            }
+            // 灾厄家族联动模组（猎杀灾厄 / 星辉灾变）宝袋软集成已随脱钩整体移除
             if (item.type == ItemID.FairyQueenBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<BookMarkLibra>(), new Fraction(1, 1));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkLibra>()));
             }
             if (item.type == ItemID.MoonLordBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<BookMarkLunar>(), new Fraction(3, 5));
-                itemLoot.Add(ModContent.ItemType<MoonlightCore>(), new Fraction(2, 5));
+                // 原 3/5 与 2/5 概率，CommonDrop 分子写法保持不化简
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<BookMarkLunar>(), 5, 1, 1, 3));
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<MoonlightCore>(), 5, 1, 1, 2));
             }
             if (item.type == ItemID.SkeletronPrimeBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<BookMarkMechanical>(), new Fraction(1, 1));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkMechanical>()));
             }
             if (item.type == ItemID.QueenSlimeBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<BookMarkOfLight>(), new Fraction(1, 1));
-            }
-            if (item.Is<CalamitasCloneBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<BookMarkOfNight>(), new Fraction(1, 1));
-            }
-            if (item.Is<CalamitasCoffer>())
-            {
-                itemLoot.Add(ModContent.ItemType<BookmarkPactOfDecay>(), new Fraction(1, 1));
-            }
-            if (item.Is<DraedonBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<BookmarkPactOfWar>(), new Fraction(1, 1));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkOfLight>()));
             }
             if (item.type == ItemID.FishronBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<BookMarkPisces>(), new Fraction(1, 1));
-            }
-            if (item.Is<ProvidenceBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<BookMarkProfaned>(), new Fraction(3, 5));
-                itemLoot.Add(ModContent.ItemType<SacredStone>(), new Fraction(3, 5));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkPisces>()));
             }
             if (item.type == ItemID.EyeOfCthulhuBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<BookMarkSagittarius>(), new Fraction(1, 2));
-                itemLoot.Add(ModContent.ItemType<BookMarkVirgo>(), new Fraction(1, 2));
-            }
-            if (item.Is<AstrumAureusBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<BookMarkScorpio>(), new Fraction(1, 2));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkSagittarius>(), 2));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkVirgo>(), 2));
             }
             if (item.type == ItemID.PlanteraBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<BookMarkSilva>(), new Fraction(1, 2));
-                itemLoot.Add(ModContent.ItemType<MutantBulb>(), new Fraction(1, 2));
-                itemLoot.Add(ModContent.ItemType<LashingBramblerod>(), new Fraction(4, 5));
-            }
-            if (item.Is<SlimeGodBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<BookMarkTaurus>(), new Fraction(1, 2));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkSilva>(), 2));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<MutantBulb>(), 2));
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<LashingBramblerod>(), 5, 1, 1, 4));
             }
             if (item.type == ItemID.GolemBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<BookMarkTerra>(), new Fraction(1, 2));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkTerra>(), 2));
             }
             if (item.type == ItemID.KingSlimeBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<BookMarkRoyal>(), new Fraction(1, 2));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkRoyal>(), 2));
             }
             if (item.Is<CruiserBag>())
             {
-                itemLoot.Add(ModContent.ItemType<BookMarkVoid>(), new Fraction(1, 1));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkVoid>()));
             }
 
             if (item.type == ItemID.PlanteraBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<ToyGuitar>(), new Fraction(1, 5));
-            }
-            if (item.type == ModContent.ItemType<StormWeaverBag>())
-            {
-                itemLoot.Add(ItemDropRule.ByCondition(new IsDeathMode(), ModContent.ItemType<HeartOfStorm>()));
-            }
-            if (item.type == ModContent.ItemType<AstrumDeusBag>())
-            {
-                itemLoot.Add(ItemDropRule.ByCondition(new IsDeathMode(), ModContent.ItemType<DeusCore>()));
-            }
-            if (item.type == ModContent.ItemType<BrimstoneElementalBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<EvilFriend>(), new Fraction(4, 9));
-            }
-            if (item.type == ModContent.ItemType<YharonBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<Vitalfeather>(), new Fraction(1, 4));
-            }
-            if (item.type == ModContent.ItemType<AstrumAureusBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<NightProjection>(), new Fraction(4, 9));
-            }
-            if (item.type == ModContent.ItemType<PolterghastBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<AnimaSola>(), new Fraction(1, 2));
-            }
-            if (item.type == ModContent.ItemType<AquaticScourgeBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<AquaticFlute>(), new Fraction(1, 3));
-            }
-            if (item.type == ModContent.ItemType<DesertScourgeBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<DustyWhistle>(), new Fraction(1, 4));
-            }
-            if (item.type == ModContent.ItemType<CalamitasCloneBag>())
-            {
-                //itemLoot.Add(ModContent.ItemType<FriendBox>(), new Fraction(1, 10));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<ToyGuitar>(), 5));
             }
             if (item.type == ItemID.PlanteraBossBag)
             {
@@ -1963,165 +1699,125 @@ namespace CalamityEntropy.Common
             }
             if (item.type == ItemID.KingSlimeBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<SlimeYoyo>(), new Fraction(4, 10));
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<SlimeYoyo>(), 10, 1, 1, 4));
             }
             if (item.type == ItemID.DeerclopsBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<Antler>(), new Fraction(4, 10));
-            }
-            if (item.type == ModContent.ItemType<HydrothermalCrate>())
-            {
-                itemLoot.Add(ModContent.ItemType<EnduranceCard>(), new Fraction(1, 5));
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<Antler>(), 10, 1, 1, 4));
             }
             if (item.type == ItemID.IronCrate || item.type == ItemID.IronCrateHard)
             {
-                itemLoot.Add(ModContent.ItemType<AuraCard>(), new Fraction(1, 10));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<AuraCard>(), 10));
             }
             if (item.type == ItemID.OasisCrate || item.type == ItemID.OasisCrateHard)
             {
-                itemLoot.Add(ModContent.ItemType<InspirationCard>(), new Fraction(3, 10));
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<InspirationCard>(), 10, 1, 1, 3));
             }
-            if (item.type == ModContent.ItemType<StarterBag>())
+            // —— 以下为脱离灾厄重挂（bookmark-rehang.md：原灾厄宝袋掉落改挂原版宝袋 / 自有 Boss 袋）——
+            if (item.type == ItemID.EaterOfWorldsBossBag || item.type == ItemID.BrainOfCthulhuBossBag)
             {
-                static bool getsDev(DropAttemptInfo info)
-                {
-                    string playerName = info.player.name;
-                    foreach (string str in Donators.Donors)
-                        if (PGetPlayer.RemoveCharAndToLower(playerName).Contains(PGetPlayer.RemoveCharAndToLower(str))) return true;
-                    return false;
-                }
-                ;
-                itemLoot.AddIf(getsDev, ModContent.ItemType<TheocracyMark>());
-                static bool getsDH(DropAttemptInfo info)
-                {
-                    string playerName = info.player.name;
-                    return playerName.ToLower().Contains("polaris");
-                }
-                ;
-                static bool getsWyrm(DropAttemptInfo info)
-                {
-                    string playerName = info.player.name;
-                    return playerName.ToLower().Contains("polaris") || playerName.ToLower().Contains("妖龙") || playerName.ToLower().Contains("wyrm");
-                }
-                ;
-                itemLoot.AddIf(getsDH, ModContent.ItemType<DustyStar>());
-                itemLoot.AddIf(getsDH, ItemID.Ruby, 8);
-                itemLoot.AddIf(getsDH, ModContent.ItemType<VoidCruiseDye>(), 3);
-                itemLoot.AddIf(getsWyrm, ModContent.ItemType<AbyssLantern>());
-                static bool getsAH(DropAttemptInfo info)
-                {
-                    string playerName = info.player.name;
-                    return playerName.ToLower().Contains("ahi") || playerName.ToLower().Contains("fr9");
-                }
-                ;
-                itemLoot.AddIf(getsAH, ModContent.ItemType<GalaxyGrapeSoda>());
-
-                static bool getsDD(DropAttemptInfo info)
-                {
-                    string playerName = info.player.name;
-                    return playerName.ToLower().Contains("dream") || playerName.ToLower().Contains("梦");
-                }
-                ;
-                itemLoot.AddIf(getsDD, ModContent.ItemType<DreamCatcher>());
-
-
-                static bool getsCHA(DropAttemptInfo info)
-                {
-                    string playerName = info.player.name;
-                    return playerName.ToLower().Contains("cha") || playerName.ToLower().Contains("lost");
-                }
-                ;
-                itemLoot.AddIf(getsCHA, ModContent.ItemType<ToyKnife>());
-
-                static bool getsAN(DropAttemptInfo info)
-                {
-                    string playerName = info.player.name;
-                    return playerName.ToLower().Contains("rat") || playerName.ToLower().Contains("ant");
-                }
-                ;
-                itemLoot.AddIf(getsAN, ModContent.ItemType<Antler>());
-
-                static bool getsSW(DropAttemptInfo info)
-                {
-                    string playerName = info.player.name;
-                    return playerName.ToLower().Contains("away") || playerName.ToLower().Contains("weaver");
-                }
-                ;
-                itemLoot.AddIf(getsSW, ModContent.ItemType<CrimsonNight>());
-
-                static bool getsMO(DropAttemptInfo info)
-                {
-                    string playerName = info.player.name;
-                    return playerName.ToLower().Contains("mo");
-                }
-                ;
-                itemLoot.AddIf(getsMO, ModContent.ItemType<MosHat>());
-
-                itemLoot.AddIf((info) => (info.player.name.ToLower().Contains("ylg") || info.player.name.ToLower().Contains("烟玉")), ModContent.ItemType<YanyusHat>());
-
-                itemLoot.AddIf((info) => (info.player.name.ToLower().Contains("sora")), ModContent.ItemType<MysteriousBook>());
-
-                itemLoot.AddIf((info) => (info.player.name.ToLower().Contains("心斩狂歌")), ModContent.ItemType<LostChubbyBird>());
-
-                itemLoot.AddIf((info) => (info.player.name.ToLower().Contains("nicholas")), ModContent.ItemType<PineappleDog>());
-
-                itemLoot.AddIf((info) => (info.player.name.ToLower().Contains("lily") || info.player.name.Contains("莉莉")), ModContent.ItemType<LostHeirloom>());
-                itemLoot.AddIf((info) => info.player.name.ToLower() == "tlipoca" || info.player.name.ToLower().Contains("kino"), ModContent.ItemType<TlipocasScythe>());
-                bool cfg(DropAttemptInfo info)
-                {
-                    return ModContent.GetInstance<ServerConfig>().ExtraItemsInStarterBag;
-                }
-                if (ModLoader.TryGetMod("MagicStorage", out Mod magicStorage))
-                {
-                    ModItem i;
-                    if (magicStorage.TryFind<ModItem>("CraftingAccess", out i))
-                    {
-                        itemLoot.AddIf(cfg, i.Type);
-                    }
-                    if (magicStorage.TryFind<ModItem>("StorageHeart", out i))
-                    {
-                        itemLoot.AddIf(cfg, i.Type, 1);
-                    }
-                    if (magicStorage.TryFind<ModItem>("StorageUnit", out i))
-                    {
-                        itemLoot.AddIf(cfg, i.Type, 1, 10, 10);
-                    }
-                }
-                if (ModLoader.TryGetMod("ImproveGame", out Mod qot))
-                {
-                    ModItem i;
-                    if (qot.TryFind<ModItem>("MagickWand", out i))
-                    {
-                        itemLoot.AddIf(cfg, i.Type);
-                    }
-                    if (qot.TryFind<ModItem>("SpaceWand", out i))
-                    {
-                        itemLoot.AddIf(cfg, i.Type);
-                    }
-                    if (qot.TryFind<ModItem>("CreateWand", out i))
-                    {
-                        itemLoot.AddIf(cfg, i.Type);
-                    }
-                    if (qot.TryFind<ModItem>("PotionBag", out i))
-                    {
-                        itemLoot.AddIf(cfg, i.Type);
-                    }
-                    if (qot.TryFind<ModItem>("BannerChest", out i))
-                    {
-                        itemLoot.AddIf(cfg, i.Type);
-                    }
-                }
-                itemLoot.AddIf(cfg, 300, 1, 30, 30);
-                itemLoot.AddIf(cfg, 2324, 1, 30, 30);
-                itemLoot.AddIf(cfg, 148);
-                itemLoot.AddIf(cfg, 3117);
-                itemLoot.AddIf(cfg, ItemID.Sunflower);
+                // 原灾厄腐巢/血肉宿主袋 1/2
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAerialite>(), 2));
             }
+            if (item.type == ItemID.SkeletronPrimeBossBag)
+            {
+                // 原灾厄硫磺火元素袋 1/2
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkBrimstone>(), 2));
+            }
+            if (item.type == ItemID.PlanteraBossBag)
+            {
+                // 原灾厄之影（CalamitasClone）袋 100%
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkOfNight>()));
+            }
+            if (item.type == ItemID.FishronBossBag)
+            {
+                // 原灾厄利维坦袋 1/2（海洋主题一致）
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAquarius>(), 2));
+            }
+            if (item.type == ItemID.CultistBossBag)
+            {
+                // 原灾厄星神游龙袋 1/2；原灾厄毁灭者躯干 100% 直掉
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAstral>(), 2));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacrificalMask>()));
+            }
+            if (item.type == ItemID.GolemBossBag)
+            {
+                // 原灾厄瘟疫使者歌莉娅袋 1/4
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<PlagueInternalCombustionEngine>(), 4));
+            }
+            if (item.type == ItemID.MoonLordBossBag)
+            {
+                // 原星辉灾变 Astrageldon 袋挂点，脱钩后重挂月总袋 1/10
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkIntergelactic>(), 10));
+            }
+            if (item.Is<ApsychosBag>())
+            {
+                // 原灾厄史莱姆之神袋 1/2
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkTaurus>(), 2));
+            }
+            if (item.Is<LuminarisBag>())
+            {
+                // 原灾厄水澜灾虫（AquaticScourge）袋 1/2
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkCapricorn>(), 2));
+            }
+            if (item.Is<ProphetBag>())
+            {
+                // 原灾厄白金星舰袋 1/2
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkScorpio>(), 2));
+            }
+            if (item.Is<NihilityTwinBag>())
+            {
+                // 原灾厄神明使徒段位掉落集中重挂（书签 100%，武器/饰品 1/4，bookmark-rehang §四）
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkProfaned>()));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<HellBohea>(), 4));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacredStone>(), 4));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BottleDarkMatter>(), 4));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<AnimaSola>(), 4));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<HeartOfStorm>(), 4));
+            }
+            if (item.Is<CruiserBag>())
+            {
+                // 原灾厄终局段位掉落集中重挂（书签 100%，武器/饰品 1/4，bookmark-rehang §四）
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAuric>()));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkPactOfWar>()));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkPactOfDecay>()));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<FlowingLight>(), 4));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<TheFilthyContractWithMammon>(), 4));
+            }
+            // —— 增补段（bookmark-rehang / misc-map §五 · 表外补充裁定的原无映射条目）——
+            if (item.type == ItemID.PlanteraBossBag)
+            {
+                // 原灾厄之影袋趣味武器
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<FriendBox>(), 10));
+            }
+            if (item.type == ItemID.SkeletronPrimeBossBag)
+            {
+                // 原灾厄硫火元素袋趣味武器（与 BookMarkBrimstone 同挂点）
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<EvilFriend>(), 10));
+            }
+            if (item.type == ItemID.GolemBossBag)
+            {
+                // 石后成长饰品保底（另有熵之馈赠礼包来源，misc-map §五）
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<SusiesBracelet>(), 4));
+            }
+            if (item.type == ItemID.MoonLordBossBag)
+            {
+                // 原灾厄亵渎卫士袋宠物（18.5→ML 档）
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<LavaPancake>(), 10));
+            }
+            if (item.type == ItemID.OceanCrateHard)
+            {
+                // 原 ExtraLoot 灾厄热泉宝匣注入改挂困难海洋木匣（misc-map §五；巫师条件商店来源保留）
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<EnduranceCard>(), 15));
+            }
+            // 原挂在灾厄新手包（StarterBag）上的开局注入已定稿分流：IGetFromStarterBag 物品经 StartBagGItem
+            // 注入自有礼包「熵之馈赠」，MagicStorage/ImproveGame 便利注入重挂 EntropyStarterBag.ModifyItemLoot（2026-08-27）
         }
+        // 难度映射定稿（difficulty-map.md）：灾厄死亡模式 → 原版大师模式
         public class IsDeathMode : IItemDropRuleCondition, IProvideItemConditionDescription
         {
-            public bool CanDrop(DropAttemptInfo info) => CalamityWorld.death;
-            public bool CanShowItemDropInUI() => CalamityWorld.death;
+            public bool CanDrop(DropAttemptInfo info) => Main.masterMode;
+            public bool CanShowItemDropInUI() => Main.masterMode;
             public string GetConditionDescription() => Language.GetTextValue("Mods.CalamityEntropy.DeathMode");
         }
     }

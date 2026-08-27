@@ -5,7 +5,6 @@ using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,13 +12,15 @@ using Terraria.ModLoader;
 namespace CalamityEntropy.Content.Projectiles.Pets.Abyss
 {
     //head/body/tail旧写法是射弹实例字段Request,每条宠物实例化都拉贴图,加载/进世界能挂
-    //VoidPalProj也共用这套,VaultLoaden必须static
     internal static class AbyssPetTextures
     {
         [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Abyss/Head")] internal static Asset<Texture2D> Head;
         [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Abyss/Body")] internal static Asset<Texture2D> Body;
         [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Abyss/Tail")] internal static Asset<Texture2D> Tail;
         [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Abyss/AbyssPet")] internal static Asset<Texture2D> Menu;   //宠物栏预览那张
+        //地面待机/行走帧动画,加载期一次就位,不再在 PreDraw 里每帧建表逐张请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Abyss/Afk", 1, 3, AssetMode = AssetMode.TextureValueArray)] internal static Texture2D[] AfkFrames;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Abyss/Walk", 1, 4, AssetMode = AssetMode.TextureValueArray)] internal static Texture2D[] WalkFrames;
     }
 
     public class AbyssPet : ModProjectile
@@ -53,27 +54,16 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Abyss
                 return false;
             }
             Player player = Main.player[Projectile.owner];
-            List<Texture2D> list = new List<Texture2D>();
             if (counter > 36)
             {
                 counter -= 36;
             }
             if (Projectile.ai[1] == 0)
             {
-                if (Projectile.velocity.Length() < 1)
-                {
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Abyss/Afk1").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Abyss/Afk2").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Abyss/Afk3").Value);
-                }
-                else
-                {
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Abyss/Walk1").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Abyss/Walk2").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Abyss/Walk3").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Abyss/Walk4").Value);
-                }
-                Texture2D tx = list[(((int)counter / 6) % list.Count)];
+                Texture2D[] frames = Projectile.velocity.Length() < 1
+                    ? AbyssPetTextures.AfkFrames
+                    : AbyssPetTextures.WalkFrames;
+                Texture2D tx = frames[(((int)counter / 6) % frames.Length)];
                 if (Projectile.velocity.X > -2 && Projectile.velocity.X < 2f)
                 {
                     if (player.Center.X > Projectile.Center.X)

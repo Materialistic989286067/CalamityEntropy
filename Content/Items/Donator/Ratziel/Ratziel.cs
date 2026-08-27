@@ -1,7 +1,9 @@
+using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -42,15 +44,16 @@ namespace CalamityEntropy.Content.Items.Donator.Ratziel
         public static int MaxShield(int lv) => 10 + lv * 4;
         public static int Level()
         {
-            if (DownedBossSystem.downedYharon)
+            // 成长阶梯按 progression-map.md 重排：原版节点 + 自有 Boss 线
+            if (EDownedBosses.downedCruiser)
                 return 10;
-            if (DownedBossSystem.downedDoG)
+            if (EDownedBosses.downedAbyssalWraith)
                 return 9;
-            if (DownedBossSystem.downedProvidence)
+            if (EDownedBosses.downedNihilityTwin)
                 return 8;
             if (NPC.downedMoonlord)
                 return 7;
-            if (NPC.downedPlantBoss && DownedBossSystem.downedCalamitasClone)
+            if (NPC.downedPlantBoss && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
                 return 6;
             if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
                 return 5;
@@ -58,9 +61,9 @@ namespace CalamityEntropy.Content.Items.Donator.Ratziel
                 return 4;
             if (NPC.downedQueenBee || NPC.downedBoss3)
                 return 3;
-            if (NPC.downedBoss2 || DownedBossSystem.downedPerforator || DownedBossSystem.downedHiveMind)
+            if (NPC.downedBoss2)
                 return 2;
-            if (NPC.downedBoss1 || DownedBossSystem.downedDesertScourge || NPC.downedSlimeKing)
+            if (NPC.downedBoss1 || NPC.downedSlimeKing)
                 return 1;
             return 0;
         }
@@ -264,7 +267,7 @@ namespace CalamityEntropy.Content.Items.Donator.Ratziel
         }
         public void DrayRays()
         {
-            Texture2D ray = CEUtils.getExtraTex("GlowCone");
+            Texture2D ray = CEExtraAssets.GlowCone;
             Main.spriteBatch.UseAdditive();
             for (int i = 0; i < targetVecs.Count; i++)
             {

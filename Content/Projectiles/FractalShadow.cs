@@ -1,4 +1,4 @@
-﻿using CalamityMod;
+﻿using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -34,7 +34,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override void AI()
         {
             Player player = Projectile.GetOwner();
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             if (init)
             {
                 rotSpeed = Projectile.ai[1] * 0.1f;

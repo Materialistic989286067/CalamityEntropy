@@ -1,8 +1,8 @@
-﻿using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -17,7 +17,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void SetDefaults()
         {
             Item.damage = 40;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.width = 58;
             Item.noUseGraphic = true;
             Item.height = 58;
@@ -25,7 +25,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAnimation = 26;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 6;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ModContent.RarityType<Lunarblight>();
             Item.UseSound = null;
             Item.noMelee = true;
@@ -47,7 +47,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -76,7 +76,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             var player = Projectile.GetOwner();
             player.heldProj = Projectile.whoAmI;
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             float cMax = player.itemTimeMax * Projectile.MaxUpdates;
             float zMax = cMax * (Main.zenithWorld ? 0.06f : 0.22f);
             if (counter == 0)
@@ -105,7 +105,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                         Projectile.localNPCImmunity[i] = 0;
                     }
 
-                    Projectile.velocity = new Vector2(Projectile.velocity.Length(), 0).RotatedBy((player.Calamity().mouseWorld - player.MountedCenter).ToRotation());
+                    Projectile.velocity = new Vector2(Projectile.velocity.Length(), 0).RotatedBy((player.Entropy().MouseWorld - player.MountedCenter).ToRotation());
                 }
                 scale = 1.4f + CEUtils.Parabola(dCounter / zMax, 0.2f);
                 offset = CEUtils.Parabola(dCounter / zMax, 40);
@@ -147,7 +147,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Texture2D tex = Projectile.GetTexture();
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation + MathHelper.PiOver4, new Vector2(0, tex.Height), Projectile.scale * scale, SpriteEffects.None, 0);
             Main.spriteBatch.UseBlendState(BlendState.Additive);
-            Texture2D star = CEUtils.getExtraTex("StarTexture");
+            Texture2D star = CEExtraAssets.StarTexture;
             Main.spriteBatch.Draw(star, Projectile.Center + Projectile.rotation.ToRotationVector2() * 84 * scale - Main.screenPosition, null, Color.White * (starAlpha), 0, star.Size() / 2f, new Vector2(2.4f, 0.6f) * Projectile.scale * 0.2f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(star, Projectile.Center + Projectile.rotation.ToRotationVector2() * 84 * scale - Main.screenPosition, null, Color.White * (starAlpha), 0, star.Size() / 2f, new Vector2(0.6f, 2.4f) * Projectile.scale * 0.2f, SpriteEffects.None, 0);
             Main.spriteBatch.ExitShaderRegion();

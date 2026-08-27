@@ -1,8 +1,6 @@
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Ranged;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -86,7 +84,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             else
             {
                 SoundEngine.PlaySound(Item.UseSound);
-                if (CalamityUtils.CheckWoodenAmmo(type, player))
+                if (CEUtils.CheckWoodenAmmo(type, player))
                     type = ProjectileID.WoodenArrowFriendly;
 
                 int j = 2;
@@ -119,10 +117,10 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<Barinade>(), 1).
-                AddIngredient(ModContent.ItemType<Barinautical>(), 1).
-                AddIngredient(ModContent.ItemType<Lumenyl>(), 20).
-                AddIngredient(ModContent.ItemType<LifeAlloy>(), 5).
+                AddIngredient(ItemID.BeesKnees, 1).
+                AddIngredient(ItemID.DaedalusStormbow, 1).
+                AddIngredient(ItemID.CrystalShard, 20).
+                AddIngredient(ItemID.HallowedBar, 5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }
@@ -158,7 +156,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             NoChaseTime = 8;
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(60, 255, 255), 0.01f).Configure("CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, 0.6f, 14);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(60, 255, 255), 0.01f).Configure("CalamityEntropy/Assets/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, 0.6f, 14);
         }
         public override bool? CanHitNPC(NPC target)
         {

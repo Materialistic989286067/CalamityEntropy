@@ -1,7 +1,7 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -26,7 +26,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = CEUtils.RogueDC;
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 82;
             Projectile.height = 82;
             Projectile.friendly = true;
@@ -76,7 +76,7 @@ namespace CalamityEntropy.Content.Projectiles
                     if (Projectile.timeLeft % Math.Max(((int)(10 / boost)), 1) == 0)
                     {
                         Projectile p = Main.projectile[Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 0.4f, ModContent.ProjectileType<VoidStarF>(), (int)(Projectile.damage * 0.1f), 5, Projectile.owner)];
-                        p.DamageType = CEUtils.RogueDC;
+                        p.DamageType = DamageClass.Melee;
                     }
                 }
             }
@@ -142,11 +142,11 @@ namespace CalamityEntropy.Content.Projectiles
             if (Projectile.ai[0] == 10)
             {
 
-                SoundStyle SwingSound = new SoundStyle("CalamityMod/Sounds/Item/TerratomereSwing");
+                SoundStyle SwingSound = new SoundStyle("CalamityEntropy/Assets/Sounds/HellkiteSwing", 2);
                 SwingSound.Pitch = 1.6f;
-                if (Projectile.Calamity().stealthStrike)
+                if (Projectile.IsEmpowered())
                 {
-                    SwingSound = new("CalamityMod/Sounds/NPCKilled/DevourerDeathImpact");
+                    SwingSound = new("CalamityEntropy/Assets/Sounds/DevourerDeathImpact");
                     SwingSound.Pitch = 0.2f;
                 }
 
@@ -154,7 +154,7 @@ namespace CalamityEntropy.Content.Projectiles
             }
             if (Projectile.ai[0] == 12)
             {
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = Utils.Remap(Main.LocalPlayer.Distance(Projectile.Center), 1800f, 1000f, 0f, 4.5f) * (Projectile.Calamity().stealthStrike ? 3 : 1.8f);
+                ScreenShaker.AddShake(new ScreenShaker.NoDirQuickShake(Utils.Remap(Main.LocalPlayer.Distance(Projectile.Center), 1800f, 1000f, 0f, 4.5f) * (Projectile.IsEmpowered() ? 3 : 1.8f)));
 
                 Projectile.extraUpdates = (Projectile.extraUpdates + 1) * 2 - 1;
             }
@@ -216,15 +216,15 @@ namespace CalamityEntropy.Content.Projectiles
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             //命中爆发DirectionalPulseRing+DetailedExplosionCal,Configure是CalamityPorts原构造
-            PRTLoader.NewParticle<PRT_DirectionalPulseRing>(target.Center, Vector2.Zero, Color.Purple, 0.1f).Configure(new Vector2(2f, 2f), 0, (Projectile.Calamity().stealthStrike ? 2 : 1) * 0.85f, (Projectile.Calamity().stealthStrike ? 46 : 36));
-            if (Projectile.Calamity().stealthStrike && Main.myPlayer == Projectile.owner && eff)
+            PRTLoader.NewParticle<PRT_DirectionalPulseRing>(target.Center, Vector2.Zero, Color.Purple, 0.1f).Configure(new Vector2(2f, 2f), 0, (Projectile.IsEmpowered() ? 2 : 1) * 0.85f, (Projectile.IsEmpowered() ? 46 : 36));
+            if (Projectile.IsEmpowered() && Main.myPlayer == Projectile.owner && eff)
             {
                 eff = false;
                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<VoidRExp>(), 0, 0, Projectile.owner);
             }
-            PRTLoader.NewParticle<PRT_DetailedExplosionCal>(target.Center, Vector2.Zero, Color.Purple, 0f).Configure(Vector2.One, Main.rand.NextFloat(-5, 5), (Projectile.Calamity().stealthStrike ? 2.2f : 1) * 0.65f, (Projectile.Calamity().stealthStrike ? 30 : 26));
-            EGlobalNPC.AddVoidTouch(target, Projectile.Calamity().stealthStrike ? 360 : 100, Projectile.Calamity().stealthStrike ? 5 : 2, 800, 10);
-            float sparkCount = Projectile.Calamity().stealthStrike ? 26 : 16;
+            PRTLoader.NewParticle<PRT_DetailedExplosionCal>(target.Center, Vector2.Zero, Color.Purple, 0f).Configure(Vector2.One, Main.rand.NextFloat(-5, 5), (Projectile.IsEmpowered() ? 2.2f : 1) * 0.65f, (Projectile.IsEmpowered() ? 30 : 26));
+            EGlobalNPC.AddVoidTouch(target, Projectile.IsEmpowered() ? 360 : 100, Projectile.IsEmpowered() ? 5 : 2, 800, 10);
+            float sparkCount = Projectile.IsEmpowered() ? 26 : 16;
             for (int i = 0; i < sparkCount; i++)
             {
                 Vector2 sparkVelocity2 = new Vector2(16, 0).RotatedBy((float)Main.rand.NextDouble() * 3.14159f * 2) * Main.rand.NextFloat(0.5f, 1.8f);
@@ -232,7 +232,7 @@ namespace CalamityEntropy.Content.Projectiles
                 float sparkScale2 = Main.rand.NextFloat(0.95f, 1.8f);
                 Color sparkColor2 = Color.DarkBlue;
 
-                float velc = Projectile.Calamity().stealthStrike ? 1.5f : 0.9f;
+                float velc = Projectile.IsEmpowered() ? 1.5f : 0.9f;
                 if (Main.rand.NextBool())
                 {
                     PRTLoader.NewParticle<PRT_AltSpark>(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f), sparkVelocity2 * velc, sparkColor2, sparkScale2 * 1).Configure(false, (int)(sparkLifetime2 * 1));

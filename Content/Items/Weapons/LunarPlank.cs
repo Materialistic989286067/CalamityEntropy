@@ -1,10 +1,9 @@
-﻿using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Rogue;
+using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -15,8 +14,11 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
-    public class LunarPlank : RogueWeapon
+    public class LunarPlank : ModItem, ICEChargeWeapon
     {
+        // 充能条 5 秒；原潜伏乘数 伤害0.9/弹速1.4 并入释放乘数
+        public CEChargeProfile ChargeProfile => CEChargeProfile.ChargeBar(5f, 0.9f, 1.4f);
+
         public override void SetDefaults()
         {
             Item.width = 32;
@@ -30,26 +32,22 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.UseSound = CEUtils.GetSound("powerwhip");
             Item.autoReuse = true;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ModContent.RarityType<Lunarblight>();
             Item.shoot = ModContent.ProjectileType<LunarPlankThrow>();
             Item.shootSpeed = 6.4f;
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Ranged;
             Item.crit = 4;
         }
 
-        public override float StealthDamageMultiplier => 0.9f;
-        public override float StealthVelocityMultiplier => 1.4f;
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.Calamity().StealthStrikeAvailable())
+            if (CEChargeWeapon.TryConsume(player, Item))
             {
                 int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
-                if (p.WithinBounds(Main.maxProjectiles))
+                if (p >= 0 && p < Main.maxProjectiles)
                 {
-                    Main.projectile[p].Calamity().stealthStrike = true;
-                    p.ToProj().netUpdate = true;
+                    CEChargeWeapon.Empower(p);
                 }
                 return false;
             }
@@ -61,7 +59,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public List<Vector2> odp = new List<Vector2>();
         public override void SetDefaults()
         {
-            Projectile.DamageType = CEUtils.RogueDC;
+            Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 32;
             Projectile.height = 32;
             Projectile.friendly = true;
@@ -75,7 +73,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/LunarPlank";
         public override void AI()
         {
-            if (Projectile.ai[0] == 0 && Projectile.Calamity().stealthStrike)
+            if (Projectile.ai[0] == 0 && Projectile.IsEmpowered())
             {
                 Projectile.scale *= 1.4f;
             }
@@ -134,7 +132,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 
                     if (ve.Count >= 3)
                     {
-                        Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/MegaStreakBacking2").Value;
+                        Texture2D tx = CEExtraAssets.MegaStreakBacking2;
                         gd.Textures[0] = tx;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                     }
@@ -161,7 +159,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 
                     if (ve.Count >= 3)
                     {
-                        Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Streak1").Value;
+                        Texture2D tx = CEExtraAssets.Streak1;
                         gd.Textures[0] = tx;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                     }
@@ -175,7 +173,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void OnKill(int timeLeft)
         {
-            if (Projectile.Calamity().stealthStrike)
+            if (Projectile.IsEmpowered())
             {
                 CEUtils.PlaySound("LunarPlankExplode", 1, Projectile.Center);
 

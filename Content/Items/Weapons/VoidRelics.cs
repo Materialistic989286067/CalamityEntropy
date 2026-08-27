@@ -1,11 +1,13 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Cooldowns;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
+using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Core.Cooldowns;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -42,7 +44,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = ItemUseStyleID.RaiseLamp;
             Item.shoot = ModContent.ProjectileType<VoidMark>();
             Item.shootSpeed = 2f;
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2);
             Item.UseSound = null;
             Item.autoReuse = true;
             Item.noMelee = true;
@@ -78,6 +80,9 @@ namespace CalamityEntropy.Content.Items.Weapons
     }
     public class VoidMark : ModProjectile
     {
+        //符文帧动画贴图(rune0~rune9),按序号批量加载,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Extra/VoidRunes/rune", 0, 10, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] RuneTexs;
         public override void SetStaticDefaults()
         {
         }
@@ -194,8 +199,8 @@ namespace CalamityEntropy.Content.Items.Weapons
                 player.AddCooldown(AbyssalStorm.ID, StormTime * 6);
                 StormTime = 0;
             }
-            player.Calamity().mouseWorldListener = true;
-            float targetRot = (player.Calamity().mouseWorld - player.MountedCenter).ToRotation();
+            player.Entropy().MouseWorldListener = true;
+            float targetRot = (player.Entropy().MouseWorld - player.MountedCenter).ToRotation();
             Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, targetRot, 0.1f, false);
             Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, targetRot, 0.02f, true);
             if (Translate)
@@ -258,7 +263,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public static void DrawRune(Vector2 pos, VoidMarksRune rune, float scale)
         {
             int texCount = int.Max(0, int.Min(9, rune.ID));
-            Texture2D tex = CEUtils.getExtraTex("VoidRunes/rune" + texCount.ToString());
+            Texture2D tex = RuneTexs[texCount];
             Main.spriteBatch.UseAdditive();
             for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver4)
             {
@@ -295,7 +300,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 
             if (translateFlex > 0.02f)
             {
-                Texture2D glow = CEUtils.getExtraTex("Glow2");
+                Texture2D glow = CEExtraAssets.Glow2;
                 Vector2 glowPos = Projectile.Center + circleOffset.RotatedBy(rotation) - Main.screenPosition;
                 float glowScale = translateFlex;
 
@@ -307,7 +312,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 
             #region ring
             var gd = Main.graphics.GraphicsDevice;
-            Texture2D tx = CEUtils.getExtraTex("DeathRay");
+            Texture2D tx = CEExtraAssets.DeathRay;
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             gd.Textures[0] = tx;
@@ -549,15 +554,15 @@ namespace CalamityEntropy.Content.Items.Weapons
             }
             if (ve.Count >= 3)
             {
-                Texture2D tx = CEUtils.getExtraTex("DeathRay");
+                Texture2D tx = CEExtraAssets.DeathRay;
                 gd.Textures[0] = tx;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-                gd.Textures[0] = CEUtils.getExtraTex("Streak2");
+                gd.Textures[0] = CEExtraAssets.Streak2;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve2.ToArray(), 0, ve2.Count - 2);
             }
 
-            Texture2D glow = CEUtils.getExtraTex("Glow2");
-            Texture2D tex = CEUtils.getExtraTex("Ray");
+            Texture2D glow = CEExtraAssets.Glow2;
+            Texture2D tex = CEExtraAssets.Ray;
 
             Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition, null, new Color(60, 60, 255), Projectile.rotation, glow.Size().Half(), 0.32f * Projectile.scale, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition, null, new Color(230, 230, 255), Projectile.rotation, glow.Size().Half(), 0.16f * Projectile.scale, SpriteEffects.None, 0);

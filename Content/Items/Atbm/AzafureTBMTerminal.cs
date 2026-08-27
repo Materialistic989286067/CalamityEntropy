@@ -1,8 +1,8 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -31,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Atbm
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.shoot = ModContent.ProjectileType<ATBMProjectile>();
             Item.shootSpeed = 2f;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.autoReuse = false;
             Item.UseSound = SoundID.Item8;
             Item.noMelee = true;
@@ -451,7 +451,7 @@ namespace CalamityEntropy.Content.Items.Atbm
             Main.EntitySpriteDraw(head, Projectile.Center - Main.screenPosition, GetCutTexRect(head, 5, Frame), lightColor, Projectile.rotation + MathHelper.PiOver2, new Vector2((head.Width - 10f) / 10f, head.Height / 2f), Projectile.scale, SpriteEffects.None);
 
             Main.spriteBatch.UseBlendState(BlendState.Additive);
-            Main.spriteBatch.Draw(CEUtils.getExtraTex("GlowCone"), Projectile.Center - Main.screenPosition, null, Color.White * 0.7f, Projectile.rotation, new Vector2(0, 250), new Vector2(1.4f, 0.8f), SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(CEExtraAssets.GlowCone, Projectile.Center - Main.screenPosition, null, Color.White * 0.7f, Projectile.rotation, new Vector2(0, 250), new Vector2(1.4f, 0.8f), SpriteEffects.None, 0);
             Main.spriteBatch.ExitShaderRegion();
 
 

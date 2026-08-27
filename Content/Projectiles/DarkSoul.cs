@@ -1,9 +1,10 @@
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
@@ -12,6 +13,9 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class DarkSoul : EBookBaseProjectile
     {
+        //拖尾贴图,加载期就位,绘制时不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/DarkSoul")]
+        internal static Asset<Texture2D> TrailTex;
         public List<Vector2> odp = new List<Vector2>();
         public List<float> odr = new List<float>();
         public Vector2 dscp = Vector2.Zero;
@@ -124,7 +128,7 @@ namespace CalamityEntropy.Content.Projectiles
                 CEUtils.PlaySound("soulexplode", 1.2f, Projectile.Center, maxIns: 4, volume: 0.8f);
                 Projectile.timeLeft = 2;
                 Projectile.Resize(256, 256);
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = 6;
+                CEUtils.SetShake(target.Center, 6);
                 //DirectionalPulseRing Configure是Calamity ring原构造,scale/rotation/lifetime顺序固定
                 PRTLoader.NewParticle<PRT_DirectionalPulseRing>(target.Center, Vector2.Zero, Color.DarkRed, 0.1f).Configure(new Vector2(2f, 2f), 0, 1 * 0.85f, 36);
                 PRTLoader.NewParticle<PRT_DetailedExplosionCal>(target.Center, Vector2.Zero, Color.DarkRed, 0f).Configure(Vector2.One, Main.rand.NextFloat(-5, 5), 1 * 0.65f, 26);
@@ -161,7 +165,7 @@ namespace CalamityEntropy.Content.Projectiles
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
                 if (ve.Count >= 3)
                 {
-                    Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/DarkSoul").Value;
+                    Texture2D tx = TrailTex.Value;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
 

@@ -2,7 +2,7 @@
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -19,7 +19,7 @@ namespace CalamityEntropy.Content.Projectiles.BNE
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = CEUtils.RogueDC;
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 64;
             Projectile.height = 64;
             Projectile.friendly = true;
@@ -48,7 +48,7 @@ namespace CalamityEntropy.Content.Projectiles.BNE
                 playsound = false;
                 TheBeginingAndTheEnd.playShootSound(Projectile.Center);
             }
-            if (Projectile.Calamity().stealthStrike)
+            if (Projectile.IsEmpowered())
             {
                 NPC target = Projectile.FindTargetWithinRange(3600);
                 if (target != null)
@@ -69,17 +69,17 @@ namespace CalamityEntropy.Content.Projectiles.BNE
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff<LifeOppress>(600);
-            for (int i = 0; i < (Projectile.Calamity().stealthStrike ? 6 : 1); i++)
+            for (int i = 0; i < (Projectile.IsEmpowered() ? 6 : 1); i++)
             {
                 //AbyssalLine带lifetime的Configure是CalamityPorts签名
                 var __prt = PRTLoader.NewParticle<PRT_AbyssalLine>(target.Center, Vector2.Zero, Color.White, 1).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, CEUtils.randomRot());
-                __prt.lx = (Projectile.Calamity().stealthStrike ? 3 : 1.6f);
-                __prt.xadd = (Projectile.Calamity().stealthStrike ? 3 : 1.6f);
+                __prt.lx = (Projectile.IsEmpowered() ? 3 : 1.6f);
+                __prt.xadd = (Projectile.IsEmpowered() ? 3 : 1.6f);
             }
             target.Entropy().StareOfAbyssTime = 12 * 60;
-            target.Entropy().StareOfAbyssLevel = (int)MathHelper.Min(target.Entropy().StareOfAbyssLevel + (Projectile.Calamity().stealthStrike ? 6 : 1), 8);
+            target.Entropy().StareOfAbyssLevel = (int)MathHelper.Min(target.Entropy().StareOfAbyssLevel + (Projectile.IsEmpowered() ? 6 : 1), 8);
             CEUtils.PlaySound("ystn_hit", Main.rand.NextFloat(0.8f, 1.2f), target.Center, 3, 0.9f);
-            if (Projectile.Calamity().stealthStrike)
+            if (Projectile.IsEmpowered())
             {
                 for (int i = 0; i < 4 + target.Entropy().StareOfAbyssLevel; i++)
                 {
@@ -109,7 +109,7 @@ namespace CalamityEntropy.Content.Projectiles.BNE
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Projectile.Calamity().stealthStrike)
+            if (Projectile.IsEmpowered())
             {
                 modifiers.SourceDamage += 0.3f;
             }

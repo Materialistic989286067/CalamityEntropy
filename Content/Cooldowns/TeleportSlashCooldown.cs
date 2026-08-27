@@ -1,12 +1,12 @@
 ﻿using CalamityEntropy.Content.Items.Donator;
-using CalamityMod.Cooldowns;
+using CalamityEntropy.Core.Cooldowns;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Localization;
 
 namespace CalamityEntropy.Content.Cooldowns
 {
-    public class TeleportSlashCooldown : CooldownHandler
+    public class TeleportSlashCooldown : CECooldownHandler
     {
         public static new string ID => "TeleportSlashCooldown";
         public override bool ShouldDisplay => true;

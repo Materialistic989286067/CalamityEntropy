@@ -1,7 +1,7 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -26,7 +26,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAnimation = 32;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 5;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = null;
             Item.noMelee = true;
@@ -50,7 +50,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe().AddIngredient(ItemID.HellstoneBar, 16)
-                .AddIngredient<AerialiteBar>(8)
+                .AddIngredient(ItemID.MeteoriteBar, 8)
                 .AddIngredient(ItemID.Obsidian, 10)
                 .AddIngredient(ItemID.StoneBlock, 40)
                 .AddTile(TileID.Anvils)
@@ -70,7 +70,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -113,7 +113,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 Projectile.scale *= scale_;
                 init = false;
 
-                if (!Projectile.GetOwner().Calamity().bladeArmEnchant && Main.myPlayer == Projectile.owner)
+                if (Main.myPlayer == Projectile.owner)
                 {
                     Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 2, ModContent.ProjectileType<MoonlightShoot>(), (int)(Projectile.damage * 1.3f), Projectile.knockBack / 2, Projectile.owner);
                 }
@@ -153,10 +153,6 @@ namespace CalamityEntropy.Content.Items.Weapons
             owner.itemTime = 2;
             owner.itemAnimation = 2;
 
-            if (Projectile.GetOwner().Calamity().bladeArmEnchant)
-            {
-                owner.itemAnimation = int.Max(1, owner.itemAnimationMax - Projectile.Entropy().Lifetime);
-            }
             if (counter > MaxUpdateTimes)
             {
                 owner.itemTime = 1;
@@ -185,7 +181,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D tex = Projectile.GetTexture();
-            Texture2D trail = CEUtils.getExtraTex("MotionTrail2");
+            Texture2D trail = CEExtraAssets.MotionTrail2;
             List<ColoredVertex> ve = new List<ColoredVertex>();
             float MaxUpdateTimes = Projectile.GetOwner().itemTimeMax * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
@@ -204,7 +200,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             {
                 var gd = Main.graphics.GraphicsDevice;
                 SpriteBatch sb = Main.spriteBatch;
-                Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/SwordTrail", AssetRequestMode.ImmediateLoad).Value;
+                Effect shader = CEEffectAssets.SwordTrail;
                 sb.End();
                 //旧Blend既不是Additive也不是AlphaBlend,Configure传NonPremultipliedBlend落第三桶
                 sb.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
@@ -242,6 +238,9 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class MoonlightShoot : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
+        //斩击贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Extra/GSlash")]
+        internal static Asset<Texture2D> GSlashTex;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
@@ -298,7 +297,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             Color clr = Color.Lerp(Color.LightSeaGreen, new Color(230, 255, 230), Projectile.timeLeft / 80f);
             Main.spriteBatch.UseBlendState(BlendState.Additive);
-            Texture2D tex = CEUtils.getExtraTex("GSlash");
+            Texture2D tex = GSlashTex.Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, clr * Projectile.Opacity, Projectile.rotation, tex.Size() * 0.5f + new Vector2(70, 0), Projectile.scale * 0.9f * new Vector2(1f, Projectile.timeLeft / 80f * 1.2f), SpriteEffects.None);
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, clr * Projectile.Opacity, Projectile.rotation, tex.Size() * 0.5f + new Vector2(80, 0), Projectile.scale * 0.9f * new Vector2(1.8f, Projectile.timeLeft / 80f * 1.2f), SpriteEffects.None);
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, clr * Projectile.Opacity, Projectile.rotation, tex.Size() * 0.5f + new Vector2(80, 0), Projectile.scale * 0.9f * new Vector2(1.8f, Projectile.timeLeft / 80f * 1.2f), SpriteEffects.None);

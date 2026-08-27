@@ -1,6 +1,5 @@
-﻿using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items;
+﻿using CalamityEntropy.Common;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -16,7 +15,7 @@ namespace CalamityEntropy.Content.Items.Donator
         {
             Item.width = 32;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Yellow;
             Item.accessory = true;
         }
@@ -54,22 +53,23 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         public static List<int> ApplyBuffType()
         {
+            // 施加减益随进度解锁，按 progression-map.md 重排到自有 Boss 线
             var l = new List<int>();
-            if (DownedBossSystem.downedCalamitas)
+            if (EDownedBosses.downedCruiser)
                 l.Add(ModContent.BuffType<TrueVulnerabilityHex>());
-            if (DownedBossSystem.downedExoMechs)
+            if (EDownedBosses.downedCruiser)
                 l.Add(ModContent.BuffType<MiracleBlight>());
-            if (DownedBossSystem.downedYharon)
+            if (EDownedBosses.downedCruiser)
                 l.Add(ModContent.BuffType<Dragonfire>());
-            if (DownedBossSystem.downedDoG)
+            if (EDownedBosses.downedAbyssalWraith)
                 l.Add(ModContent.BuffType<GodSlayerInferno>());
-            if (DownedBossSystem.downedProvidence)
+            if (EDownedBosses.downedNihilityTwin)
                 l.Add(ModContent.BuffType<HolyFlames>());
-            if (DownedBossSystem.downedBoomerDuke)
+            if (EDownedBosses.downedAbyssalWraith)
                 l.Add(ModContent.BuffType<SulphuricPoisoning>());
-            if (DownedBossSystem.downedPlaguebringer)
+            if (NPC.downedGolemBoss)
                 l.Add(ModContent.BuffType<Plague>());
-            if (DownedBossSystem.downedCryogen)
+            if (NPC.downedMechBossAny)
                 l.Add(BuffID.Frostburn2);
             if (NPC.downedBoss2)
                 l.Add(BuffID.Venom);
@@ -148,23 +148,24 @@ namespace CalamityEntropy.Content.Items.Donator
         };
         public static int Level()
         {
-            if (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs)
+            // 成长阶梯按 progression-map.md 重排：原版节点 + 自有 Boss 线
+            if (EDownedBosses.downedCruiser)
                 return 9;
-            if (DownedBossSystem.downedDoG)
+            if (EDownedBosses.downedAbyssalWraith)
                 return 8;
-            if (DownedBossSystem.downedProvidence)
+            if (EDownedBosses.downedNihilityTwin)
                 return 7;
             if (NPC.downedMoonlord)
                 return 6;
             if (NPC.downedPlantBoss)
                 return 5;
-            if (DownedBossSystem.downedCryogen || DownedBossSystem.downedBrimstoneElemental)
+            if (NPC.downedMechBossAny)
                 return 4;
-            if (DownedBossSystem.downedSlimeGod)
+            if (EDownedBosses.downedApsychos)
                 return 3;
-            if (NPC.downedBoss2 || DownedBossSystem.downedPerforator || DownedBossSystem.downedHiveMind)
+            if (NPC.downedBoss2)
                 return 2;
-            if (NPC.downedSlimeKing || NPC.downedBoss1 || DownedBossSystem.downedDesertScourge)
+            if (NPC.downedSlimeKing || NPC.downedBoss1)
                 return 1;
 
             return 0;

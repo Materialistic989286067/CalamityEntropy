@@ -1,14 +1,9 @@
 ﻿using CalamityEntropy.Common;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Projectiles.Melee;
-using CalamityMod.Rarities;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -32,18 +27,20 @@ namespace CalamityEntropy.Content.Items.Books
             Item.crit = 10;
             Item.mana = 30;
             Item.shootSpeed = 45;
-            Item.rare = ModContent.RarityType<ExoticRainbow>();
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<Golden>();
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
         }
-        public override Texture2D BookMarkTexture => ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/EntropyBookUI/BookMark7").Value;
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/BookMark7")]
+        internal static Asset<Texture2D> BookMarkSlotTex;
+        public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<ControlTerminalHeld>();
         public override int SlotCount => 6;
 
         public override void AddRecipes()
         {
             CreateRecipe().AddIngredient<ProphecyMasterpiece>()
-                .AddIngredient<ExoPrism>(5)
-                .AddTile<DraedonsForge>()
+                .AddIngredient<VoidBar>(5)
+                .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
     }
@@ -232,7 +229,6 @@ namespace CalamityEntropy.Content.Items.Books
         {
             return Utils.GetLerpValue(1f, 0.4f, completionRatio, clamped: true) * (float)Math.Sin(Math.Acos(1f - Utils.GetLerpValue(0f, 0.15f, completionRatio, clamped: true))) * Utils.GetLerpValue(0f, 0.1f, (float)base.Projectile.timeLeft / 600f, clamped: true) * 6;
         }
-        public static ReLogic.Content.Asset<Texture2D> TrailTex = null;
         public Color TrailColor(float completionRatio, Vector2 vertex)
         {
             return Color.Lerp(Color.Cyan, new Color(0, 0, 255), completionRatio);
@@ -258,7 +254,7 @@ namespace CalamityEntropy.Content.Items.Books
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             base.OnHitNPC(target, hit, damageDone);
-            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice") with { Pitch = 0.1f * Projectile.numHits, MaxInstances = 12 }, Projectile.Center);
+            SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/SwiftSlice") with { Pitch = 0.1f * Projectile.numHits, MaxInstances = 12 }, Projectile.Center);
             if (hitCount == 1)
             {
                 Projectile.ai[0] = 120;
@@ -283,28 +279,25 @@ namespace CalamityEntropy.Content.Items.Books
             {
                 float ra = i * MathHelper.PiOver2;
                 Main.spriteBatch.EnterShaderRegion();
-                if (TrailTex == null)
-                {
-                    TrailTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/BasicTrail");
-                }
-                Color color1 = CalamityUtils.MulticolorLerp((Main.GlobalTimeWrappedHourly * 0.5f + (float)base.Projectile.whoAmI * 0.12f) % 1f, Color.Cyan, Color.Lime, Color.GreenYellow, Color.Goldenrod, Color.Orange);
-                Color color2 = CalamityUtils.MulticolorLerp((Main.GlobalTimeWrappedHourly * 0.5f + (float)base.Projectile.whoAmI * 0.12f + 0.2f) % 1f, Color.Cyan, Color.Lime, Color.GreenYellow, Color.Goldenrod, Color.Orange);
+                Color color1 = CEUtils.MulticolorLerp((Main.GlobalTimeWrappedHourly * 0.5f + (float)base.Projectile.whoAmI * 0.12f) % 1f, Color.Cyan, Color.Lime, Color.GreenYellow, Color.Goldenrod, Color.Orange);
+                Color color2 = CEUtils.MulticolorLerp((Main.GlobalTimeWrappedHourly * 0.5f + (float)base.Projectile.whoAmI * 0.12f + 0.2f) % 1f, Color.Cyan, Color.Lime, Color.GreenYellow, Color.Goldenrod, Color.Orange);
 
-                GameShaders.Misc["CalamityMod:ExobladePierce"].SetShaderTexture(TrailTex);
-                GameShaders.Misc["CalamityMod:ExobladePierce"].UseImage2("Images/Extra_189");
-                GameShaders.Misc["CalamityMod:ExobladePierce"].UseColor(color1);
-                GameShaders.Misc["CalamityMod:ExobladePierce"].UseSecondaryColor(color2);
-                GameShaders.Misc["CalamityMod:ExobladePierce"].Apply();
-                GameShaders.Misc["CalamityMod:ExobladePierce"].Apply();
+                //拖尾贴图改走 PRTSharedAssets 共享字段
+                GameShaders.Misc["CalamityEntropy:ExobladePierce"].SetShaderTexture(PRTSharedAssets.BasicTrail);
+                GameShaders.Misc["CalamityEntropy:ExobladePierce"].UseImage2("Images/Extra_189");
+                GameShaders.Misc["CalamityEntropy:ExobladePierce"].UseColor(color1);
+                GameShaders.Misc["CalamityEntropy:ExobladePierce"].UseSecondaryColor(color2);
+                GameShaders.Misc["CalamityEntropy:ExobladePierce"].Apply();
+                GameShaders.Misc["CalamityEntropy:ExobladePierce"].Apply();
                 Vector2[] tpos = new Vector2[ProjectileID.Sets.TrailCacheLength[Type]];
                 for (int k = 0; k < ProjectileID.Sets.TrailCacheLength[Type]; k++)
                 {
                     tpos[k] = Projectile.oldPos[k] + (Projectile.oldRot[k] + ra).ToRotationVector2() * 37 * Projectile.scale;
                 }
-                PrimitiveRenderer.RenderTrail(tpos, new PrimitiveSettings(TrailWidth, TrailColor, (_, _) => base.Projectile.Size * 0.5f, smoothen: true, pixelate: false, GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
-                GameShaders.Misc["CalamityMod:ExobladePierce"].UseColor(Color.White);
-                GameShaders.Misc["CalamityMod:ExobladePierce"].UseSecondaryColor(Color.White);
-                PrimitiveRenderer.RenderTrail(tpos, new PrimitiveSettings(MiniTrailWidth, MiniTrailColor, (_, _) => base.Projectile.Size * 0.5f, smoothen: true, pixelate: false, GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
+                CEPrimitiveRenderer.RenderTrail(tpos, new CEPrimitiveSettings(TrailWidth, TrailColor, (_, _) => base.Projectile.Size * 0.5f, smoothen: true, pixelate: false, GameShaders.Misc["CalamityEntropy:ExobladePierce"]), 30);
+                GameShaders.Misc["CalamityEntropy:ExobladePierce"].UseColor(Color.White);
+                GameShaders.Misc["CalamityEntropy:ExobladePierce"].UseSecondaryColor(Color.White);
+                CEPrimitiveRenderer.RenderTrail(tpos, new CEPrimitiveSettings(MiniTrailWidth, MiniTrailColor, (_, _) => base.Projectile.Size * 0.5f, smoothen: true, pixelate: false, GameShaders.Misc["CalamityEntropy:ExobladePierce"]), 30);
                 Main.spriteBatch.ExitShaderRegion();
             }
             Main.EntitySpriteDraw(Projectile.GetTexture(), Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, Projectile.GetTexture().Size() / 2f, Projectile.scale, SpriteEffects.None); ;
@@ -317,11 +310,7 @@ namespace CalamityEntropy.Content.Items.Books
 
         public static float MaxWidth = 30f;
 
-        public static Asset<Texture2D> BloomTex;
-
         public static Asset<Texture2D> SlashTex;
-
-        public static Asset<Texture2D> TrailTex;
 
 
         public ref float Time => ref base.Projectile.ai[0];
@@ -396,12 +385,13 @@ namespace CalamityEntropy.Content.Items.Books
             }
         }
 
+        public static readonly SoundStyle BeamHitSound = new SoundStyle("CalamityEntropy/Assets/Sounds/SwiftSlice") { Volume = 0.4f, PitchVariance = 0.2f };
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            SoundEngine.PlaySound(in Exoblade.BeamHitSound, target.Center);
+            SoundEngine.PlaySound(in BeamHitSound, target.Center);
             if (Main.myPlayer == base.Projectile.owner)
             {
-                int num = Projectile.NewProjectile(base.Projectile.GetSource_FromAI(), target.Center, base.Projectile.velocity * 0.1f, ModContent.ProjectileType<ExobeamSlashCreator>(), base.Projectile.damage, 0f, base.Projectile.owner, target.whoAmI, base.Projectile.velocity.ToRotation());
+                int num = Projectile.NewProjectile(base.Projectile.GetSource_FromAI(), target.Center, base.Projectile.velocity * 0.1f, ModContent.ProjectileType<ExobeamSlashBurst>(), base.Projectile.damage, 0f, base.Projectile.owner, target.whoAmI, base.Projectile.velocity.ToRotation());
                 if (Main.projectile.IndexInRange(num))
                 {
                     Main.projectile[num].timeLeft = 20;
@@ -457,14 +447,10 @@ namespace CalamityEntropy.Content.Items.Books
             Color white = Color.White;
             white.A = 0;
             Main.EntitySpriteDraw(value, position, null, white, base.Projectile.rotation + MathF.PI / 4f, value.Size() / 2f, num * base.Projectile.scale, SpriteEffects.None);
-            if (BloomTex == null)
-            {
-                BloomTex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
-            }
-
-            Texture2D value2 = BloomTex.Value;
-            Color color = CalamityUtils.MulticolorLerp((Main.GlobalTimeWrappedHourly * 0.5f + (float)base.Projectile.whoAmI * 0.12f) % 1f, Color.Cyan, Color.Lime, Color.GreenYellow, Color.Goldenrod, Color.Orange);
-            Color color2 = CalamityUtils.MulticolorLerp((Main.GlobalTimeWrappedHourly * 0.5f + (float)base.Projectile.whoAmI * 0.12f + 0.2f) % 1f, Color.Cyan, Color.Lime, Color.GreenYellow, Color.Goldenrod, Color.Orange);
+            //光晕贴图改走 PRTSharedAssets 共享字段
+            Texture2D value2 = PRTSharedAssets.BloomCircle.Value;
+            Color color = CEUtils.MulticolorLerp((Main.GlobalTimeWrappedHourly * 0.5f + (float)base.Projectile.whoAmI * 0.12f) % 1f, Color.Cyan, Color.Lime, Color.GreenYellow, Color.Goldenrod, Color.Orange);
+            Color color2 = CEUtils.MulticolorLerp((Main.GlobalTimeWrappedHourly * 0.5f + (float)base.Projectile.whoAmI * 0.12f + 0.2f) % 1f, Color.Cyan, Color.Lime, Color.GreenYellow, Color.Goldenrod, Color.Orange);
             Vector2 position2 = base.Projectile.oldPos[2] + base.Projectile.Size / 2f - Main.screenPosition;
             white = color * 0.1f;
             white.A = 0;
@@ -474,21 +460,17 @@ namespace CalamityEntropy.Content.Items.Books
             white.A = 0;
             Main.EntitySpriteDraw(value2, position3, null, white, 0f, value2.Size() / 2f, 0.34f * base.Projectile.scale, SpriteEffects.None);
             Main.spriteBatch.EnterShaderRegion();
-            if (TrailTex == null)
-            {
-                TrailTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/BasicTrail");
-            }
-
-            GameShaders.Misc["CalamityMod:ExobladePierce"].SetShaderTexture(TrailTex);
-            GameShaders.Misc["CalamityMod:ExobladePierce"].UseImage2("Images/Extra_189");
-            GameShaders.Misc["CalamityMod:ExobladePierce"].UseColor(color);
-            GameShaders.Misc["CalamityMod:ExobladePierce"].UseSecondaryColor(color2);
-            GameShaders.Misc["CalamityMod:ExobladePierce"].Apply();
-            GameShaders.Misc["CalamityMod:ExobladePierce"].Apply();
-            PrimitiveRenderer.RenderTrail(base.Projectile.oldPos, new PrimitiveSettings(TrailWidth, TrailColor, (_, _) => base.Projectile.Size * 0.5f, smoothen: true, pixelate: false, GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
-            GameShaders.Misc["CalamityMod:ExobladePierce"].UseColor(Color.White);
-            GameShaders.Misc["CalamityMod:ExobladePierce"].UseSecondaryColor(Color.White);
-            PrimitiveRenderer.RenderTrail(base.Projectile.oldPos, new PrimitiveSettings(MiniTrailWidth, MiniTrailColor, (_, _) => base.Projectile.Size * 0.5f, smoothen: true, pixelate: false, GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
+            //拖尾贴图改走 PRTSharedAssets 共享字段
+            GameShaders.Misc["CalamityEntropy:ExobladePierce"].SetShaderTexture(PRTSharedAssets.BasicTrail);
+            GameShaders.Misc["CalamityEntropy:ExobladePierce"].UseImage2("Images/Extra_189");
+            GameShaders.Misc["CalamityEntropy:ExobladePierce"].UseColor(color);
+            GameShaders.Misc["CalamityEntropy:ExobladePierce"].UseSecondaryColor(color2);
+            GameShaders.Misc["CalamityEntropy:ExobladePierce"].Apply();
+            GameShaders.Misc["CalamityEntropy:ExobladePierce"].Apply();
+            CEPrimitiveRenderer.RenderTrail(base.Projectile.oldPos, new CEPrimitiveSettings(TrailWidth, TrailColor, (_, _) => base.Projectile.Size * 0.5f, smoothen: true, pixelate: false, GameShaders.Misc["CalamityEntropy:ExobladePierce"]), 30);
+            GameShaders.Misc["CalamityEntropy:ExobladePierce"].UseColor(Color.White);
+            GameShaders.Misc["CalamityEntropy:ExobladePierce"].UseSecondaryColor(Color.White);
+            CEPrimitiveRenderer.RenderTrail(base.Projectile.oldPos, new CEPrimitiveSettings(MiniTrailWidth, MiniTrailColor, (_, _) => base.Projectile.Size * 0.5f, smoothen: true, pixelate: false, GameShaders.Misc["CalamityEntropy:ExobladePierce"]), 30);
             Main.spriteBatch.ExitShaderRegion();
             Vector2 position4 = base.Projectile.oldPos[2] + base.Projectile.Size / 2f - Main.screenPosition;
             white = Color.White * 0.2f;
@@ -500,5 +482,51 @@ namespace CalamityEntropy.Content.Items.Books
             Main.EntitySpriteDraw(value2, position5, null, white, 0f, value2.Size() / 2f, 0.2f * base.Projectile.scale, SpriteEffects.None);
             return false;
         }
+    }
+
+    // 原灾厄 ExobeamSlashCreator 的自有等效: 在目标周围分两波引发能量斩爆
+    public class ExobeamSlashBurst : ModProjectile
+    {
+        public NPC Target => Main.npc[(int)Projectile.ai[0]];
+        public float SlashDirection
+        {
+            get
+            {
+                if (Projectile.ai[1] > MathHelper.Pi)
+                    return Main.rand.NextFloatDirection();
+                return Projectile.ai[1] + Main.rand.NextFloatDirection() * 0.2f;
+            }
+        }
+
+        public override string Texture => "CalamityEntropy/Assets/Extra/Ports/Invisible";
+
+        public override void SetDefaults()
+        {
+            Projectile.width = 2;
+            Projectile.height = 2;
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Magic;
+            Projectile.ignoreWater = false;
+            Projectile.tileCollide = false;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 45;
+            Projectile.MaxUpdates = 2;
+            Projectile.noEnchantmentVisuals = true;
+        }
+
+        public override void AI()
+        {
+            if (Main.myPlayer == Projectile.owner && Projectile.timeLeft % 20 == 19 && Target.active)
+            {
+                float maxOffset = Math.Min(Target.width * 0.4f, 300f);
+                Vector2 spawnOffset = SlashDirection.ToRotationVector2() * (Main.rand.NextFloatDirection() * maxOffset);
+                Vector2 pos = Target.Center + spawnOffset;
+                CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromAI(), Projectile.GetOwner(), pos, Projectile.damage, 80, Projectile.DamageType);
+                for (int i = 0; i < 6; i++)
+                    PRTLoader.NewParticle<PRT_GlowSpark>(pos, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(6, 12), Color.LightGreen, Main.rand.NextFloat(0.05f, 0.09f)).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0);
+            }
+        }
+
+        public override bool? CanDamage() => false;
     }
 }

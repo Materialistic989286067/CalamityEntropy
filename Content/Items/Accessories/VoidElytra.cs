@@ -1,9 +1,7 @@
-﻿using CalamityEntropy.Common;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
-using CalamityMod.Items;
-using CalamityMod.Items.Accessories.Wings;
-using CalamityMod.Rarities;
+using CalamityEntropy.Content.Rarities;
 using InnoVault.PRT;
 using Terraria;
 using Terraria.DataStructures;
@@ -13,7 +11,7 @@ using Terraria.ModLoader;
 namespace CalamityEntropy.Content.Items.Accessories
 {
     [AutoloadEquip(EquipType.Wings)]
-    public class VoidElytra : BaseWings
+    public class VoidElytra : CEBaseWings
     {
         public static float HorSpeed = 12;
         public static float AccMul = 3;
@@ -28,8 +26,8 @@ namespace CalamityEntropy.Content.Items.Accessories
             base.SetDefaults();
             Item.width = 22;
             Item.height = 20;
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.rare = ModContent.RarityType<Turquoise>();
+            Item.value = Item.buyPrice(platinum: 1, gold: 50);
+            Item.rare = ModContent.RarityType<NihilityBlue>();
             Item.accessory = true;
 
         }

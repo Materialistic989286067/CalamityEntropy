@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Dusts;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
@@ -12,6 +11,8 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
 {
     public class SoulSlurperFriendly : FriendFindNPC
     {
+        //发光层贴图改由 VaultLoaden 在加载期赋值,替代原 SetStaticDefaults 手动 Request(服务器上保持 null,只在绘制读取)
+        [VaultLoaden("CalamityEntropy/Content/NPCs/FriendFinderNPC/SoulSlurperFriendlyGlow")]
         public static Asset<Texture2D> GlowTexture;
         public override bool CheckActive()
         {
@@ -20,10 +21,6 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
         public override void SetStaticDefaults()
         {
             NPCID.Sets.TrailingMode[NPC.type] = 1;
-            if (!Main.dedServ)
-            {
-                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
-            }
             this.HideFromBestiary();
         }
 
@@ -44,9 +41,6 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.noTileCollide = true;
-            NPC.Calamity().VulnerableToHeat = false;
-            NPC.Calamity().VulnerableToCold = true;
-            NPC.Calamity().VulnerableToWater = true;
             NPC.friendly = true;
         }
 
@@ -212,7 +206,7 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             Vector2 halfSizeTexture = new Vector2((float)(texture.Width / 2), (float)(texture.Height / 2));
             int afterimageAmt = 5;
 
-            if (CalamityClientConfig.Instance.Afterimages)
+            // 灾厄残影客户端开关移除，恒定绘制
             {
                 for (int i = 1; i < afterimageAmt; i += 2)
                 {
@@ -235,7 +229,6 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             texture = GlowTexture.Value;
             Color redGlow = Color.Lerp(Color.White, Color.Red, 0.5f);
 
-            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int j = 1; j < afterimageAmt; j++)
                 {
@@ -255,19 +248,13 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
         }
         public override void HitEffect(NPC.HitInfo hit)
         {
+            // 硫火尘暂以原版红火把尘近似；灾厄 gore 资产不复存在，碎块演出删除
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.RedTorch, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
-                {
-                    Mod mod = ModContent.GetInstance<CalamityMod.CalamityMod>();
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, mod.Find<ModGore>("SoulSlurper").Type, NPC.scale);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, mod.Find<ModGore>("SoulSlurper2").Type, NPC.scale);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, mod.Find<ModGore>("SoulSlurper3").Type, NPC.scale);
-                }
                 NPC.position.X = NPC.position.X + (float)(NPC.width / 2);
                 NPC.position.Y = NPC.position.Y + (float)(NPC.height / 2);
                 NPC.width = 50;
@@ -276,7 +263,7 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
                 NPC.position.Y = NPC.position.Y - (float)(NPC.height / 2);
                 for (int i = 0; i < 10; i++)
                 {
-                    int brimDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    int brimDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.RedTorch, 0f, 0f, 100, default, 2f);
                     Main.dust[brimDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -286,10 +273,10 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
                 }
                 for (int j = 0; j < 20; j++)
                 {
-                    int brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
+                    int brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.RedTorch, 0f, 0f, 100, default, 3f);
                     Main.dust[brimDust2].noGravity = true;
                     Main.dust[brimDust2].velocity *= 5f;
-                    brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.RedTorch, 0f, 0f, 100, default, 2f);
                     Main.dust[brimDust2].velocity *= 2f;
                 }
             }

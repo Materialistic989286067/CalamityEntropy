@@ -1,6 +1,6 @@
 ﻿using CalamityEntropy.Content.Items;
-using CalamityMod.Dusts;
 using Terraria;
+using Terraria.ID;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ModLoader;
@@ -21,7 +21,8 @@ namespace CalamityEntropy.Content.Tiles
             Main.tileFrameImportant[(int)base.Type] = true;
             AddMapEntry(new Color(63, 72, 200));
 
-            DustType = (int)CalamityDusts.PurpleCosmilite;
+            // 脱离灾厄:原用灾厄紫色宇宙尘,改原版紫炬光尘
+            DustType = DustID.PurpleTorch;
         }
 
     }

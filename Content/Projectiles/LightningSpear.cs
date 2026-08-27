@@ -1,7 +1,10 @@
-﻿using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Particles.CalamityPorts;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -13,6 +16,9 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class LightningSpear : ModProjectile
     {
+        //长矛本体贴图,加载期就位,绘制时不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/LightningSpear")]
+        internal static Asset<Texture2D> SpearTex;
         List<Vector2> odp = new List<Vector2>();
         List<float> odr = new List<float>();
         private bool sd = false;
@@ -40,8 +46,8 @@ namespace CalamityEntropy.Content.Projectiles
             if (!sd && Projectile.owner == Main.myPlayer)
             {
                 sd = true;
-                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 16, Color.MediumTurquoise, 0.07f).Configure("CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 22, new Vector2(1f, 1.7f), shrinkSpeed: -0.2f);
-                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 24, Color.DeepSkyBlue, 0.05f).Configure("CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 18, new Vector2(1f, 1.7f), shrinkSpeed: -0.23f);
+                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 16, Color.MediumTurquoise, 0.07f).Configure("CalamityEntropy/Assets/Particles/HighResHollowCircleHardEdgeAlt", false, 22, new Vector2(1f, 1.7f), shrinkSpeed: -0.2f);
+                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 24, Color.DeepSkyBlue, 0.05f).Configure("CalamityEntropy/Assets/Particles/HighResHollowCircleHardEdgeAlt", false, 18, new Vector2(1f, 1.7f), shrinkSpeed: -0.23f);
             }
             Projectile.ai[0]++;
             if (Projectile.ai[0] > 5)
@@ -74,7 +80,7 @@ namespace CalamityEntropy.Content.Projectiles
                 v.Add(new VertexPointSets(odp[i], Color.LightBlue, 26, (i / (odp.Count - 1f)) * 3f + Main.GlobalTimeWrappedHourly * 4));
             }
             var ve = v.GetVertexesList();
-            gd.Textures[0] = getExtraTex("VoltTrailThicc");
+            gd.Textures[0] = CEExtraAssets.VoltTrailThicc;
             gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
             v.Clear();
             for (int i = 0; i < odp.Count; i++)
@@ -83,11 +89,11 @@ namespace CalamityEntropy.Content.Projectiles
                 v.Add(new VertexPointSets(odp[i], Color.White, 12, (i / (odp.Count - 1f)) * 3f + Main.GlobalTimeWrappedHourly * 6));
             }
             ve = v.GetVertexesList();
-            gd.Textures[0] = getExtraTex("VoltTrailThicc");
+            gd.Textures[0] = CEExtraAssets.VoltTrailThicc;
             gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-            Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/LightningSpear").Value;
+            Texture2D tx = SpearTex.Value;
             float x = 0f;
             for (int i = 0; i < odp.Count; i++)
             {
@@ -107,7 +113,7 @@ namespace CalamityEntropy.Content.Projectiles
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            SoundStyle sd = new("CalamityMod/Sounds/Item/AnomalysNanogunMPFBExplosion");
+            SoundStyle sd = new("CalamityEntropy/Assets/Sounds/explosionbig");
             sd.Volume = 0.6f;
             SoundEngine.PlaySound(sd, Projectile.Center);
             var r = Main.rand;

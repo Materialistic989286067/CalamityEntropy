@@ -1,5 +1,4 @@
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -53,7 +52,7 @@ namespace CalamityEntropy.Content.Projectiles
                 Projectile.Opacity = Projectile.timeLeft / 240f;
             }
             Player player = Projectile.GetOwner();
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             if (init)
             {
                 Projectile.rotation = CEUtils.randomRot();

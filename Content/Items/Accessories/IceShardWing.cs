@@ -1,6 +1,3 @@
-﻿using CalamityMod;
-using CalamityMod.Items.Accessories.Wings;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -9,7 +6,7 @@ using Terraria.ModLoader;
 namespace CalamityEntropy.Content.Items.Accessories
 {
     [AutoloadEquip(EquipType.Wings)]
-    public class IceShardWing : BaseWings
+    public class IceShardWing : CEBaseWings
     {
         public static float HorSpeed = 7.6f;
         public static float AccMul = 1;
@@ -27,7 +24,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.value = Item.buyPrice(0, 12, 25);
             Item.rare = ItemRarityID.Blue;
             Item.accessory = true;
-            Item.Calamity().donorItem = true;
+            // 脱离灾厄:灾厄 donorItem 捐助者提示行随灾厄退场删除
         }
         public override float BonusAscentWhileFalling => 0.8f;
         public override float BonusAscentWhileRising => 0.1f;
@@ -37,7 +34,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().AddIngredient(ItemID.SoulofFlight, 20).
-                AddIngredient<CryonicBar>(5).
+                AddIngredient(ItemID.HallowedBar, 5).
                 AddIngredient(ItemID.PurificationPowder, 5).
                 AddTile(TileID.MythrilAnvil).
                 Register();

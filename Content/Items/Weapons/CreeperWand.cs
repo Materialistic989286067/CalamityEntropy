@@ -1,6 +1,4 @@
 ﻿using CalamityEntropy.Content.Buffs;
-using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Items;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
@@ -30,7 +28,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = ItemUseStyleID.Swing;
             Item.shoot = ModContent.ProjectileType<CreeperMinion>();
             Item.shootSpeed = 2f;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(0, 5);
             Item.autoReuse = true;
             Item.UseSound = SoundID.Item8;
             Item.noMelee = true;
@@ -77,7 +75,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 16;
         }
-        public bool Active => Projectile.GetOwner().HasBuff<AdrenalineMode>() || (((int)Main.GameUpdateCount + Projectile.ai[1]) % 450 < 120);
+        // 原灾厄肾上腺素(AdrenalineMode)检测随 ripper 系统退役，保留周期激活常态分支
+        public bool Active => ((int)Main.GameUpdateCount + Projectile.ai[1]) % 450 < 120;
         public override bool? CanHitNPC(NPC target)
         {
             return Active ? null : false;

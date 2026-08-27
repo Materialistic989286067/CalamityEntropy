@@ -25,7 +25,8 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void AI()
         {
-            if (Projectile.DamageType.CountsAsClass(CEUtils.RogueDC))
+            //原盗贼职业判定改魔法: 两个发射源里 CrossBorderPursuit 已裁定为魔法, 其裂隙保持 1.4 倍体积
+            if (Projectile.DamageType.CountsAsClass(DamageClass.Magic))
                 Projectile.scale = 1.4f;
             if (Projectile.ai[0] == 0)
             {

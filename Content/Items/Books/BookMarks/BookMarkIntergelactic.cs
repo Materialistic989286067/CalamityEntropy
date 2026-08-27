@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -14,14 +13,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             base.SetDefaults();
             Item.rare = ItemRarityID.Red;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
-            if (ModLoader.TryGetMod("CatalystMod", out Mod caly))
-            {
-                if (caly.TryFind<ModRarity>("SuperbossRarity", out ModRarity rare))
-                {
-                    Item.rare = rare.Type;
-                }
-            }
+            Item.value = Item.buyPrice(platinum: 1);
         }
         public override Color tooltipColor => Color.LightSkyBlue;
         public override EBookProjectileEffect getEffect()

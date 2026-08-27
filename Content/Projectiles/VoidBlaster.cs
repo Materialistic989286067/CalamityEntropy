@@ -1,5 +1,7 @@
-﻿using CalamityMod;
+﻿using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.IO;
 using Terraria;
@@ -10,6 +12,13 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class VoidBlaster : ModProjectile
     {
+        //枪体三层贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/VB/VEHA")]
+        internal static Asset<Texture2D> HandleATex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/VB/VEHB")]
+        internal static Asset<Texture2D> HandleBTex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/VB/VES")]
+        internal static Asset<Texture2D> StreamTex;
         int frame = 0;
         public float Rot = 0;
         public override void SetStaticDefaults()
@@ -150,9 +159,9 @@ namespace CalamityEntropy.Content.Projectiles
             if (LX == -1)
                 LX = Projectile.Center.X;
             LX = float.Lerp(LX, Projectile.Center.X, 0.4f);
-            Texture2D t1 = CEUtils.RequestTex("CalamityEntropy/Content/Projectiles/VB/VEHA");
-            Texture2D t2 = CEUtils.RequestTex("CalamityEntropy/Content/Projectiles/VB/VEHB");
-            Texture2D t3 = CEUtils.RequestTex("CalamityEntropy/Content/Projectiles/VB/VES");
+            Texture2D t1 = HandleATex.Value;
+            Texture2D t2 = HandleBTex.Value;
+            Texture2D t3 = StreamTex.Value;
             int dir = Projectile.rotation.ToRotationVector2().X > 0 ? 1 : -1;
             SpriteEffects ef = dir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically;
             Color clr = Color.Lerp(Color.White, new Color(0, 0, 255, 0), cl);

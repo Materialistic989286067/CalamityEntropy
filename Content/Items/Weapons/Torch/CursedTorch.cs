@@ -1,9 +1,9 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Items;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.DataStructures;
@@ -32,7 +32,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
             Item.useStyle = ItemUseStyleID.Swing;
             Item.shoot = ModContent.ProjectileType<CursedTorchMinion>();
             Item.shootSpeed = 2f;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.autoReuse = true;
             Item.UseSound = SoundID.Item8;
             Item.noMelee = true;
@@ -54,6 +54,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
     }
     public class CursedTorchMinion : ModProjectile
     {
+        //咒眼贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Content/Items/Weapons/Torch/CursedEye")]
+        internal static Asset<Texture2D> CursedEyeTex;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
@@ -145,7 +148,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D tex = Projectile.GetTexture();
-            Texture2D eye = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/Torch/CursedEye");
+            Texture2D eye = CursedEyeTex.Value;
             int total = 5;
             int num = tex.Height / total;
             Rectangle frame = new Rectangle(0, num * Projectile.frame, tex.Width, num - 2);
@@ -156,7 +159,10 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
     }
     public class CursingFlame : ModProjectile
     {
-        public override string Texture => "CalamityMod/Projectiles/FireProj";
+        //雾团贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Particles/MediumMist")]
+        internal static Asset<Texture2D> MediumMistTex;
+        public override string Texture => "CalamityEntropy/Assets/Extra/Ports/FireProj";
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.MinionShot[Type] = true;
@@ -223,7 +229,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D fire = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            Texture2D mist = ModContent.Request<Texture2D>("CalamityMod/Particles/MediumMist").Value;
+            Texture2D mist = MediumMistTex.Value;
 
             // The conga line of colors to sift through
             Color color1 = new Color(178, 255, 170, 200);

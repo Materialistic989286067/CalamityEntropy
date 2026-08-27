@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items.LoreItems;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using Terraria;
@@ -11,17 +10,14 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Lores
 {
-    public class NihilityTwinLore : LoreItem
+    public class NihilityTwinLore : CELoreItem
     {
         public static float VoidRes = 0.1f;
         public static int HealPreSec = 1;
         public static float MaxFlyTimeAddition = 0.05f;
-        public override void SetStaticDefaults()
-        {
-            base.SetStaticDefaults();
-        }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
+            base.ModifyTooltips(tooltips);
             if (Keyboard.GetState().IsKeyDown(Keys.LeftShift))
                 return;
             if (LoreEffect.Enabled)

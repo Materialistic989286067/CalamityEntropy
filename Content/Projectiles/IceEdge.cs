@@ -1,6 +1,5 @@
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Buffs.StatDebuffs;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -90,7 +89,6 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<FrozenLungs>(), 600);
             target.AddBuff(BuffID.Frostburn, 1080);
             Main.player[Projectile.owner].AddBuff(ModContent.BuffType<CosmicFreeze>(), 600);
             SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode);
@@ -113,7 +111,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tx = CEUtils.RequestTex("CalamityEntropy/Content/Projectiles/IceEdge");
+            Texture2D tx = Projectile.GetTexture();
             float x = 0f;
             for (int i = 0; i < odp.Count; i++)
             {

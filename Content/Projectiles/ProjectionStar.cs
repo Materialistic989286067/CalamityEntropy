@@ -1,5 +1,4 @@
-﻿using CalamityMod.NPCs.AstrumDeus;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -53,7 +52,7 @@ namespace CalamityEntropy.Content.Projectiles
 
             }
             ParticleOrchestrator.RequestParticleSpawn(true, ParticleOrchestraType.Keybrand, new ParticleOrchestraSettings() { IndexOfPlayerWhoInvokedThis = (byte)Projectile.owner, MovementVector = Vector2.Zero, PositionInWorld = Projectile.Center });
-            SoundEngine.PlaySound(AstrumDeusHead.LaserSound, Projectile.Center);
+            SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/lasershoot") { Volume = 0.35f }, Projectile.Center);
         }
         public override bool PreDraw(ref Color lightColor)
         {

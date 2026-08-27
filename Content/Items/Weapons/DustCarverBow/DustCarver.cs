@@ -1,12 +1,13 @@
+using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -45,23 +46,23 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
                     flag = false;
                 }
             }
-            //16
+            // 16 级成长链：灾厄 downed 旗标已按 progression-map 落到原版节点+自有 Boss 阶梯
             Check(NPC.downedBoss1);
-            Check(NPC.downedBoss2 || DownedBossSystem.downedPerforator || DownedBossSystem.downedHiveMind);
-            Check(DownedBossSystem.downedSlimeGod);
+            Check(NPC.downedBoss2);
+            Check(EDownedBosses.downedApsychos);
             Check(Main.hardMode);
-            Check(DownedBossSystem.downedBrimstoneElemental);
-            Check(DownedBossSystem.downedCalamitasClone);
+            Check(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3);
+            Check(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3);
             Check(NPC.downedPlantBoss);
-            Check(DownedBossSystem.downedRavager);
+            Check(NPC.downedAncientCultist);
             Check(NPC.downedAncientCultist);
             Check(NPC.downedMoonlord);
-            Check(DownedBossSystem.downedProvidence);
-            Check(DownedBossSystem.downedPolterghast);
-            Check(DownedBossSystem.downedDoG);
-            Check(DownedBossSystem.downedYharon);
-            Check(DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs);
-            Check(DownedBossSystem.downedPrimordialWyrm);
+            Check(EDownedBosses.downedNihilityTwin);
+            Check(EDownedBosses.downedNihilityTwin);
+            Check(EDownedBosses.downedAbyssalWraith);
+            Check(EDownedBosses.downedCruiser);
+            Check(EDownedBosses.downedCruiser);
+            Check(EDownedBosses.downedCruiser);
             return Level;
         }
         public override bool CanConsumeAmmo(Item ammo, Player player)
@@ -122,7 +123,7 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 6f;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(1, 0);
             Item.rare = ItemRarityID.Red;
             Item.UseSound = null;
             Item.autoReuse = false;
@@ -159,8 +160,16 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
         }
         public override void AddRecipes()
         {
+            // 原灾厄血珠原料按 material-map 拆为脊椎骨/腐肉双平行配方
             CreateRecipe()
-                .AddIngredient<BloodOrb>(5)
+                .AddIngredient(ItemID.Vertebrae, 5)
+                .AddRecipeGroup(CERecipeGroups.evilBar, 4)
+                .AddIngredient(ItemID.Silk, 4)
+                .AddIngredient(ItemID.RichMahogany, 12)
+                .AddTile(TileID.WorkBenches)
+                .Register();
+            CreateRecipe()
+                .AddIngredient(ItemID.RottenChunk, 5)
                 .AddRecipeGroup(CERecipeGroups.evilBar, 4)
                 .AddIngredient(ItemID.Silk, 4)
                 .AddIngredient(ItemID.RichMahogany, 12)
@@ -508,7 +517,7 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
 
             if (Charging > 0)
             {
-                Texture2D star = CEUtils.getExtraTex("StarTexture_White");
+                Texture2D star = CEExtraAssets.StarTexture_White;
                 Vector2 sScale = Charging < 0.5f ? new Vector2(1, 0.8f) : new Vector2(1.8f, 0.7f);
                 float sOffset = Charging < 0.5f ? 2 * (0.5f - Charging) : 0;
                 float sAlpha = Charging / 0.5f * 0.4f + 0.6f;
@@ -532,6 +541,9 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
 
     public class DustCarverArrorGProj : GlobalProjectile
     {
+        //箭矢贴图与拖尾用 Asset,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Extra/DustArrow")]
+        internal static Asset<Texture2D> DustArrowTex;
         public override bool InstancePerEntity => true;
         public bool active = false;
         public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter writer)
@@ -594,12 +606,12 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
                 return true;
             }
             Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:ArtAttack"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Streak1"));
-            GameShaders.Misc["CalamityMod:ArtAttack"].Apply();
-            PrimitiveRenderer.RenderTrail(oldPos, new PrimitiveSettings(WidthFunction, ColorFunction, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityMod:ArtAttack"]), 180);
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].SetShaderTexture(CEExtraAssets.Streak1Asset);
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].Apply();
+            CEPrimitiveRenderer.RenderTrail(oldPos, new CEPrimitiveSettings(WidthFunction, ColorFunction, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityEntropy:ArtAttack"]), 180);
             Main.spriteBatch.ExitShaderRegion();
-            Texture2D glow2 = CEUtils.getExtraTex("SpearArrowGlow2");
-            Texture2D arrow = CEUtils.getExtraTex("DustArrow");
+            Texture2D glow2 = CEExtraAssets.SpearArrowGlow2;
+            Texture2D arrow = DustArrowTex.Value;
             float rot = projectile.velocity.ToRotation();
             Main.spriteBatch.Draw(arrow, projectile.Center - Main.screenPosition, null, Color.White * 0.6f, rot, arrow.Size() / 2f, projectile.scale, SpriteEffects.None, 0);
             Main.spriteBatch.UseBlendState(BlendState.Additive);

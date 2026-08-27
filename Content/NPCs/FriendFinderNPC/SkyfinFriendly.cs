@@ -1,8 +1,6 @@
-﻿using CalamityMod;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Rogue;
+﻿using CalamityEntropy.Common;
+using CalamityEntropy.Content.Buffs.PortsDoT;
+using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.ItemDropRules;
@@ -42,10 +40,6 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             NPC.noTileCollide = true;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
-            NPC.Calamity().VulnerableToHeat = false;
-            NPC.Calamity().VulnerableToSickness = false;
-            NPC.Calamity().VulnerableToElectricity = true;
-            NPC.Calamity().VulnerableToWater = false;
             NPC.friendly = true;
         }
         public override bool CheckActive()
@@ -83,17 +77,19 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
                     NPC.velocity = NPC.velocity.MoveTowards(Vector2.Zero, 0.25f);
                     NPC.rotation = NPC.rotation.AngleTowards(NPC.AngleTo(Target.Center) + (NPC.spriteDirection > 0).ToInt() * MathHelper.Pi, 0.2f);
 
+                    // 提速门槛按进度表映射：渊海灾祸→荧光蛾、幽魂→虚无双子
                     float chargeSpeed = 11.5f;
-                    if (DownedBossSystem.downedAquaticScourge)
+                    if (EDownedBosses.downedLuminaris)
                         chargeSpeed += 4f;
-                    if (DownedBossSystem.downedPolterghast)
+                    if (EDownedBosses.downedNihilityTwin)
                         chargeSpeed += 3.5f;
                     if (NPC.velocity.Length() < 1.25f)
                     {
                         SoundEngine.PlaySound(SoundID.DD2_WyvernDiveDown, NPC.Center);
+                        // 硫海酸液尘暂以原版诅咒火把尘近似
                         for (int i = 0; i < 36; i++)
                         {
-                            Dust acid = Dust.NewDustPerfect(NPC.Center, (int)CalamityDusts.SulphurousSeaAcid);
+                            Dust acid = Dust.NewDustPerfect(NPC.Center, DustID.CursedTorch);
                             acid.velocity = (MathHelper.TwoPi * i / 36f).ToRotationVector2() * 6f;
                             acid.scale = 1.1f;
                             acid.noGravity = true;
@@ -111,7 +107,10 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
                     idealVelocity = NPC.SafeDirectionTo(Target.Center);
                     Vector2 leftVelocity = NPC.velocity.RotatedBy(-angularTurnSpeed);
                     Vector2 rightVelocity = NPC.velocity.RotatedBy(angularTurnSpeed);
-                    if (leftVelocity.AngleBetween(idealVelocity) < rightVelocity.AngleBetween(idealVelocity))
+                    // 原灾厄 AngleBetween 扩展就地展开为等价夹角计算
+                    float leftAngleGap = (float)Math.Acos(Vector2.Dot(leftVelocity.SafeNormalize(Vector2.Zero), idealVelocity.SafeNormalize(Vector2.Zero)));
+                    float rightAngleGap = (float)Math.Acos(Vector2.Dot(rightVelocity.SafeNormalize(Vector2.Zero), idealVelocity.SafeNormalize(Vector2.Zero)));
+                    if (leftAngleGap < rightAngleGap)
                         NPC.velocity = leftVelocity;
                     else
                         NPC.velocity = rightVelocity;
@@ -144,19 +143,19 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ModContent.ItemType<SulphuricScale>(), 2, 1, 3);
-            LeadingConditionRule postAS = npcLoot.DefineConditionalDropSet(DropHelper.PostAS());
-            postAS.Add(ModContent.ItemType<SkyfinBombers>(), 20);
+            // 硫磺鳞按材料表换鲨鱼鳍（原灾厄 DropHelper.Add 扩展改原版掉落规则等价写法）；
+            // SkyfinBombers 灾厄成品掉落词条按处置表删除
+            npcLoot.Add(ItemDropRule.Common(ItemID.SharkFin, 2, 1, 3));
         }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 8; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.CursedTorch, hit.HitDirection, -1f, 0, default, 1f);
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.CursedTorch, hit.HitDirection, -1f, 0, default, 1f);
             }
         }
 

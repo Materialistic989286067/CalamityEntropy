@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using ReLogic.Graphics;
 using System;
@@ -13,6 +14,11 @@ namespace CalamityEntropy.Common
 {
     public class OverrideModNameDisplay : ModSystem
     {
+        //模组列表条目只在整包加载完成后才会绘制,此时字段已就位;专用服务器不挂钩,读不到也无妨
+        [VaultLoaden("CalamityEntropy/Assets/Extra/NameMask")]
+        private static Asset<Texture2D> NameMaskTex;
+        [VaultLoaden("CalamityEntropy/Assets/Effects/NameEffect", AssetMode.EffectValue, "EnchantedPass")]
+        private static Effect NameEffectShader;
         public override void Load()
         {
             if (Main.dedServ)
@@ -45,7 +51,7 @@ namespace CalamityEntropy.Common
         private void DrawHook(DrawDelegate orig, object uiModItem, SpriteBatch sb)
         {
             orig(uiModItem, sb);
-            if (_renderTarget == null)
+            if (_renderTarget == null || NameMaskTex == null || NameEffectShader == null)
             {
                 return;
             }
@@ -59,8 +65,8 @@ namespace CalamityEntropy.Common
             {
                 return;
             }
-            var texture = CEUtils.getExtraTex("NameMask");
-            Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/NameEffect", AssetRequestMode.ImmediateLoad).Value;
+            var texture = NameMaskTex.Value;
+            Effect shader = NameEffectShader;
             shader.Parameters["uTime"].SetValue(Main.GlobalTimeWrappedHourly);
             Vector2 position = modName.GetDimensions().Position() - new Vector2(0f, 2f) - Vector2.One * 2;
             Main.instance.GraphicsDevice.Textures[1] = texture;

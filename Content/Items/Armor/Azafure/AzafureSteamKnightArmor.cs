@@ -1,4 +1,3 @@
-﻿using CalamityMod.Items;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,7 +11,7 @@ namespace CalamityEntropy.Content.Items.Armor.Azafure
         {
             Item.width = 34;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.defense = 15;
             Item.rare = ItemRarityID.Pink;
         }

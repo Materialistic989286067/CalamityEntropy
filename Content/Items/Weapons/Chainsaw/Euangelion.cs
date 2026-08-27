@@ -1,6 +1,4 @@
-﻿using CalamityEntropy.Content.Projectiles.Chainsaw;
-using CalamityMod;
-using CalamityMod.Items.Materials;
+using CalamityEntropy.Content.Projectiles.Chainsaw;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,7 +10,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
         public override void SetDefaults()
         {
             Item.damage = 230;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.width = 42;
             Item.height = 42;
             Item.noUseGraphic = true;
@@ -37,8 +35,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
             CreateRecipe().
                 AddIngredient<EnslavedStar>().
                 AddIngredient(ItemID.LunarBar, 5).
-                AddIngredient<UnholyEssence>(10).
-                AddIngredient<Necroplasm>(5).
+                AddIngredient<NihilityFragments>(15).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

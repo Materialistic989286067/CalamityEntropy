@@ -1,5 +1,7 @@
 ﻿using CalamityEntropy.Content.Dusts;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -11,6 +13,9 @@ namespace CalamityEntropy.Content.Projectiles.monument
 {
     public class MonumentGround : ModProjectile
     {
+        //地裂贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/monument/MonumentGround")]
+        internal static Asset<Texture2D> GroundTex;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
@@ -72,7 +77,7 @@ namespace CalamityEntropy.Content.Projectiles.monument
             {
                 return false;
             }
-            Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/monument/MonumentGround").Value;
+            Texture2D tx = GroundTex.Value;
             float sc = (float)(30 - Projectile.timeLeft) / 15f;
             if (Projectile.timeLeft <= 15)
             {

@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -21,7 +20,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.knockBack = 2.4f;
             Item.UseSound = CEUtils.GetSound("urnopen");
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.value = Item.buyPrice(gold: 60);
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<UrnOfSoulsHoldout>();
             Item.shootSpeed = 6f;

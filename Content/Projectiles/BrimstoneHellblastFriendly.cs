@@ -1,7 +1,6 @@
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -89,7 +88,7 @@ namespace CalamityEntropy.Content.Projectiles
         {
             lightColor.R = (byte)(255 * Projectile.Opacity);
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CEUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
             return false;
         }
 
@@ -103,7 +102,7 @@ namespace CalamityEntropy.Content.Projectiles
     }
     public class BrimstoneGigaBlastFriendly : EBookBaseProjectile
     {
-        public static readonly SoundStyle ImpactSound = new SoundStyle("CalamityMod/Sounds/Custom/SCalSounds/BrimstoneGigablastImpact");
+        public static readonly SoundStyle ImpactSound = new SoundStyle("CalamityEntropy/Assets/Sounds/explosionbig") { Pitch = -0.25f };
 
         public bool withinRange;
 
@@ -398,13 +397,13 @@ namespace CalamityEntropy.Content.Projectiles
         {
             lightColor.R = (byte)(255f * base.Projectile.Opacity);
 
-            CalamityUtils.DrawAfterimagesCentered(base.Projectile, ProjectileID.Sets.TrailingMode[base.Projectile.type], lightColor);
+            CEUtils.DrawAfterimagesCentered(base.Projectile, ProjectileID.Sets.TrailingMode[base.Projectile.type], lightColor);
             return false;
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            return CalamityUtils.CircularHitboxCollision(base.Projectile.Center, 10f * base.Projectile.scale, targetHitbox);
+            return CEUtils.CircularHitboxCollision(base.Projectile.Center, 10f * base.Projectile.scale, targetHitbox);
         }
     }
 }

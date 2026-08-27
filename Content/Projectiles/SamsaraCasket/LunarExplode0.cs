@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.Items.Weapons;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
@@ -9,6 +10,9 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
 {
     public class LunarExplode0 : ModProjectile
     {
+        //帧动画数组(LunarExplode0~6),加载期就位,PreDraw 不再拼接路径逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/SamsaraCasket/LunarExplode", 0, 7, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] Frames;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
@@ -50,7 +54,7 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
         public override bool PreDraw(ref Color lightColor)
         {
             lightColor = Color.White;
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/LunarExplode" + frame.ToString()).Value;
+            Texture2D tex = Frames[frame];
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, tex.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
 
             return false;

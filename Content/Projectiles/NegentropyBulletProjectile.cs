@@ -1,6 +1,6 @@
 ﻿using CalamityEntropy.Content.Items.Donator;
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -61,7 +61,7 @@ namespace CalamityEntropy.Content.Projectiles
             float rj = CEUtils.randomRot();
             for (int i = 0; i < 360; i += 90)
             {
-                //AbyssalLine旧GeneralParticleHandler spawn,现走BasePRT,参数照抄
+                //AbyssalLine旧版粒子系统 spawn,现走BasePRT,参数照抄
                 var __prt = PRTLoader.NewParticle<PRT_AbyssalLine>(pos, Vector2.Zero, Color.LightBlue, 1).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, MathHelper.ToRadians(i) + rj, 26);
                 __prt.lx = 1f;
                 __prt.xadd = 0.1f;

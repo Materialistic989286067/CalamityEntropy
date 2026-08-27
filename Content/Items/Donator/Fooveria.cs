@@ -1,11 +1,10 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items;
-using CalamityMod.Items.LoreItems;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -28,7 +27,7 @@ namespace CalamityEntropy.Content.Items.Donator
         public override void SetDefaults()
         {
             Item.damage = 10;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.width = 48;
             Item.height = 60;
             Item.useTime = 24;
@@ -36,7 +35,7 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.useAnimation = 24;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 2;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Green;
             Item.UseSound = null;
             Item.noMelee = true;
@@ -45,7 +44,6 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.shoot = ModContent.ProjectileType<FooveriaHeld>();
             Item.shootSpeed = 12f;
             Item.Entropy().Legend = true;
-            Item.Calamity().CannotBeEnchanted = true;
             LastLevel = -1;
             UpdateInventory(Main.LocalPlayer);
         }
@@ -94,21 +92,22 @@ namespace CalamityEntropy.Content.Items.Donator
                 }
             }
 
+            // 成长阶梯按 progression-map.md 重排：原版节点 + 自有 Boss 线
             Check(NPC.downedSlimeKing);
             Check(NPC.downedBoss1);
-            Check(DownedBossSystem.downedHiveMind || DownedBossSystem.downedPerforator);
-            Check(DownedBossSystem.downedSlimeGod);
+            Check(NPC.downedBoss2);
+            Check(EDownedBosses.downedApsychos);
             Check(Main.hardMode);
             Check(NPC.downedMechBossAny);
             Check(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3);
             Check(NPC.downedPlantBoss);
             Check(NPC.downedGolemBoss);
             Check(NPC.downedMoonlord);
-            Check(DownedBossSystem.downedProvidence);
-            Check(DownedBossSystem.downedDoG);
-            Check(DownedBossSystem.downedYharon);
-            Check(DownedBossSystem.downedExoMechs || DownedBossSystem.downedCalamitas);
-            Check(DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs);
+            Check(EDownedBosses.downedNihilityTwin);
+            Check(EDownedBosses.downedAbyssalWraith);
+            Check(EDownedBosses.downedCruiser);
+            Check(EDownedBosses.downedCruiser);
+            Check(EDownedBosses.downedCruiser);
 
             return Level;
 
@@ -153,7 +152,7 @@ namespace CalamityEntropy.Content.Items.Donator
             if (player.HeldItem == Item)
             {
                 player.Entropy().BBarNoDecrease = 120;
-                player.Calamity().mouseWorldListener = true;
+                player.Entropy().MouseWorldListener = true;
             }
         }
         public override bool AllowPrefix(int pre)
@@ -178,7 +177,7 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -241,7 +240,7 @@ namespace CalamityEntropy.Content.Items.Donator
             {
                 CEUtils.PlaySound("CryogenHit" + Main.rand.Next(1, 4), Main.rand.NextFloat(1f, 1.2f), Projectile.Center, 16);
                 CEUtils.PlaySound("CryogenHit" + Main.rand.Next(1, 4), Main.rand.NextFloat(1f, 1.2f), Projectile.Center, 16);
-                Projectile.GetOwner().Entropy().noItemTime = (int)(30f / Projectile.GetOwner().GetTotalAttackSpeed<TrueMeleeDamageClass>());
+                Projectile.GetOwner().Entropy().noItemTime = (int)(30f / Projectile.GetOwner().GetTotalAttackSpeed(DamageClass.Melee));
                 int pt = ModContent.ProjectileType<FooveriaIceShard>();
                 for (int i = 0; i < 6; i++)
                 {
@@ -375,7 +374,7 @@ namespace CalamityEntropy.Content.Items.Donator
                 return false;
             }
             Texture2D tex = Projectile.GetTexture();
-            Texture2D trail = CEUtils.getExtraTex("MotionTrail2");
+            Texture2D trail = CEExtraAssets.MotionTrail2;
             List<ColoredVertex> ve = new List<ColoredVertex>();
             float MaxUpdateTimes = Projectile.GetOwner().itemTimeMax * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
@@ -394,7 +393,7 @@ namespace CalamityEntropy.Content.Items.Donator
             {
                 var gd = Main.graphics.GraphicsDevice;
                 SpriteBatch sb = Main.spriteBatch;
-                Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/SwordTrail", AssetRequestMode.ImmediateLoad).Value;
+                Effect shader = CEEffectAssets.SwordTrail;
                 sb.End();
                 sb.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                 shader.Parameters["color2"].SetValue((new Color(90, 120, 255)).ToVector4());
@@ -404,7 +403,7 @@ namespace CalamityEntropy.Content.Items.Donator
 
                 gd.Textures[0] = trail;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-                trail = CEUtils.getExtraTex("SplitTrail");
+                trail = CEExtraAssets.SplitTrail;
                 gd.Textures[0] = trail;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
 
@@ -486,8 +485,8 @@ namespace CalamityEntropy.Content.Items.Donator
             CEUtils.PlaySound("CryogenHit" + Main.rand.Next(1, 4), 1, Projectile.Center);
 
             float scale = 60 / 40f;
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.LightBlue, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 16);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.LightBlue, 0.005f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 13);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.LightBlue, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 16);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.LightBlue, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 13);
 
         }
         public override void SetDefaults()
@@ -556,7 +555,7 @@ namespace CalamityEntropy.Content.Items.Donator
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
                 if (ve.Count >= 3)
                 {
-                    Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/wohslash").Value;
+                    Texture2D tx = CEExtraAssets.wohslash;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
 
@@ -577,7 +576,7 @@ namespace CalamityEntropy.Content.Items.Donator
                               b * a));
                         lr = (mp.odp[i] - mp.odp[i - 1]).ToRotation();
                     }
-                    tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/wohslash").Value;
+                    tx = CEExtraAssets.wohslash;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }
@@ -588,9 +587,9 @@ namespace CalamityEntropy.Content.Items.Donator
             tofs++;
 
             Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:ArtAttack"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Streak1"));
-            GameShaders.Misc["CalamityMod:ArtAttack"].Apply();
-            PrimitiveRenderer.RenderTrail(odp, new PrimitiveSettings(TrailWidth, TrailColor, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityMod:ArtAttack"]), 180);
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].SetShaderTexture(CEExtraAssets.Streak1Asset);
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].Apply();
+            CEPrimitiveRenderer.RenderTrail(odp, new CEPrimitiveSettings(TrailWidth, TrailColor, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityEntropy:ArtAttack"]), 180);
             Main.spriteBatch.ExitShaderRegion();
             if (odp.Count > 1)
             {

@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -31,7 +30,7 @@ namespace CalamityEntropy.Content.Items
 
         public override void AddRecipes()
         {
-            CreateRecipe(250).AddIngredient(ModContent.ItemType<DubiousPlating>(), 2).AddIngredient(ItemID.IronBar, 10).AddTile(TileID.Anvils).Register();
+            CreateRecipe(250).AddIngredient(ModContent.ItemType<AzafurePlating>(), 2).AddIngredient(ItemID.IronBar, 10).AddTile(TileID.Anvils).Register();
         }
     }
 }

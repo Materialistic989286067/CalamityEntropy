@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Reflection;
 using Terraria;
 using Terraria.DataStructures;
@@ -11,15 +13,24 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
 {
     public class CruiserBodiesMapLayer : ModMapLayer
     {
+        //地图图层贴图,加载期由 VaultLoaden 赋值(地图绘制只在客户端跑)
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserBody_Head_Boss")]
+        private static Asset<Texture2D> crBodyIconTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserTail_Head_Boss")]
+        private static Asset<Texture2D> crTailIconTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserHead_Head_Boss")]
+        private static Asset<Texture2D> crHeadIconTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/p2head")]
+        private static Asset<Texture2D> crHead2IconTex;
         public static bool drawOutline = false;
         public override Position GetDefaultPosition() => new Before(IMapLayer.Spawn);
         public override void Draw(ref MapOverlayDrawContext context, ref string text)
         {
-            Texture2D crBody = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Cruiser/CruiserBody_Head_Boss");
-            Texture2D crTail = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Cruiser/CruiserTail_Head_Boss");
+            Texture2D crBody = crBodyIconTex.Value;
+            Texture2D crTail = crTailIconTex.Value;
 
-            Texture2D crHead1 = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Cruiser/CruiserHead_Head_Boss");
-            Texture2D crHead2 = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Cruiser/p2head");
+            Texture2D crHead1 = crHeadIconTex.Value;
+            Texture2D crHead2 = crHead2IconTex.Value;
 
             bool anythingToDraw = true;
             if (anythingToDraw)

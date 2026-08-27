@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -54,7 +55,7 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CEUtils.drawLine(Main.spriteBatch, ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value, Projectile.Center, new Vector2(Projectile.ai[1], Projectile.ai[2]), Color.Purple * ap * 0.45f, 5 * ap);
+            CEUtils.drawLine(Main.spriteBatch, CEExtraAssets.white, Projectile.Center, new Vector2(Projectile.ai[1], Projectile.ai[2]), Color.Purple * ap * 0.45f, 5 * ap);
             return false;
         }
     }

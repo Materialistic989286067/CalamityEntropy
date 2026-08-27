@@ -1,6 +1,4 @@
-﻿using CalamityEntropy.Common;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using CalamityEntropy.Common;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -17,7 +15,7 @@ namespace CalamityEntropy.Content.Items.Accessories.Cards
         {
             Item.width = 22;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
 
@@ -35,10 +33,10 @@ namespace CalamityEntropy.Content.Items.Accessories.Cards
 
         public override void AddRecipes()
         {
+            // 脱离灾厄:StarblightSoot→星辉鳞尘,EssenceofSunlight 与原有光明之魂合并
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<StarblightSoot>(), 5)
-                .AddIngredient(ModContent.ItemType<EssenceofSunlight>(), 5)
-                .AddIngredient(ItemID.SoulofLight, 3)
+                .AddIngredient(ModContent.ItemType<StarlitScaleDust>(), 5)
+                .AddIngredient(ItemID.SoulofLight, 8)
                 .AddTile(TileID.CrystalBall)
                 .Register();
         }

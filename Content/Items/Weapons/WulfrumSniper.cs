@@ -2,10 +2,6 @@
 using CalamityEntropy.Content.Items.Weapons.Miracle;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Rogue;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -39,7 +35,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5;
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.value = Item.buyPrice(gold: 1);
             Item.rare = ItemRarityID.Blue;
             Item.UseSound = CEUtils.GetSound("gunshot");
             Item.autoReuse = true;
@@ -79,15 +75,15 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<EnergyCore>(2)
-                .AddIngredient<WulfrumMetalScrap>(8)
+                .AddIngredient<AzafureCircuitry>(2)
+                .AddIngredient(ItemID.IronBar, 8)
                 .AddCondition(Mod.GetLocalization("NonZenithWorld"), () => !Main.zenithWorld)
                 .AddTile(TileID.Anvils)
                 .Register();
             CreateRecipe()
-                .AddIngredient<MeldBlob>(4)
+                .AddIngredient(ItemID.SoulofNight, 4)
                 .AddIngredient(ItemID.LunarBar, 8)
-                .AddIngredient<AstralBar>(8)
+                .AddIngredient(ItemID.FragmentNebula, 8)
                 .AddCondition(Mod.GetLocalization("ZenithWorld"), () => Main.zenithWorld)
                 .AddTile(TileID.Anvils)
                 .Register();
@@ -95,11 +91,11 @@ namespace CalamityEntropy.Content.Items.Weapons
         #endregion
 
         #region Animations
-        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
+        public override void HoldItem(Player player) => player.Entropy().MouseWorldListener = true;
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
-            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+            player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
             Vector2 itemPosition = player.MountedCenter + itemRotation.ToRotationVector2() * 76f;
@@ -108,16 +104,16 @@ namespace CalamityEntropy.Content.Items.Weapons
 
 
 
-            CalamityUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
+            CEUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
             base.UseStyle(player, heldItemFrame);
         }
 
         public override void UseItemFrame(Player player)
         {
-            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+            player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
 
             float animProgress = 1 - player.itemTime / (float)player.itemTimeMax;
-            float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
+            float rotation = (player.Center - player.Entropy().MouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
             if (animProgress < 0.5)
                 rotation += (-0.15f) * (float)Math.Pow((0.5f - animProgress) / 0.5f, 2) * player.direction;
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
@@ -133,7 +129,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            position += new Vector2(0, -8 * player.direction).RotatedBy((player.Calamity().mouseWorld - player.Center).ToRotation());
+            position += new Vector2(0, -8 * player.direction).RotatedBy((player.Entropy().MouseWorld - player.Center).ToRotation());
         }
         #endregion
     }
@@ -188,7 +184,6 @@ namespace CalamityEntropy.Content.Items.Weapons
                     {
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), fpos, Projectile.velocity.normalize() * 12, ModContent.ProjectileType<Blackhole>(), (int)(Projectile.damage * 0.2f), Projectile.knockBack, Projectile.owner, 0, -1);
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), fpos, Projectile.velocity.normalize() * 256, ModContent.ProjectileType<AbyssalCrack>(), (int)(Projectile.damage * 0.2f), Projectile.knockBack, Projectile.owner, 0, -1);
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), fpos, Projectile.velocity.normalize() * 12, ModContent.ProjectileType<SupernovaStealthBoom>(), (int)(Projectile.damage * 0.2f), Projectile.knockBack, Projectile.owner, 0, -1);
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), fpos, Projectile.velocity.normalize() * 16, ModContent.ProjectileType<VENihilityLaser>(), (int)(Projectile.damage * 0.2f), Projectile.knockBack, Projectile.owner, 0, -1);
                     }
                 }
@@ -285,7 +280,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            int type = ModContent.ItemType<WulfrumMetalScrap>();
+            int type = ItemID.IronBar;
             Main.instance.LoadItem(type);
             Texture2D tex = TextureAssets.Item[type].Value;
             Main.EntitySpriteDraw(Projectile.getDrawData(lightColor, tex));

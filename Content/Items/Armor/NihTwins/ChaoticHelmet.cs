@@ -1,8 +1,7 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Placeables.Ores;
+using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Weapons;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 using Terraria;
@@ -19,7 +18,7 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
         {
             Item.width = 40;
             Item.height = 40;
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1, gold: 50);
             Item.defense = 26;
             Item.rare = ModContent.RarityType<NihilityBlue>();
         }
@@ -33,18 +32,16 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
         public override void UpdateArmorSet(Player player)
         {
             player.setBonus = Mod.GetLocalization("ChaoticSetBonus").Value;
-            player.setBonus = player.setBonus.Replace("[KEY]", CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString());
-            player.setBonus = player.setBonus.Replace("[KN]", CalamityKeybinds.ArmorSetBonusHotKey.DisplayName.Value);
+            // 脱离灾厄:灾厄套装键改自有 EModPlayer.ArmorSetBonusHotKey,键名提示走自有扩展
+            player.setBonus = player.setBonus.Replace("[KEY]", EModPlayer.ArmorSetBonusHotKey.TooltipKeyHint());
+            player.setBonus = player.setBonus.Replace("[KN]", EModPlayer.ArmorSetBonusHotKey.DisplayName.Value);
             player.setBonus = player.setBonus.Replace("[LIMIT]", MaxCells.ToString());
             string cnctStr = Mod.GetLocalization("NihArmorConnet").Value;
             cnctStr = cnctStr.Replace("[ANOTHERSET]", Mod.GetLocalization("VoidEaterSet").Value);
-            cnctStr = cnctStr.Replace("[CONNECT]", CEKeybinds.NihilityAndChaoticArmorConnectKey.TooltipHotkeyString());
+            cnctStr = cnctStr.Replace("[CONNECT]", CEKeybinds.NihilityAndChaoticArmorConnectKey.TooltipKeyHint());
             player.setBonus += "\n" + cnctStr;
-            if (!ModContent.GetInstance<Config>().MariviumArmorSetOnlyProvideStealthBarWhenHoldingRogueWeapons || player.HeldItem.DamageType.CountsAsClass(CEUtils.RogueDC))
-            {
-                player.Calamity().wearingRogueArmor = true;
-                player.Calamity().rogueStealthMax += 1.2f;
-            }
+            // 潜行体系退役:原潜行条(上限1.2)按容量×10%换算为大招充能速度
+            player.GetModPlayer<CEChargePlayer>().ChargeRateMult += 0.12f;
             player.endurance += 0.12f;
             player.statLifeMax2 += 40;
             player.GetDamage(DamageClass.Generic) += 0.12f;
@@ -62,7 +59,7 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
         {
             CreateRecipe()
                 .AddIngredient<ChaoticPiece>(5)
-                .AddIngredient<ExodiumCluster>(6)
+                .AddIngredient(ItemID.LunarOre, 6)
                 .AddIngredient(ItemID.LunarBar, 8)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
@@ -74,7 +71,8 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
         public static int BaseDamage = 400;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(ModContent.GetInstance<AverageDamageClass>(), false, -1);
+            // 脱离灾厄:灾厄 AverageDamageClass 收敛为通用伤害(player-api.md §5)
+            Projectile.FriendlySetDefaults(DamageClass.Generic, false, -1);
             Projectile.width = Projectile.height = 40;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 8;

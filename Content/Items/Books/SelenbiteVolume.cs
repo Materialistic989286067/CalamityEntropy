@@ -1,12 +1,12 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.UI.EntropyBookUI;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Ores;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -27,9 +27,11 @@ namespace CalamityEntropy.Content.Items.Books
             Item.mana = 15;
             Item.ArmorPenetration = 25;
             Item.rare = ItemRarityID.Red;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1);
         }
-        public override Texture2D BookMarkTexture => ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/EntropyBookUI/SV").Value;
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/SV")]
+        internal static Asset<Texture2D> BookMarkSlotTex;
+        public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<SelenbiteVolumeHeld>();
         public override int SlotCount => 4;
 
@@ -37,8 +39,8 @@ namespace CalamityEntropy.Content.Items.Books
         {
             CreateRecipe()
                 .AddIngredient<DarkScripture>()
-                .AddIngredient<ExodiumCluster>(12)
-                .AddIngredient<Necroplasm>(4)
+                .AddIngredient(ItemID.LunarOre, 12)
+                .AddIngredient<NihilityFragments>(4)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
@@ -137,7 +139,7 @@ namespace CalamityEntropy.Content.Items.Books
         {
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-            Texture2D tex = CEUtils.getExtraTex("StarTexture");
+            Texture2D tex = CEExtraAssets.StarTexture;
             float num = 0.5f * (float)Math.Sin(Projectile.localAI[1] + Main.GameUpdateCount / 10f);
             float num2 = 0.5f * (float)Math.Sin(Projectile.localAI[1] + Main.GameUpdateCount / 10f + MathHelper.PiOver4);
 

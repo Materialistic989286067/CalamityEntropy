@@ -1,6 +1,5 @@
-﻿using CalamityEntropy.Common;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items.Donator;
-using CalamityMod.Items;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -18,7 +17,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         {
             Item.width = 46;
             Item.height = 46;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Purple;
             Item.accessory = true;
         }
@@ -29,7 +28,8 @@ namespace CalamityEntropy.Content.Items.Accessories
             mp.shadowRune = true;
             player.GetDamage(DamageClass.Magic) *= 0.5f;
             player.GetDamage(DamageClass.Melee) *= 0.5f;
-            player.GetDamage(CEUtils.RogueDC) *= 0.5f;
+            // 脱离灾厄:盗贼职业并入原版,投掷减半承接原盗贼减半
+            player.GetDamage(DamageClass.Throwing) *= 0.5f;
             player.GetDamage(DamageClass.Ranged) *= 0.5f;
             if (!hideVisual)
             {

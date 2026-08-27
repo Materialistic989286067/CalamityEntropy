@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,7 +14,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
         {
             Item.DefaultToWhip(ModContent.ProjectileType<ForeseeWhipProj>(), 100, 3, 4, 24);
             Item.rare = ItemRarityID.Yellow;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.value = Item.buyPrice(gold: 60);
             Item.autoReuse = true;
         }
     }

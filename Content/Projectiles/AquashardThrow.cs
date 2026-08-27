@@ -1,9 +1,12 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
-using CalamityMod.Graphics.Primitives;
-using CalamityMod.Projectiles.Ranged;
+using CalamityEntropy.Content.Particles.CalamityPorts;
+using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Weapons;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,7 +33,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = CEUtils.RogueDC;
+            Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 46;
             Projectile.height = 46;
             Projectile.friendly = true;
@@ -73,8 +76,8 @@ namespace CalamityEntropy.Content.Projectiles
         {
             odp.Add(Projectile.Center);
             odr.Add(Projectile.rotation);
-            if (Projectile.ai[0] > 12 && Projectile.Calamity().stealthStrike && Main.myPlayer == Projectile.owner && ++Projectile.localAI[1] % 3 == 0 && ++Projectile.localAI[2] < 9)
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - Projectile.velocity * 3, Projectile.velocity * 0.2f, ModContent.ProjectileType<AquashardSplit>(), (int)(Projectile.damage * 0.25), 0f, Projectile.owner).ToProj().DamageType = CEUtils.RogueDC;
+            if (Projectile.ai[0] > 12 && Projectile.IsEmpowered() && Main.myPlayer == Projectile.owner && ++Projectile.localAI[1] % 3 == 0 && ++Projectile.localAI[2] < 9)
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - Projectile.velocity * 3, Projectile.velocity * 0.2f, ModContent.ProjectileType<AquashardSplit>(), (int)(Projectile.damage * 0.25), 0f, Projectile.owner).ToProj().DamageType = DamageClass.Ranged;
 
             if (odp.Count > 16)
             {
@@ -151,7 +154,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                 SoundStyle SwingSound = SoundID.Item1;
                 SwingSound.Pitch = 0f;
-                if (Projectile.Calamity().stealthStrike)
+                if (Projectile.IsEmpowered())
                 {
                     SwingSound.Pitch = 1f;
                 }
@@ -165,20 +168,20 @@ namespace CalamityEntropy.Content.Projectiles
         public bool spawnShard = true;
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(60, 255, 255), 0.01f).Configure("CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, 0.64f, 14);
-            CEUtils.PlaySound("slice", Projectile.Calamity().stealthStrike ? 1.2f : 1f, target.Center);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(60, 255, 255), 0.01f).Configure("CalamityEntropy/Assets/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, 0.64f, 14);
+            CEUtils.PlaySound("slice", Projectile.IsEmpowered() ? 1.2f : 1f, target.Center);
             if (spawnShard)
             {
                 spawnShard = false;
                 if (Projectile.owner == Main.myPlayer)
                 {
-                    for (int i = 0; i < (Projectile.Calamity().stealthStrike ? 0 : 3); i++)
+                    for (int i = 0; i < (Projectile.IsEmpowered() ? 0 : 3); i++)
                     {
                         Vector2 velocity = new Vector2(Main.rand.NextFloat(-6, 6), Main.rand.NextFloat(-34, -26));
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<AquaShardWaterBullet>(), (int)(Projectile.damage * 0.33f), 0f, Projectile.owner).ToProj().DamageType = CEUtils.RogueDC;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<AquaShardWaterBullet>(), (int)(Projectile.damage * 0.33f), 0f, Projectile.owner).ToProj().DamageType = DamageClass.Ranged;
                     }
                 }
-                if (Projectile.Calamity().stealthStrike)
+                if (Projectile.IsEmpowered())
                 {
                     for (int i = 0; i < 16; i++)
                     {
@@ -228,17 +231,17 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            if (Projectile.ai[0] > 14 && Projectile.Calamity().stealthStrike)
+            if (Projectile.ai[0] > 14 && Projectile.IsEmpowered())
             {
                 Main.spriteBatch.EnterShaderRegion();
-                GameShaders.Misc["CalamityMod:ArtAttack"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/StreakGoop"));
-                GameShaders.Misc["CalamityMod:ArtAttack"].Apply();
+                GameShaders.Misc["CalamityEntropy:ArtAttack"].SetShaderTexture(CEExtraAssets.StreakGoopAsset);
+                GameShaders.Misc["CalamityEntropy:ArtAttack"].Apply();
                 List<Vector2> lt = new List<Vector2>();
                 for (int i = 0; i < ProjectileID.Sets.TrailCacheLength[Type]; i++)
                 {
                     lt.Add(Projectile.oldPos[i] + Projectile.Size / 2 + Projectile.oldRot[i].ToRotationVector2() * 68);
                 }
-                PrimitiveRenderer.RenderTrail(lt, new PrimitiveSettings(WidthFunction, ColorFunction, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityMod:ArtAttack"]), 180);
+                CEPrimitiveRenderer.RenderTrail(lt, new CEPrimitiveSettings(WidthFunction, ColorFunction, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityEntropy:ArtAttack"]), 180);
                 Main.spriteBatch.ExitShaderRegion();
             }
             Texture2D tx = TextureAssets.Projectile[Projectile.type].Value;
@@ -262,7 +265,7 @@ namespace CalamityEntropy.Content.Projectiles
     {
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, 2);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, 2);
             Projectile.width = Projectile.height = 16;
             Projectile.timeLeft = 100;
             Projectile.Opacity = 0;
@@ -298,7 +301,7 @@ namespace CalamityEntropy.Content.Projectiles
     {
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, 2);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, 2);
             Projectile.width = Projectile.height = 46;
             Projectile.timeLeft = 120;
         }
@@ -342,7 +345,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             NoChaseTime = 8;
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(60, 255, 255), 0.01f).Configure("CalamityMod/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, 0.55f, 14);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(60, 255, 255), 0.01f).Configure("CalamityEntropy/Assets/Particles/BloomRing", Vector2.One, CEUtils.randomRot(), 0.01f, 0.55f, 14);
         }
         public override bool? CanHitNPC(NPC target)
         {

@@ -1,5 +1,4 @@
-﻿using CalamityMod;
-using CalamityMod.World;
+﻿using CalamityEntropy.Content.NPCs.FriendFinderNPC;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.IO;
@@ -59,11 +58,12 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             }
             NPC.defense = 60;
             NPC.lifeMax = 2800000;
-            if (CalamityWorld.death)
+            // 难度轴按裁定表收敛：死亡→大师、复仇→专家
+            if (Main.masterMode)
             {
                 NPC.damage += 20;
             }
-            else if (CalamityWorld.revenge)
+            else if (Main.expertMode)
             {
                 NPC.damage += 20;
             }

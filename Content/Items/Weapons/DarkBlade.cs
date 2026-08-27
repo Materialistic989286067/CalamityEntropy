@@ -1,8 +1,6 @@
-﻿using CalamityEntropy.Common;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Items;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -32,7 +30,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.crit = 10;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 7;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(0, 2);
             Item.rare = ItemRarityID.Green;
             Item.UseSound = null;
             Item.noMelee = true;
@@ -72,7 +70,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -152,7 +150,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Projectile.Center = Projectile.GetOwner().GetDrawCenter() - Projectile.velocity.normalize() * 10;
             Projectile.rotation = Projectile.velocity.ToRotation();
 
-            Projectile.velocity = new Vector2(Projectile.velocity.Length(), 0).RotatedBy((owner.Calamity().mouseWorld - Projectile.Center).ToRotation());
+            Projectile.velocity = new Vector2(Projectile.velocity.Length(), 0).RotatedBy((owner.Entropy().MouseWorld - Projectile.Center).ToRotation());
 
 
             if (Projectile.velocity.X > 0)
@@ -175,7 +173,6 @@ namespace CalamityEntropy.Content.Items.Weapons
                 int sparkLifetime2 = 24;
                 float sparkScale2 = 2f;
                 Color sparkColor2 = Color.Black;
-                //EParticle.spawnNew→PRTLoader.NewParticle,spawn点和数值迁移纪律:一个不改
                 PRTLoader.NewParticle<PRT_AltSpark>(Projectile.Center + Projectile.velocity.normalize() * 80, sparkVelocity2, sparkColor2, sparkScale2 * (1.4f)).Configure(false, (int)(sparkLifetime2 * (1.2f)));
 
                 sparkVelocity2 = Projectile.velocity * 1.4f;
@@ -247,7 +244,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 64;
             Projectile.height = 64;
             Projectile.friendly = true;
@@ -304,7 +301,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             counter++;
             if (counter < 22 * Projectile.MaxUpdates)
             {
-                Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, (player.Calamity().mouseWorld - Projectile.Center).ToRotation(), 0.004f, false);
+                Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, (player.Entropy().MouseWorld - Projectile.Center).ToRotation(), 0.004f, false);
                 offsetVel *= 0.987f;
                 offsetToPlr += offsetVel;
                 Projectile.Center = player.Center + offsetToPlr;
@@ -319,7 +316,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 {
 
                     shoot = false;
-                    Projectile.velocity = (player.Calamity().mouseWorld - Projectile.Center).normalize() * 4;
+                    Projectile.velocity = (player.Entropy().MouseWorld - Projectile.Center).normalize() * 4;
                     Projectile.rotation = Projectile.velocity.ToRotation();
                     if (Projectile.ai[0] == 0)
                     {

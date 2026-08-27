@@ -1,5 +1,8 @@
-﻿using CalamityEntropy.Content.NPCs.AbyssalWraith;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.NPCs.AbyssalWraith;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
@@ -125,7 +128,7 @@ namespace CalamityEntropy.Content.Projectiles.AbyssalWraithProjs
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D warn = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/vlbw").Value;
+            Texture2D warn = CEExtraAssets.vlbw;
             Texture2D t = TextureAssets.Projectile[Projectile.type].Value;
             for (int i = 0; i < odp.Count; i++)
             {

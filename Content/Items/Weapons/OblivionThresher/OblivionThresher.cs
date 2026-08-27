@@ -1,10 +1,7 @@
 ﻿using CalamityEntropy.Content.Cooldowns;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Ranged;
+using CalamityEntropy.Core.Cooldowns;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -31,7 +28,7 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
             Item.noUseGraphic = true;
             Item.channel = true;
             Item.knockBack = 4f;
-            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1, gold: 20);
             Item.rare = ModContent.RarityType<VoidPurple>();
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<OblivionThresherHoldout>();
@@ -41,9 +38,9 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<SuperradiantSlaughterer>()
+                .AddIngredient(ItemID.SDMG)
                 .AddIngredient<VoidBar>(5)
-                .AddIngredient<AscendantSpiritEssence>(2)
+                .AddIngredient<WraithSoulEssence>(2)
                 .AddTile<VoidWellTile>()
                 .Register();
         }

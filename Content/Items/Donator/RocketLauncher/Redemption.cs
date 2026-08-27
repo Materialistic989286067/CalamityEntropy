@@ -1,12 +1,8 @@
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using InnoVault.PRT;
 using System;
 using System.Collections.Generic;
@@ -38,7 +34,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
             Item.damage = 400;
             Item.knockBack = 4f;
             Item.UseSound = null;
-            Item.value = Item.buyPrice(gold: 48);
+            Item.value = Item.buyPrice(platinum: 1);
             Item.rare = ItemRarityID.Pink;
             Item.Entropy().tooltipStyle = 8;
             Item.Entropy().strokeColor = Color.DarkGreen;
@@ -51,7 +47,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
         #region Animations
         public override void HoldItem(Player player)
         {
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             if (player.altFunctionUse != 2)
             {
                 if (player.channel)
@@ -97,7 +93,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
         }
         public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
-            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+            player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
             Vector2 itemPosition = player.MountedCenter + itemRotation.ToRotationVector2() * 76f;
@@ -115,16 +111,16 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
                 if (animProgress < 0.32f)
                     itemPosition += itemRotation.ToRotationVector2() * (float)Math.Pow((1 - animProgress / 0.32f), 2) * -32;
             }
-            CalamityUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
+            CEUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
             base.UseStyle(player, heldItemFrame);
         }
 
         public override void UseItemFrame(Player player)
         {
-            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+            player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
 
             float animProgress = 1 - player.itemTime / (float)player.itemTimeMax;
-            float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
+            float rotation = (player.Center - player.Entropy().MouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
             if (player.channel)
             {
 
@@ -148,12 +144,13 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 
         public override void AddRecipes()
         {
+            // 灾厄原料按 material-map.md 替换：TheHive（瘟疫档）按表外兜底→乌兹冲锋枪、AuricBar→虚空锭；宇宙砧→远古操纵机
             CreateRecipe()
                 .AddIngredient<Filthless>()
-                .AddIngredient<TheHive>()
+                .AddIngredient(ItemID.Uzi)
                 .AddIngredient<OsseousRemains>(20)
-                .AddIngredient<AuricBar>(5)
-                .AddTile<CosmicAnvil>()
+                .AddIngredient<VoidBar>(5)
+                .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
         public static void OnKillAction(Projectile Projectile)

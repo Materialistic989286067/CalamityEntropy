@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Content.NPCs;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -62,8 +61,8 @@ namespace CalamityEntropy.Content.Items
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<DubiousPlating>(), 3).
-                AddIngredient(ModContent.ItemType<MysteriousCircuitry>(), 4).
+                AddIngredient(ModContent.ItemType<AzafurePlating>(), 3).
+                AddIngredient(ModContent.ItemType<AzafureCircuitry>(), 4).
                 AddTile(TileID.WorkBenches).
                 Register();
         }

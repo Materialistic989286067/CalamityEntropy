@@ -4,7 +4,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.Particles.CalamityPorts
 {
-    //照CalamityMod MediumMistParticle翻的,MistOpacity减到0自己Kill不靠Lifetime到点
+    //灾厄MediumMistParticle的移植,MistOpacity减到0自己Kill不靠Lifetime到点
     public class PRT_MediumMistCal : BasePRT
     {
         public float MistOpacity;
@@ -25,7 +25,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             Variant = 0;
         }
 
-        //@CalamityMod/Particles/MediumMist,Texture认不了@语法,WhiteTexPath占位真图PreDraw里VaultLoaden拿
+        //Assets/Particles/MediumMist,WhiteTexPath占位,真图PreDraw里走PRTSharedAssets
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_MediumMistCal Configure(Color colorFade, float opacity, float rotationSpeed = 0f)
@@ -72,10 +72,10 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
         public override bool PreDraw(SpriteBatch spriteBatch)
         {
-            Texture2D tex = PRTSharedAssets.MediumMist.Value;   //横排3列,Variant随机0-2
-            int frameWidth = tex.Width / 3;
-            Rectangle frame = new Rectangle(frameWidth * Variant, 0, frameWidth, tex.Height);
-            spriteBatch.Draw(tex, Position - Main.screenPosition, frame, Color, Rotation, new Vector2(frameWidth / 2f, tex.Height / 2f), Scale, SpriteEffects.None, 0);
+            Texture2D tex = PRTSharedAssets.MediumMist.Value;   //竖排3帧,Variant随机0-2,对齐灾厄FrameVariants竖切语义(原横切是搬运bug)
+            int frameHeight = tex.Height / 3;
+            Rectangle frame = new Rectangle(0, frameHeight * Variant, tex.Width, frameHeight);
+            spriteBatch.Draw(tex, Position - Main.screenPosition, frame, Color, Rotation, new Vector2(tex.Width / 2f, frameHeight / 2f), Scale, SpriteEffects.None, 0);
             return false;
         }
     }

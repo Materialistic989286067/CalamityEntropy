@@ -1,6 +1,4 @@
-﻿using CalamityMod;
-using CalamityMod.Items.TreasureBags.MiscGrabBags;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
@@ -21,7 +19,8 @@ namespace CalamityEntropy.Content.Items
         public static List<int> items;
         public override void ModifyItemLoot(Item item, ItemLoot itemLoot)
         {
-            if (item.ModItem != null && item.ModItem is StarterBag)
+            // 注入目标由灾厄新手包改为自有礼包「熵之馈赠」
+            if (item.ModItem != null && item.ModItem is EntropyStarterBag)
             {
                 foreach (int id in items)
                 {
@@ -30,15 +29,26 @@ namespace CalamityEntropy.Content.Items
                     {
                         int ItemCount = 1;
                         gfsb.OwnAble(Main.LocalPlayer, ref ItemCount);
-                        bool func(DropAttemptInfo info)
-                        {
-                            int __ = 1;
-                            return gfsb.OwnAble(info.player, ref __);
-                        }
-                        itemLoot.AddIf(func, id, 1, ItemCount, ItemCount);
+                        itemLoot.Add(ItemDropRule.ByCondition(new OwnableCondition(gfsb), id, 1, ItemCount, ItemCount));
                     }
                 }
             }
+        }
+        // 把 OwnAble 判定包装为原生掉落条件（按掉落时的实际玩家判定）
+        private class OwnableCondition : IItemDropRuleCondition, IProvideItemConditionDescription
+        {
+            private readonly IGetFromStarterBag gfsb;
+            public OwnableCondition(IGetFromStarterBag gfsb)
+            {
+                this.gfsb = gfsb;
+            }
+            public bool CanDrop(DropAttemptInfo info)
+            {
+                int count = 1;
+                return gfsb.OwnAble(info.player, ref count);
+            }
+            public bool CanShowItemDropInUI() => false;
+            public string GetConditionDescription() => null;
         }
     }
 }

@@ -1,7 +1,8 @@
 ﻿using CalamityEntropy.Content.Buffs.Pets;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,6 +11,13 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Plant
 {
     public class PlanteraChan : ModProjectile
     {
+        //帧动画贴图在加载期一次就位,不再在 PreDraw 里每帧建表逐张请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Plant/fly", 1, 5, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] FlyFrames;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Plant/walk", 1, 5, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] WalkFrames;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Plant/jump")]
+        internal static Asset<Texture2D> JumpTex;
         public float counter = 0;
         public override void SetStaticDefaults()
         {
@@ -30,39 +38,22 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Plant
         {
             if (Main.gameMenu)
             {
-                Texture2D txd = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Plant/fly1").Value;
+                Texture2D txd = FlyFrames[0];
 
                 Main.EntitySpriteDraw(txd, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, new Vector2(txd.Width, txd.Height) / 2, Projectile.scale, SpriteEffects.FlipHorizontally, 0);
 
                 return false;
             }
             Player player = Main.player[Projectile.owner];
-            List<Texture2D> list = new List<Texture2D>();
             if (counter > 36)
             {
                 counter -= 36;
             }
-            if (Projectile.ai[1] == 1)
-            {
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Plant/fly1").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Plant/fly2").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Plant/fly3").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Plant/fly4").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Plant/fly5").Value);
-
-            }
-            else
-            {
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Plant/walk1").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Plant/walk2").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Plant/walk3").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Plant/walk4").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Plant/walk5").Value);
-            }
-            Texture2D tx = list[(((int)counter / 6) % list.Count)];
+            Texture2D[] frames = Projectile.ai[1] == 1 ? FlyFrames : WalkFrames;
+            Texture2D tx = frames[(((int)counter / 6) % frames.Length)];
             if (Projectile.ai[1] == 0 && Projectile.velocity.Y != 0)
             {
-                tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Plant/jump").Value;
+                tx = JumpTex.Value;
             }
             if (Projectile.velocity.X > -2 && Projectile.velocity.X < 2f)
             {

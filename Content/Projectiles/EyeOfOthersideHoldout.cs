@@ -1,7 +1,9 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.GameContent;
@@ -18,7 +20,7 @@ namespace CalamityEntropy.Content.Projectiles
 
         public NPC target;
 
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        public override string Texture => "CalamityEntropy/Assets/Extra/Ports/Invisible";
 
         public override void SetStaticDefaults()
         {
@@ -124,12 +126,19 @@ namespace CalamityEntropy.Content.Projectiles
 
         public void KillTheThing(NPC npc)
         {
-            Projectile.velocity = Projectile.SuperhomeTowardsTarget(npc, 50f / (float)(Projectile.extraUpdates + 1), 60f / (float)(Projectile.extraUpdates + 1), 1f / (float)(Projectile.extraUpdates + 1));
+            // 灾厄 SuperhomeTowardsTarget 内联：预判弹道 + 惯性混合，数值不变
+            float homingSpeed = 50f / (Projectile.extraUpdates + 1);
+            float inertia = 60f / (Projectile.extraUpdates + 1);
+            float predictionStrength = 1f / (Projectile.extraUpdates + 1);
+            if (predictionStrength < 0.01f)
+                predictionStrength = 0.01f;
+            Vector2 idealVelocity = CEUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, npc, homingSpeed / predictionStrength, 1) * predictionStrength;
+            Projectile.velocity = (Projectile.velocity * (inertia - 1f) + idealVelocity) / inertia;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D value = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/SmallGreyscaleCircle").Value;
+            Texture2D value = CEExtraAssets.SmallGreyscaleCircle;
             for (int i = 0; i < Projectile.oldPos.Length; i++)
             {
                 float amount = (float)Math.Cos((float)Projectile.timeLeft / 32f + Main.GlobalTimeWrappedHourly / 20f + (float)i / (float)Projectile.oldPos.Length * MathF.PI) * 0.5f + 0.5f;
@@ -271,7 +280,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D light = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Glow").Value;
+            Texture2D light = CEExtraAssets.Glow;
             Main.spriteBatch.Draw(light, Projectile.Center - Main.screenPosition * Projectile.scale, null, Color.LightBlue * 0.7f, 0, light.Size() / 2, 0.5f * Projectile.scale * (1 + (float)Math.Cos((counter) * 0.02f) * 0.2f), SpriteEffects.None, 0);
 
             Main.spriteBatch.End();
@@ -287,7 +296,7 @@ namespace CalamityEntropy.Content.Projectiles
             float sparkleScale = 0.28f * Projectile.scale;
             //PRT_SparkleCal bloom/color在Configure里,旧Calamity SparkleParticle两色构造
             PRTLoader.NewParticle<PRT_SparkleCal>(Projectile.Center, Vector2.Zero, color, sparkleScale)
-                .Configure(bloom, 17, Main.rand.NextFloat(-0.1f, 0.1f), 1.2f);  //holdout装饰sparkle,GeneralParticleHandler迁过来的,数值没动
+                .Configure(bloom, 17, Main.rand.NextFloat(-0.1f, 0.1f), 1.2f);  //holdout装饰sparkle,旧版粒子系统迁过来的,数值没动
         }
     }
 

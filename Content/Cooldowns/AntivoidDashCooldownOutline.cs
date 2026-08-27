@@ -1,10 +1,10 @@
-﻿using CalamityMod.Cooldowns;
+﻿using CalamityEntropy.Core.Cooldowns;
 using Terraria.Audio;
 using Terraria.Localization;
 
 namespace CalamityEntropy.Content.Cooldowns
 {
-    public class AntivoidDashCooldown : CooldownHandler
+    public class AntivoidDashCooldown : CECooldownHandler
     {
         public static new string ID => "AntivoidDash";
         public override bool ShouldDisplay => true;

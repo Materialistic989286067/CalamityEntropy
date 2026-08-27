@@ -1,14 +1,11 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Items.Weapons.Swirlblades;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Rarities;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -33,14 +30,14 @@ namespace CalamityEntropy.Content.Items.Weapons.TwinSaw
             Item.useTime = 10;
             Item.useAnimation = 10;
             Item.autoReuse = true;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.damage = 7;
             Item.knockBack = 6;
             Item.crit = 5;
             Item.channel = true;
             Item.shoot = ModContent.ProjectileType<AzafureTwinSawHeld>();
             Item.shootSpeed = 12;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.rare = ModContent.RarityType<AzafureOrange>();
         }
         public override bool MeleePrefix()
@@ -86,7 +83,7 @@ namespace CalamityEntropy.Content.Items.Weapons.TwinSaw
     {
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(ModContent.GetInstance<TrueMeleeDamageClass>(), false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 4;
         }
@@ -103,7 +100,7 @@ namespace CalamityEntropy.Content.Items.Weapons.TwinSaw
         public override void AI()
         {
             var player = Projectile.GetOwner();
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             if (Projectile.localAI[0]++ == 0)
             {
                 CEUtils.PlaySound("HellkiteSwing2", Main.rand.NextFloat(1.4f, 1.7f), Projectile.Center, 8, CEUtils.WeapSound * 0.4f);
@@ -113,7 +110,7 @@ namespace CalamityEntropy.Content.Items.Weapons.TwinSaw
                 Projectile.rotation = Projectile.velocity.ToRotation();
             }
             Projectile.Center = player.MountedCenter;
-            Projectile.velocity = Projectile.velocity.Length() * (player.Calamity().mouseWorld - Projectile.Center).normalize();
+            Projectile.velocity = Projectile.velocity.Length() * (player.Entropy().MouseWorld - Projectile.Center).normalize();
             if (Projectile.ai[0] > 0)
             {
                 player.heldProj = Projectile.whoAmI;
@@ -277,7 +274,7 @@ namespace CalamityEntropy.Content.Items.Weapons.TwinSaw
         {
             Texture2D tex = Projectile.GetTexture();
             Texture2D saw = this.getTextureAlt("Saw");
-            Texture2D cs = CEUtils.getExtraTex("CircularSmear");
+            Texture2D cs = CEExtraAssets.CircularSmear;
             Vector2 offset = CEUtils.randomPointInCircle((Hitted && Projectile.ai[1] == 0 && Counter < 36) || (Projectile.localAI[0] > 7 && Projectile.ai[1] != 0 && Counter < 60) ? 8 : 0);
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + offset, null, lightColor * Projectile.Opacity, Projectile.rotation, tex.Size() * 0.5f + heldOrigin, Projectile.scale, dir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically, 0);
             Main.spriteBatch.Draw(saw, sawOrigin - Main.screenPosition + offset, null, lightColor * Projectile.Opacity, Main.GameUpdateCount * -1.2f * dir, saw.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
@@ -400,7 +397,7 @@ namespace CalamityEntropy.Content.Items.Weapons.TwinSaw
                         PRTLoader.NewParticle<PRT_SparkCal>(pos, vel, color, scale).Configure(false, Main.rand.Next(3, 6));
                     }
                 }
-            SoundStyle burn = new("CalamityMod/Sounds/Item/WeldingBurn");
+            SoundStyle burn = new SoundStyle("CalamityEntropy/Assets/Sounds/steam") { PitchVariance = 0.2f };
             SoundEngine.PlaySound(burn with { Volume = 0.4f, Pitch = 0.55f }, target.Center);
         }
         public override string Texture => CEUtils.WhiteTexPath;

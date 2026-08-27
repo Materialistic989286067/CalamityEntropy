@@ -545,8 +545,7 @@ namespace CalamityEntropy
                 //基础数值
                 case "brilliancecard":
                     return modPlayer.brillianceCard;
-                case "shadowpact":
-                    return modPlayer.shadowPact;
+                //脱离灾厄:shadowpact键随潜行退役删除
 
                 //装备效果
                 case "heartofstorm":
@@ -601,19 +600,7 @@ namespace CalamityEntropy
                 case "meleedamagereduce":
                     return modPlayer.meleeDamageReduce;
 
-                //潜行相关
-                case "roguestealthregen":
-                    return modPlayer.RogueStealthRegen;
-                case "roguestealthregenmult":
-                    return modPlayer.RogueStealthRegenMult;
-                case "nostealthregen":
-                    return modPlayer.NoNaturalStealthRegen;
-                case "extrastealthbar":
-                    return modPlayer.ExtraStealthBar;
-                case "extrastealth":
-                    return modPlayer.ExtraStealth;
-                case "shadowstealth":
-                    return modPlayer.shadowStealth;
+                //脱离灾厄:潜行相关键(roguestealthregen/roguestealthregenmult/nostealthregen/extrastealthbar/extrastealth/shadowstealth)随盗贼系统退役删除
 
                 //武器状态
                 case "weaponboost":
@@ -775,23 +762,7 @@ namespace CalamityEntropy
                         throw new ArgumentException("WeaponBoost requires int value");
                     break;
 
-                case "extrastealth":
-                    if (args[2] is float floatVal7)
-                        modPlayer.ExtraStealth = floatVal7;
-                    else if (args[2] is double doubleVal7)
-                        modPlayer.ExtraStealth = (float)doubleVal7;
-                    else
-                        throw new ArgumentException("ExtraStealth requires float or double value");
-                    break;
-
-                case "shadowstealth":
-                    if (args[2] is float floatVal8)
-                        modPlayer.shadowStealth = floatVal8;
-                    else if (args[2] is double doubleVal8)
-                        modPlayer.shadowStealth = (float)doubleVal8;
-                    else
-                        throw new ArgumentException("shadowStealth requires float or double value");
-                    break;
+                //脱离灾厄:extrastealth/shadowstealth写入键随盗贼系统退役删除
 
                 default:
                     throw new ArgumentException($"Unknown or read-only player data key: {key}");

@@ -1,6 +1,4 @@
-﻿using CalamityMod;
-using CalamityMod.Items;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -17,10 +15,10 @@ namespace CalamityEntropy.Content.Items.Tools
             Item.damage = 6;
             Item.knockBack = 4f;
             Item.useTime = Item.useAnimation = 15;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Green;
             Item.crit = 2;
             Item.autoReuse = true;
@@ -44,7 +42,7 @@ namespace CalamityEntropy.Content.Items.Tools
         public override string Texture => "CalamityEntropy/Content/Items/Tools/SentryRemover";
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(ModContent.GetInstance<TrueMeleeDamageClass>(), false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {

@@ -1,10 +1,10 @@
-﻿using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Ranged;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -32,7 +32,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 6f;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1);
             Item.rare = ItemRarityID.Red;
             Item.UseSound = CEUtils.GetSound("ProminenceShoot");
             Item.autoReuse = true;
@@ -49,7 +49,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             PRTLoader.NewParticle<PRT_SparkleCal>(position + velocity, Vector2.Zero, impactColor, impactParticleScale).Configure(Color.OrangeRed, 8, 0.16f, 2f);
 
 
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = 4 * player.Entropy().GetPressure();
+            // 原灾厄全局屏震改自有 ScreenShaker
+            ScreenShaker.AddShake(new ScreenShaker.ScreenShake(Vector2.Zero, 4 * player.Entropy().GetPressure()));
             //StrikeParticle+Smoke成对,PRTDrawMode走Configure尾参
             for (int i = 0; i < 64; i++)
             {
@@ -77,7 +78,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe().AddIngredient(ItemID.FragmentSolar, 16)
-                .AddIngredient<TheBallista>()
+                .AddIngredient(ItemID.Uzi)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
@@ -86,27 +87,27 @@ namespace CalamityEntropy.Content.Items.Weapons
             return true;
         }
         #region Animations
-        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
+        public override void HoldItem(Player player) => player.Entropy().MouseWorldListener = true;
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
-            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+            player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
             Vector2 itemPosition = player.MountedCenter + new Vector2(0, -24);
             Vector2 itemSize = new Vector2(Item.width, Item.height);
             Vector2 itemOrigin = new Vector2(-14, 0);
 
-            CalamityUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
+            CEUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
             base.UseStyle(player, heldItemFrame);
         }
 
         public override void UseItemFrame(Player player)
         {
-            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+            player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
 
             float animProgress = 1 - player.itemTime / (float)player.itemTimeMax;
-            float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
+            float rotation = (player.Center - player.Entropy().MouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
             if (animProgress < 0.5)
                 rotation += (-0.5f) * (float)Math.Pow((0.5f - animProgress) / 0.5f, 2) * player.direction;
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
@@ -145,7 +146,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override bool PreDraw(ref Color lightColor)
         {
             lightColor = Color.White;
-            Texture2D circle = CEUtils.getExtraTex("BasicCircle");
+            Texture2D circle = CEExtraAssets.BasicCircle;
             for (int i = 0; i < odp.Count; i++)
             {
                 float s = (i + 1f) / (float)odp.Count * ((float)Projectile.timeLeft / 160f);

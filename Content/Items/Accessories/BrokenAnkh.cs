@@ -1,6 +1,5 @@
-﻿using CalamityEntropy.Common;
-using CalamityMod;
-using CalamityMod.Items;
+using CalamityEntropy.Common;
+using CalamityEntropy.Content.Items.Armor;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -18,14 +17,15 @@ namespace CalamityEntropy.Content.Items.Accessories
             }
             else
             {
-                list.IntegrateHotkey(CEKeybinds.ThrowPoopHotKey);
+                // 脱离灾厄:灾厄 IntegrateHotkey 扩展改自有键名提示
+                list.Replace("[KEY]", CEKeybinds.ThrowPoopHotKey.TooltipKeyHint());
             }
         }
         public override void SetDefaults()
         {
             Item.width = 50;
             Item.height = 50;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Blue;
             Item.accessory = true;
         }

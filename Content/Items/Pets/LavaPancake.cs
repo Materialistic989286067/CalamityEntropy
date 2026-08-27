@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -44,6 +44,7 @@ namespace CalamityEntropy.Content.Items.Pets
     public abstract class ProfanedGuardianPet : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
+        internal abstract Texture2D[] Frames { get; }
         public int counter = 0;
         public override void SetStaticDefaults()
         {
@@ -59,23 +60,18 @@ namespace CalamityEntropy.Content.Items.Pets
             Projectile.width = 42;
             Projectile.height = 42;
         }
-        public virtual string TextureName => "";
         public override bool PreDraw(ref Color lightColor)
         {
             lightColor = Color.White;
+            Texture2D[] frames = Frames;
             if (Main.gameMenu)
             {
-                Texture2D txd = ModContent.Request<Texture2D>("CalamityEntropy/Content/Items/Pets/Prof/" + TextureName + "1").Value;
+                Texture2D txd = frames[0];
                 Main.EntitySpriteDraw(txd, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, new Vector2(txd.Width, txd.Height) / 2, Projectile.scale, SpriteEffects.FlipHorizontally, 0);
 
                 return false;
             }
-            List<Texture2D> list = new List<Texture2D>();
-            for (int i = 1; i <= texs; i++)
-            {
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Items/Pets/Prof/" + TextureName + i.ToString()).Value);
-            }
-            Texture2D tx = list[(counter / 4) % list.Count];
+            Texture2D tx = frames[(counter / 4) % frames.Length];
             Projectile.direction = Math.Sign(Projectile.GetOwner().Center.X - Projectile.Center.X);
             if (Projectile.direction == -1)
             {
@@ -91,7 +87,6 @@ namespace CalamityEntropy.Content.Items.Pets
             return false;
 
         }
-        public virtual int texs => 5;
         public virtual float MS => 0.1f;
         public virtual Vector2 posOffset => new Vector2(-40, -40);
         void MoveToTarget(Vector2 targetPos)
@@ -124,19 +119,25 @@ namespace CalamityEntropy.Content.Items.Pets
 
     public class ProfPetG1 : ProfanedGuardianPet
     {
-        public override string TextureName => "A";
+        [VaultLoaden("CalamityEntropy/Content/Items/Pets/Prof/A", 1, 5, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] FramesA;
+        internal override Texture2D[] Frames => FramesA;
         public override float MS => 0.1f;
         public override Vector2 posOffset => new Vector2(-85, -20);
     }
     public class ProfPetG2 : ProfanedGuardianPet
     {
-        public override string TextureName => "B";
+        [VaultLoaden("CalamityEntropy/Content/Items/Pets/Prof/B", 1, 5, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] FramesB;
+        internal override Texture2D[] Frames => FramesB;
         public override float MS => 0.08f;
         public override Vector2 posOffset => new Vector2(-115, -20);
     }
     public class ProfPetG3 : ProfanedGuardianPet
     {
-        public override string TextureName => "C";
+        [VaultLoaden("CalamityEntropy/Content/Items/Pets/Prof/C", 1, 5, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] FramesC;
+        internal override Texture2D[] Frames => FramesC;
         public override float MS => 0.06f;
         public override Vector2 posOffset => new Vector2(-145, -20);
     }

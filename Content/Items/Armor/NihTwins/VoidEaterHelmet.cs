@@ -1,10 +1,10 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using CalamityEntropy.Core.Weapons;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -24,7 +24,7 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
         {
             Item.width = 40;
             Item.height = 40;
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1, gold: 50);
             Item.defense = 24;
             Item.rare = ModContent.RarityType<NihilityBlue>();
         }
@@ -38,18 +38,16 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
         public override void UpdateArmorSet(Player player)
         {
             player.setBonus = Mod.GetLocalization("VoidEaterBonus").Value;
-            player.setBonus = player.setBonus.Replace("[KEY]", CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString());
-            player.setBonus = player.setBonus.Replace("[KN]", CalamityKeybinds.ArmorSetBonusHotKey.DisplayName.Value);
+            // 脱离灾厄:灾厄套装键改自有 EModPlayer.ArmorSetBonusHotKey,键名提示走自有扩展
+            player.setBonus = player.setBonus.Replace("[KEY]", EModPlayer.ArmorSetBonusHotKey.TooltipKeyHint());
+            player.setBonus = player.setBonus.Replace("[KN]", EModPlayer.ArmorSetBonusHotKey.DisplayName.Value);
             player.setBonus = player.setBonus.Replace("[SHIELD]", MaxShield.ToString());
             string cnctStr = Mod.GetLocalization("NihArmorConnet").Value;
             cnctStr = cnctStr.Replace("[ANOTHERSET]", Mod.GetLocalization("ChaoticSet").Value);
-            cnctStr = cnctStr.Replace("[CONNECT]", CEKeybinds.NihilityAndChaoticArmorConnectKey.TooltipHotkeyString());
+            cnctStr = cnctStr.Replace("[CONNECT]", CEKeybinds.NihilityAndChaoticArmorConnectKey.TooltipKeyHint());
             player.setBonus += "\n" + cnctStr;
-            if (!ModContent.GetInstance<Config>().MariviumArmorSetOnlyProvideStealthBarWhenHoldingRogueWeapons || player.HeldItem.DamageType.CountsAsClass(CEUtils.RogueDC))
-            {
-                player.Calamity().wearingRogueArmor = true;
-                player.Calamity().rogueStealthMax += 1.2f;
-            }
+            // 潜行体系退役:原潜行条(上限1.2)按容量×10%换算为大招充能速度
+            player.GetModPlayer<CEChargePlayer>().ChargeRateMult += 0.12f;
             player.Entropy().NihilitySet = true;
             player.GetDamage(DamageClass.Generic) += 0.14f;
             player.GetCritChance(DamageClass.Generic) += 14;
@@ -66,9 +64,9 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
 
         public override void AddRecipes()
         {
+            // 脱离灾厄:原 Necroplasm×6 换虚无碎片并与原有 5 枚合并
             CreateRecipe()
-                .AddIngredient<NihilityFragments>(5)
-                .AddIngredient(ModContent.ItemType<Necroplasm>(), 6)
+                .AddIngredient<NihilityFragments>(11)
                 .AddIngredient(ItemID.LunarBar, 8)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
@@ -106,7 +104,8 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
             Projectile.timeLeft = 12;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
-            Projectile.DamageType = ModContent.GetInstance<AverageDamageClass>();
+            // 脱离灾厄:灾厄 AverageDamageClass 收敛为通用伤害(player-api.md §5)
+            Projectile.DamageType = DamageClass.Generic;
         }
         public bool st = true;
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
@@ -169,7 +168,8 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
                     }
                 }
             }
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower += Utils.Remap(Main.LocalPlayer.Distance(Projectile.Center), 1600f, 100f, 0f, 0.08f);
+            // 脱离灾厄:灾厄 GeneralScreenShakePower 持续微震改用自有屏震(每帧小幅,距离衰减)
+            ScreenShaker.AddShake(new ScreenShaker.ScreenShake(Vector2.Zero, Utils.Remap(Main.LocalPlayer.Distance(Projectile.Center), 1600f, 100f, 0f, 0.4f)));
 
             if (Projectile.timeLeft < 6)
             {
@@ -223,11 +223,11 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
                     break;
                 }
             }
-            Texture2D tb = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/clback").Value;
-            Texture2D px = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value;
-            Texture2D tl = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/cllight").Value;
-            Texture2D th = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/clinghth").Value;
-            Texture2D tl2 = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/cllight2").Value;
+            Texture2D tb = CEExtraAssets.clback;
+            Texture2D px = CEExtraAssets.white;
+            Texture2D tl = CEExtraAssets.cllight;
+            Texture2D th = CEExtraAssets.clinghth;
+            Texture2D tl2 = CEExtraAssets.cllight2;
             Main.spriteBatch.Draw(tb, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, new Vector2(0, tb.Height / 2), new Vector2(length, width), SpriteEffects.None, 0);
             foreach (Vector2 ps in p)
             {

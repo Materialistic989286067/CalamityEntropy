@@ -1,9 +1,7 @@
-﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -27,7 +25,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Item.useTime = Item.useAnimation = 50;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 6;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1);
             Item.rare = ItemRarityID.Red;
             Item.UseSound = null;
             Item.noMelee = true;
@@ -52,9 +50,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         {
             CreateRecipe()
                 .AddIngredient<StarlitFractal>()
-                .AddIngredient<FlarefrostBlade>()
+                .AddIngredient(ItemID.TrueNightsEdge)
                 .AddIngredient(ItemID.LunarBar, 5)
-                .AddIngredient<LifeAlloy>(5)
+                .AddIngredient(ItemID.HallowedBar, 5)
                 .AddIngredient(ItemID.FragmentSolar, 5)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
@@ -73,7 +71,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -92,12 +90,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public float spawnProjCounter = 0;
         public override void AI()
         {
-            bool noProj = Projectile.GetOwner().Calamity().bladeArmEnchant;
-            if (noProj)
-            {
-                spawnProj = false;
-                shoot = false;
-            }
             Player owner = Projectile.GetOwner();
             float MaxUpdateTimes = owner.itemTimeMax * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
@@ -139,7 +131,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 {
                     spawnProjCounter -= 6f;
                     Vector2 spawnPos = Projectile.Center + Projectile.rotation.ToRotationVector2() * 98 * scale * Projectile.scale;
-                    if (Main.myPlayer == Projectile.owner && !noProj)
+                    if (Main.myPlayer == Projectile.owner)
                     {
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), spawnPos, CEUtils.randomPointInCircle(0.1f) + Projectile.rotation.ToRotationVector2() * 6, ModContent.ProjectileType<FractalBlight>(), Projectile.damage / 5, Projectile.knockBack, Projectile.owner, Main.rand.NextFloat() * 6.28f, 1);
                     }
@@ -150,11 +142,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             }
             else
             {
-                Projectile.velocity = new Vector2(Projectile.velocity.Length(), 0).RotatedBy((owner.Calamity().mouseWorld - Projectile.Center).ToRotation());
+                Projectile.velocity = new Vector2(Projectile.velocity.Length(), 0).RotatedBy((owner.mouseWorld() - Projectile.Center).ToRotation());
                 if (progress < 0.34f)
                 {
                     float p = progress / 0.34f;
-                    Projectile.rotation = (owner.Calamity().mouseWorld - Projectile.Center).ToRotation() + CEUtils.GetRepeatedCosFromZeroToOne(p, 2) * MathHelper.ToRadians(140) * (Projectile.velocity.X > 0 ? -1 : 1);
+                    Projectile.rotation = (owner.mouseWorld() - Projectile.Center).ToRotation() + CEUtils.GetRepeatedCosFromZeroToOne(p, 2) * MathHelper.ToRadians(140) * (Projectile.velocity.X > 0 ? -1 : 1);
                 }
                 else
                 {
@@ -162,14 +154,14 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                     {
                         float p = (progress - 0.34f) / 0.33f;
 
-                        Projectile.rotation = (owner.Calamity().mouseWorld - Projectile.Center).ToRotation() + (CEUtils.GetRepeatedCosFromZeroToOne(1 - p, 2) * MathHelper.ToRadians(280) - MathHelper.ToRadians(140)) * (Projectile.velocity.X > 0 ? -1 : 1);
+                        Projectile.rotation = (owner.mouseWorld() - Projectile.Center).ToRotation() + (CEUtils.GetRepeatedCosFromZeroToOne(1 - p, 2) * MathHelper.ToRadians(280) - MathHelper.ToRadians(140)) * (Projectile.velocity.X > 0 ? -1 : 1);
 
                     }
                     else
                     {
                         float p = (progress - 0.67f) / 0.33f;
 
-                        Projectile.rotation = (owner.Calamity().mouseWorld - Projectile.Center).ToRotation() + (CEUtils.GetRepeatedCosFromZeroToOne(p, 2) * MathHelper.ToRadians(280) - MathHelper.ToRadians(140)) * (Projectile.velocity.X > 0 ? -1 : 1);
+                        Projectile.rotation = (owner.mouseWorld() - Projectile.Center).ToRotation() + (CEUtils.GetRepeatedCosFromZeroToOne(p, 2) * MathHelper.ToRadians(280) - MathHelper.ToRadians(140)) * (Projectile.velocity.X > 0 ? -1 : 1);
 
                     }
                     if (progress > 0.46 && shoot)
@@ -205,10 +197,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             owner.heldProj = Projectile.whoAmI;
             owner.itemTime = 2;
             owner.itemAnimation = 2;
-            if (Projectile.GetOwner().Calamity().bladeArmEnchant)
-            {
-                owner.itemAnimation = int.Max(1, owner.itemAnimationMax - Projectile.Entropy().Lifetime);
-            }
             if (counter > MaxUpdateTimes)
             {
                 owner.itemTime = 1;
@@ -278,11 +266,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             {
 
                 Main.spriteBatch.UseBlendState(BlendState.Additive);
-                Texture2D bs = CEUtils.getExtraTex("SemiCircularSmear");
+                Texture2D bs = CEExtraAssets.SemiCircularSmear;
                 Main.spriteBatch.Draw(bs, (Vector2)(Projectile.Center + CEUtils.GetOwner(Projectile).gfxOffY * Vector2.UnitY - Main.screenPosition), null, Color.Lerp(new Color(255, 200, 215), new Color(255, 140, 150), counter / MaxUpdateTime) * (float)(Math.Cos(CEUtils.GetRepeatedCosFromZeroToOne(counter / MaxUpdateTime, 1) * MathHelper.Pi - MathHelper.PiOver2)), Projectile.rotation + MathHelper.ToRadians(32) * -dir, bs.Size() / 2f, Projectile.scale * 1.6f * scale, SpriteEffects.None, 0);
 
                 if (shineTex == null)
-                    shineTex = CEUtils.getExtraTex("StarTexture");
+                    shineTex = CEExtraAssets.StarTexture;
                 Main.spriteBatch.Draw(shineTex, Projectile.Center + Projectile.rotation.ToRotationVector2() * 98 * scale * Projectile.scale - Main.screenPosition, null, Color.LightGoldenrodYellow * 0.7f * ((float)Math.Cos((counter / MaxUpdateTime) * MathHelper.TwoPi - MathHelper.Pi) * 0.5f + 0.5f), 0, shineTex.Size() / 2f, 0.36f * Projectile.scale * new Vector2(2.8f, 0.5f), SpriteEffects.None, 0);
                 Main.spriteBatch.Draw(shineTex, Projectile.Center + Projectile.rotation.ToRotationVector2() * 98 * scale * Projectile.scale - Main.screenPosition, null, Color.LightGoldenrodYellow * 0.7f * ((float)Math.Cos((counter / MaxUpdateTime) * MathHelper.TwoPi - MathHelper.Pi) * 0.5f + 0.5f), 0, shineTex.Size() / 2f, 0.36f * Projectile.scale * new Vector2(0.5f, 2.8f), SpriteEffects.None, 0);
 

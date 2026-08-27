@@ -5,7 +5,8 @@ FlowingLight: {
 		{$CommonItemTooltip.FlightAndSlowfall}
 		按住↓以加速下落
 		飞行时按住↓以悬停
-		获得炽天使翼靴的加成
+		免疫熔岩与着火，不受摔落伤害
+		可在水面与冰面上疾行，大幅提升移动速度
 		$“臻至化境”
 		'''
 }

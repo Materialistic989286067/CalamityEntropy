@@ -1,8 +1,10 @@
-﻿using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Graphics.Primitives;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Particles.CalamityPorts;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.Graphics.Shaders;
@@ -56,8 +58,6 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
         float drawcount = 0;
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            //VFX接线从自研EParticle换InnoVault PRT,调用形状尽量跟旧的一样
-            //EParticle.spawnNew→PRTLoader.NewParticle,spawn点和数值迁移纪律:一个不改
             PRTLoader.NewParticle<PRT_DirectionalPulseRing>(Projectile.position, Vector2.Zero, new Color(255, 40, 40), 0f).Configure(new Vector2(2f, 2f), 0, 0.4f, 16);
 
             CEUtils.PlaySound("GrassSwordHit" + Main.rand.Next(4).ToString(), 1.4f, target.Center, 16, CEUtils.WeapSound * 0.6f);
@@ -90,9 +90,9 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:ArtAttack"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/StreakGoop"));
-            GameShaders.Misc["CalamityMod:ArtAttack"].Apply();
-            PrimitiveRenderer.RenderTrail(base.Projectile.oldPos, new PrimitiveSettings(WidthFunction, ColorFunction, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityMod:ArtAttack"]), 180);
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].SetShaderTexture(CEExtraAssets.StreakGoopAsset);
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].Apply();
+            CEPrimitiveRenderer.RenderTrail(base.Projectile.oldPos, new CEPrimitiveSettings(WidthFunction, ColorFunction, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityEntropy:ArtAttack"]), 180);
             Main.spriteBatch.ExitShaderRegion();
             Texture2D value = Projectile.GetTexture();
             Main.EntitySpriteDraw(value, Projectile.position - Main.screenPosition, null, Color.White * Projectile.Opacity, Projectile.rotation, value.Size() * 0.5f, base.Projectile.scale, SpriteEffects.None);

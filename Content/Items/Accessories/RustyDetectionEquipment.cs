@@ -1,5 +1,3 @@
-﻿using CalamityMod.Items;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,7 +11,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         {
             Item.width = 36;
             Item.height = 46;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Green;
             Item.accessory = true;
         }
@@ -34,9 +32,10 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<DubiousPlating>(), 20).
-                AddIngredient(ModContent.ItemType<MysteriousCircuitry>(), 15).
-                AddIngredient(ModContent.ItemType<SuspiciousScrap>(), 1).
+                AddIngredient(ModContent.ItemType<AzafurePlating>(), 20).
+                AddIngredient(ModContent.ItemType<AzafureCircuitry>(), 15).
+                //脱离灾厄:灾厄可疑废料按material-map废料族规则换铁锭
+                AddIngredient(ItemID.IronBar, 1).
                 AddTile(TileID.Anvils).
                 Register();
         }

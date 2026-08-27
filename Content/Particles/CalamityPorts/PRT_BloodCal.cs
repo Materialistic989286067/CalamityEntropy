@@ -11,7 +11,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
     {
         public Color InitialColor;
 
-        //@CalamityMod/Particles/Blood → PRTSharedAssets.Blood,HasAsset认不出@语法
+        //Assets/Particles/Blood → PRTSharedAssets.Blood,Texture指白图占位
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_BloodCal Configure(int lifetime)

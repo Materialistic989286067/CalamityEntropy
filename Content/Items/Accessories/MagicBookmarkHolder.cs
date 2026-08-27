@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items;
+using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -8,6 +9,9 @@ namespace CalamityEntropy.Content.Items.Accessories
 {
     public class MagicBookmarkHolder : ModItem, IPriceFromRecipe
     {
+        //额外书签槽外观贴图,加载期就位;仅在 !Main.dedServ 分支读取
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/Extra1")]
+        internal static Texture2D SlotTex;
         public int AdditionalPrice => 200;
         public static float MAGEDAMAGE = 0.05f;
         public override void SetDefaults()
@@ -15,7 +19,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.width = 18;
             Item.height = 30;
             Item.rare = ItemRarityID.Blue;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.accessory = true;
         }
 
@@ -24,7 +28,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             player.Entropy().AdditionalBookmarkSlot += 1;
             player.GetDamage(DamageClass.Magic) += MAGEDAMAGE;
             if (!Main.dedServ)
-                player.Entropy().BookmarkHolderSpecialTextures.Add(CEUtils.RequestTex("CalamityEntropy/Content/UI/EntropyBookUI/Extra1"));
+                player.Entropy().BookmarkHolderSpecialTextures.Add(SlotTex);
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {

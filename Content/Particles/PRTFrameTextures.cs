@@ -5,7 +5,6 @@ using Terraria.ModLoader;
 namespace CalamityEntropy.Content.Particles
 {
     /// <summary>
-    /// 按帧懒加载：路径带帧号没法 VaultLoaden 静态声明，首次访问 Request 后缓存在数组槽里
     /// PreDraw 里每帧 Request 会把帧率吃没；MCode/Rune/Sakura 三套路由见下方 accessor
     /// </summary>
     internal static class PRTFrameTextures

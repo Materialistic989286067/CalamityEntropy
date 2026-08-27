@@ -1,8 +1,11 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Graphics.Primitives;
+using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Weapons;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
@@ -17,6 +20,9 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class RadianceSpearThrow : ModProjectile, IJavelin
     {
+        //拖尾贴图,加载期就位,绘制时不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Assets/Extra/slash2")]
+        internal static Asset<Texture2D> Slash2Tex;
         List<Vector2> odp = new List<Vector2>();
         List<float> odr = new List<float>();
         public bool SetHandRot { get; set; }
@@ -27,7 +33,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = CEUtils.RogueDC;
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 58;
             Projectile.height = 58;
             Projectile.friendly = true;
@@ -146,7 +152,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                 SoundStyle SwingSound = SoundID.Item1;
                 SwingSound.Pitch = 0f;
-                if (Projectile.Calamity().stealthStrike)
+                if (Projectile.IsEmpowered())
                 {
                     SwingSound.Pitch = 1f;
                 }
@@ -159,7 +165,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void OnKill(int timeLeft)
         {
-            float sparkCount = Projectile.Calamity().stealthStrike ? 26 : 16;
+            float sparkCount = Projectile.IsEmpowered() ? 26 : 16;
             Projectile target = Projectile;
             for (int i = 0; i < sparkCount; i++)
             {
@@ -168,7 +174,7 @@ namespace CalamityEntropy.Content.Projectiles
                 float sparkScale2 = Main.rand.NextFloat(0.95f, 1.8f);
                 Color sparkColor2 = Color.Yellow;
 
-                float velc = Projectile.Calamity().stealthStrike ? 1.5f : 0.9f;
+                float velc = Projectile.IsEmpowered() ? 1.5f : 0.9f;
                 if (Main.rand.NextBool())
                 {
                     //PRT_AltSpark跟LineCal随机混用,旧Calamity spark/Lines二选一
@@ -182,8 +188,8 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            SoundEngine.PlaySound(new("CalamityMod/Sounds/NPCKilled/DevourerSegmentBreak1") { Volume = 0.3f }, Projectile.Center);
-            float sparkCount = Projectile.Calamity().stealthStrike ? 26 : 16;
+            SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/Smash", 2) { Volume = 0.3f }, Projectile.Center);
+            float sparkCount = Projectile.IsEmpowered() ? 26 : 16;
             for (int i = 0; i < sparkCount; i++)
             {
                 Vector2 sparkVelocity2 = new Vector2(16, 0).RotatedBy(Projectile.rotation).RotatedByRandom(MathHelper.ToRadians(40)) * Main.rand.NextFloat(0.5f, 1.8f);
@@ -191,7 +197,7 @@ namespace CalamityEntropy.Content.Projectiles
                 float sparkScale2 = Main.rand.NextFloat(0.95f, 1.8f);
                 Color sparkColor2 = Color.Yellow;
 
-                float velc = Projectile.Calamity().stealthStrike ? 1.5f : 0.9f;
+                float velc = Projectile.IsEmpowered() ? 1.5f : 0.9f;
                 if (Main.rand.NextBool())
                 {
                     //AltSpark Configure(bool,int)是Ports签名,不是opacity/glow/mode那套
@@ -202,13 +208,13 @@ namespace CalamityEntropy.Content.Projectiles
                     PRTLoader.NewParticle<PRT_LineCal>(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f), sparkVelocity2 * velc, Main.rand.NextBool() ? Color.GreenYellow : Color.LightYellow, sparkScale2 * 1).Configure(false, (int)(sparkLifetime2 * 1));
                 }
             }
-            if (Projectile.owner == Main.myPlayer && beam && Projectile.Calamity().stealthStrike)
+            if (Projectile.owner == Main.myPlayer && beam && Projectile.IsEmpowered())
             {
                 beam = false;
                 for (int i = 0; i < 4; i++)
                 {
                     Vector2 velocity = MathHelper.ToRadians(i * 90).ToRotationVector2() * 16;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, velocity, ModContent.ProjectileType<HolyBeam>(), (int)(Projectile.damage * 0.26f), 0f, Projectile.owner).ToProj().DamageType = CEUtils.RogueDC;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, velocity, ModContent.ProjectileType<HolyBeam>(), (int)(Projectile.damage * 0.26f), 0f, Projectile.owner).ToProj().DamageType = DamageClass.Melee;
                 }
             }
         }
@@ -266,7 +272,7 @@ namespace CalamityEntropy.Content.Projectiles
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
                 if (ve.Count >= 3)
                 {
-                    Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/slash2").Value;
+                    Texture2D tx = Slash2Tex.Value;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }
@@ -281,9 +287,9 @@ namespace CalamityEntropy.Content.Projectiles
             Vector2 position = base.Projectile.Center - Main.screenPosition + Vector2.UnitY * base.Projectile.gfxOffY;
             Vector2 origin = value.Size() * 0.5f;
             Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:ArtAttack"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-            GameShaders.Misc["CalamityMod:ArtAttack"].Apply();
-            PrimitiveRenderer.RenderTrail(odp, new PrimitiveSettings(TrailWidth, TrailColor, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityMod:ArtAttack"]), 180);
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].SetShaderTexture(CEExtraAssets.SylvestaffStreakAsset);
+            GameShaders.Misc["CalamityEntropy:ArtAttack"].Apply();
+            CEPrimitiveRenderer.RenderTrail(odp, new CEPrimitiveSettings(TrailWidth, TrailColor, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityEntropy:ArtAttack"]), 180);
             Main.spriteBatch.ExitShaderRegion();
 
         }

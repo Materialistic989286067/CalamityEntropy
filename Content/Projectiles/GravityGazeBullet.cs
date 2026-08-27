@@ -1,6 +1,8 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -98,7 +100,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.spriteBatch.End();
             EffectLoader.PreparePixelShader(gdv);
             Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
-            Asset<Texture2D> texture = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Enchanted", AssetRequestMode.ImmediateLoad);
+            Asset<Texture2D> texture = CEExtraAssets.EnchantedAsset;
 
             if (odp != null && rots != null)
             {
@@ -107,7 +109,7 @@ namespace CalamityEntropy.Content.Projectiles
                     Main.spriteBatch.End();
                     Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                     {
-                        Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Streak1").Value;
+                        Texture2D tx = CEExtraAssets.Streak1;
                         List<ColoredVertex> ve = new List<ColoredVertex>();
                         Color b = new Color(255, 255, 255) * 0.7f;
                         float p = -Main.GlobalTimeWrappedHourly * 1;

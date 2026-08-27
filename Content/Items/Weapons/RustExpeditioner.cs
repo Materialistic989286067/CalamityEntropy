@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using Terraria;
+﻿using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -33,7 +32,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ModContent.ItemType<DubiousPlating>(), 5).AddIngredient(ItemID.IronBar, 15).AddTile(TileID.Anvils).Register();
+            CreateRecipe().AddIngredient(ModContent.ItemType<AzafurePlating>(), 5).AddIngredient(ItemID.IronBar, 15).AddTile(TileID.Anvils).Register();
         }
 
         public override bool RangedPrefix()

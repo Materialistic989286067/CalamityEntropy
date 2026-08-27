@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Content.Items.Weapons;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Projectiles.TwistedTwin;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -118,12 +119,12 @@ namespace CalamityEntropy.Content.Projectiles
 
                     }
                     backspeed = 1.2f * (Projectile.ai[1] / (float)maxCharge);
-                    SoundStyle SwingSound = new SoundStyle("CalamityMod/Sounds/Item/TerratomereSwing");
+                    SoundStyle SwingSound = new SoundStyle("CalamityEntropy/Assets/Sounds/HellkiteSwing", 2);
                     SwingSound.Volume = 0.6f;
                     SwingSound.Pitch = 0.4f + 2f * (Projectile.ai[1] / (float)maxCharge);
                     if (Projectile.ai[1] >= maxCharge)
                     {
-                        SwingSound = new SoundStyle("CalamityMod/Sounds/Item/HalleysInfernoHit");
+                        SwingSound = new SoundStyle("CalamityEntropy/Assets/Sounds/energyImpact");
                         SwingSound.Pitch = 1.2f;
                         SwingSound.Volume = 0.46f;
 
@@ -164,8 +165,8 @@ namespace CalamityEntropy.Content.Projectiles
             Vector2 up = Projectile.Center + new Vector2(-20, -24).RotatedBy(Projectile.rotation) + new Vector2(-back, 0).RotatedBy(Projectile.rotation);
             Vector2 down = Projectile.Center + new Vector2(-20, 24).RotatedBy(Projectile.rotation) + new Vector2(-back, 0).RotatedBy(Projectile.rotation);
             Vector2 middle = Projectile.Center + new Vector2(-21 - Projectile.ai[1] * 0.35f, 0).RotatedBy(Projectile.rotation) + new Vector2(-back, 0).RotatedBy(Projectile.rotation);
-            CEUtils.drawLine(Main.spriteBatch, ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value, up, middle, Color.Red, 2, 2);
-            CEUtils.drawLine(Main.spriteBatch, ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value, down, middle, Color.Red, 2, 2);
+            CEUtils.drawLine(Main.spriteBatch, CEExtraAssets.white, up, middle, Color.Red, 2, 2);
+            CEUtils.drawLine(Main.spriteBatch, CEExtraAssets.white, down, middle, Color.Red, 2, 2);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);

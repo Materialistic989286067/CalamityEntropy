@@ -1,12 +1,13 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.Graphics;
 using CalamityEntropy.Utilities;
-using CalamityMod;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Melee;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -38,8 +39,9 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
         }
         public override void AddRecipes()
         {
+            // 灾厄原料按 material-map.md 表外兜底：Nadir（原犽戎档终局近战）→自有巡游者掉落近战 VoidAnnihilate
             CreateRecipe()
-                .AddIngredient<Nadir>()
+                .AddIngredient<VoidAnnihilate>()
                 .AddIngredient<FadingRunestone>()
                 .AddIngredient(ItemID.FragmentNebula, 4)
                 .AddIngredient(ItemID.FragmentSolar, 4)
@@ -61,7 +63,7 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
             Item.knockBack = 8f;
             Item.UseSound = SoundID.Item1;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityCalamityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 3, gold: 20);
             Item.rare = ItemRarityID.Blue;
             Item.shoot = ModContent.ProjectileType<StarBreakerHeld>();
             Item.shootSpeed = 42;
@@ -86,9 +88,14 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
     }
     public class StarBreakerHeld : ModProjectile
     {
+        //枪尖箭头与光晕贴图,加载期就位,不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Assets/Extra/SpearArrow")]
+        internal static Texture2D SpearArrowTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/SpearArrowGlow")]
+        internal static Texture2D SpearArrowGlowTex;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(ModContent.GetInstance<TrueMeleeDamageClass>(), false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
             Projectile.timeLeft = 60;
@@ -416,8 +423,8 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
             Main.spriteBatch.UseBlendState(BlendState.NonPremultiplied);
             var tex = Projectile.GetTexture();
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation + MathHelper.PiOver4, new Vector2(32, tex.Height - 32), Projectile.scale, 0f, 0f);
-            Texture2D arrow = CEUtils.getExtraTex("SpearArrow");
-            Texture2D glow = CEUtils.getExtraTex("SpearArrowGlow");
+            Texture2D arrow = SpearArrowTex;
+            Texture2D glow = SpearArrowGlowTex;
             float arrowAlpha = CEUtils.Parabola(AttackTime, 1) - 0.6f;
             if (arrowAlpha < 0)
                 arrowAlpha = 0;
@@ -469,7 +476,7 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
             {
                 int dir = AttackCount2 == 0 ? 1 : -1;
                 dir *= Projectile.velocity.X > 0 ? 1 : -1;
-                Texture2D smr = CEUtils.getExtraTex("CircularSmear");
+                Texture2D smr = CEExtraAssets.CircularSmear;
 
                 Effect shader = CommonEffects.colorLerp;
                 Main.spriteBatch.End();

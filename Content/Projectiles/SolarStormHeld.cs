@@ -1,6 +1,6 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -256,7 +256,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public static void DrawChargingEnergyBall(Vector2 pos, float size, float alpha)
         {
-            Texture2D tex = CEUtils.getExtraTex("a_circle");
+            Texture2D tex = CEExtraAssets.a_circle;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, Color.OrangeRed * alpha, 0, tex.Size() * 0.5f, size * 0.4f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(255, 220, 190) * alpha, 0, tex.Size() * 0.5f, size * 0.24f, SpriteEffects.None, 0);
@@ -362,7 +362,9 @@ namespace CalamityEntropy.Content.Projectiles
                     if (CEUtils.getDistance(Projectile.Center, CEUtils.GetOwner(Projectile).Center) < 2000)
                     {
                         CalamityEntropy.FlashEffectStrength = 0.42f;
-                        CEUtils.GetOwner(Projectile).Calamity().GeneralScreenShakePower = 12;
+                        // 原写法只对持有者本端生效,保持该语义
+                        if (Main.myPlayer == Projectile.owner)
+                            ScreenShaker.AddShake(new ScreenShaker.NoDirQuickShake(12));
                     }
                     SoundEngine.PlaySound(SoundID.NPCDeath56, Projectile.Center);
                 }
@@ -381,8 +383,8 @@ namespace CalamityEntropy.Content.Projectiles
                     dust2.alpha = Main.rand.Next(40, 100 + 1);
                 }
 
-                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, mainColor, 4.5f * 0.16f).Configure("CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 4.5f * 0.16f, 3.5f * 0.16f, 20);
-                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.White, 4f * 0.16f).Configure("CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 4f * 0.16f, 3f * 0.16f, 20);
+                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, mainColor, 4.5f * 0.16f).Configure("CalamityEntropy/Assets/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 4.5f * 0.16f, 3.5f * 0.16f, 20);
+                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.White, 4f * 0.16f).Configure("CalamityEntropy/Assets/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 4f * 0.16f, 3f * 0.16f, 20);
 
                 Vector2 BurstFXDirection = new Vector2(0, 6 * 0.16f).RotatedBy(MathHelper.PiOver4);
                 for (int i = 0; i < 16; i++)
@@ -493,7 +495,7 @@ namespace CalamityEntropy.Content.Projectiles
                         _ => Color.LawnGreen,
                     };
 
-                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, randomColor * 0.7f, 0f).Configure("CalamityMod/Particles/FlameExplosion", new Vector2(1f, 1f), Main.rand.NextFloat(-20, 20), 0f, (4f - i * 0.28f) * 0.12f, 50);
+                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, randomColor * 0.7f, 0f).Configure("CalamityEntropy/Assets/Particles/FlameExplosion", new Vector2(1f, 1f), Main.rand.NextFloat(-20, 20), 0f, (4f - i * 0.28f) * 0.12f, 50);
                 }
             }
 

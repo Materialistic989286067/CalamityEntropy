@@ -1,6 +1,4 @@
 ﻿using CalamityEntropy.Content.Items;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -22,14 +20,16 @@ namespace CalamityEntropy.Content.AzafureMiners
             Item.consumable = true;
             Item.createTile = ModContent.TileType<AzafureMinerTile>();
             Item.rare = ItemRarityID.Orange;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            //脱离灾厄:原灾厄RarityOrangeBuyPrice,按rarity-map实值表Orange=5金
+            Item.value = Item.buyPrice(gold: 5);
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient<EnergyCore>()
+            //脱离灾厄:灾厄EnergyCore/DubiousPlating按material-map换自有阿扎弗电路/镀层
+            CreateRecipe().AddIngredient<AzafureCircuitry>()
                 .AddIngredient<HellIndustrialComponents>(6)
-                .AddIngredient<DubiousPlating>(6)
+                .AddIngredient<AzafurePlating>(6)
                 .AddRecipeGroup(CERecipeGroups.IronBar, 2)
                 .AddTile(TileID.HeavyWorkBench)
                 .Register();

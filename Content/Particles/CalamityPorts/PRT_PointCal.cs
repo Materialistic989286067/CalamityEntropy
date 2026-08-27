@@ -13,7 +13,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         public bool UseAdditive = true;
         public bool AffectedByLight;
 
-        //@CalamityMod/Particles/PointParticle,HasAsset认不出@,PreDraw里拿真图
+        //Assets/Particles/PointParticle,PreDraw里拿真图
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_PointCal Configure(bool affectedByGravity, int lifetime, bool additiveBlend = true, bool affectedByLight = false)

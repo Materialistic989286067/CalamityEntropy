@@ -1,10 +1,6 @@
 ﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Melee;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,7 +13,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             Item.damage = 500;
             Item.crit = 16;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.width = 142;
             Item.noUseGraphic = true;
             Item.height = 142;
@@ -25,7 +21,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAnimation = 4;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 6;
-            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2, gold: 80);
             Item.rare = ModContent.RarityType<VoidPurple>();
             Item.UseSound = null;
             Item.channel = true;
@@ -41,8 +37,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<DefiledGreatsword>(), 1).
-                AddIngredient(ModContent.ItemType<NightmareFuel>(), 10).
+                AddIngredient(ModContent.ItemType<StarlessNight>(), 1).
+                AddIngredient(ItemID.SpookyWood, 10).
                 AddIngredient(ModContent.ItemType<VoidBar>(), 5).
                 AddTile(ModContent.TileType<VoidWellTile>()).
                 Register();

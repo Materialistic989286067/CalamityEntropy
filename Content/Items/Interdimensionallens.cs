@@ -35,7 +35,7 @@ namespace CalamityEntropy.Content.Items
         public override void AddRecipes()
         {
             Recipe recipe = CreateRecipe();
-            recipe.AddIngredient(ModContent.ItemType<Voidstone>(), 4);
+            recipe.AddIngredient(ItemID.Obsidian, 4);
             recipe.AddIngredient(ItemID.Glass, 4);
             recipe.AddTile(TileID.WorkBenches);
             recipe.Register();

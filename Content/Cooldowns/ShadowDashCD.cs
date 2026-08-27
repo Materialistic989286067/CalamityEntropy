@@ -1,10 +1,10 @@
-﻿using CalamityMod.Cooldowns;
+﻿using CalamityEntropy.Core.Cooldowns;
 using Terraria.Audio;
 using Terraria.Localization;
 
 namespace CalamityEntropy.Content.Cooldowns
 {
-    public class ShadowDashCD : CooldownHandler
+    public class ShadowDashCD : CECooldownHandler
     {
         public static new string ID => "ShadowDashCD";
         public override bool ShouldDisplay => true;

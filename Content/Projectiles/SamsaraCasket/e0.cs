@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
@@ -7,6 +8,9 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
 {
     public class e0 : ModProjectile
     {
+        //帧动画数组(e0~e4),加载期就位,PreDraw 不再拼接路径逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/SamsaraCasket/e", 0, 5, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] Frames;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
@@ -54,7 +58,7 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/e" + frame.ToString()).Value;
+            Texture2D tex = Frames[frame];
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, Color.White, 0, tex.Size() / 2, Projectile.scale * 2, SpriteEffects.None, 0);
             return false;
         }

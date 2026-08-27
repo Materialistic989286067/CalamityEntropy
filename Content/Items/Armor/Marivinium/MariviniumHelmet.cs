@@ -1,12 +1,8 @@
-using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items;
-using CalamityMod.Items.Armor.OmegaBlue;
+using CalamityEntropy.Core.Weapons;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -22,7 +18,7 @@ namespace CalamityEntropy.Content.Items.Armor.Marivinium
         {
             Item.width = 48;
             Item.height = 48;
-            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2, gold: 80);
             Item.defense = 50;
             Item.rare = ModContent.RarityType<AbyssalBlue>();
         }
@@ -40,18 +36,16 @@ namespace CalamityEntropy.Content.Items.Armor.Marivinium
             player.maxMinions += 10;
             player.GetDamage(DamageClass.Summon) += 0.75f;
             player.Entropy().MariviniumSet = true;
-            if (!ModContent.GetInstance<Config>().MariviumArmorSetOnlyProvideStealthBarWhenHoldingRogueWeapons || player.HeldItem.DamageType.CountsAsClass(CEUtils.RogueDC))
-            {
-                player.Calamity().wearingRogueArmor = true;
-                player.Calamity().rogueStealthMax += 1.35f;
-            }
+            // 潜行体系退役:原潜行条(上限1.35)按容量×10%换算为大招充能速度
+            player.GetModPlayer<CEChargePlayer>().ChargeRateMult += 0.135f;
             if (player.velocity.Length() < 1)
             {
                 player.lifeRegen += 20;
                 player.Entropy().lifeRegenPerSec += 1;
             }
             ApplyBuffImmune(player);
-            if (player.HeldItem.DamageType.CountsAsClass(ModContent.GetInstance<TrueMeleeDamageClass>()))
+            // 脱离灾厄:灾厄 TrueMeleeDamageClass 判定改为「近战且武器本体可挥砍」
+            if (player.HeldItem.DamageType.CountsAsClass(DamageClass.Melee) && !player.HeldItem.noMelee)
             {
                 player.Entropy().damageReduce += 0.10f;
                 player.statDefense += 15;
@@ -75,7 +69,6 @@ namespace CalamityEntropy.Content.Items.Armor.Marivinium
             player.buffImmune[ModContent.BuffType<Nightwither>()] = true;
             player.buffImmune[ModContent.BuffType<HolyFlames>()] = true;
             player.buffImmune[ModContent.BuffType<GalvanicCorrosion>()] = true;
-            player.buffImmune[ModContent.BuffType<FrozenLungs>()] = true;
             player.buffImmune[BuffID.Frostburn] = true;
             player.buffImmune[ModContent.BuffType<ArmorCrunch>()] = true;
             player.buffImmune[BuffID.Electrified] = true;
@@ -85,14 +78,9 @@ namespace CalamityEntropy.Content.Items.Armor.Marivinium
             player.buffImmune[148] = true;
             player.buffImmune[BuffID.BrokenArmor] = true;
             player.buffImmune[BuffID.WitheredArmor] = true;
-            player.buffImmune[ModContent.BuffType<Shadowflame>()] = true;
             player.buffImmune[ModContent.BuffType<MaliciousCode>()] = true;
             player.buffImmune[ModContent.BuffType<CrushDepth>()] = true;
             player.buffImmune[ModContent.BuffType<HadopelagicPressure>()] = true;
-            if (Main.zenithWorld)
-            {
-                player.buffImmune[ModContent.BuffType<NOU>()] = true;
-            }
         }
         public override void UpdateEquip(Player player)
         {
@@ -105,8 +93,9 @@ namespace CalamityEntropy.Content.Items.Armor.Marivinium
 
         public override void AddRecipes()
         {
+            // 脱离灾厄:灾厄欧米茄蓝盔改为蘑菇矿潜袭面甲(表外裁定,档位由龙牙把关)
             CreateRecipe()
-                .AddIngredient<OmegaBlueHelmet>()
+                .AddIngredient(ItemID.ShroomiteMask)
                 .AddIngredient<WyrmTooth>(4)
                 .AddIngredient<FadingRunestone>()
                 .AddTile<AbyssalAltarTile>()

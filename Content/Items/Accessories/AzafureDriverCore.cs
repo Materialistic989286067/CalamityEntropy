@@ -1,19 +1,11 @@
 ﻿using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.CalPlayer;
-using CalamityMod.CalPlayer.Dashes;
-using CalamityMod.Enums;
-using CalamityMod.Items;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Materials;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -34,7 +26,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         {
             Item.width = 60;
             Item.height = 54;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.defense = 6;
             Item.accessory = true;
             Item.rare = ModContent.RarityType<AzafureOrange>();
@@ -42,7 +34,6 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            CalamityPlayer modPlayer = player.Calamity();
             if (charge < maxCharge)
             {
                 charge += 1f / 300f;
@@ -50,7 +41,7 @@ namespace CalamityEntropy.Content.Items.Accessories
 
             if (charge >= (player.AzafureEnhance() ? 0.8f : 1) || player.Entropy().AzDash > 0)
             {
-                modPlayer.DashID = AzafureDriverDash.ID;
+                player.GetModPlayer<CEShieldDashPlayer>().ActiveDash = AzafureDriverDash.Instance;
                 player.dashType = 0;
             }
             player.Entropy().DriverShieldVisual = !hideVisual;
@@ -73,26 +64,25 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
         public override void AddRecipes()
         {
+            // 脱离灾厄:RoverDrive(灾厄能量盾件,表外)→黑曜石盾同档盾饰;AshesofCalamity→地壳碎片(material-map)
             CreateRecipe()
                 .AddIngredient<AzafureChargeShield>()
-                .AddIngredient<RoverDrive>()
-                .AddIngredient<AshesofCalamity>(6)
+                .AddIngredient(ItemID.ObsidianShield)
+                .AddIngredient<TectonicShard>(6)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
     }
-    public class AzafureDriverDash : PlayerDashEffect
+    public class AzafureDriverDash : CEShieldDashEffect
     {
+        public static readonly AzafureDriverDash Instance = new();
 
         public int Time;
 
         public bool PostHit;
 
-        public new static string ID => "Azafure Driver Core";
+        public static string ID => "AzafureDriverDash";
         public override string DashID => ID;
-        public override DashCollisionType CollisionType => DashCollisionType.ShieldSlam;
-
-        public override bool IsOmnidirectional => false;
 
         public override float CalculateDashSpeed(Player player)
         {
@@ -159,7 +149,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             dashSpeed = 18f;
         }
 
-        public override void OnHitEffects(Player player, NPC npc, IEntitySource source, ref DashHitContext hitContext)
+        public override void OnHitEffects(Player player, NPC npc, ref CEDashHitContext hitContext)
         {
             if (player.Entropy().AzChargeShieldSteamTime <= 0)
             {
@@ -167,7 +157,8 @@ namespace CalamityEntropy.Content.Items.Accessories
             }
             if (!PostHit)
             {
-                player.Calamity().GeneralScreenShakePower = 6f;
+                // 脱离灾厄:原灾厄 GeneralScreenShakePower=6,改用自有屏震
+                ScreenShaker.AddShake(new ScreenShaker.ScreenShake(Vector2.Zero, 6));
                 PostHit = true;
             }
             NPC target = npc;

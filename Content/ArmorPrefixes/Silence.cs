@@ -1,5 +1,5 @@
-﻿using CalamityMod;
-using Terraria;
+﻿using Terraria;
+using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.ArmorPrefixes
 {
@@ -7,8 +7,8 @@ namespace CalamityEntropy.Content.ArmorPrefixes
     {
         public override void UpdateEquip(Player player, Item item)
         {
-            player.Calamity().wearingRogueArmor = true;
-            player.Calamity().rogueStealthMax += 0.02f;
+            // 潜行体系退役:原+2%潜行上限按 Echo 前缀先例减半转通用伤害
+            player.GetDamage(DamageClass.Generic) += 0.01f;
         }
         public override Color getColor()
         {

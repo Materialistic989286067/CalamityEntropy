@@ -1,11 +1,10 @@
 displayName = Calamity Entropy
 author = Polaris
 version = 3.33
-modReferences = CalamityMod, InnoVault
-loadAfter = CalamityMod	
-weakReferences = InfernumMode, AlchemistNPCLite, CalamityOverhaul
+modReferences = InnoVault
+weakReferences = AlchemistNPCLite
 homepage = discord.gg/eAXVkq66
-buildIgnore = .vs\*, Properties\*, *.csproj, *.user, obj\*, bin\*, *.config, .git\*, .github\*, LICENSE, README.md, .editorconfig, .gitignore, .gitattributes, Effects\Compiler\*
+buildIgnore = .*, Properties\*, *.csproj, *.user, obj\*, bin\*, *.config, LICENSE, README.md, Effects\Compiler\*, Doc\*
 hideCode = false
 hideResources = true
 includeSource = false

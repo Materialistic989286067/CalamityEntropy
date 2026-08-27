@@ -1,5 +1,6 @@
-﻿using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
@@ -57,7 +58,7 @@ namespace CalamityEntropy.Content.Projectiles.LuminarisShoots
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D tex = Projectile.GetTexture();
-            Texture2D l = CEUtils.getExtraTex("LTLine");
+            Texture2D l = CEExtraAssets.LTLine;
             List<int> rots = new List<int>() { 0, 120, 240 };
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             foreach (int i in rots)
@@ -114,7 +115,7 @@ namespace CalamityEntropy.Content.Projectiles.LuminarisShoots
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D tex = Projectile.GetTexture();
-            Texture2D l = CEUtils.getExtraTex("LTLine");
+            Texture2D l = CEExtraAssets.LTLine;
             List<int> rots = new List<int>() { 0, 120, 240 };
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             foreach (int i in rots)

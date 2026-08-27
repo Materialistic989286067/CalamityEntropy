@@ -1,3 +1,4 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.NPCs.SpiritFountain;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault.PRT;
@@ -81,7 +82,7 @@ namespace CalamityEntropy.Content.Projectiles.SpiritFountainShoots
         }
         public void DrawEnergyBall(Vector2 pos, float size, float alpha)
         {
-            Texture2D tex = CEUtils.getExtraTex("a_circle");
+            Texture2D tex = CEExtraAssets.a_circle;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(90, 90, 165) * alpha, Projectile.rotation, tex.Size() * 0.5f, new Vector2(1 + (Projectile.velocity.Length() * 0.2f), 1) * size * 0.25f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(40, 40, 255) * alpha, Projectile.rotation, tex.Size() * 0.5f, new Vector2(1 + (Projectile.velocity.Length() * 0.2f), 1) * size * 0.4f, SpriteEffects.None, 0);

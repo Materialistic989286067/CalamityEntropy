@@ -1,7 +1,6 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Melee;
+using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -25,7 +24,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Item.useAnimation = 18;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 5;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = null;
             Item.noMelee = true;
@@ -57,7 +56,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 .AddIngredient(ItemID.GoldBroadsword)
                 .AddIngredient(ItemID.LightsBane)
                 .AddIngredient(ItemID.EnchantedSword)
-                .AddIngredient<SeashineSword>()
+                .AddIngredient(ItemID.Muramasa)
                 .AddTile(TileID.Anvils)
                 .Register();
 
@@ -66,7 +65,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 .AddIngredient(ItemID.GoldBroadsword)
                 .AddIngredient(ItemID.BloodButcherer)
                 .AddIngredient(ItemID.EnchantedSword)
-                .AddIngredient<SeashineSword>()
+                .AddIngredient(ItemID.Muramasa)
                 .AddTile(TileID.Anvils)
                 .Register();
 
@@ -75,7 +74,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 .AddIngredient(ItemID.PlatinumBroadsword)
                 .AddIngredient(ItemID.LightsBane)
                 .AddIngredient(ItemID.EnchantedSword)
-                .AddIngredient<SeashineSword>()
+                .AddIngredient(ItemID.Muramasa)
                 .AddTile(TileID.Anvils)
                 .Register();
 
@@ -84,7 +83,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 .AddIngredient(ItemID.PlatinumBroadsword)
                 .AddIngredient(ItemID.BloodButcherer)
                 .AddIngredient(ItemID.EnchantedSword)
-                .AddIngredient<SeashineSword>()
+                .AddIngredient(ItemID.Muramasa)
                 .AddTile(TileID.Anvils)
                 .Register();
         }
@@ -102,7 +101,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -120,8 +119,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public bool shoot = true;
         public override void AI()
         {
-            if (Projectile.GetOwner().Calamity().bladeArmEnchant)
-                shoot = false;
             Player owner = Projectile.GetOwner();
             float MaxUpdateTimes = owner.itemTimeMax * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
@@ -186,10 +183,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             owner.heldProj = Projectile.whoAmI;
             owner.itemTime = 2;
             owner.itemAnimation = 2;
-            if (Projectile.GetOwner().Calamity().bladeArmEnchant)
-            {
-                owner.itemAnimation = int.Max(1, owner.itemAnimationMax - Projectile.Entropy().Lifetime);
-            }
             if (counter > MaxUpdateTimes)
             {
                 Projectile.Kill();
@@ -236,7 +229,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             float MaxUpdateTime = Projectile.GetOwner().itemTimeMax * Projectile.MaxUpdates;
             if (Projectile.ai[0] < 2)
             {
-                Texture2D bs = CEUtils.getExtraTex("SemiCircularSmear");
+                Texture2D bs = CEExtraAssets.SemiCircularSmear;
                 Main.spriteBatch.UseBlendState(BlendState.Additive);
                 Main.spriteBatch.Draw(bs, (Vector2)(Projectile.Center + CEUtils.GetOwner(Projectile).gfxOffY * Vector2.UnitY - Main.screenPosition), null, Color.Lerp(new Color(50, 140, 160), new Color(200, 255, 66), counter / MaxUpdateTime) * (1 - counter / MaxUpdateTime) * 0.8f, Projectile.rotation + MathHelper.ToRadians(32) * -dir, bs.Size() / 2f, Projectile.scale * 1.25f * scale, SpriteEffects.None, 0);
                 Main.spriteBatch.ExitShaderRegion();

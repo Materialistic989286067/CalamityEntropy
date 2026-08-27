@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Items.Donator;
-using CalamityMod.Items;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,7 +13,7 @@ namespace CalamityEntropy.Content.Items.Vanity.KM
         {
             Item.width = 48;
             Item.height = 48;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ItemRarityID.Pink;
             Item.vanity = true;
         }

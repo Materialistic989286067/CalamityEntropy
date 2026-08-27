@@ -2,6 +2,7 @@
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.TwistedTwin;
 using CalamityEntropy.Content.UI.EntropyBookUI;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
@@ -47,7 +48,10 @@ namespace CalamityEntropy.Content.Items.Books
         }
         public virtual int HeldProjectileType => -1;
         public virtual int SlotCount => 6;
-        public virtual Texture2D BookMarkTexture => ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/EntropyBookUI/BookMark1").Value;
+        //默认书签底座贴图,加载期就位;各书籍子类各自持有同名字段覆写
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/BookMark1")]
+        internal static Asset<Texture2D> BookMarkTex;
+        public virtual Texture2D BookMarkTexture => BookMarkTex.Value;
         public virtual void CheckSpawn(Player player)
         {
             if (Main.myPlayer == player.whoAmI && !EBookUI.active)

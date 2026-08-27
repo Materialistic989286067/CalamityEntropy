@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityEntropy.Assets.Register;
+using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
@@ -85,7 +87,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             {
-                Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/MegaStreakBacking2b").Value;
+                Texture2D tx = CEExtraAssets.MegaStreakBacking2b;
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = this.color * w;
                 float p = -Main.GlobalTimeWrappedHourly * 2;
@@ -111,7 +113,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             {
-                Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/MegaStreakInner").Value;
+                Texture2D tx = CEExtraAssets.MegaStreakInner;
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = new Color(255, 246, 246) * w;
                 float p = -Main.GlobalTimeWrappedHourly * 2;

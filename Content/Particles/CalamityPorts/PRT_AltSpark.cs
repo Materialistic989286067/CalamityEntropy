@@ -5,7 +5,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.Particles.CalamityPorts
 {
-    //照CalamityMod的AltSpark翻的,跟SparkCal同图同AI,桶是AlphaBlend
+    //灾厄AltSpark的移植,跟SparkCal同图同AI,桶是AlphaBlend
     public class PRT_AltSpark : BasePRT
     {
         public Color InitialColor;
@@ -20,7 +20,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             AffectedByGravity = false;   //CanPool复用,重力开关忘了清下一朵行为就变了
         }
 
-        //StarProj在@CalamityMod/Projectiles/StarProj,映射PRTSharedAssets.StarProj
+        //StarProj自制贴图在Assets/Particles,映射PRTSharedAssets.StarProj
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_AltSpark Configure(bool affectedByGravity, int lifetime)
@@ -57,7 +57,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         public override bool PreDraw(SpriteBatch spriteBatch)
         {
             Vector2 drawScale = new Vector2(0.5f, 1.6f) * Scale;
-            Texture2D texture = PRTSharedAssets.StarProj.Value;   //@CalamityMod/Projectiles/StarProj,VaultLoaden映射
+            Texture2D texture = PRTSharedAssets.StarProj.Value;   //自制StarProj,VaultLoaden映射
 
             spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color, Rotation, texture.Size() * 0.5f, drawScale, SpriteEffects.None, 0f);
             spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color, Rotation, texture.Size() * 0.5f, drawScale * new Vector2(0.45f, 1f), SpriteEffects.None, 0f);

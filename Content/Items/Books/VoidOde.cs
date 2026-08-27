@@ -2,8 +2,9 @@
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod.Items;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -20,9 +21,11 @@ namespace CalamityEntropy.Content.Items.Books
             Item.mana = 10;
             Item.shootSpeed = 44;
             Item.rare = ModContent.RarityType<VoidPurple>();
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
         }
-        public override Texture2D BookMarkTexture => ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/EntropyBookUI/BookMark6").Value;
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/BookMark6")]
+        internal static Asset<Texture2D> BookMarkSlotTex;
+        public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<VoidOdeHeld>();
         public override int SlotCount => 6;
 

@@ -1,7 +1,7 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -15,9 +15,12 @@ namespace CalamityEntropy.Content.Projectiles.Chainsaw
 {
     public class BrokenChainsaw0 : ModProjectile
     {
+        //链锯帧动画数组(序号 0 起),加载期就位,PreDraw 不再拼接路径逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Chainsaw/BrokenChainsaw", 0, 3, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] Frames;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(ModContent.GetInstance<TrueMeleeDamageClass>(), false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 4;
         }
@@ -36,7 +39,7 @@ namespace CalamityEntropy.Content.Projectiles.Chainsaw
         public override void AI()
         {
             var player = Projectile.GetOwner();
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             if (Projectile.localAI[0]++ == 0)
             {
                 CEUtils.PlaySound("HellkiteSwing2", Main.rand.NextFloat(1.4f, 1.7f), Projectile.Center, 8, CEUtils.WeapSound * 0.4f);
@@ -46,7 +49,7 @@ namespace CalamityEntropy.Content.Projectiles.Chainsaw
                 Projectile.rotation = Projectile.velocity.ToRotation();
             }
             Projectile.Center = player.MountedCenter;
-            Projectile.velocity = Projectile.velocity.Length() * (player.Calamity().mouseWorld - Projectile.Center).normalize();
+            Projectile.velocity = Projectile.velocity.Length() * (player.Entropy().MouseWorld - Projectile.Center).normalize();
             player.heldProj = Projectile.whoAmI;
 
 
@@ -170,7 +173,7 @@ namespace CalamityEntropy.Content.Projectiles.Chainsaw
         }
         public override bool PreDraw(ref Color dc)
         {
-            Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Chainsaw/BrokenChainsaw" + (((int)(Projectile.ai[0] / 4)) % frame).ToString()).Value;
+            Texture2D tx = Frames[((int)(Projectile.ai[0] / 4)) % frame];
             Main.spriteBatch.Draw(tx, Projectile.Center + CEUtils.randomPointInCircle((Hitted && Counter < cutTime) ? 8 : 0) - Main.screenPosition, null, dc * Projectile.Opacity, Projectile.rotation, tx.Size() * 0.5f + heldOrigin, Projectile.scale, dir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically, 0);
             return false;
         }

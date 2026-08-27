@@ -1,8 +1,10 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -10,6 +12,13 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
 {
     public class OblivionCruiserDash : ModProjectile
     {
+        //巡洋者头部与颚部贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/Head2")]
+        internal static Asset<Texture2D> CruiserHeadTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawUp2")]
+        internal static Asset<Texture2D> CruiserJawUpTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawDown2")]
+        internal static Asset<Texture2D> CruiserJawDownTex;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
@@ -122,9 +131,9 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
             {
                 alpha = (float)Projectile.timeLeft / 10f;
             }
-            Texture2D txd = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Cruiser/Head2").Value;
-            Texture2D j2 = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawUp2").Value;
-            Texture2D j1 = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawDown2").Value;
+            Texture2D txd = CruiserHeadTex.Value;
+            Texture2D j2 = CruiserJawUpTex.Value;
+            Texture2D j1 = CruiserJawDownTex.Value;
             Vector2 joffset = new Vector2(60, 62);
             Vector2 ofs2 = joffset * new Vector2(1, -1);
             float roth = mouthRot * 0.8f;

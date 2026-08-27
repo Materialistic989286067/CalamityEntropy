@@ -1,10 +1,12 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Graphics.Primitives;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.Graphics.Shaders;
@@ -15,6 +17,9 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class ZyphrosCrystal : ModProjectile
     {
+        //拖尾与水晶变体贴图(c0~c5 按 ai[0] 取),加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/ZypCrystals/c", 0, 6, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] CrystalFrames;
         public override string Texture => "CalamityEntropy/Assets/Extra/white";
         public override void SetStaticDefaults()
         {
@@ -98,10 +103,11 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new PrimitiveSettings(WidthFunction, ColorFunction, (_, _) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
+            // 暂替贴图：原灾厄 ScarletDevilStreak 条带，待 texture-map 定稿后按表回改
+            GameShaders.Misc["CalamityEntropy:TrailStreak"].SetShaderTexture(CEExtraAssets.StreakFadedAsset);
+            CEPrimitiveRenderer.RenderTrail(Projectile.oldPos, new CEPrimitiveSettings(WidthFunction, ColorFunction, (_, _) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityEntropy:TrailStreak"]), 30);
 
-            Texture2D t = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/ZypCrystals/c" + ((int)Projectile.ai[0]).ToString()).Value;
+            Texture2D t = CrystalFrames[(int)Projectile.ai[0]];
             Main.EntitySpriteDraw(t, Projectile.Center - Main.screenPosition, null, Color.White * alpha, Projectile.rotation, t.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
 
             return false;

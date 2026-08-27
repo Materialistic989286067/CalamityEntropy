@@ -1,5 +1,5 @@
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod.Buffs.DamageOverTime;
 using InnoVault.PRT;
 using System;
 using System.Collections.Generic;

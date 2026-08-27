@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Common;
-using CalamityMod.Items.Accessories.Vanity;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
@@ -79,7 +78,7 @@ namespace CalamityEntropy.Content.Items.Vanity
             Item.width = 32;
             Item.height = 36;
             Item.accessory = true;
-            Item.value = CalamityMod.Items.CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Green;
             Item.vanity = true;
             Item.Entropy().tooltipStyle = 8;

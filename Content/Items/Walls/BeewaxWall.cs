@@ -1,5 +1,4 @@
-﻿using CalamityMod.Walls;
-using Terraria.ID;
+﻿using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Walls
@@ -11,7 +10,8 @@ namespace CalamityEntropy.Content.Items.Walls
             Item.ResearchUnlockCount = 200;
         }
 
-        public override void SetDefaults() => Item.DefaultToPlaceableWall(ModContent.WallType<GiantHiveWall>());
+        // 灾厄巨型蜂巢墙随脱离灾厄移除，改放置原版安全蜂巢墙
+        public override void SetDefaults() => Item.DefaultToPlaceableWall(WallID.Hive);
 
         public override void AddRecipes()
         {

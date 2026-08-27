@@ -1,7 +1,5 @@
-﻿using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -27,7 +25,7 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
         {
             Item.width = 38;
             Item.height = 34;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
             Item.defense = 40;
             Item.rare = ModContent.RarityType<VoidPurple>();
         }
@@ -44,7 +42,7 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
         {
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<VoidBar>(), 18)
-                .AddIngredient(ModContent.ItemType<TwistingNether>(), 5)
+                .AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 5)
                 .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();
         }

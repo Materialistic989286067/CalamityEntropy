@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -24,7 +23,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.knockBack = 0;
             Item.UseSound = CEUtils.GetSound("vp_use");
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
             Item.rare = ModContent.RarityType<NihilityBlue>();
             Item.shoot = ModContent.ProjectileType<NihilityVirus>();
             Item.shootSpeed = 16f;

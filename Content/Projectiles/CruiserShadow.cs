@@ -1,7 +1,9 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
@@ -12,6 +14,15 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class CruiserShadow : ModProjectile
     {
+        //巡洋者虚影贴图组:身体 P2b1~P2b7 按序号收进数组,头与上下颚单字段,加载期就位
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/P2b", 1, 7, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] BodyFrames;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/Head2")]
+        internal static Asset<Texture2D> HeadTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawUp2")]
+        internal static Asset<Texture2D> JawUpTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawDown2")]
+        internal static Asset<Texture2D> JawDownTex;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
@@ -265,7 +276,7 @@ namespace CalamityEntropy.Content.Projectiles
                     Vector2 pos = bodies[d];
 
                     Texture2D tx;
-                    tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Cruiser/P2b" + (bd + 1).ToString()).Value;
+                    tx = BodyFrames[bd];
 
                     spriteBatch.Draw(tx, pos - Main.screenPosition, null, Color.White * alpha, rot, new Vector2(tx.Width, tx.Height) / 2, Projectile.scale, SpriteEffects.None, 0f);
 
@@ -273,9 +284,9 @@ namespace CalamityEntropy.Content.Projectiles
 
                 }
             }
-            Texture2D txd = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Cruiser/Head2").Value;
-            Texture2D j2 = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawUp2").Value;
-            Texture2D j1 = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawDown2").Value;
+            Texture2D txd = HeadTex.Value;
+            Texture2D j2 = JawUpTex.Value;
+            Texture2D j1 = JawDownTex.Value;
             Vector2 joffset = new Vector2(60, 62);
             Vector2 ofs2 = joffset * new Vector2(1, -1);
             float roth = mouthRot * 0.8f;

@@ -1,8 +1,5 @@
-﻿using CalamityEntropy.Content.Items.Armor.Azafure;
+using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
 using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
@@ -32,7 +29,7 @@ namespace CalamityEntropy.Content.Items.Accessories.Modules
         {
             Item.width = 40;
             Item.height = 40;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.accessory = true;
         }
@@ -81,7 +78,7 @@ namespace CalamityEntropy.Content.Items.Accessories.Modules
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient<HellIndustrialComponents>(2).AddIngredient<MysteriousCircuitry>(2).AddTile(TileID.WorkBenches).Register();
+            CreateRecipe().AddIngredient<HellIndustrialComponents>(2).AddIngredient<AzafureCircuitry>(2).AddTile(TileID.WorkBenches).Register();
         }
         public override void UpdateAccessory(Player player, bool hideVisual)
         {

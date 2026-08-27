@@ -1,12 +1,11 @@
 ﻿using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items.LoreItems;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Lores
 {
-    public class LoreAcropolis : LoreItem
+    public class LoreAcropolis : CELoreItem
     {
         public override void SetDefaults()
         {

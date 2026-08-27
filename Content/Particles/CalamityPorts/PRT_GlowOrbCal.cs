@@ -15,7 +15,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         public bool Important;
         public bool GlowCenter = true;
 
-        //@CalamityMod/Particles/GlowOrbParticle → PRTSharedAssets,Texture属性走不了@
+        //Assets/Particles/GlowOrbParticle → PRTSharedAssets,Texture指白图占位
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_GlowOrbCal Configure(bool affectedByGravity, int lifetime, bool additiveBlend = true,

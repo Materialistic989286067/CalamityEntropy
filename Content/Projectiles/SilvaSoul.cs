@@ -1,7 +1,9 @@
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Particles;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
@@ -10,6 +12,9 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class SilvaSoul : EBookBaseProjectile
     {
+        //拖尾贴图,加载期就位,绘制时不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/SilvaSoul")]
+        internal static Asset<Texture2D> TrailTex;
         public List<Vector2> odp = new List<Vector2>();
         public List<float> odr = new List<float>();
         public Vector2 dscp = Vector2.Zero;
@@ -143,7 +148,7 @@ namespace CalamityEntropy.Content.Projectiles
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
                 if (ve.Count >= 3)
                 {
-                    Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SilvaSoul").Value;
+                    Texture2D tx = TrailTex.Value;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
 

@@ -1,6 +1,7 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -131,11 +132,11 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
             if (ve.Count >= 3)
             {
                 var gd = Main.graphics.GraphicsDevice;
-                gd.Textures[0] = CEUtils.getExtraTex("MotionTrail2");
+                gd.Textures[0] = CEExtraAssets.MotionTrail2;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
             }
             Main.spriteBatch.ExitShaderRegion();
-            Texture2D c = CEUtils.getExtraTex("Glow2");
+            Texture2D c = CEExtraAssets.Glow2;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             for (float i = 0; i < 1; i += 0.02f)
             {
@@ -279,7 +280,7 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
                             if (CEUtils.getDistance(Projectile.Center, top) < 60)
                             {
                                 HookNPC.ToNPC().velocity *= 0;
-                                mp.harpoon.PointAPos(Projectile.GetOwner().Calamity().mouseWorld, 1);
+                                mp.harpoon.PointAPos(Projectile.GetOwner().Entropy().MouseWorld, 1);
                                 Projectile.rotation = mp.harpoon.Seg2Rot;
                                 HookNPC.ToNPC().Center = mp.harpoon.TopPos + mp.harpoon.Seg2Rot.ToRotationVector2() * 16;
 

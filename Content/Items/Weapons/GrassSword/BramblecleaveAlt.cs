@@ -1,6 +1,8 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -14,6 +16,9 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
 {
     public class BramblecleaveAlt : ModProjectile
     {
+        //剑体贴图,加载期由 VaultLoaden 赋值;拖尾着色器读共享基座 CEEffectAssets
+        [VaultLoaden("CalamityEntropy/Content/Items/Weapons/GrassSword/SwordTex")]
+        internal static Asset<Texture2D> SwordTex;
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/GrassSword/Vine";
         public override void SetDefaults()
         {
@@ -49,7 +54,7 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
                 sparkScale2 *= (1 + Bramblecleave.GetLevel() * 0.05f);
                 Color sparkColor2 = Color.Lerp(Color.Green, Color.LightGreen, Main.rand.NextFloat());
 
-                //AltSpark CalamityPorts,Configure(false,life)对齐旧GeneralParticleHandler
+                //AltSpark CalamityPorts,Configure(false,life)对齐旧版粒子系统
                 //EParticle→PRT,草剑alt命中spark迁移没改数值
                 PRTLoader.NewParticle<PRT_AltSpark>(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f), sparkVelocity2 * (1f), sparkColor2, sparkScale2 * (1.4f)).Configure(false, (int)(sparkLifetime2 * (1.2f)));
             }
@@ -107,13 +112,13 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
                     }
                     Projectile.velocity *= 0.88f;
 
-                    Projectile.velocity += (player.Calamity().mouseWorld - Projectile.Center).normalize() * 0.96f;
+                    Projectile.velocity += (player.mouseWorld() - Projectile.Center).normalize() * 0.96f;
                     Projectile.rotation += 0.14f;
                     LerpCenter = Vector2.Lerp(LerpCenter, (player.Center + Projectile.Center) / 2f, 0.01f);
                 }
                 else
                 {
-                    var target = CEUtils.FindTarget_HomingProj(Projectile, player.Calamity().mouseWorld, 400);
+                    var target = CEUtils.FindTarget_HomingProj(Projectile, player.mouseWorld(), 400);
                     if (target != null)
                     {
                         if (CEUtils.getDistance(Projectile.Center, target.Center) > 280)
@@ -132,9 +137,9 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
                     else
                     {
                         Projectile.velocity *= 0.98f;
-                        if (CEUtils.getDistance(player.Calamity().mouseWorld, Projectile.Center) > 60)
+                        if (CEUtils.getDistance(player.mouseWorld(), Projectile.Center) > 60)
                         {
-                            Projectile.velocity += (player.Calamity().mouseWorld - Projectile.Center).normalize();
+                            Projectile.velocity += (player.mouseWorld() - Projectile.Center).normalize();
                         }
                     }
                     Projectile.rotation = Projectile.velocity.ToRotation();
@@ -172,7 +177,7 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
                 Main.EntitySpriteDraw(draw, pos - Main.screenPosition, null, Color.Lerp(lightColor, Color.White, 0.25f), (pos - last).ToRotation(), new Vector2(0, draw.Height / 2), 1, SpriteEffects.None);
                 last = pos;
             }
-            Texture2D trail = CEUtils.getExtraTex("MotionTrail2");
+            Texture2D trail = CEExtraAssets.MotionTrail2;
             List<ColoredVertex> ve = new List<ColoredVertex>();
 
             for (int i = 0; i < odr.Count; i++)
@@ -189,7 +194,7 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
             {
                 var gd = Main.graphics.GraphicsDevice;
                 SpriteBatch sb = Main.spriteBatch;
-                Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/SwordTrail", AssetRequestMode.ImmediateLoad).Value;
+                Effect shader = CEEffectAssets.SwordTrail;
                 sb.End();
                 sb.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                 shader.Parameters["color2"].SetValue((new Color(90, 255, 90)).ToVector4());
@@ -199,13 +204,13 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
 
                 gd.Textures[0] = trail;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-                trail = CEUtils.getExtraTex("SplitTrail");
+                trail = CEExtraAssets.SplitTrail;
                 gd.Textures[0] = trail;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
 
                 Main.spriteBatch.ExitShaderRegion();
             }
-            Texture2D sword = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/GrassSword/SwordTex");
+            Texture2D sword = SwordTex.Value;
             Main.EntitySpriteDraw(sword, Projectile.Center - Main.screenPosition, null, Color.Lerp(lightColor, Color.White, 0.6f), Projectile.rotation + MathHelper.PiOver4, sword.Size() / 2f, 1.6f + 0.1f * Bramblecleave.GetLevel(), SpriteEffects.None);
 
             return false;

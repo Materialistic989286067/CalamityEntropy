@@ -1,7 +1,6 @@
 ﻿using CalamityEntropy.Content.Particles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Rogue;
+using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -13,12 +12,15 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
-    public class CrystalSpike : RogueWeapon
+    public class CrystalSpike : ModItem
     {
         public static int MAXSTICK => 8;
+        // 条件触发大招：场上已布置的晶刺达到该数量时，下次投掷召回全部晶刺并强化
+        public static int ULTSPIKES => 6;
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             tooltips.Replace("[S]", MAXSTICK.ToString());
+            tooltips.Replace("[U]", ULTSPIKES.ToString());
         }
         public override void SetDefaults()
         {
@@ -33,40 +35,46 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.value = Item.buyPrice(gold: 1);
             Item.rare = ItemRarityID.Blue;
             Item.shoot = ModContent.ProjectileType<CrystalSpikeThrow>();
             Item.shootSpeed = 12f;
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Ranged;
         }
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<UrchinStinger>()
+                .AddIngredient(ItemID.Starfish)
                 .AddIngredient(ItemID.ManaCrystal, 2)
                 .AddTile(TileID.Anvils)
                 .Register();
         }
-        public override float StealthDamageMultiplier => 1;
-        public override float StealthVelocityMultiplier => 1;
-        public override float StealthKnockbackMultiplier => 1;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.Calamity().StealthStrikeAvailable())
+            // 大招条件：场上布置的晶刺 ≥ ULTSPIKES 时，本次投掷召回全部晶刺并强化
+            bool ult = CountDeployedSpikes(player) >= ULTSPIKES;
+            if (ult)
             {
                 ReturnAllSpikes(player);
             }
             int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0);
 
-            if (player.Calamity().StealthStrikeAvailable())
+            if (ult && p >= 0 && p < Main.maxProjectiles)
             {
-                if (p.WithinBounds(Main.maxProjectiles))
-                {
-                    Main.projectile[p].Calamity().stealthStrike = true;
-                }
+                CEChargeWeapon.Empower(p);
             }
             return false;
+        }
+        public int CountDeployedSpikes(Player player)
+        {
+            int sum = 0;
+            foreach (Projectile p in Main.ActiveProjectiles)
+            {
+                if (p.owner == player.whoAmI && p.type == Item.shoot && p.ModProjectile is CrystalSpikeThrow cst && cst.StickNPC >= 0)
+                    sum++;
+            }
+            return sum;
         }
         public void ReturnAllSpikes(Player player)
         {
@@ -95,7 +103,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/CrystalSpike";
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, true, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, true, -1);
             Projectile.width = Projectile.height = 14;
             Projectile.timeLeft = 120 * 4;
             Projectile.MaxUpdates = 3;
@@ -173,7 +181,6 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            //EParticle.spawnNew→PRTLoader.NewParticle,spawn点和数值迁移纪律:一个不改
             PRTLoader.NewParticle<PRT_CrystalGlow>(Projectile.Center + Projectile.rotation.ToRotationVector2() * 10, Vector2.Zero, Color.MediumPurple * 1.3f, 1.5f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
 
             CEUtils.PlaySound("truemoonlighthit", Main.rand.NextFloat(1.4f, 1.8f), target.Center, 60, 0.7f);
@@ -203,7 +210,6 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             if (StickNPC >= 0)
                 return false;
-            //VFX接线从自研EParticle换InnoVault PRT,调用形状尽量跟旧的一样
             PRTLoader.NewParticle<PRT_CrystalGlow>(Projectile.Center + oldVelocity + Projectile.rotation.ToRotationVector2() * 4, Vector2.Zero, Color.MediumPurple * 1.3f, 1.5f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
             if (Main.myPlayer == Projectile.owner)
             {
@@ -217,7 +223,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/CrystalSpike";
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.width = Projectile.height = 12;
             Projectile.timeLeft = 60;
         }
@@ -244,7 +250,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/CrystalSpike";
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.width = Projectile.height = 12;
             Projectile.timeLeft = 10000;
         }
@@ -285,8 +291,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                     {
                         Vector2 vel = (Main.MouseWorld - Projectile.GetOwner().MountedCenter).normalize() * 15;
                         int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.GetOwner().MountedCenter + vel.normalize().RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-10, 10), vel, ModContent.ProjectileType<CrystalSpikeThrow>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1);
-                        p.ToProj().Calamity().stealthStrike = true;
-                        CEUtils.SyncProj(p);
+                        CEChargeWeapon.Empower(p);
                     }
                 }
             }

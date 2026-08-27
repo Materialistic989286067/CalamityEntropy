@@ -1,10 +1,12 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -38,6 +40,7 @@ namespace CalamityEntropy.Content.Projectiles.Prophet
         public LoopSound sd;
         public float RotateSpeed = 0;
         public float rspd = 0;
+        ScreenShaker.ScreenShake holdShake = null;
         public override void AI()
         {
             if (playsound)
@@ -113,7 +116,16 @@ namespace CalamityEntropy.Content.Projectiles.Prophet
             Projectile.velocity = new Vector2(Projectile.velocity.Length(), 0).RotatedBy(Projectile.rotation);
             if (Projectile.ai[0] > 40 && CEUtils.getDistance(Main.LocalPlayer.Center, Projectile.Center) < 4000)
             {
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = 7;
+                // 原为灾厄每帧赋值式持续震屏,改为持有单个震屏对象逐帧刷新幅度
+                if (holdShake != null && holdShake.active)
+                {
+                    holdShake.amplitude = 7;
+                }
+                else if (!Main.dedServ)
+                {
+                    holdShake = new ScreenShaker.NoDirQuickShake(7);
+                    ScreenShaker.AddShake(holdShake);
+                }
             }
             Projectile.ai[0]++;
         }
@@ -155,7 +167,7 @@ namespace CalamityEntropy.Content.Projectiles.Prophet
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             {
-                Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/MegaStreakBacking2").Value;
+                Texture2D tx = CEExtraAssets.MegaStreakBacking2;
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = new Color(60, 60, 170);
 
@@ -185,13 +197,13 @@ namespace CalamityEntropy.Content.Projectiles.Prophet
             }
 
             Main.spriteBatch.End();
-            var effect = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/fableeyelaser", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            var effect = CEEffectAssets.fableeyelaser;
             effect.Parameters["yofs"].SetValue(yx);
 
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, effect, Main.GameViewMatrix.TransformationMatrix);
             effect.CurrentTechnique.Passes["fableeyelaser"].Apply();
             {
-                Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/TurbulentNoise").Value;
+                Texture2D tx = CEExtraAssets.TurbulentNoise;
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = Color.SkyBlue * 0.66f;
                 float p = -Main.GlobalTimeWrappedHourly;
@@ -222,7 +234,7 @@ namespace CalamityEntropy.Content.Projectiles.Prophet
             }
             effect.Parameters["yofs"].SetValue(-yx);
             {
-                Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/EternityStreak").Value;
+                Texture2D tx = CEExtraAssets.EternityStreak;
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = new Color(255, 255, 255) * 0.66f;
                 float p = -Main.GlobalTimeWrappedHourly * 2;

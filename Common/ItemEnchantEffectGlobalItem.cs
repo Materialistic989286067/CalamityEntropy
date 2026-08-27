@@ -1,4 +1,6 @@
-﻿using CalamityEntropy.Content.Items.Weapons.GrassSword;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Items.Weapons.GrassSword;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
@@ -8,6 +10,10 @@ namespace CalamityEntropy.Common
 {
     public class ItemEnchantEffectGlobalItem : GlobalItem
     {
+        //附魔叠加层贴图读共享基座,着色器在加载期就位,只在物品绘制钩子(客户端)里读取
+        [VaultLoaden("CalamityEntropy/Assets/Effects/Transform", AssetMode.EffectValue, "EnchantedPass")]
+        internal static Effect TransformShader;
+
         public Color enchantColor = new Color(160, 80, 255, 255);
         public float strength = 0.6f;
         public int brbType = -1;
@@ -28,8 +34,8 @@ namespace CalamityEntropy.Common
             {
                 return true;
             }
-            Asset<Texture2D> texture = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Enchanted", AssetRequestMode.ImmediateLoad);
-            Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Transform", AssetRequestMode.ImmediateLoad).Value;
+            Asset<Texture2D> texture = CEExtraAssets.EnchantedAsset;
+            Effect shader = TransformShader;
             shader.Parameters["uTime"].SetValue(Main.GlobalTimeWrappedHourly * 0.2f);
             shader.Parameters["color"].SetValue(enchantColor.ToVector4());
             shader.Parameters["strength"].SetValue(strength);
@@ -57,8 +63,8 @@ namespace CalamityEntropy.Common
             {
                 return true;
             }
-            Asset<Texture2D> texture = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Enchanted", AssetRequestMode.ImmediateLoad);
-            Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Transform", AssetRequestMode.ImmediateLoad).Value;
+            Asset<Texture2D> texture = CEExtraAssets.EnchantedAsset;
+            Effect shader = TransformShader;
 
             shader.Parameters["uTime"].SetValue(Main.GlobalTimeWrappedHourly * 0.2f);
             shader.Parameters["color"].SetValue(enchantColor.ToVector4());

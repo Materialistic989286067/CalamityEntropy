@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityEntropy.Assets.Register;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -243,7 +244,7 @@ namespace CalamityEntropy.Content.Projectiles
                 Vector2 a = Vector2.Lerp(root, p1, p);
                 Vector2 b = Vector2.Lerp(p1, end, p);
                 Vector2 c = Vector2.Lerp(a, b, p);
-                CEUtils.drawLine(Main.spriteBatch, ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value, lastp, c, Color.White, size, 2);
+                CEUtils.drawLine(Main.spriteBatch, CEExtraAssets.white, lastp, c, Color.White, size, 2);
                 lastp = c;
                 size -= 20f / (float)counts;
                 p += 1f / (float)counts;

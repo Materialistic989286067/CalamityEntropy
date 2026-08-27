@@ -8,13 +8,13 @@ using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Items.Weapons.Whips;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.Prophet;
-using CalamityMod;
-using CalamityMod.Events;
-using CalamityMod.World;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,6 +30,13 @@ namespace CalamityEntropy.Content.NPCs.Prophet
     [AutoloadBossHead]
     public class TheProphet : ModNPC
     {
+        //绘制用贴图,加载期由 VaultLoaden 赋值,只在客户端绘制路径读取
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Prophet/Wing", 1, 2, AssetMode = AssetMode.TextureValueArray)]
+        private static Texture2D[] fintexs;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Prophet/Tail")]
+        private static Asset<Texture2D> tailTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Prophet/ring")]
+        private static Asset<Texture2D> ringTex;
         public float finRotCounter = 0;
         public bool music2 = false;
         public class TailPoint
@@ -59,27 +66,57 @@ namespace CalamityEntropy.Content.NPCs.Prophet
         {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<ProphetBag>()));
 
-            npcLoot.DefineConditionalDropSet(() => true).Add(DropHelper.PerPlayer(ItemID.GreaterHealingPotion, 1, 5, 15), hideLootReport: true);
+            // 治疗药水按人 5-15 瓶,隐藏图鉴条目(承接原灾厄 PerPlayer 语义)
+            npcLoot.Add(new DropPerPlayerOnThePlayer(ItemID.GreaterHealingPotion, 1, 5, 15, new HiddenDropCondition()));
 
-
-            var normalOnly = npcLoot.DefineNormalOnlyDropSet();
+            LeadingConditionRule normalOnly = new LeadingConditionRule(new Conditions.NotExpert());
             {
-                normalOnly.Add(ModContent.ItemType<RuneSong>(), new Fraction(4, 5));
-                normalOnly.Add(ModContent.ItemType<UrnOfSouls>(), new Fraction(4, 5));
-                normalOnly.Add(ModContent.ItemType<SpiritBanner>(), new Fraction(4, 5));
-                normalOnly.Add(ModContent.ItemType<RuneMachineGun>(), new Fraction(4, 5));
-                normalOnly.Add(ModContent.ItemType<ProphecyFlyingKnife>(), new Fraction(4, 5));
-                normalOnly.Add(ModContent.ItemType<ForeseeOrb>(), new Fraction(4, 5));
-                normalOnly.Add(ModContent.ItemType<RuneWing>(), new Fraction(4, 5));
-                normalOnly.Add(ModContent.ItemType<ForeseeWhip>(), new Fraction(3, 5));
-                normalOnly.Add(ModContent.ItemType<BookMarkForesee>(), new Fraction(2, 5));
-                normalOnly.Add(ModContent.ItemType<CursedThread>(), 1);
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<RuneSong>(), 5, 1, 1, 4));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<UrnOfSouls>(), 5, 1, 1, 4));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<SpiritBanner>(), 5, 1, 1, 4));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<RuneMachineGun>(), 5, 1, 1, 4));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<ProphecyFlyingKnife>(), 5, 1, 1, 4));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<ForeseeOrb>(), 5, 1, 1, 4));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<RuneWing>(), 5, 1, 1, 4));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<ForeseeWhip>(), 5, 1, 1, 3));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<BookMarkForesee>(), 5, 1, 1, 2));
+                normalOnly.OnSuccess(ItemDropRule.Common(ModContent.ItemType<CursedThread>(), 1));
             }
-            npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<ProphetRelic>());
+            npcLoot.Add(normalOnly);
+            // 遗物:原灾厄复仇→大师条件对齐原版大师掉落惯例(difficulty-map)
+            npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsMasterMode(), ModContent.ItemType<ProphetRelic>()));
 
-            npcLoot.Add(ModContent.ItemType<ProphetTrophy>(), 10);
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<ProphetTrophy>(), 10));
 
-            npcLoot.AddConditionalPerPlayer(() => !EDownedBosses.downedProphet, ModContent.ItemType<ProphetLore>());
+            // 首杀传说:承接原灾厄按人实例掉落语义
+            npcLoot.Add(new DropPerPlayerOnThePlayer(ModContent.ItemType<ProphetLore>(), 1, 1, 1, new LoreFirstKill()));
+        }
+
+        // 恒真但隐藏图鉴条目的条件:对应原 hideLootReport 语义
+        private class HiddenDropCondition : IItemDropRuleCondition, IProvideItemConditionDescription
+        {
+            public bool CanDrop(DropAttemptInfo info) => true;
+            public bool CanShowItemDropInUI() => false;
+            public string GetConditionDescription() => null;
+        }
+
+        // 首杀传说条件:对应 downed 旗标未置位时每名玩家各掉一份
+        private class LoreFirstKill : IItemDropRuleCondition, IProvideItemConditionDescription
+        {
+            public bool CanDrop(DropAttemptInfo info) => !EDownedBosses.downedProphet;
+            public bool CanShowItemDropInUI() => true;
+            public string GetConditionDescription() => null;
+        }
+
+        // 原灾厄全局 DR 字段的本地等效:AI 每帧按阶段重算,并入原有 AIStyle==8 半伤分支(修 CS0111 重复成员)
+        public float DamageReduction = 0.10f;
+        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
+        {
+            modifiers.FinalDamage *= 1f - DamageReduction;
+            if (AIStyle == 8)
+            {
+                modifiers.FinalDamage *= 0.5f;
+            }
         }
         public override void SetStaticDefaults()
         {
@@ -124,17 +161,14 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             NPC.width = 80;
             NPC.height = 80;
             NPC.damage = 68;
-            NPC.Calamity().DR = 0.10f;
+            DamageReduction = 0.10f;
             NPC.lifeMax = 48000;
-            if (BossRushEvent.BossRushActive)
-            {
-                NPC.lifeMax += 350000;
-            }
-            if (CalamityWorld.death)
+            // 难度映射:死亡→大师、复仇→专家(difficulty-map)
+            if (Main.masterMode)
             {
                 NPC.damage += 4;
             }
-            else if (CalamityWorld.revenge)
+            else if (Main.expertMode)
             {
                 NPC.damage += 2;
             }
@@ -154,13 +188,6 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             }
         }
 
-        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
-        {
-            if (AIStyle == 8)
-            {
-                modifiers.FinalDamage *= 0.5f;
-            }
-        }
         public float dr = 0.26f;
         public void UpdateFins()
         {
@@ -195,13 +222,8 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             {
                 dr -= 0.5f / (160 * 60);
             }
-            NPC.Calamity().CurrentlyIncreasingDefenseOrDR = AIStyle == 8;
-            if (AIStyle == 8)
-            {
-                NPC.Calamity().DR = 0.50f;
-            }
-            else { NPC.Calamity().DR = 0.12f; }
-            NPC.Calamity().DR += dr;
+            // 原灾厄该条减伤上升提示位随灾厄退场,DR 改本地字段结算
+            DamageReduction = (AIStyle == 8 ? 0.50f : 0.12f) + dr;
             if (spawnAnm > 0)
             {
                 NPC.dontTakeDamage = true;
@@ -236,7 +258,6 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                 {
                     NPC.localAI[0] = 0;
                     Player target = NPC.target.ToPlayer();
-                    NPC.Calamity().CurrentlyEnraged = false;
                     AttackPlayer(target);
                 }
                 UpdateTails();
@@ -300,15 +321,12 @@ namespace CalamityEntropy.Content.NPCs.Prophet
         public int AIC = -1;
         public void AttackPlayer(Player target)
         {
-            if (target.ZoneDungeon || BossRushEvent.BossRushActive)
+            if (target.ZoneDungeon)
             {
                 NoEnrange = 500;
             }
             NoEnrange--;
-            if (NoEnrange < 0)
-            {
-                NPC.Calamity().CurrentlyEnraged = true;
-            }
+            // 原灾厄该条狂怒提示位(CurrentlyEnraged)随灾厄退场,狂怒数值逻辑本就在下方自持
             if (NPC.life < NPC.lifeMax / 2)
             {
                 phase = 2;
@@ -322,11 +340,12 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             {
                 difficult += 0.06f;
             }
-            if (CalamityWorld.revenge)
+            // 难度映射:复仇→专家、死亡→大师(difficulty-map)
+            if (Main.expertMode)
             {
                 difficult += 0.1f;
             }
-            if (CalamityWorld.death)
+            if (Main.masterMode)
             {
                 difficult += 0.1f;
             }
@@ -412,7 +431,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                     {
                         if (!Main.dedServ)
                         {
-                            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/CometShardUse"), NPC.Center);
+                            SoundEngine.PlaySound(SoundID.Item9 with { Pitch = 0.2f, Volume = 0.85f, MaxInstances = 8 }, NPC.Center);
                             CEUtils.PlaySound("crystedge_spawn_crystal", Main.rand.NextFloat(0.8f, 1.2f), NPC.Center);
                         }
                         if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -444,7 +463,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                         {
                             if (!Main.dedServ)
                             {
-                                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/CometShardUse"), NPC.Center);
+                                SoundEngine.PlaySound(SoundID.Item9 with { Pitch = 0.2f, Volume = 0.85f, MaxInstances = 8 }, NPC.Center);
                                 CEUtils.PlaySound("crystedge_spawn_crystal", Main.rand.NextFloat(0.8f, 1.2f), NPC.Center);
                             }
                             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -541,7 +560,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                     {
                         if (!Main.dedServ)
                         {
-                            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/CometShardUse"), NPC.Center);
+                            SoundEngine.PlaySound(SoundID.Item9 with { Pitch = 0.2f, Volume = 0.85f, MaxInstances = 8 }, NPC.Center);
                             CEUtils.PlaySound("crystedge_spawn_crystal", Main.rand.NextFloat(0.8f, 1.2f), NPC.Center);
                         }
                         TeleportTo(target.Center + target.velocity.SafeNormalize(CEUtils.randomRot().ToRotationVector2()) * 900 / difficult);
@@ -640,7 +659,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                     {
                         if (!Main.dedServ)
                         {
-                            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/CometShardUse"), NPC.Center);
+                            SoundEngine.PlaySound(SoundID.Item9 with { Pitch = 0.2f, Volume = 0.85f, MaxInstances = 8 }, NPC.Center);
                             CEUtils.PlaySound("crystedge_spawn_crystal", Main.rand.NextFloat(0.8f, 1.2f), NPC.Center);
                         }
                         for (float i = 0; i < 360; i += (phase == 1 ? 60 : 40))
@@ -661,7 +680,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                     {
                         if (!Main.dedServ)
                         {
-                            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/CometShardUse"), NPC.Center);
+                            SoundEngine.PlaySound(SoundID.Item9 with { Pitch = 0.2f, Volume = 0.85f, MaxInstances = 8 }, NPC.Center);
                             CEUtils.PlaySound("crystedge_spawn_crystal", Main.rand.NextFloat(0.8f, 1.2f), NPC.Center);
                         }
                         for (float i = 0; i < 360; i += (phase == 1 ? 60 : 40))
@@ -683,7 +702,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                     {
                         if (!Main.dedServ)
                         {
-                            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/CometShardUse"), NPC.Center);
+                            SoundEngine.PlaySound(SoundID.Item9 with { Pitch = 0.2f, Volume = 0.85f, MaxInstances = 8 }, NPC.Center);
                             CEUtils.PlaySound("crystedge_spawn_crystal", Main.rand.NextFloat(0.8f, 1.2f), NPC.Center);
                         }
                         for (float i = 0; i < 360; i += (phase == 1 ? 60 : 40))
@@ -757,7 +776,11 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                             }
                         }
                         NPC.velocity *= 0;
-                        TeleportTo(EDownedBosses.GetDungeonArchiveCenterPos() + new Vector2(0, 80));
+                        // 禁忌档案坐标写入源已随灾厄 IL 删除，新世界恒为 (-1,-1)（misc-map 无锚点方案）；
+                        // 无效坐标跳过档案馆传送（安全短路，防落到世界界外），仅旧档遗留有效值时保留原演出；
+                        // 下方距离检查兜底把 Boss 拉回玩家附近（2026-08-27 定稿）
+                        if (EDownedBosses.ForbiddenArchiveCenter.X >= 0)
+                            TeleportTo(EDownedBosses.GetDungeonArchiveCenterPos() + new Vector2(0, 80));
                         if (CEUtils.getDistance(NPC.Center, NPC.target.ToPlayer().Center) > 1600)
                             TeleportTo(target.Center - target.velocity.SafeNormalize(-Vector2.UnitY) * 300);
                     }
@@ -787,8 +810,8 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                         {
                             if (plr.Distance(NPC.Center) < 2400)
                             {
+                                // 原灾厄无限飞行位删除,上行每帧回满翅膀时间即等效(player-api)
                                 plr.wingTime = plr.wingTimeMax;
-                                plr.Calamity().infiniteFlight = true;
                             }
                         }
                     }
@@ -973,7 +996,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                     GraphicsDevice gd = Main.graphics.GraphicsDevice;
                     if (ve.Count >= 3)
                     {
-                        Texture2D tx = CEUtils.getExtraTex("AbyssalCircle2");
+                        Texture2D tx = CEExtraAssets.AbyssalCircle2;
                         gd.Textures[0] = tx;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                     }
@@ -997,7 +1020,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                     GraphicsDevice gd = Main.graphics.GraphicsDevice;
                     if (ve.Count >= 3)
                     {
-                        Texture2D tx = CEUtils.getExtraTex("AbyssalCircle2");
+                        Texture2D tx = CEExtraAssets.AbyssalCircle2;
                         gd.Textures[0] = tx;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                     }
@@ -1021,7 +1044,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                     GraphicsDevice gd = Main.graphics.GraphicsDevice;
                     if (ve.Count >= 3)
                     {
-                        Texture2D tx = CEUtils.getExtraTex("AbyssalCircle2");
+                        Texture2D tx = CEExtraAssets.AbyssalCircle2;
                         gd.Textures[0] = tx;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                     }
@@ -1031,16 +1054,8 @@ namespace CalamityEntropy.Content.NPCs.Prophet
 
             }
         }
-        public List<Texture2D> fintexs = null;
         public void DrawFins()
         {
-            if (fintexs == null)
-            {
-                fintexs = new List<Texture2D>() {
-                    ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Prophet/Wing1", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value,
-                    ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Prophet/Wing2", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value
-                };
-            }
             float rotj = finRotCounter <= 0.4f ? CEUtils.GetRepeatedCosFromZeroToOne(finRotCounter / 0.4f, 1) : 1 - CEUtils.GetRepeatedCosFromZeroToOne((finRotCounter - 0.4f) / 0.6f, 1);
             Main.EntitySpriteDraw(fintexs[1], NPC.Center + new Vector2(-20, -20).RotatedBy(NPC.rotation) - Main.screenPosition, null, Color.White, rl - rotj, fintexs[1].Size(), NPC.scale, SpriteEffects.None);
             Main.EntitySpriteDraw(fintexs[1], NPC.Center + new Vector2(-20, 20).RotatedBy(rl) - Main.screenPosition, null, Color.White, rl + rotj, fintexs[1].Size() * new Vector2(1, 0), NPC.scale, SpriteEffects.FlipVertically);
@@ -1076,10 +1091,10 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             GraphicsDevice gd = Main.graphics.GraphicsDevice;
             if (ve.Count >= 3)
             {
-                Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Prophet/Tail").Value;
+                Texture2D tx = tailTex.Value;
                 gd.Textures[0] = tx;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-                Texture2D ring = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Prophet/ring").Value;
+                Texture2D ring = ringTex.Value;
                 if (tail.Count > 10)
                 {
                     Main.EntitySpriteDraw(ring, tail[8].position - Main.screenPosition, null, Color.White, (tail[9].position - tail[8].position).ToRotation() - MathHelper.PiOver2, ring.Size() / 2f, NPC.scale, SpriteEffects.None);

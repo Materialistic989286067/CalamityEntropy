@@ -1,4 +1,3 @@
-﻿using CalamityMod;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 using Terraria;
@@ -18,9 +17,16 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 1;
-            this.HideFromBestiary();
+            // 图鉴隐藏:原灾厄隐藏扩展的原版等价写法
+            NPCID.Sets.NPCBestiaryDrawOffset[Type] = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
             NPCID.Sets.MPAllowedEnemies[Type] = true;
             NPCID.Sets.ImmuneToRegularBuffs[Type] = true;
+        }
+        // 原灾厄 DR 的本地等效,每帧从头部镜像
+        public float DamageReduction = 0.4f;
+        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
+        {
+            modifiers.FinalDamage *= 1f - DamageReduction;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -54,7 +60,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             NPC.noGravity = true;
             NPC.Entropy().VoidTouchDR = 0.7f;
             NPC.scale = 1.1f;
-            NPC.Calamity().DR = 0.4f;
+            DamageReduction = 0.4f;
             if (Main.getGoodWorld)
             {
                 NPC.scale = 0.5f;
@@ -78,7 +84,8 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             NPC.scale = Main.npc[(int)NPC.ai[3]].scale;
             NPC.Entropy().VoidTouchDR = Main.npc[(int)NPC.ai[3]].Entropy().VoidTouchDR;
             NPC.defense = Main.npc[(int)NPC.ai[3]].defense;
-            NPC.Calamity().DR = Main.npc[(int)NPC.ai[3]].Calamity().DR;
+            if (Main.npc[(int)NPC.ai[3]].ModNPC is CruiserHead headSeg)
+                DamageReduction = headSeg.DamageReduction;
             NPC.dontTakeDamage = Main.npc[(int)NPC.ai[3]].dontTakeDamage;
             NPC.ai[0] += 1;
             NPC.life = Main.npc[(int)NPC.ai[3]].life;

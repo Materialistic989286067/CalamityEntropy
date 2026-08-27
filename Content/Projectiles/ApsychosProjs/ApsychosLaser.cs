@@ -1,5 +1,6 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -98,7 +99,7 @@ namespace CalamityEntropy.Content.Projectiles.ApsychosProjs
         public override bool PreDraw(ref Color lightColor)
         {
             counter++;
-            Texture2D tex = CEUtils.getExtraTex("DeathRay2");
+            Texture2D tex = CEExtraAssets.DeathRay2;
             Main.spriteBatch.UseBlendState(BlendState.NonPremultiplied, SamplerState.LinearWrap);
 
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, new Rectangle(-counter * 18, 0, length, tex.Height), new Color(120, 120, 255), Projectile.rotation, new Vector2(0, tex.Height / 2), new Vector2(1, width * 0.8f), SpriteEffects.None, 0);
@@ -106,7 +107,7 @@ namespace CalamityEntropy.Content.Projectiles.ApsychosProjs
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, new Rectangle(-counter * 40, 0, length, tex.Height), Color.White, Projectile.rotation, new Vector2(0, tex.Height / 2), new Vector2(1, width * 0.5f), SpriteEffects.None, 0);
             Main.spriteBatch.UseBlendState(BlendState.Additive, SamplerState.LinearWrap);
 
-            Texture2D star = CEUtils.getExtraTex("StarTexture");
+            Texture2D star = CEExtraAssets.StarTexture;
             float num = 0.5f * (float)Math.Sin(Main.GameUpdateCount / 10f);
             float num2 = 0.5f * (float)Math.Sin(Main.GameUpdateCount / 10f + MathHelper.PiOver4);
             Vector2 pos = Projectile.Center;

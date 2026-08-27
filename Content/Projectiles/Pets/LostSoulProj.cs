@@ -1,6 +1,7 @@
 ﻿using CalamityEntropy.Content.Buffs.Pets;
-using CalamityMod.Events;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,6 +15,11 @@ namespace CalamityEntropy.Content.Projectiles.Pets
 {
     public class LostSoulProj : ModProjectile
     {
+        //贴图在加载期一次就位,不再在 PreDraw 里逐帧请求;两张都是横向多帧的雪碧图
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/LostSoulProj")]
+        internal static Asset<Texture2D> BodyTex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/LostSoulSpawn")]
+        internal static Asset<Texture2D> SpawnTex;
         public int counter = 0;
         public override void SetStaticDefaults()
         {
@@ -34,7 +40,7 @@ namespace CalamityEntropy.Content.Projectiles.Pets
         public List<NPC> needLoots = new List<NPC>();
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D txd = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/LostSoulProj").Value;
+            Texture2D txd = BodyTex.Value;
             if (Main.gameMenu)
             {
 
@@ -45,7 +51,7 @@ namespace CalamityEntropy.Content.Projectiles.Pets
             dc++;
             if (spawnAnm)
             {
-                txd = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/LostSoulSpawn").Value;
+                txd = SpawnTex.Value;
                 Main.EntitySpriteDraw(txd, Projectile.Center - Main.screenPosition + new Vector2((spawnAnmFrame == 1 ? Main.rand.Next(-4, 5) : 0), (float)Math.Cos((float)dc * 0.06f) * 20), CEUtils.GetCutTexRect(txd, 6, spawnAnmFrame), lightColor * alpha, Projectile.rotation, new Vector2(32, txd.Height) / 2, Projectile.scale, SpriteEffects.None, 0);
 
 
@@ -153,12 +159,6 @@ namespace CalamityEntropy.Content.Projectiles.Pets
                     hasBoss = true;
                     break;
                 }
-            }
-            if (BossRushEvent.BossRushActive)
-            {
-                hasBoss = false;
-                bosses.Clear();
-                needLoots.Clear();
             }
             if (hideVisualTime <= 0)
             {

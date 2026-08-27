@@ -1,9 +1,8 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.Cruiser;
 using CalamityEntropy.Content.Projectiles.Prophet;
-using CalamityMod;
-using CalamityMod.World;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -130,7 +129,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                     if (j.realLife == NPC.whoAmI)
                     {
                         j.defense = 4;
-                        CalamityUtils.Calamity(j).DR = 0.1f;
+                        // 段体的灾厄 DR=0.1 写入删除(灾厄减伤体系随脱钩退场,彩蛋本体保留)
                         if (j.ai[2] <= 8f && j.ai[2] > 4f)
                         {
                             j.width = 26;
@@ -147,7 +146,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                     }
                 }
             }
-            CalamityUtils.Calamity(Main.LocalPlayer).monolithExoShader = 30;
+            // 原灾厄 Exo 巨石屏效(monolithExoShader)删除:纯灾厄视觉,天顶彩蛋本体保留
             if (NPC.ai[0] > 10f)
             {
                 Player player = Main.player[Main.myPlayer];
@@ -328,7 +327,16 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                             {
                                 targetPlayerr.velocity = Vector2.Zero;
                                 targetPlayerr.Center = NPC.Center + Utils.ToRotationVector2(NPC.rotation) * 120f;
-                                CalamityUtils.Calamity(targetPlayerr).GeneralScreenShakePower = Utils.Remap(Main.LocalPlayer.Distance(NPC.Center), 1800f, 1000f, 0f, 4.5f, true) * 4f;
+                                // 原灾厄全局屏震(逐帧置强度)改自有 ScreenShaker:仅受害者本端,复用实例逐帧刷新
+                                if (targetPlayerr.whoAmI == Main.myPlayer && !Main.dedServ)
+                                {
+                                    if (this.biteShake == null || !this.biteShake.active)
+                                    {
+                                        this.biteShake = new ScreenShaker.ScreenShake(Vector2.Zero, 0);
+                                        ScreenShaker.AddShake(this.biteShake);
+                                    }
+                                    this.biteShake.amplitude = Utils.Remap(Main.LocalPlayer.Distance(NPC.Center), 1800f, 1000f, 0f, 4.5f, true) * 4f;
+                                }
                                 this.mouthRot = -40f;
                                 //咬杀10颗Void,Random()每只NPC seed不一致是故意的
                                 for (int i3 = 0; i3 < 10; i3++)
@@ -598,13 +606,14 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                     int num = 8;
                     int counts = 2;
                     float speed = 24f;
-                    if (CalamityWorld.revenge)
+                    // 难度映射:复仇→专家、死亡→大师(difficulty-map)
+                    if (Main.expertMode)
                     {
                         num = 10;
                         counts = 3;
                         speed = 25f;
                     }
-                    if (CalamityWorld.death)
+                    if (Main.masterMode)
                     {
                         num = 10;
                         counts = 4;
@@ -696,22 +705,22 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                 {
                     if (this.changeCounter < 80)
                     {
-                        CEUtils.drawLine(Main.spriteBatch, ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white", ReLogic.Content.AssetRequestMode.AsyncLoad).Value, NPC.Center, NPC.Center + Utils.ToRotationVector2(NPC.rotation) * 6000f, new Color(166, 111, 255) * ((float)this.changeCounter / 80f) * 0.7f, 8f, 0);
+                        CEUtils.drawLine(Main.spriteBatch, CEExtraAssets.white, NPC.Center, NPC.Center + Utils.ToRotationVector2(NPC.rotation) * 6000f, new Color(166, 111, 255) * ((float)this.changeCounter / 80f) * 0.7f, 8f, 0);
                     }
                     if (this.changeCounter > 140 && this.changeCounter < 200)
                     {
-                        CEUtils.drawLine(Main.spriteBatch, ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white", ReLogic.Content.AssetRequestMode.AsyncLoad).Value, NPC.Center, NPC.Center + Utils.ToRotationVector2(NPC.rotation) * 6000f, new Color(166, 111, 255) * ((float)(this.changeCounter - 140) / 60f) * 0.7f, 8f, 0);
+                        CEUtils.drawLine(Main.spriteBatch, CEExtraAssets.white, NPC.Center, NPC.Center + Utils.ToRotationVector2(NPC.rotation) * 6000f, new Color(166, 111, 255) * ((float)(this.changeCounter - 140) / 60f) * 0.7f, 8f, 0);
                     }
                 }
                 if (this.aitype == 7f)
                 {
                     if (this.changeCounter < 60)
                     {
-                        CEUtils.drawLine(Main.spriteBatch, ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white", ReLogic.Content.AssetRequestMode.AsyncLoad).Value, NPC.Center, NPC.Center + Utils.ToRotationVector2(NPC.rotation) * 6000f, new Color(200, 180, 255) * ((float)this.changeCounter / 60f) * 0.7f, 8f, 0);
+                        CEUtils.drawLine(Main.spriteBatch, CEExtraAssets.white, NPC.Center, NPC.Center + Utils.ToRotationVector2(NPC.rotation) * 6000f, new Color(200, 180, 255) * ((float)this.changeCounter / 60f) * 0.7f, 8f, 0);
                     }
                     if (this.changeCounter > 140 && this.changeCounter < 200)
                     {
-                        CEUtils.drawLine(Main.spriteBatch, ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white", ReLogic.Content.AssetRequestMode.AsyncLoad).Value, NPC.Center, NPC.Center + Utils.ToRotationVector2(NPC.rotation) * 6000f, new Color(200, 180, 255) * ((float)(this.changeCounter - 140) / 60f) * 0.7f, 8f, 0);
+                        CEUtils.drawLine(Main.spriteBatch, CEExtraAssets.white, NPC.Center, NPC.Center + Utils.ToRotationVector2(NPC.rotation) * 6000f, new Color(200, 180, 255) * ((float)(this.changeCounter - 140) / 60f) * 0.7f, 8f, 0);
                     }
                 }
             }
@@ -720,6 +729,9 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             return false;
         }
         public float ProgressDraw;
+
+        // 咬合钳制期持续屏震的复用实例(仅受害者本端)
+        private ScreenShaker.ScreenShake biteShake;
 
         private int length = 27;
 

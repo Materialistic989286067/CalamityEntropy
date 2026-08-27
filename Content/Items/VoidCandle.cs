@@ -1,7 +1,6 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -25,7 +24,7 @@ namespace CalamityEntropy.Content.Items
             Item.rare = ModContent.RarityType<VoidPurple>();
             Item.createTile = ModContent.TileType<VoidCandleTile>();
             Item.buffType = ModContent.BuffType<VoidCandleBuff>();
-            Item.buffTime = CalamityUtils.SecondsToFrames(600);
+            Item.buffTime = CEUtils.SecondsToFrames(600);
         }
 
     }

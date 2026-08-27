@@ -27,7 +27,6 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             opacity = 0f;
         }
 
-        //跨模组贴图VaultLoaden表在PRTSharedAssets,Texture只能白图占位
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_DirectionalPulseRing Configure(Vector2 squish, float rotation, float finalScale, int lifetime)

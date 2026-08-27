@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.NPCs.Prophet;
-using CalamityMod.Events;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -11,8 +10,6 @@ namespace CalamityEntropy.Content.Skies
 
         public override bool IsSceneEffectActive(Player player)
         {
-            if (BossRushEvent.BossRushActive)
-                return false;
             if (NPC.FindFirstNPC(ModContent.NPCType<TheProphet>()) != -1)
             {
                 return true;

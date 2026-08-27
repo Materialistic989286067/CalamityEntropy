@@ -1,9 +1,8 @@
+using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
+using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -31,8 +30,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Depletion
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 0;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.value = Item.buyPrice(2, 40);
+            Item.rare = ModContent.RarityType<Golden>();
             Item.shoot = ModContent.ProjectileType<DepletionHeld>();
             Item.shootSpeed = 16f;
             Item.mana = 5;
@@ -57,8 +56,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Depletion
         {
             CreateRecipe()
                 .AddIngredient<Malign.Malign>()
-                .AddIngredient<UnholyEssence>(8)
-                .AddIngredient<EffulgentFeather>(8)
+                .AddIngredient<NihilityFragments>(16)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
@@ -211,7 +209,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Depletion
                 CEUtils.DrawLines(points, new Color(255, 255, 160), 2f * active, 0);
             }
 
-            Texture2D t = CEUtils.getExtraTex("Triangle");
+            Texture2D t = CEExtraAssets.Triangle;
             for (int i = 0; i < 3; i++)
             {
                 float rot = (MathHelper.TwoPi / 3f) * i;
@@ -277,7 +275,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Depletion
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = CEUtils.getExtraTex("Triangle");
+            Texture2D tex = CEExtraAssets.Triangle;
             Main.spriteBatch.UseBlendState(BlendState.NonPremultiplied);
             Color clr = Color.Lerp(Color.Yellow, Color.White, num * num * num * num);
             clr.A = (byte)(255 * num);

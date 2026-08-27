@@ -3,10 +3,7 @@ using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
+using CalamityEntropy.Core.Cooldowns;
 using InnoVault.PRT;
 using Terraria;
 using Terraria.DataStructures;
@@ -34,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.shoot = ModContent.ProjectileType<AzafureProtectiveCannonShot>();
             Item.shootSpeed = 2f;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(0, 5);
             Item.autoReuse = true;
             Item.UseSound = null;
             Item.noMelee = true;
@@ -59,7 +56,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(4)
-                .AddIngredient<MysteriousCircuitry>()
+                .AddIngredient<AzafureCircuitry>()
                 .AddIngredient(ItemID.HallowedBar, 6)
                 .AddRecipeGroup(CERecipeGroups.IronBar, 6)
                 .AddIngredient(ItemID.Wire, 12)

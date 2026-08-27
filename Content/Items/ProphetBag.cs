@@ -3,9 +3,9 @@ using CalamityEntropy.Content.Items.Accessories.SoulCards;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Books.BookMarks;
 using CalamityEntropy.Content.Items.Weapons;
+using CalamityEntropy.Content.Items.Weapons.CrystalBalls;
 using CalamityEntropy.Content.Items.Weapons.Whips;
 using CalamityEntropy.Content.NPCs.Prophet;
-using CalamityMod;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
@@ -42,30 +42,33 @@ namespace CalamityEntropy.Content.Items
 
         public override void PostUpdate()
         {
-            CalamityMod.CalamityUtils.ForceItemIntoWorld(Item);
+            CEUtils.ForceItemIntoWorld(Item);
             Item.TreasureBagLightAndDust();
         }
 
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
-            return CalamityUtils.DrawTreasureBagInWorld(Item, spriteBatch, ref rotation, ref scale, whoAmI);
+            return CEUtils.DrawTreasureBagInWorld(Item, spriteBatch, ref rotation, ref scale, whoAmI);
         }
 
         public override void ModifyItemLoot(ItemLoot itemLoot)
         {
             itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<TheProphet>()));
 
-            itemLoot.Add(ModContent.ItemType<RuneSong>(), new Fraction(3, 5));
-            itemLoot.Add(ModContent.ItemType<UrnOfSouls>(), new Fraction(3, 5));
-            itemLoot.Add(ModContent.ItemType<SpiritBanner>(), new Fraction(3, 5));
-            itemLoot.Add(ModContent.ItemType<RuneMachineGun>(), new Fraction(3, 5));
-            itemLoot.Add(ModContent.ItemType<ProphecyFlyingKnife>(), new Fraction(3, 5));
-            itemLoot.Add(ModContent.ItemType<ForeseeOrb>(), new Fraction(4, 5));
-            itemLoot.Add(ModContent.ItemType<RuneWing>(), new Fraction(4, 5));
-            itemLoot.Add(ModContent.ItemType<ForeseeWhip>(), new Fraction(2, 5));
-            itemLoot.Add(ModContent.ItemType<ProphecyMasterpiece>(), new Fraction(3, 5));
-            itemLoot.Add(ModContent.ItemType<BookMarkForesee>(), new Fraction(3, 5));
-            itemLoot.Add(ModContent.ItemType<CursedThread>(), 1);
+            //脱离灾厄:原灾厄DropHelper.Add扩展换原版规则,分数概率按CommonDrop(物品,分母,最少,最多,分子)对位
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<RuneSong>(), 5, 1, 1, 3));
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<UrnOfSouls>(), 5, 1, 1, 3));
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<SpiritBanner>(), 5, 1, 1, 3));
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<RuneMachineGun>(), 5, 1, 1, 3));
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<ProphecyFlyingKnife>(), 5, 1, 1, 3));
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<ForeseeOrb>(), 5, 1, 1, 4));
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<RuneWing>(), 5, 1, 1, 4));
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<ForeseeWhip>(), 5, 1, 1, 2));
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<ProphecyMasterpiece>(), 5, 1, 1, 3));
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<BookMarkForesee>(), 5, 1, 1, 3));
+            itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<CursedThread>()));
+            // 自灾厄白金星舰宝袋重挂（bookmark-rehang 增补段）
+            itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<NightProjection>(), 4));
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using CalamityMod;
-using CalamityMod.Projectiles.Summon;
-using CalamityMod.World;
+﻿using CalamityEntropy.Content.Projectiles;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.IO;
@@ -46,12 +44,13 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
         public float MaxVelocity = 10f;
         public float DistanceFromPlayer = 500f;
 
-        public float AmountOfProjectiles = (CalamityWorld.death) ? 2f : (CalamityWorld.revenge) ? 4f : (Main.expertMode) ? 3f : 3f;
-        public float TimeBetweenProjectiles = (CalamityWorld.death) ? 50f : (CalamityWorld.revenge) ? 35f : (Main.expertMode) ? 40f : 45f;
-        public float TimeBetweenBurst = (CalamityWorld.death) ? 240f : 180f;
+        // 难度轴按裁定表收敛：死亡→大师、复仇→专家（大师蕴含专家，原纯专家档并入）
+        public float AmountOfProjectiles = (Main.masterMode) ? 2f : (Main.expertMode) ? 4f : 3f;
+        public float TimeBetweenProjectiles = (Main.masterMode) ? 50f : (Main.expertMode) ? 35f : 45f;
+        public float TimeBetweenBurst = (Main.masterMode) ? 240f : 180f;
         public float ProjectileSpeed = 26f;
 
-        public float TimeBeforeDash = (CalamityWorld.revenge) ? 100f : 120f;
+        public float TimeBeforeDash = (Main.expertMode) ? 100f : 120f;
         public float TimeDashing = 100f;
         public float DashSpeed = 22f;
 
@@ -82,9 +81,6 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             NPC.DeathSound = SoundID.NPCDeath7;
             NPC.rarity = 2;
             NPC.coldDamage = true;
-            NPC.Calamity().VulnerableToHeat = true;
-            NPC.Calamity().VulnerableToCold = false;
-            NPC.Calamity().VulnerableToSickness = false;
             NPC.friendly = true;
         }
 
@@ -151,7 +147,8 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
                 {
                     Vector2 vecToPlayer = NPC.SafeDirectionTo(player.Center);
                     Vector2 projVelocity = vecToPlayer * ProjectileSpeed;
-                    int type = ModContent.ProjectileType<IceClasperSummonProjectile>();
+                    // 灾厄冰钳召唤弹换自有同主题友方冰锥
+                    int type = ModContent.ProjectileType<Icicle>();
                     int damage = NPC.damage;
 
                     if (Main.myPlayer == NPC.Entropy().friendFinderOwner && target is NPC)
@@ -260,13 +257,6 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Frost, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
-                {
-                    Mod mod = ModContent.GetInstance<CalamityMod.CalamityMod>();
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, mod.Find<ModGore>("IceClasper").Type);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, mod.Find<ModGore>("IceClasper2").Type);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, mod.Find<ModGore>("IceClasper3").Type);
-                }
             }
         }
 
@@ -283,7 +273,8 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
 (MathHelper.Clamp(AITimer, 0f, TimeBeforeDash) / TimeBeforeDash);
             float AfterimageFade = MathHelper.Lerp(0f, 1f, interpolant);
 
-            if (CurrentState == IceClasperAIState.Dashing && CalamityMod.CalamityClientConfig.Instance.Afterimages)
+            // 灾厄残影客户端开关移除，恒定绘制
+            if (CurrentState == IceClasperAIState.Dashing)
             {
                 for (int i = 0; i < NPC.oldPos.Length; i++)
                 {

@@ -1,13 +1,15 @@
 ﻿using CalamityEntropy.Common;
-using CalamityMod;
+using CalamityEntropy.Content.Items.Donator;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Vanity
 {
-    public class PureIceShard : ModItem, IVanitySkin, IGetFromStarterBag
+    public class PureIceShard : ModItem, IVanitySkin, IGetFromStarterBag, IDonatorItem
     {
+        // 原灾厄 donorItem 旗标改走自有捐赠者提示通道，署名取自专属判定
+        public string DonatorName => "Cirno";
         public override void Load()
         {
             if (Main.netMode != NetmodeID.Server)
@@ -41,7 +43,6 @@ namespace CalamityEntropy.Content.Items.Vanity
             Item.accessory = true;
             Item.vanity = true;
             Item.value = Item.buyPrice(0, 1, 0, 0);
-            Item.Calamity().donorItem = true;
             Item.rare = ItemRarityID.Yellow;
         }
 

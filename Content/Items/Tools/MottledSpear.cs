@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Items.Armor.Azafure;
-using CalamityMod;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
@@ -89,12 +88,32 @@ namespace CalamityEntropy.Content.Items.Tools
             }
         }
 
+        // 锁链绘制（原生移植，替代灾厄 DrawHook 扩展）：自钩头向玩家逐节铺贴链条
+        private void DrawChain(Texture2D chainTexture)
+        {
+            Player player = Projectile.GetOwner();
+            Vector2 center = Projectile.Center;
+            float angleToMountedCenter = Projectile.AngleTo(player.MountedCenter) - MathHelper.PiOver2;
+            while (true)
+            {
+                float distanceMagnitude = (player.MountedCenter - center).Length();
+                if (distanceMagnitude < chainTexture.Height + 1f || float.IsNaN(distanceMagnitude))
+                    break;
+                center += Projectile.SafeDirectionTo(player.MountedCenter) * chainTexture.Height;
+                Color tileAtCenterColor = Lighting.GetColor((int)center.X / 16, (int)(center.Y / 16f));
+                Main.spriteBatch.Draw(chainTexture, center - Main.screenPosition,
+                    new Rectangle(0, 0, chainTexture.Width, chainTexture.Height),
+                    tileAtCenterColor, angleToMountedCenter,
+                    chainTexture.Size() / 2, 1f, SpriteEffects.None, 0f);
+            }
+        }
+
         public override bool PreDraw(ref Color lightColor)
         {
             if (hitsnd)
                 Projectile.rotation = (Projectile.Center - Projectile.GetOwner().Center).ToRotation();
             Texture2D hook = Projectile.GetTexture();
-            Projectile.DrawHook(this.getTextureAlt("Chain")); //Draw the chain
+            DrawChain(this.getTextureAlt("Chain"));
             Vector2 origin = new Vector2(32, hook.Height / 2);
             Main.EntitySpriteDraw(hook, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, origin, Projectile.scale, Projectile.Center.X > Projectile.GetOwner().Center.X ? SpriteEffects.None : SpriteEffects.FlipVertically);
             return false;

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityEntropy.Assets.Register;
+using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
 using System;
 using Terraria;
@@ -16,8 +17,8 @@ namespace CalamityEntropy.Content.Rarities
         public static void Draw(Item Item, SpriteBatch spriteBatch, string text, int X, int Y, float rotation,
             Vector2 baseScale, float time, DynamicSpriteFont font)
         {
-            Texture2D glow = CEUtils.getExtraTex("Glow");
-            Texture2D particle = CEUtils.getExtraTex("Ray");
+            Texture2D glow = CEExtraAssets.Glow;
+            Texture2D particle = CEExtraAssets.Ray;
             spriteBatch.UseBlendState_UI(BlendState.Additive);
             Vector2 origin = font.MeasureString(text) * new Vector2(1, 0.6f) * 0.5f;
             float ey = CELists.tooltipNameUpList.Contains(Language.ActiveCulture.Name) ? 0 : 4;

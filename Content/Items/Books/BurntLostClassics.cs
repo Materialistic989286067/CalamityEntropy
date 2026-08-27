@@ -1,8 +1,8 @@
 ﻿using CalamityEntropy.Content.Particles;
-using CalamityMod;
-using CalamityMod.Items.Materials;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -22,14 +22,16 @@ namespace CalamityEntropy.Content.Items.Books
             Item.shootSpeed = 15;
             Item.ArmorPenetration = 20;
         }
-        public override Texture2D BookMarkTexture => ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/EntropyBookUI/BLC").Value;
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/BLC")]
+        internal static Asset<Texture2D> BookMarkSlotTex;
+        public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<BurntLostClassicsHeld>();
         public override int SlotCount => 3;
 
         public override void AddRecipes()
         {
             CreateRecipe().AddIngredient<DarkScripture>()
-                .AddIngredient<AshesofCalamity>(6)
+                .AddIngredient<TectonicShard>(6)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
@@ -65,7 +67,8 @@ namespace CalamityEntropy.Content.Items.Books
     {
         public override void OnHitNPC(Projectile projectile, NPC target, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<CalamityMod.Buffs.DamageOverTime.BrimstoneFlames>(), 320);
+            //完整限定名会被入口类同名遮蔽(CalamityEntropy 先解析为类),改经 global:: 前缀
+            target.AddBuff(ModContent.BuffType<global::CalamityEntropy.Content.Buffs.PortsDoT.BrimstoneFlames>(), 320);
         }
     }
 
@@ -102,6 +105,13 @@ namespace CalamityEntropy.Content.Items.Books
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
+        //残影三态贴图,加载期就位,不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Assets/Extra/Ports/Invisible")]
+        internal static Asset<Texture2D> InvisibleTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/Ports/DrizzlefishFire")]
+        internal static Asset<Texture2D> FireTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/Ports/DrizzlefishFire2")]
+        internal static Asset<Texture2D> FireTex2;
         public int Time;
         public override void AI()
         {
@@ -126,20 +136,20 @@ namespace CalamityEntropy.Content.Items.Books
         {
             if (Time < 7)
             {
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1, ModContent.Request<Texture2D>("CalamityMod/Projectiles/InvisibleProj").Value);
+                CEUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1, InvisibleTex.Value);
             }
             else if (Projectile.ai[1] == 1f)
             {
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1, ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/DrizzlefishFire2").Value);
+                CEUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1, FireTex2.Value);
             }
             else
             {
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1, ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/DrizzlefishFire").Value);
+                CEUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1, FireTex.Value);
             }
 
             if (Projectile.ai[1] == 1f)
             {
-                Texture2D value = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/DrizzlefishFire2").Value;
+                Texture2D value = FireTex2.Value;
                 Main.spriteBatch.Draw(value, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, 16, 16), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)value.Width / 2f, 10f), Projectile.scale, SpriteEffects.None, 0f);
                 return false;
             }

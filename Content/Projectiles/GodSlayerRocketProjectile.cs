@@ -1,7 +1,7 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
 using System;
 using System.Collections.Generic;
@@ -47,7 +47,7 @@ namespace CalamityEntropy.Content.Projectiles
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(0.15f, 0.35f);
                 }
-                CalamityUtils.HomeInOnNPC(Projectile, true, 500f, 60, 200f);
+                CEUtils.HomeInOnNPC(Projectile, true, 500f, 60, 200f);
 
 
 
@@ -106,7 +106,7 @@ namespace CalamityEntropy.Content.Projectiles
             //PRT_DirectionalPulseRing Configure是Calamity ring原构造,scale/rotation/lifetime顺序固定
             PRTLoader.NewParticle<PRT_DirectionalPulseRing>(Projectile.Center, Vector2.Zero, Color.Aqua, 0.1f).Configure(new Vector2(2f, 2f), 0, 0.85f * 1.4f, (int)(36 * 1.1f));
             PRTLoader.NewParticle<PRT_DetailedExplosionCal>(Projectile.Center, Vector2.Zero, Color.Magenta, 0f).Configure(Vector2.One, Main.rand.NextFloat(-5, 5), 0.65f * 1.4f, (int)(26 * 1.1f));
-            float sparkCount = Projectile.Calamity().stealthStrike ? 26 : 16;
+            float sparkCount = Projectile.IsEmpowered() ? 26 : 16;
             for (int i = 0; i < sparkCount; i++)
             {
                 Vector2 sparkVelocity2 = new Vector2(16, 0).RotatedBy((float)Main.rand.NextDouble() * 3.14159f * 2) * Main.rand.NextFloat(0.5f, 1.8f);

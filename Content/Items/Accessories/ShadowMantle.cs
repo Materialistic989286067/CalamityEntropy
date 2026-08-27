@@ -1,8 +1,7 @@
+using CalamityEntropy.Common;
+using CalamityEntropy.Content.Items.Armor;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Systems.Collections;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -13,25 +12,24 @@ namespace CalamityEntropy.Content.Items.Accessories
 {
     public class ShadowMantle : ModItem
     {
-        public override void SetStaticDefaults()
-        {
-            CalamityItemSets.HasAccessoryKeybind[Type] = true;
-        }
         public static float BaseDamage = 25;
         public static int CooldownTicks = 30 * 60;
+        // 突进后增伤窗口:1.5 秒内 +10% 伤害(rogue-weapons.md §三)
+        public const int DashBoostTime = 90;
+        public const float DashBoostDamage = 0.10f;
         public override void SetDefaults()
         {
             Item.width = 42;
             Item.defense = 4;
             Item.height = 48;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            var k = Main.LocalPlayer.Calamity().FindAccessory<ShadowMantle>().GetDynamicModHotkey();
-            tooltips.IntegrateHotkey(k);
+            // 脱离灾厄:灾厄动态饰品键位并入自有 AccessoryAbilityHotKey(player-api.md §2)
+            tooltips.Replace("[KEY]", EModPlayer.AccessoryAbilityHotKey.TooltipKeyHint());
         }
 
         public static string ID = "ShadowMantle";
@@ -57,12 +55,26 @@ namespace CalamityEntropy.Content.Items.Accessories
                 .Register();
         }
     }
+    /// <summary>暗影披风增伤窗口:影遁突进后 1.5 秒内 +10% 伤害。</summary>
+    public class ShadowMantlePlayer : ModPlayer
+    {
+        public int dashBoostTime;
+
+        public override void PostUpdateEquips()
+        {
+            if (dashBoostTime > 0)
+            {
+                dashBoostTime--;
+                Player.GetDamage(DamageClass.Generic) += ShadowMantle.DashBoostDamage;
+            }
+        }
+    }
     public class ShadowMantleSlash : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC);
+            Projectile.FriendlySetDefaults(DamageClass.Generic);
             Projectile.timeLeft = 10;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
@@ -95,6 +107,8 @@ namespace CalamityEntropy.Content.Items.Accessories
             }
             if (Projectile.timeLeft == 10)
             {
+                // 突进落地开启增伤窗口
+                player.GetModPlayer<ShadowMantlePlayer>().dashBoostTime = ShadowMantle.DashBoostTime;
                 CEUtils.PlaySound("ShadowDash", 1, Projectile.Center);
                 player.Entropy().screenShift = 1;
                 player.Entropy().screenPos = player.Center;

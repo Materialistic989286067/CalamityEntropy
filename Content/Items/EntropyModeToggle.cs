@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Common;
-using CalamityMod.Items;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -23,7 +22,7 @@ namespace CalamityEntropy.Content.Items
             Item.useAnimation = 22;
             Item.useStyle = ItemUseStyleID.RaiseLamp;
             Item.noMelee = true;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Purple;
             Item.scale = 0.6f;
             Item.UseSound = CEUtils.GetSound("soul");

@@ -1,7 +1,9 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ModLoader;
@@ -10,6 +12,9 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class AbyssalStar : ModProjectile
     {
+        //星芒拖尾贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Assets/Extra/StarTrail")]
+        internal static Asset<Texture2D> StarTrailTex;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
@@ -48,7 +53,7 @@ namespace CalamityEntropy.Content.Projectiles
                 lightColor *= ((float)Projectile.timeLeft / 30f);
             }
             Texture2D tx = TextureAssets.Projectile[Projectile.type].Value;
-            Texture2D t = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/StarTrail").Value;
+            Texture2D t = StarTrailTex.Value;
             Main.spriteBatch.Draw(t, Projectile.Center - Main.screenPosition, null, lightColor * 0.6f, Projectile.velocity.ToRotation(), t.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
 
             Main.spriteBatch.Draw(tx, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, tx.Size() / 2, Projectile.scale, SpriteEffects.None, 0);

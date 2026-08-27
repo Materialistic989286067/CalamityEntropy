@@ -1,5 +1,4 @@
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -20,7 +19,7 @@ public class UhrwerkHammerCallout : ModProjectile
     }
     public override void SetDefaults()
     {
-        Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+        Projectile.DamageType = DamageClass.Melee;
         Projectile.width = 96;
         Projectile.height = 96;
         Projectile.friendly = true;

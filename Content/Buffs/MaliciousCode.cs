@@ -10,7 +10,6 @@ namespace CalamityEntropy.Content.Buffs
 {
     public class MaliciousCode : ModBuff
     {
-        public static bool CALAMITY__OVERHAUL => ModLoader.HasMod("Calamity" + "Overhaul");
         public override void SetStaticDefaults()
         {
             Main.buffNoSave[Type] = true;
@@ -44,7 +43,7 @@ namespace CalamityEntropy.Content.Buffs
         {
             if (npc.HasBuff<MaliciousCode>())
             {
-                modifiers.FinalDamage *= MaliciousCode.CALAMITY__OVERHAUL ? 0.6f : 0.7f;
+                modifiers.FinalDamage *= 0.7f;
             }
         }
         public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -84,7 +83,7 @@ namespace CalamityEntropy.Content.Buffs
         {
             if (malicious)
             {
-                modifiers.FinalDamage *= MaliciousCode.CALAMITY__OVERHAUL ? 0.86f : 0.9f;
+                modifiers.FinalDamage *= 0.9f;
             }
         }
         public bool SHOTSPEEDDOWN = true;
@@ -95,7 +94,7 @@ namespace CalamityEntropy.Content.Buffs
                 if (SHOTSPEEDDOWN)
                 {
                     SHOTSPEEDDOWN = false;
-                    projectile.velocity *= MaliciousCode.CALAMITY__OVERHAUL ? 0.7f : 0.8f;
+                    projectile.velocity *= 0.8f;
                 }
             }
             return base.PreAI(projectile);

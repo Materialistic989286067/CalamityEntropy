@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs.PortsDoT;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
@@ -126,7 +128,7 @@ namespace CalamityEntropy.Content.Projectiles
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
                 if (ve.Count >= 4)
                 {
-                    Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Fire", AssetRequestMode.ImmediateLoad).Value;
+                    Effect shader = CEEffectAssets.Fire;
                     Main.instance.GraphicsDevice.Textures[1] = CEUtils.getExtraTex("colormap_fire");
                     shader.CurrentTechnique.Passes["EnchantedPass"].Apply();
 
@@ -170,7 +172,7 @@ namespace CalamityEntropy.Content.Projectiles
                               b));
 
                     }
-                    tx = CEUtils.getExtraTex("StreakSolid");
+                    tx = CEExtraAssets.StreakSolid;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }

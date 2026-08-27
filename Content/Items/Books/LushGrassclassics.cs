@@ -1,6 +1,8 @@
 using CalamityEntropy.Content.Buffs;
-using CalamityMod;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -31,7 +33,9 @@ namespace CalamityEntropy.Content.Items.Books
                 .AddTile(TileID.WorkBenches)
                 .Register();
         }
-        public override Texture2D BookMarkTexture => ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/EntropyBookUI/LG").Value;
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/LG")]
+        internal static Asset<Texture2D> BookMarkSlotTex;
+        public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
     }
 
     public class LushGrassclassicsHeld : EntropyBookHeldProjectile

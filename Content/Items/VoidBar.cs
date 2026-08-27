@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
@@ -40,7 +39,7 @@ namespace CalamityEntropy.Content.Items
         }
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            CalamityUtils.DrawInventoryCustomScale(
+            CEUtils.DrawInventoryCustomScale(
                 spriteBatch,
                 texture: TextureAssets.Item[Type].Value,
                 position,

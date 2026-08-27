@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Common;
-using CalamityMod.Items.LoreItems;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using Terraria;
@@ -10,16 +9,13 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Lores
 {
-    public class ProphetLore : LoreItem
+    public class ProphetLore : CELoreItem
     {
         public static float ImmuneAdd = 0.5f;
         public static int LifeRegen = 1;
-        public override void SetStaticDefaults()
-        {
-            base.SetStaticDefaults();
-        }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
+            base.ModifyTooltips(tooltips);
             if (Keyboard.GetState().IsKeyDown(Keys.LeftShift))
                 return;
             if (LoreEffect.Enabled)

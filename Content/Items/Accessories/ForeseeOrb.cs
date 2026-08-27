@@ -1,6 +1,7 @@
-﻿using CalamityEntropy.Content.Buffs;
-using CalamityMod.Items;
+using CalamityEntropy.Content.Buffs;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
@@ -11,6 +12,11 @@ namespace CalamityEntropy.Content.Items.Accessories
 {
     public class ForeseeOrb : ModItem
     {
+        //完整/破碎两套物品贴图在加载期就位,佩戴时按 buff 状态切换,不再每帧请求
+        [VaultLoaden("CalamityEntropy/Content/Items/Accessories/ForeseeOrb")]
+        internal static Asset<Texture2D> OrbTex;
+        [VaultLoaden("CalamityEntropy/Content/Items/Accessories/ForeseeOrbBreak")]
+        internal static Asset<Texture2D> OrbBreakTex;
         public static float DMG = 0.16f;
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
@@ -20,7 +26,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         {
             Item.width = 40;
             Item.height = 40;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.value = Item.buyPrice(gold: 60);
             Item.rare = ItemRarityID.Yellow;
             Item.accessory = true;
         }
@@ -36,11 +42,11 @@ namespace CalamityEntropy.Content.Items.Accessories
             {
                 if (player.HasBuff<ShatteredOrb>())
                 {
-                    TextureAssets.Item[Type] = ModContent.Request<Texture2D>("CalamityEntropy/Content/Items/Accessories/ForeseeOrbBreak");
+                    TextureAssets.Item[Type] = OrbBreakTex;
                 }
                 else
                 {
-                    TextureAssets.Item[Type] = ModContent.Request<Texture2D>("CalamityEntropy/Content/Items/Accessories/ForeseeOrb");
+                    TextureAssets.Item[Type] = OrbTex;
                 }
             }
         }

@@ -5,7 +5,10 @@ using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.Prophet;
-using CalamityMod;
+using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Core.Cooldowns;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -19,6 +22,11 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
 {
     public class OblivionThresherHoldout : ModProjectile
     {
+        //本文件三个锯刃类共用的贴图,加载期由 VaultLoaden 赋值;漩涡着色器读共享基座 CEEffectAssets
+        [VaultLoaden("CalamityEntropy/Content/Items/Weapons/OblivionThresher/OblivionThresherShootE1")]
+        internal static Asset<Texture2D> ThresherShootE1Tex;
+        [VaultLoaden("CalamityEntropy/Content/Items/Weapons/OblivionThresher/OblivionThresherShootE2")]
+        internal static Asset<Texture2D> ThresherShootE2Tex;
         public override void SetDefaults()
         {
             Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
@@ -43,9 +51,9 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
             }
             Player player = Projectile.GetOwner();
 
-            Projectile.rotation = CEUtils.RotateTowardsAngle(CEUtils.RotateTowardsAngle(Projectile.rotation, (player.Calamity().mouseWorld - Projectile.Center).ToRotation(), 0.1f, false), (player.Calamity().mouseWorld - Projectile.Center).ToRotation(), 0.1f, true);
+            Projectile.rotation = CEUtils.RotateTowardsAngle(CEUtils.RotateTowardsAngle(Projectile.rotation, (player.Entropy().MouseWorld - Projectile.Center).ToRotation(), 0.1f, false), (player.Entropy().MouseWorld - Projectile.Center).ToRotation(), 0.1f, true);
             Projectile.Center = player.GetDrawCenter() - new Vector2(-Xoffset + 12, 0).RotatedBy(Projectile.rotation);
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             if (Projectile.owner == Main.myPlayer && Main.mouseRight)
             {
                 if (!player.HasCooldown(OblivionThretherCooldown.ID))
@@ -107,7 +115,7 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
                             return;
                         }
                         Shoot = false;
-                        SoundStyle ShootSound = new("CalamityMod/Sounds/Item/SawShot", 2) { PitchVariance = 0.1f, Volume = 0.4f + Charge * 0.5f };
+                        SoundStyle ShootSound = new("CalamityEntropy/Assets/Sounds/SawShot", 2) { PitchVariance = 0.1f, Volume = 0.4f + Charge * 0.5f };
                         SoundEngine.PlaySound(ShootSound, Projectile.Center);
                         NoSawOnHoldout = true;
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), jpos, Projectile.velocity, ModContent.ProjectileType<OblivionThresherShoot>(), (int)(Projectile.damage * Charge), Projectile.knockBack, Projectile.owner, Charge);
@@ -199,9 +207,9 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
                 DrawVortex(jpos, new Color(80, 70, 250), Charge * 0.8f);
                 DrawVortex(jpos, new Color(90, 80, 255) * Charge * 0.8f, 2.6f, 0.2f);
             }
-            Texture2D j1 = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/OblivionThresher/OblivionThresherShootE1");
-            Texture2D j2 = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/OblivionThresher/OblivionThresherShootE2");
-            Texture2D s = CEUtils.getExtraTex("SemiCircularSmear");
+            Texture2D j1 = OblivionThresherHoldout.ThresherShootE1Tex.Value;
+            Texture2D j2 = OblivionThresherHoldout.ThresherShootE2Tex.Value;
+            Texture2D s = CEExtraAssets.SemiCircularSmear;
             if (Charge >= 1f)
             {
                 Color c = Color.Lerp(Color.White, Color.Blue, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 10f) * 0.5f + 0.5f);
@@ -261,7 +269,7 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
         public void DrawVortex(Vector2 pos, Color color, float Size = 1, float glow = 1f)
         {
             Main.spriteBatch.End();
-            Effect effect = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Vortex", AssetRequestMode.ImmediateLoad).Value;
+            Effect effect = CEEffectAssets.Vortex;
             effect.Parameters["Center"].SetValue(new Vector2(0.5f, 0.5f));
             effect.Parameters["Strength"].SetValue(22);
             effect.Parameters["AspectRatio"].SetValue(1);
@@ -273,7 +281,7 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
             effect.Parameters["enhanceLightAlpha"].SetValue(0.8f);
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             effect.CurrentTechnique.Passes[0].Apply();
-            Main.spriteBatch.Draw(CEUtils.getExtraTex("VoronoiShapes"), pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12, CEUtils.getExtraTex("VoronoiShapes").Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(CEExtraAssets.VoronoiShapes, pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12, CEExtraAssets.VoronoiShapes.Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
             CEUtils.DrawGlow(pos, Color.White * 0.4f * glow, 0.8f * Size * glow);
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
@@ -311,7 +319,7 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
             void DrawVortex(Vector2 pos, Color color, float Size = 1, float glow = 1f)
             {
                 Main.spriteBatch.End();
-                Effect effect = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Vortex", AssetRequestMode.ImmediateLoad).Value;
+                Effect effect = CEEffectAssets.Vortex;
                 effect.Parameters["Center"].SetValue(new Vector2(0.5f, 0.5f));
                 effect.Parameters["Strength"].SetValue(22);
                 effect.Parameters["AspectRatio"].SetValue(1);
@@ -323,7 +331,7 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
                 effect.Parameters["enhanceLightAlpha"].SetValue(0.8f);
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                 effect.CurrentTechnique.Passes[0].Apply();
-                Main.spriteBatch.Draw(CEUtils.getExtraTex("VoronoiShapes"), pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12, CEUtils.getExtraTex("VoronoiShapes").Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(CEExtraAssets.VoronoiShapes, pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12, CEExtraAssets.VoronoiShapes.Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
                 CEUtils.DrawGlow(pos, Color.White * glow * 0.6f, 1.4f * Size * glow);
             }
             Vector2 shakeOffset = CEUtils.randomPointInCircle(Charge * 3);
@@ -333,9 +341,9 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
                 DrawVortex(jpos, new Color(60, 50, 250), 1 * Charge);
                 DrawVortex(jpos, new Color(90, 110, 255) * Charge * 0.8f, 2.6f, 0.4f);
             }
-            Texture2D j1 = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/OblivionThresher/OblivionThresherShootE1");
-            Texture2D j2 = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/OblivionThresher/OblivionThresherShootE2");
-            Texture2D s = CEUtils.getExtraTex("SemiCircularSmear");
+            Texture2D j1 = OblivionThresherHoldout.ThresherShootE1Tex.Value;
+            Texture2D j2 = OblivionThresherHoldout.ThresherShootE2Tex.Value;
+            Texture2D s = CEExtraAssets.SemiCircularSmear;
             if (Charge >= 1f)
             {
                 Color c = Color.Lerp(Color.White, Color.Blue, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 10f) * 0.5f + 0.5f);
@@ -412,7 +420,7 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
             Projectile.localAI[1]++;
             if (Projectile.localAI[1] > 82 && Projectile.GetOwner().ownedProjectileCounts[ModContent.ProjectileType<OblivionThresherShootAlt>()] > 0)
             {
-                Projectile.velocity += (Projectile.GetOwner().Calamity().mouseWorld - Projectile.Center).normalize() * 3f;
+                Projectile.velocity += (Projectile.GetOwner().mouseWorld() - Projectile.Center).normalize() * 3f;
                 Projectile.velocity *= 0.9f;
             }
             else if (Projectile.ai[0] >= 0.5f)
@@ -473,7 +481,7 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
             void DrawVortex(Vector2 pos, Color color, float Size = 1, float glow = 1f, float strength = 1)
             {
                 Main.spriteBatch.End();
-                Effect effect = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Vortex", AssetRequestMode.ImmediateLoad).Value;
+                Effect effect = CEEffectAssets.Vortex;
                 effect.Parameters["Center"].SetValue(new Vector2(0.5f, 0.5f));
                 effect.Parameters["Strength"].SetValue(16 * strength);
                 effect.Parameters["AspectRatio"].SetValue(1);
@@ -485,7 +493,7 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
                 effect.Parameters["enhanceLightAlpha"].SetValue(0.8f);
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                 effect.CurrentTechnique.Passes[0].Apply();
-                Main.spriteBatch.Draw(CEUtils.getExtraTex("VoronoiShapes"), pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12 * Math.Sign(strength), CEUtils.getExtraTex("VoronoiShapes").Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(CEExtraAssets.VoronoiShapes, pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12 * Math.Sign(strength), CEExtraAssets.VoronoiShapes.Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
                 CEUtils.DrawGlow(pos, Color.White * glow * 0.7f, 0.7f * Size * glow);
                 CEUtils.DrawGlow(pos, Color.White * glow * 0.4f, 4f * Size * glow);
             }
@@ -498,9 +506,9 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
                 DrawVortex(jpos, new Color(46, 40, 255) * Charge, 4f, 0.2f, 1.5f);
                 DrawVortex(jpos, new Color(46, 40, 255) * Charge, 4f, 0.2f, -1.5f);
             }
-            Texture2D j1 = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/OblivionThresher/OblivionThresherShootE1");
-            Texture2D j2 = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/OblivionThresher/OblivionThresherShootE2");
-            Texture2D s = CEUtils.getExtraTex("SemiCircularSmear");
+            Texture2D j1 = OblivionThresherHoldout.ThresherShootE1Tex.Value;
+            Texture2D j2 = OblivionThresherHoldout.ThresherShootE2Tex.Value;
+            Texture2D s = CEExtraAssets.SemiCircularSmear;
             if (Charge >= 1f)
             {
                 Color c = Color.Lerp(Color.White, Color.Blue, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 10f) * 0.5f + 0.5f);
@@ -579,7 +587,7 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
                 {
                     Projectile.velocity = (Main.MouseWorld - Projectile.Center).normalize() * 26;
                     Projectile.netUpdate = true;
-                    SoundStyle ShootSound = new("CalamityMod/Sounds/Item/SawShot", 2) { PitchVariance = 0.1f, Volume = 1f };
+                    SoundStyle ShootSound = new("CalamityEntropy/Assets/Sounds/SawShot", 2) { PitchVariance = 0.1f, Volume = 1f };
                     SoundEngine.PlaySound(ShootSound, Projectile.Center);
                     OnJaw = false;
                     Projectile.GetOwner().velocity = Projectile.velocity * -0.4f;
@@ -602,7 +610,7 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
                 }
                 if (Projectile.localAI[2]++ > 60)
                 {
-                    Projectile.velocity += (Projectile.GetOwner().Calamity().mouseWorld - Projectile.Center).normalize() * 1f;
+                    Projectile.velocity += (Projectile.GetOwner().mouseWorld() - Projectile.Center).normalize() * 1f;
                     Projectile.velocity *= 0.9f;
                 }
             }

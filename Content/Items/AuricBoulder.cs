@@ -1,7 +1,5 @@
-﻿using CalamityEntropy.Content.Tiles;
-using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+﻿using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Content.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -25,7 +23,7 @@ namespace CalamityEntropy.Content.Items
             Item.consumable = true;
             Item.maxStack = 9999;
             Item.value = Item.sellPrice(gold: 4);
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.rare = ModContent.RarityType<Golden>();
             Item.DefaultToPlaceableTile(ModContent.TileType<AuricBoulderTile>(), 0);
             Item.width = 32;
             Item.height = 32;
@@ -38,7 +36,7 @@ namespace CalamityEntropy.Content.Items
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ModContent.ItemType<AuricBar>(), 1).AddTile(ModContent.TileType<CosmicAnvil>()).Register();
+            CreateRecipe().AddIngredient(ModContent.ItemType<VoidBar>(), 1).AddTile(TileID.LunarCraftingStation).Register();
         }
     }
 }

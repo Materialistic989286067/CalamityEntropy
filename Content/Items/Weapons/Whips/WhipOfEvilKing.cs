@@ -1,7 +1,6 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items.Materials;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -40,7 +39,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<AncientBoneDust>()
+                .AddIngredient(ItemID.Bone)
                 .AddIngredient(ItemID.Silk, 8)
                 .AddRecipeGroup(CERecipeGroups.evilBar, 5)
                 .AddIngredient(ItemID.GoldCoin, 99)

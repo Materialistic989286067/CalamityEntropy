@@ -1,7 +1,5 @@
-﻿using CalamityEntropy.Common;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Accessories.Wings;
+using CalamityEntropy.Common;
+using CalamityEntropy.Content.Items.Armor;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -12,7 +10,7 @@ using Terraria.ModLoader;
 namespace CalamityEntropy.Content.Items.Accessories
 {
     [AutoloadEquip(EquipType.Wings)]
-    public class RuneWing : BaseWings, ISpecialDrawingWing
+    public class RuneWing : CEBaseWings, ISpecialDrawingWing
     {
         public static float HorSpeed = 7.5f;
         public static float AccMul = 1.2f;
@@ -39,7 +37,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             base.SetDefaults();
             Item.width = 22;
             Item.height = 20;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.value = Item.buyPrice(gold: 60);
             Item.rare = ItemRarityID.Yellow;
             Item.accessory = true;
 
@@ -47,7 +45,8 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             tooltips.Replace("[DT]", (float)Math.Round(MAXDASHTIME / 60f, 1));
-            tooltips.IntegrateHotkey(CEKeybinds.RuneDashHotKey);
+            // 脱离灾厄:灾厄 IntegrateHotkey 扩展改自有键名提示
+            tooltips.Replace("[KEY]", CEKeybinds.RuneDashHotKey.TooltipKeyHint());
         }
         public override void UpdateAccessory(Player player, bool hideVisual)
         {

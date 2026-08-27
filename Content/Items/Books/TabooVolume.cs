@@ -1,15 +1,14 @@
-﻿using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Rarities;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityEntropy.Content.Rarities;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Books
@@ -24,20 +23,23 @@ namespace CalamityEntropy.Content.Items.Books
             Item.crit = 10;
             Item.mana = 42;
             Item.shootSpeed = 29;
-            Item.rare = ModContent.RarityType<CalamityRed>();
-            Item.value = CalamityGlobalItem.RarityCalamityRedBuyPrice;
+            Item.rare = ModContent.RarityType<VoidPurple>();
+            Item.value = Item.buyPrice(platinum: 3, gold: 20);
         }
-        public override Texture2D BookMarkTexture => ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/EntropyBookUI/BookMark8").Value;
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/BookMark8")]
+        internal static Asset<Texture2D> BookMarkSlotTex;
+        public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<TabooVolumeHeld>();
         public override int SlotCount => 7;
 
         public override void AddRecipes()
         {
 
+            // 原灾厄原料: Heresy(月后魔法武器)按档位换最后之棱, 湮灭之灰换自有虚空之鳞
             CreateRecipe().AddIngredient<BurntLostClassics>()
-                .AddIngredient<Heresy>()
-                .AddIngredient<AshesofAnnihilation>(6)
-                .AddTile<DraedonsForge>()
+                .AddIngredient(ItemID.LastPrism)
+                .AddIngredient<VoidScales>(6)
+                .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
     }
@@ -120,9 +122,12 @@ namespace CalamityEntropy.Content.Items.Books
             }
             return base.Shoot();
         }
+        //环绕灵魂索魂者贴图,加载期就位,不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Items/Books/SoulSeekerSupreme")]
+        internal static Asset<Texture2D> SeekerTex;
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityEntropy/Content/Items/Books/SoulSeekerSupreme").Value;
+            Texture2D tex = SeekerTex.Value;
             foreach (Vector2 pos in getSeekerPos())
             {
                 Main.EntitySpriteDraw(tex, pos - Main.screenPosition, CEUtils.GetCutTexRect(tex, 6, ((int)Main.GameUpdateCount / 4) % 6, false), lightColor, 0, new Vector2(48, 65), Projectile.scale, (Projectile.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally));

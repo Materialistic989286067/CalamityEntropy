@@ -1,5 +1,6 @@
 ﻿using CalamityEntropy;
 using CalamityEntropy.Content.Items.Vanity;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System.Collections.Generic;
@@ -11,6 +12,10 @@ namespace CoHHeadDrawLayer.Common.DrawLayers
 {
     public class CoHHeadDrawLayer : PlayerDrawLayer
     {
+        //发饰贴图在加载期就位,不再每帧走 RequestTex 查表
+        [VaultLoaden("CalamityEntropy/Content/Items/Vanity/CrystalofHeart_Hair")]
+        internal static Asset<Texture2D> HairTex;
+
         public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
         {
             if (drawInfo.drawPlayer.dead)
@@ -29,7 +34,7 @@ namespace CoHHeadDrawLayer.Common.DrawLayers
         {
             var player = drawInfo.drawPlayer;
             var mp = player.GetModPlayer<VanityModPlayer>();
-            Texture2D texture = CEUtils.RequestTex("CalamityEntropy/Content/Items/Vanity/CrystalofHeart_Hair");
+            Texture2D texture = HairTex.Value;
             Vector2 headPos = drawInfo.HeadPosition(true);
 
             Vector2 offset = new Vector2(-2, 0);

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -6,6 +7,9 @@ namespace CalamityEntropy.Content.Projectiles.monument
 {
     public class Vmwave : ModProjectile
     {
+        //冲击波三帧(wave1~3),加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/monument/wave", 1, 3, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] WaveFrames;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
@@ -37,9 +41,9 @@ namespace CalamityEntropy.Content.Projectiles.monument
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tx1 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/monument/wave1").Value;
-            Texture2D tx2 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/monument/wave2").Value;
-            Texture2D tx3 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/monument/wave3").Value;
+            Texture2D tx1 = WaveFrames[0];
+            Texture2D tx2 = WaveFrames[1];
+            Texture2D tx3 = WaveFrames[2];
             Texture2D draw = tx1;
             if (Projectile.timeLeft < 7)
             {

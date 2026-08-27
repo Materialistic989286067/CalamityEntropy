@@ -1,8 +1,5 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Projectiles.SamsaraCasket;
-using CalamityMod;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items.LoreItems;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
@@ -29,7 +26,8 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override StatInheritanceData GetModifierInheritance(DamageClass damageClass)
         {
-            if (damageClass == CEUtils.RogueDC)
+            // 盗贼职业已并入原版投掷,继承比例照旧
+            if (damageClass == Throwing)
             {
                 return new StatInheritanceData(0.2f, 0.2f, 0.2f, 0.2f, 0.2f);
             }
@@ -57,7 +55,6 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.value = Item.buyPrice(silver: 1);
             Item.rare = ItemRarityID.Red;
             Item.Entropy().Legend = true;
-            Item.Calamity().CannotBeEnchanted = true;
         }
 
         public override void UpdateInventory(Player player)
@@ -109,7 +106,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void HoldItem(Player player)
         {
             player.Entropy().sCasketLevel = 0;
-            if (DownedBossSystem.downedHiveMind || DownedBossSystem.downedPerforator)
+            if (NPC.downedBoss2)
             {
                 player.Entropy().sCasketLevel = 1;
             }
@@ -125,15 +122,15 @@ namespace CalamityEntropy.Content.Items.Weapons
             {
                 player.Entropy().sCasketLevel = 4;
             }
-            if (DownedBossSystem.downedDoG)
+            if (EDownedBosses.downedAbyssalWraith)
             {
                 player.Entropy().sCasketLevel = 5;
             }
-            if (DownedBossSystem.downedYharon)
+            if (EDownedBosses.downedCruiser)
             {
                 player.Entropy().sCasketLevel = 6;
             }
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<SamsaraCasketProj>()] < 1 && !player.HasBuff(ModContent.BuffType<NOU>()))
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<SamsaraCasketProj>()] < 1)
             {
                 int p = Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.Center, Vector2.Zero, ModContent.ProjectileType<SamsaraCasketProj>(), Item.damage, player.GetWeaponKnockback(Item), player.whoAmI);
 
@@ -154,7 +151,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             {
                 ap += 20;
             }
-            if (DownedBossSystem.downedSignus)
+            if (EDownedBosses.downedNihilityTwin)
             {
                 ap += 30;
             }
@@ -176,7 +173,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             {
                 j++;
             }
-            if (DownedBossSystem.downedPerforator || DownedBossSystem.downedHiveMind)
+            if (NPC.downedBoss2)
             {
                 j++;
             }
@@ -188,7 +185,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             {
                 j++;
             }
-            if (DownedBossSystem.downedCryogen)
+            if (NPC.downedMechBossAny)
             {
                 j++;
             }
@@ -212,35 +209,35 @@ namespace CalamityEntropy.Content.Items.Weapons
             {
                 j++;
             }
-            if (DownedBossSystem.downedDragonfolly)
+            if (NPC.downedMoonlord)
             {
                 j++;
             }
-            if (DownedBossSystem.downedProvidence)
+            if (EDownedBosses.downedNihilityTwin)
             {
                 j++;
             }
-            if (DownedBossSystem.downedSignus)
+            if (EDownedBosses.downedNihilityTwin)
             {
                 j++;
             }
-            if (DownedBossSystem.downedPolterghast)
+            if (EDownedBosses.downedNihilityTwin)
             {
                 j++;
             }
-            if (DownedBossSystem.downedDoG)
+            if (EDownedBosses.downedAbyssalWraith)
             {
                 j++;
             }
-            if (DownedBossSystem.downedYharon)
+            if (EDownedBosses.downedCruiser)
             {
                 j++;
             }
-            if (DownedBossSystem.downedExoMechs)
+            if (EDownedBosses.downedCruiser)
             {
                 j++;
             }
-            if (DownedBossSystem.downedCalamitas)
+            if (EDownedBosses.downedCruiser)
             {
                 j++;
             }
@@ -275,7 +272,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             {
                 ad += 0.65f;
             }
-            if (DownedBossSystem.downedCryogen)
+            if (NPC.downedMechBossAny)
             {
                 ad += 0.3f;
             }
@@ -291,45 +288,41 @@ namespace CalamityEntropy.Content.Items.Weapons
             {
                 ad += 0.5f;
             }
-            if (DownedBossSystem.downedProvidence)
+            if (EDownedBosses.downedNihilityTwin)
             {
                 ad += 0.3f;
             }
-            if (DownedBossSystem.downedDragonfolly)
+            if (NPC.downedMoonlord)
             {
                 ad += 0.1f;
             }
-            if (DownedBossSystem.downedSignus)
+            if (EDownedBosses.downedNihilityTwin)
             {
                 ad += 0.1f;
             }
-            if (DownedBossSystem.downedPolterghast)
+            if (EDownedBosses.downedNihilityTwin)
             {
                 ad += 0.5f;
             }
-            if (DownedBossSystem.downedDoG)
+            if (EDownedBosses.downedAbyssalWraith)
             {
                 ad += 0.6f;
             }
-            if (DownedBossSystem.downedYharon)
+            if (EDownedBosses.downedCruiser)
             {
                 ad += 1.75f;
             }
-            if (DownedBossSystem.downedExoMechs)
+            if (EDownedBosses.downedCruiser)
             {
                 ad += 0.3f;
             }
-            if (DownedBossSystem.downedCalamitas)
+            if (EDownedBosses.downedCruiser)
             {
                 ad += 0.5f;
             }
-            if (DownedBossSystem.downedExoMechs && DownedBossSystem.downedCalamitas)
+            if (EDownedBosses.downedCruiser)
             {
                 ad += 0.75f;
-            }
-            if (DownedBossSystem.downedBossRush)
-            {
-                ad += 2.0f;
             }
             return ad;
         }
@@ -356,7 +349,6 @@ namespace CalamityEntropy.Content.Items.Weapons
             CreateRecipe()
                 .AddIngredient(ItemID.FallenStar, 5)
                 .AddIngredient(ItemID.WoodenSword)
-                .AddIngredient(ModContent.ItemType<LoreAwakening>())
                 .AddTile(TileID.WorkBenches).Register();
         }
     }

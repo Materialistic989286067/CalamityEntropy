@@ -1,7 +1,9 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -14,7 +16,7 @@ namespace CalamityEntropy.Content.Projectiles
     {
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 26;
             Projectile.height = 26;
             Projectile.timeLeft = 120;
@@ -97,10 +99,6 @@ namespace CalamityEntropy.Content.Projectiles
             {
                 player.itemTime = 2;
                 player.itemAnimation = 2;
-                if (Projectile.GetOwner().Calamity().bladeArmEnchant)
-                {
-                    player.itemAnimation = int.Max(1, player.itemAnimationMax - Projectile.Entropy().Lifetime);
-                }
             }
 
             float speed = player.GetTotalAttackSpeed(Projectile.DamageType);
@@ -125,7 +123,7 @@ namespace CalamityEntropy.Content.Projectiles
                 if (counter >= 20 && spawnProj)
                 {
                     spawnProj = false;
-                    if (!Projectile.GetOwner().Calamity().bladeArmEnchant && Main.myPlayer == Projectile.owner)
+                    if (Main.myPlayer == Projectile.owner)
                     {
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), player.Center, Projectile.velocity, ModContent.ProjectileType<WohLaser>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner, 0, 0, 2).ToProj().DamageType = Projectile.DamageType;
                     }
@@ -175,7 +173,7 @@ namespace CalamityEntropy.Content.Projectiles
                 if (counter >= 16 && st)
                 {
                     st = false;
-                    if (!Projectile.GetOwner().Calamity().bladeArmEnchant && Main.myPlayer == Projectile.owner)
+                    if (Main.myPlayer == Projectile.owner)
                     {
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), player.Center, Projectile.velocity * 0.52f, ModContent.ProjectileType<VoidImpact>(), (int)(Projectile.damage), Projectile.knockBack, Projectile.owner);
                     }
@@ -345,7 +343,7 @@ namespace CalamityEntropy.Content.Projectiles
 
             if (ve.Count >= 3)
             {
-                trail = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value;
+                trail = CEExtraAssets.white;
                 gd.Textures[0] = trail;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
             }
@@ -376,7 +374,7 @@ namespace CalamityEntropy.Content.Projectiles
 
             if (ve.Count >= 3)
             {
-                trail = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/SwordSlashTexture").Value;
+                trail = CEExtraAssets.SwordSlashTexture;
                 gd.Textures[0] = trail;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
             }

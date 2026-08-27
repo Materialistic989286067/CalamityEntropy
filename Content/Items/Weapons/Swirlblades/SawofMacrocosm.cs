@@ -1,25 +1,19 @@
-using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Rarities;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Weapons;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Intrinsics.Arm;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -28,11 +22,14 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 {
-    public class SawofMacrocosm : RogueWeapon
+    public class SawofMacrocosm : ModItem, ICEChargeWeapon
     {
+        // 充能条 8 秒；原潜伏乘数 伤害0.5/弹速1.25 并入释放乘数
+        public CEChargeProfile ChargeProfile => CEChargeProfile.ChargeBar(8f, 0.5f, 1.25f);
+
         public override void SetDefaults()
         {
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 40;
             Item.width = 86;
             Item.height = 86;
@@ -40,8 +37,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Item.crit = 8;
             Item.ArmorPenetration = 30;
             Item.UseSound = SoundID.Item1 with { Volume = 1.2f };
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<CosmicPurple>();
+            Item.value = Item.buyPrice(platinum: 2);
+            Item.rare = ModContent.RarityType<AbyssalBlue>();
             Item.shoot = ModContent.ProjectileType<SawofMacrocosmProj>();
             Item.shootSpeed = 52f;
             Item.knockBack = 2f;
@@ -51,17 +48,14 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Item.noMelee = true;
             Item.noUseGraphic = true;
         }
-        public override float StealthDamageMultiplier => 0.5f;
-        public override float StealthVelocityMultiplier => 1.25f;
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             CEUtils.PlaySound("SwingMid", Main.rand.NextFloat(1.8f, 2.1f), position, 16, 0.44f);
+            bool ult = CEChargeWeapon.TryConsume(player, Item);
             int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            if (player.Calamity().StealthStrikeAvailable() && p.WithinBounds(Main.maxProjectiles))
+            if (ult && p >= 0 && p < Main.maxProjectiles)
             {
-                Main.projectile[p].Calamity().stealthStrike = true;
-                CEUtils.SyncProj(p);
+                CEChargeWeapon.Empower(p);
             }
             return false;
         }
@@ -69,10 +63,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         {
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<BlazingSwirlblade>())
-                .AddIngredient(ModContent.ItemType<DimensionTearingDisk>())
-                .AddIngredient(ModContent.ItemType<CosmiliteBar>(), 6)
-                .AddIngredient(ModContent.ItemType<AscendantSpiritEssence>(), 2)
-                .AddTile<CosmicAnvil>()
+                .AddIngredient(ItemID.StarWrath)
+                .AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 8)
+                .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
         public override bool MeleePrefix()
@@ -82,6 +75,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
     }
     public class SawofMacrocosmProj : BaseSwirlblade
     {
+        //本文件三个锯刃类共用的贴图,加载期由 VaultLoaden 赋值;漩涡着色器读共享基座 CEEffectAssets
+        [VaultLoaden("CalamityEntropy/Content/Items/Weapons/OblivionThresher/OblivionThresherShootE1")]
+        internal static Asset<Texture2D> ThresherShootE1Tex;
+        [VaultLoaden("CalamityEntropy/Content/Items/Weapons/OblivionThresher/OblivionThresherShootE2")]
+        internal static Asset<Texture2D> ThresherShootE2Tex;
         public override string Texture => CEUtils.ItemTexPath<SawofMacrocosm>();
         public override int OldPosLength => 12;
         public override void SetDefaults()
@@ -91,7 +89,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Projectile.tileCollide = false;
         }
         public override float Radius => 180;
-        public override int SpreadTime => Projectile.Calamity().stealthStrike ? 63 : 36;
+        public override int SpreadTime => Projectile.IsEmpowered() ? 63 : 36;
         public override void AI()
         {
             base.AI();
@@ -109,23 +107,24 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         }
         public override void FlyBack()
         {
-            if (Projectile.Calamity().stealthStrike)
+            if (Projectile.IsEmpowered())
             {
                 NPC target = CEUtils.FindTarget_HomingProj(Projectile, Projectile.Center, 6000);
                 if(target == null)
                 {
-                    Projectile.Calamity().stealthStrike = false;
+                    //无目标时撤销强化态，回退为普通收回（对应原潜伏分支清旗标的行为）
+                    Projectile.GetGlobalProjectile<CEEmpowerGlobalProjectile>().Empowered = false;
                     return;
                 }
                 CEUtils.PlaySound("DoGLaserWallBigAttack", 1.2f, Projectile.Center);
                 PRTLoader.NewParticle<PRT_DirectionalPulseRing>(Projectile.Center, Vector2.Zero, Color.Purple, 0.1f).Configure(new Vector2(2f, 2f), 0, 0.85f, 46);
-                PRTLoader.NewParticle<PRT_DetailedExplosionCal>(Projectile.Center, Vector2.Zero, Color.Purple, 0f).Configure(Vector2.One, Main.rand.NextFloat(-5, 5), (Projectile.Calamity().stealthStrike ? 2.2f : 1) * 0.65f, 30);
+                PRTLoader.NewParticle<PRT_DetailedExplosionCal>(Projectile.Center, Vector2.Zero, Color.Purple, 0f).Configure(Vector2.One, Main.rand.NextFloat(-5, 5), (Projectile.IsEmpowered() ? 2.2f : 1) * 0.65f, 30);
 
                 float scale = 7f;
                 for (float i = 1; i >= 0.2f; i -= 0.2f)
                 {
-                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 160), new Color(170, 160, 255), i) * i, 0.005f * i * (Radius / 180f)).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f * i * (Radius / 180f), scale * 0.07f * i * (Radius / 180f), 12 + (int)(i * 8));
-                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 180), new Color(170, 160, 255), i) * i, 0.0046f * i * (Radius / 180f)).Configure("CalamityMod/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f * i * (Radius / 180f), scale * 0.0625f * i * (Radius / 180f), 12 + (int)(i * 8));
+                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 160), new Color(170, 160, 255), i) * i, 0.005f * i * (Radius / 180f)).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f * i * (Radius / 180f), scale * 0.07f * i * (Radius / 180f), 12 + (int)(i * 8));
+                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 180), new Color(170, 160, 255), i) * i, 0.0046f * i * (Radius / 180f)).Configure("CalamityEntropy/Assets/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f * i * (Radius / 180f), scale * 0.0625f * i * (Radius / 180f), 12 + (int)(i * 8));
                 }
                 if (Main.myPlayer == Projectile.owner)
                 {
@@ -134,7 +133,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 ScreenShaker.AddShakeWithRangeFade(new ScreenShaker.ScreenShake(Vector2.Zero, 9), Projectile.Distance(Main.LocalPlayer.Center), 3600);
                 Projectile.Kill();
             }
-            if(!Projectile.Calamity().stealthStrike)
+            if(!Projectile.IsEmpowered())
             {
                 base.FlyBack();
             }
@@ -180,7 +179,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 void DrawVortex(Vector2 pos, Color color, float Size = 1, float glow = 1f)
                 {
                     Main.spriteBatch.End();
-                    Effect effect = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Vortex", AssetRequestMode.ImmediateLoad).Value;
+                    Effect effect = CEEffectAssets.Vortex;
                     effect.Parameters["Center"].SetValue(new Vector2(0.5f, 0.5f));
                     effect.Parameters["Strength"].SetValue(19);
                     effect.Parameters["AspectRatio"].SetValue(1);
@@ -192,7 +191,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                     effect.Parameters["enhanceLightAlpha"].SetValue(1f);
                     Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, effect, Main.GameViewMatrix.TransformationMatrix);
                     effect.CurrentTechnique.Passes[0].Apply();
-                    Main.spriteBatch.Draw(CEUtils.getExtraTex("VoronoiShapes"), pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12, CEUtils.getExtraTex("VoronoiShapes").Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(CEExtraAssets.VoronoiShapes, pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12, CEExtraAssets.VoronoiShapes.Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
                     CEUtils.DrawGlow(pos, Color.White * glow * 0.6f, 1.4f * Size * glow);
                 }
                 Vector2 shakeOffset = CEUtils.randomPointInCircle(BladeScale * 3);
@@ -200,9 +199,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 DrawVortex(jpos, new Color(100, 100, 255), scale * 2.6f);
                 DrawVortex(jpos, new Color(200, 100, 255), scale * 1.4f, 0.4f);
 
-                Texture2D j1 = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/OblivionThresher/OblivionThresherShootE1");
-                Texture2D j2 = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/OblivionThresher/OblivionThresherShootE2");
-                Texture2D s = CEUtils.getExtraTex("SemiCircularSmear");
+                Texture2D j1 = SawofMacrocosmProj.ThresherShootE1Tex.Value;
+                Texture2D j2 = SawofMacrocosmProj.ThresherShootE2Tex.Value;
+                Texture2D s = CEExtraAssets.SemiCircularSmear;
                 Color c = Color.Lerp(Color.White, Color.Blue, (float)Math.Sin(time * 26f) * 0.5f + 0.5f);
 
                 Main.EntitySpriteDraw(j1, jpos - Main.screenPosition, null, Color.White * 0.8f, Main.GameUpdateCount * 0.6f, j1.Size() / 2f, scale, SpriteEffects.None);
@@ -229,7 +228,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 int sType = ModContent.ProjectileType<SawofMacrocosmSplit>();
                 for (int i = 0; i < 4; i++)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (i * MathHelper.PiOver2 + rt).ToRotationVector2() * Projectile.scale * (Projectile.Calamity().stealthStrike ? 90 : 42), sType, Projectile.damage, 0, Projectile.owner, i % 2 == 0 ? 1 : 0, Projectile.Calamity().stealthStrike ? 1 : 0);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (i * MathHelper.PiOver2 + rt).ToRotationVector2() * Projectile.scale * (Projectile.IsEmpowered() ? 90 : 42), sType, Projectile.damage, 0, Projectile.owner, i % 2 == 0 ? 1 : 0, Projectile.IsEmpowered() ? 1 : 0);
                 }
             }
             CEUtils.PlaySound("DoGLaserWallSpawn", Main.rand.NextFloat(1f, 1.25f), Projectile.Center, volume: 1f);
@@ -282,8 +281,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         {
             if (Projectile.Entropy().FirstFrames)
                 orgPos = Projectile.Center;
+            //ai[1] 随生成包同步，各端本地打标即可
             if (Projectile.ai[1] > 0)
-                Projectile.Calamity().stealthStrike = true;
+                Projectile.SetEmpowered(false);
             base.AI();
             if(Counter < FlyTime)
             {
@@ -346,7 +346,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 void DrawVortex(Vector2 pos, Color color, float Size = 1, float glow = 1f)
                 {
                     Main.spriteBatch.End();
-                    Effect effect = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Vortex", AssetRequestMode.ImmediateLoad).Value;
+                    Effect effect = CEEffectAssets.Vortex;
                     effect.Parameters["Center"].SetValue(new Vector2(0.5f, 0.5f));
                     effect.Parameters["Strength"].SetValue(19);
                     effect.Parameters["AspectRatio"].SetValue(1);
@@ -358,7 +358,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                     effect.Parameters["enhanceLightAlpha"].SetValue(1f);
                     Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                     effect.CurrentTechnique.Passes[0].Apply();
-                    Main.spriteBatch.Draw(CEUtils.getExtraTex("VoronoiShapes"), pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12, CEUtils.getExtraTex("VoronoiShapes").Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(CEExtraAssets.VoronoiShapes, pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12, CEExtraAssets.VoronoiShapes.Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
                     CEUtils.DrawGlow(pos, Color.White * glow * 0.6f, 1.4f * Size * glow);
                 }
                 Vector2 shakeOffset = CEUtils.randomPointInCircle(BladeScale * 3);
@@ -366,9 +366,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 DrawVortex(jpos, new Color(100, 100, 255), scale * 2.6f);
                 DrawVortex(jpos, new Color(200, 100, 255), scale * 1.4f, 0.4f);
 
-                Texture2D j1 = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/OblivionThresher/OblivionThresherShootE1");
-                Texture2D j2 = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/OblivionThresher/OblivionThresherShootE2");
-                Texture2D s = CEUtils.getExtraTex("SemiCircularSmear");
+                Texture2D j1 = SawofMacrocosmProj.ThresherShootE1Tex.Value;
+                Texture2D j2 = SawofMacrocosmProj.ThresherShootE2Tex.Value;
+                Texture2D s = CEExtraAssets.SemiCircularSmear;
                 Color c = Color.Lerp(Color.White, Color.Blue, (float)Math.Sin(time * 26f) * 0.5f + 0.5f);
 
                 Main.EntitySpriteDraw(j1, jpos - Main.screenPosition, null, Color.White * 0.8f, Main.GameUpdateCount * 0.6f, j1.Size() / 2f, scale, SpriteEffects.None);
@@ -407,7 +407,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
     {
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.width = 32;
             Projectile.height = 32;
             Projectile.timeLeft = 180;
@@ -428,7 +428,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             }
             Projectile.rotation = Projectile.velocity.ToRotation();
             CEUtils.AddLight(Projectile.Center, Color.MediumSeaGreen, Projectile.scale);
-            Projectile.Calamity().stealthStrike = Projectile.ai[0] > 0;
+            //ai[0] 随生成包同步，逐帧本地刷新强化标志（原逻辑同款直写）
+            Projectile.GetGlobalProjectile<CEEmpowerGlobalProjectile>().Empowered = Projectile.ai[0] > 0;
             Projectile.localAI[0]++;
             if (Projectile.ai[0] > 0)
             {
@@ -459,15 +460,15 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         }
         public override void OnKill(int timeLeft)
         {
-            if(!Projectile.Calamity().stealthStrike)
+            if(!Projectile.IsEmpowered())
             {
-                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/NPCKilled/DevourerDeathImpact") with { PitchRange = (0.7f, 1.1f), Volume = 0.4f }, Projectile.Center);
+                SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/DevourerDeathImpact") with { PitchRange = (0.7f, 1.1f), Volume = 0.4f }, Projectile.Center);
                 float scale = 4f;
                 float Radius = 180;
                 for (float i = 1; i >= 0.2f; i -= 0.2f)
                 {
-                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 160), new Color(170, 160, 255), i) * i, 0.005f * i * (Radius / 180f)).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f * i * (Radius / 180f), scale * 0.07f * i * (Radius / 180f), 9 + (int)(i * 8));
-                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 180), new Color(170, 100, 255), i) * i, 0.0046f * i * (Radius / 180f)).Configure("CalamityMod/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f * i * (Radius / 180f), scale * 0.05f * i * (Radius / 180f), 9 + (int)(i * 8));
+                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 160), new Color(170, 160, 255), i) * i, 0.005f * i * (Radius / 180f)).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f * i * (Radius / 180f), scale * 0.07f * i * (Radius / 180f), 9 + (int)(i * 8));
+                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 180), new Color(170, 100, 255), i) * i, 0.0046f * i * (Radius / 180f)).Configure("CalamityEntropy/Assets/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f * i * (Radius / 180f), scale * 0.05f * i * (Radius / 180f), 9 + (int)(i * 8));
                 }
                 CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromThis(), Projectile.GetOwner(), Projectile.Center, Projectile.damage, scale * 54 * (Radius / 180f), Projectile.DamageType);
             }
@@ -511,7 +512,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                     width = p / 0.8f;
                 else
                     width = CEUtils.Parabola(0.5f + (p - 0.8f) / 0.4f, 1);
-                vp.Add(new CEUtils.VertexPointSets(odp[i], Color.White * alpha, 30 * Projectile.scale * width * (Projectile.Calamity().stealthStrike ? 1.8f : 1), 0));
+                vp.Add(new CEUtils.VertexPointSets(odp[i], Color.White * alpha, 30 * Projectile.scale * width * (Projectile.IsEmpowered() ? 1.8f : 1), 0));
             }
             ThalassianWaterBolt.DrawTrail(vp, new Color(220, 180, 255), new Color(80, 60, 255));
             if (vp.Count > 6)
@@ -526,9 +527,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                         width = p / 0.8f;
                     else
                         width = CEUtils.Parabola(0.5f + (p - 0.8f) / 0.4f, 1);
-                    vp.Add(new CEUtils.VertexPointSets(odp[i], Color.White * alpha, 30 * Projectile.scale * width * (Projectile.Calamity().stealthStrike ? 1.8f : 1), 0));
+                    vp.Add(new CEUtils.VertexPointSets(odp[i], Color.White * alpha, 30 * Projectile.scale * width * (Projectile.IsEmpowered() ? 1.8f : 1), 0));
                 }
-                DrawBlackTrail(vp, Color.Black, CEUtils.getExtraTex("MegaStreakBacking2b"), 0.3f);
+                DrawBlackTrail(vp, Color.Black, CEExtraAssets.MegaStreakBacking2b, 0.3f);
             }
             return false;
         }
@@ -536,9 +537,12 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
     }
     public class MacrocosmSawDash : ModProjectile
     {
+        //咬合贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Particles/Jaws")]
+        internal static Asset<Texture2D> JawsTex;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.width = 28;
             Projectile.height = 28;
             Projectile.tileCollide = false;
@@ -554,7 +558,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         {
             if (Projectile.Entropy().FirstFrames)
             {
-                SoundStyle ShootSound = new("CalamityMod/Sounds/Item/SawShot", 2) { PitchVariance = 0f, Volume = 1 };
+                SoundStyle ShootSound = new("CalamityEntropy/Assets/Sounds/SawShot", 2) { PitchVariance = 0f, Volume = 1 };
                 SoundEngine.PlaySound(ShootSound, Projectile.Center);
 
                 for (int i = 0; i < 32; i++)
@@ -624,14 +628,14 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             }
             for (int i = 0; i < 12; i++)
                 PRTLoader.NewParticle<PRT_GlowSparkCal>(target.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, Main.rand.NextBool() ? Color.MediumPurple : Color.LightBlue, 0.04f * Main.rand.NextFloat(0.65f, 1f)).Configure(false, 11, new Vector2(2.4f, 0.6f), true);
-            SoundEngine.PlaySound(new("CalamityMod/Sounds/NPCKilled/DevourerSegmentBreak1") { Volume = 0.6f, PitchRange = (0.4f, 0.7f) });
+            SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/Smash", 2) { Volume = 0.6f, PitchRange = (0.4f, 0.7f) });
             PRTLoader.NewParticle<PRT_DirectionalPulseRing>(target.Center, Vector2.Zero, Color.Purple, 0.1f).Configure(new Vector2(2f, 2f), 0, 1.2f, 46);
             PRTLoader.NewParticle<PRT_DetailedExplosionCal>(target.Center, Vector2.Zero, Color.Purple, 0f).Configure(Vector2.One, Main.rand.NextFloat(-5, 5), 1.6f * 0.65f, 40);
             float scale = 4f;
             for (float i = 1; i >= 0.2f; i -= 0.2f)
             {
-                PRTLoader.NewParticle<PRT_CustomPulse>(target.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 160), new Color(170, 160, 255), i) * i, 0.005f * i * (Radius / 180f)).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f * i * (Radius / 180f), scale * 0.07f * i * (Radius / 180f), 16 + (int)(i * 20));
-                PRTLoader.NewParticle<PRT_CustomPulse>(target.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 180), new Color(170, 160, 255), i) * i, 0.0046f * i * (Radius / 180f)).Configure("CalamityMod/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f * i * (Radius / 180f), scale * 0.0625f * i * (Radius / 180f), 16 + (int)(i * 20));
+                PRTLoader.NewParticle<PRT_CustomPulse>(target.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 160), new Color(170, 160, 255), i) * i, 0.005f * i * (Radius / 180f)).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f * i * (Radius / 180f), scale * 0.07f * i * (Radius / 180f), 16 + (int)(i * 20));
+                PRTLoader.NewParticle<PRT_CustomPulse>(target.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 180), new Color(170, 160, 255), i) * i, 0.0046f * i * (Radius / 180f)).Configure("CalamityEntropy/Assets/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f * i * (Radius / 180f), scale * 0.0625f * i * (Radius / 180f), 16 + (int)(i * 20));
             }
             for (int i = 0; i < 32; i++)
             {
@@ -659,7 +663,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             void DrawVortex(Vector2 pos, Color color, float Size = 1, float glow = 1f)
             {
                 Main.spriteBatch.End();
-                Effect effect = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Vortex", AssetRequestMode.ImmediateLoad).Value;
+                Effect effect = CEEffectAssets.Vortex;
                 effect.Parameters["Center"].SetValue(new Vector2(0.5f, 0.5f));
                 effect.Parameters["Strength"].SetValue(22);
                 effect.Parameters["AspectRatio"].SetValue(1);
@@ -671,7 +675,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 effect.Parameters["enhanceLightAlpha"].SetValue(0.8f);
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                 effect.CurrentTechnique.Passes[0].Apply();
-                Main.spriteBatch.Draw(CEUtils.getExtraTex("VoronoiShapes"), pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12, CEUtils.getExtraTex("VoronoiShapes").Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(CEExtraAssets.VoronoiShapes, pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12, CEExtraAssets.VoronoiShapes.Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
                 CEUtils.DrawGlow(pos, Color.White * glow * 0.6f, 1.4f * Size * glow);
             }
             Vector2 shakeOffset = CEUtils.randomPointInCircle(BladeScale * 3);
@@ -679,9 +683,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             DrawVortex(jpos, new Color(100, 100, 255) * Projectile.Opacity, scale * 2.6f);
             DrawVortex(jpos, new Color(200, 100, 255) * Projectile.Opacity, scale * 1.4f, 0.4f * Projectile.Opacity);
 
-            Texture2D j1 = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/OblivionThresher/OblivionThresherShootE1");
-            Texture2D j2 = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/OblivionThresher/OblivionThresherShootE2");
-            Texture2D s = CEUtils.getExtraTex("SemiCircularSmear");
+            Texture2D j1 = SawofMacrocosmProj.ThresherShootE1Tex.Value;
+            Texture2D j2 = SawofMacrocosmProj.ThresherShootE2Tex.Value;
+            Texture2D s = CEExtraAssets.SemiCircularSmear;
             Color c = Color.Lerp(Color.White, Color.Blue, (float)Math.Sin(time * 26f) * 0.5f + 0.5f);
 
             Main.EntitySpriteDraw(j1, jpos - Main.screenPosition, null, Color.White * 0.8f * Projectile.Opacity, Main.GameUpdateCount * 0.6f, j1.Size() / 2f, scale, SpriteEffects.None);
@@ -694,7 +698,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Main.EntitySpriteDraw(s, jpos - Main.screenPosition, null, c * 0.8f * Projectile.Opacity, Main.GameUpdateCount * -0.6f - MathHelper.Pi * 0.6f, s.Size() / 2f, scale * 0.84f, SpriteEffects.None);
             float jscale = scale * 1.4f;
-            Texture2D jaws = CEUtils.RequestTex("CalamityMod/Particles/Jaws");
+            Texture2D jaws = JawsTex.Value;
             
             for(int i = 0; i < oldPos.Count; i++)
             {

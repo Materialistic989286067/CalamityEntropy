@@ -1,4 +1,6 @@
-﻿using Terraria;
+﻿using CalamityEntropy.Core.Weapons;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.ArmorPrefixes
 {
@@ -6,7 +8,8 @@ namespace CalamityEntropy.Content.ArmorPrefixes
     {
         public override void UpdateEquip(Player player, Item item)
         {
-            player.Entropy().RogueStealthRegen += 0.04f;
+            //脱离灾厄:原+4%潜行回复,按rogue-weapons通用换算(x1.5)改为大招充能速度+6%
+            player.GetModPlayer<CEChargePlayer>().ChargeRateMult += 0.06f;
         }
         public override Color getColor()
         {

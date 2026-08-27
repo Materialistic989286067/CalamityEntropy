@@ -1,8 +1,7 @@
+using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Melee;
+using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -26,7 +25,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Item.useTime = Item.useAnimation = 18;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 5;
-            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+            Item.value = Item.buyPrice(gold: 10);
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = null;
             Item.noMelee = true;
@@ -56,7 +55,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             CreateRecipe()
                 .AddIngredient<ShatteredFractal>()
                 .AddIngredient(ItemID.Starfury)
-                .AddIngredient<WindBlade>()
+                .AddIngredient(ItemID.BeeKeeper)
                 .AddTile(TileID.Anvils)
                 .Register();
         }
@@ -74,7 +73,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -93,9 +92,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public float spawnFeatherCounter = 0;
         public override void AI()
         {
-            bool noProj = Projectile.GetOwner().Calamity().bladeArmEnchant;
-            if (noProj)
-                shoot = false;
             Player owner = Projectile.GetOwner();
             float MaxUpdateTimes = owner.itemTimeMax * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
@@ -143,7 +139,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 {
                     spawnFeatherCounter -= 16f;
                     Vector2 spawnPos = Projectile.Center + new Vector2(0, 600) * Projectile.ai[0] + CEUtils.randomPointInCircle(34);
-                    if (Main.myPlayer == Projectile.owner && !noProj)
+                    if (Main.myPlayer == Projectile.owner)
                     {
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), spawnPos, (Main.MouseWorld - spawnPos).normalize() * 28, ModContent.ProjectileType<FractalFeather>(), Projectile.damage / 3, Projectile.knockBack, Projectile.owner, Main.rand.NextFloat() * 6.28f);
                     }
@@ -171,10 +167,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             owner.heldProj = Projectile.whoAmI;
             owner.itemTime = 2;
             owner.itemAnimation = 2;
-            if (Projectile.GetOwner().Calamity().bladeArmEnchant)
-            {
-                owner.itemAnimation = int.Max(1, owner.itemAnimationMax - Projectile.Entropy().Lifetime);
-            }
             if (counter > MaxUpdateTimes)
             {
                 owner.itemTime = 1;
@@ -222,7 +214,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             float MaxUpdateTime = Projectile.GetOwner().itemTimeMax * Projectile.MaxUpdates;
             if (Projectile.ai[0] < 2)
             {
-                Texture2D bs = CEUtils.getExtraTex("SemiCircularSmear");
+                Texture2D bs = CEExtraAssets.SemiCircularSmear;
                 Main.spriteBatch.UseBlendState(BlendState.Additive);
                 Main.spriteBatch.Draw(bs, (Vector2)(Projectile.Center + CEUtils.GetOwner(Projectile).gfxOffY * Vector2.UnitY - Main.screenPosition), null, Color.Lerp(new Color(50, 140, 160), new Color(200, 255, 66), counter / MaxUpdateTime) * (float)(Math.Cos(CEUtils.GetRepeatedCosFromZeroToOne(counter / MaxUpdateTime, 3) * MathHelper.Pi - MathHelper.PiOver2)) * 0.5f, Projectile.rotation + MathHelper.ToRadians(32) * -dir, bs.Size() / 2f, Projectile.scale * 1.2f * scale, SpriteEffects.None, 0);
                 Main.spriteBatch.ExitShaderRegion();

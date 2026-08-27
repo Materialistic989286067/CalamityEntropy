@@ -1,13 +1,8 @@
-using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Donator.BreakStar;
 using CalamityEntropy.Content.Items.Weapons;
-using CalamityEntropy.Content.Items.Weapons.Fractal;
 using CalamityEntropy.Content.NPCs.Cruiser;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.Cruiser;
-using CalamityMod.Items.Accessories.Vanity;
-using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Typeless;
 using System.Collections.Generic;
 using Terraria.ModLoader;
 
@@ -16,23 +11,13 @@ namespace CalamityEntropy
     public static class CELists
     {
         public static List<string> tooltipNameUpList = new() { "zh-Hans" };
-        public static List<int> SpecialTaintedEnchantmentList;
         public static List<int> GodheadBlacklist;
+        /// <summary>脱离灾厄:原为灾厄时装联动表,灾厄条目全删后留空列表以保持消费方(VanityDisplay)编译。</summary>
         public static List<int> CalVanityItems;
         public static List<int> CruiserSpecificDeathProjs;
         public static List<int> CruiserSegs;
         public static void Load()
         {
-            int I<T>() where T : ModItem
-            {
-                return ModContent.ItemType<T>();
-            }
-            int ItemByName(string name)
-            {
-                if (ModContent.GetInstance<CalamityMod.CalamityMod>().TryFind<ModItem>(name, out var mi))
-                    return mi.Type;
-                return -1;
-            }
             int P<T>() where T : ModProjectile
             {
                 return ModContent.ProjectileType<T>();
@@ -41,59 +26,29 @@ namespace CalamityEntropy
             {
                 return ModContent.NPCType<T>();
             }
-            SpecialTaintedEnchantmentList = new()
-            {
-                I<ShatteredFractal>(),
-                I<WelkinFractal>(),
-                I<BrilliantFractal>(),
-                I<AbyssFractal>(),
-                I<StarlitFractal>(),
-                I<ElementalFractal>(),
-                I<SpiritFractal>(),
-                I<VoidFractal>(),
-                I<FinalFractal>(),
-                I<AshesSword>(),
-                I<MoonlightSword>(),
-                I<TrueMoonlightSword>(),
-                I<Voidshade>()
-            };
+            //脱离灾厄:灾厄弹幕条目(Hellkite/GrandGuardian/MajesticGuard/GrandDad/Earth Holdout)已删除
             SoyMilkProjectileBlacklist = new()
             {
                 P<RailPulseBowProjectile>(),
                 P<GhostdomWhisperHoldout>(),
                 P<HadopelagicEchoIIProj>(),
                 P<SolarStormHeld>(),
-                P<HellkiteHoldout>(),
-                P<GrandGuardianHoldout>(),
-                P<MajesticGuardHoldout>(),
-                P<GrandDadHoldout>(),
-                P<EarthHoldout>(),
                 P<BatteringRamProj>(),
                 P<CinderConvergencerHoldout>(),
                 P<VoidAnnihilateCharge>(),
                 P<VoidAnnihilateSpawner>(),
-		        P<AzafureEKatanaSlash>(),
+                P<AzafureEKatanaSlash>(),
                 P<RuneSongHeld>(),
                 P<AzafureImperialGuardMachineGunHeld>(),
                 P<VoidshadeHeld>(),
                 P<StarBreakerHeld>()
             };
+            //脱离灾厄:灾厄弹幕条目(FlashBolt)已删除,ElectricLaser 为本模组自有类型
             GodheadBlacklist = new()
             {
-                P<ElectricLaser>(),
-                P<FlashBolt>()
+                P<ElectricLaser>()
             };
-            CalVanityItems = new()
-            {
-                I<GhostBracelet>(),
-                I<HapuFruit>(),
-                I<OracleHeadphones>(),
-                ItemByName("GlimmeringRibbon"),
-                I<LittleE>(),
-                I<SharkyPlush>(),
-                I<XyksBlessingBlue>(),
-                I<XyksBlessingOrange>() 
-            };
+            CalVanityItems = new();
             CruiserSpecificDeathProjs = new()
             {
                 P<VoidStar>(),
@@ -115,7 +70,6 @@ namespace CalamityEntropy
         public static List<int> SoyMilkProjectileBlacklist;
         public static void Unload()
         {
-            SpecialTaintedEnchantmentList = null;
             SoyMilkProjectileBlacklist = null;
             GodheadBlacklist = null;
             CalVanityItems = null;

@@ -2,9 +2,6 @@
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -36,7 +33,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Cogfly
             Item.useStyle = ItemUseStyleID.Swing;
             Item.shoot = ModContent.ProjectileType<AzafureCogflyMinion>();
             Item.shootSpeed = 2f;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(0, 5);
             Item.autoReuse = true;
             Item.UseSound = CEUtils.GetSound("CogflyUse");
             Item.noMelee = true;
@@ -54,7 +51,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Cogfly
         public override void AddRecipes()
         {
             CreateRecipe().AddIngredient<HellIndustrialComponents>(4)
-                .AddIngredient<MysteriousCircuitry>()
+                .AddIngredient<AzafureCircuitry>()
                 .AddRecipeGroup(CERecipeGroups.IronBar, 4)
                 .AddTile(TileID.Anvils)
                 .Register();

@@ -1,11 +1,12 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Cooldowns;
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
+using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.Cooldowns;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -22,11 +23,21 @@ namespace CalamityEntropy.Content.Items.Donator
 
         public override void AddRecipes()
         {
+            // 灾厄原料按 material-map.md 替换：BloodOrb→脊椎骨/腐肉双平行配方、Bloodstone→虚无碎片
             CreateRecipe()
                 .AddIngredient(ItemID.StoneBlock)
                 .AddIngredient(ItemID.BlackLens, 5)
-                .AddIngredient<BloodOrb>(9)
-                .AddIngredient<Bloodstone>(10)
+                .AddIngredient(ItemID.Vertebrae, 9)
+                .AddIngredient<NihilityFragments>(10)
+                .AddCondition(Condition.BloodMoon)
+                .AddCondition(Condition.NearWater)
+                .DisableDecraft()
+                .Register();
+            CreateRecipe()
+                .AddIngredient(ItemID.StoneBlock)
+                .AddIngredient(ItemID.BlackLens, 5)
+                .AddIngredient(ItemID.RottenChunk, 9)
+                .AddIngredient<NihilityFragments>(10)
                 .AddCondition(Condition.BloodMoon)
                 .AddCondition(Condition.NearWater)
                 .DisableDecraft()
@@ -46,12 +57,12 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ItemRarityID.Blue;
             Item.shoot = ModContent.ProjectileType<FetalDreamSlash>();
             Item.shootSpeed = 16;
             Item.DamageType = DamageClass.Default;
-            Item.rare = ModContent.RarityType<PureGreen>();
+            Item.rare = ModContent.RarityType<GlowGreen>();
             Item.Entropy().stroke = true;
             Item.Entropy().NameColor = Color.LightGreen;
             Item.Entropy().strokeColor = Color.DarkGreen;
@@ -196,7 +207,7 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D trail = CEUtils.getExtraTex("MotionTrail2");
+            Texture2D trail = CEExtraAssets.MotionTrail2;
             List<ColoredVertex> ve = new List<ColoredVertex>();
             float MaxUpdateTimes = Projectile.GetOwner().itemTimeMax * Projectile.MaxUpdates;
             float progress = (Projectile.ai[1] / MaxUpdateTimes);
@@ -215,7 +226,7 @@ namespace CalamityEntropy.Content.Items.Donator
             {
                 var gd = Main.graphics.GraphicsDevice;
                 SpriteBatch sb = Main.spriteBatch;
-                Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/SwordTrail", AssetRequestMode.ImmediateLoad).Value;
+                Effect shader = CEEffectAssets.SwordTrail;
                 sb.End();
                 sb.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                 shader.Parameters["color2"].SetValue((new Color(255, 90, 90)).ToVector4());
@@ -225,7 +236,7 @@ namespace CalamityEntropy.Content.Items.Donator
 
                 gd.Textures[0] = trail;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-                trail = CEUtils.getExtraTex("SplitTrail");
+                trail = CEExtraAssets.SplitTrail;
                 gd.Textures[0] = trail;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
 

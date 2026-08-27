@@ -1,5 +1,4 @@
-﻿using CalamityMod;
-using System.IO;
+﻿using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -78,9 +77,9 @@ namespace CalamityEntropy.Content.Projectiles
         {
             lightColor.R = (byte)(255 * Projectile.Opacity);
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CEUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 18 * Projectile.scale, targetHitbox);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CEUtils.CircularHitboxCollision(Projectile.Center, 18 * Projectile.scale, targetHitbox);
     }
 }

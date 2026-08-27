@@ -1,13 +1,12 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles.CalamityPorts;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Rogue;
+using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -20,8 +19,11 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
-    public class Revelation : RogueWeapon
+    public class Revelation : ModItem, ICEChargeWeapon
     {
+        // 充能条 6 秒；原潜伏乘数 伤害0.75/弹速1/击退4 并入释放乘数
+        public CEChargeProfile ChargeProfile => CEChargeProfile.ChargeBar(6f, 0.75f, 1f, 4f);
+
         public override void SetDefaults()
         {
             Item.width = 36;
@@ -35,26 +37,22 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1);
             Item.rare = ItemRarityID.Red;
             Item.shoot = ModContent.ProjectileType<RevelationThrown>();
             Item.shootSpeed = 20f;
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Melee;
         }
-
-        public override float StealthDamageMultiplier => 0.75f;
-        public override float StealthVelocityMultiplier => 1f;
-        public override float StealthKnockbackMultiplier => 4f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.Calamity().StealthStrikeAvailable())
+            if (CEChargeWeapon.TryConsume(player, Item))
             {
                 for(int i = 0; i < 3; i++)
                 {
                     int p = Projectile.NewProjectile(source, position, velocity.RotatedByRandom(0.2f) * (0.8f + i * 0.12f), type, damage, knockback, player.whoAmI, 0, 0, i == 0 ? 1 : 0);
-                    if (p.WithinBounds(Main.maxProjectiles))
-                        Main.projectile[p].Calamity().stealthStrike = true;
+                    if (p >= 0 && p < Main.maxProjectiles)
+                        CEChargeWeapon.Empower(p);
                 }
                 return false;
             }
@@ -72,8 +70,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             Recipe recipe = CreateRecipe();
-            recipe.AddIngredient(ModContent.ItemType<SubductionSlicer>(), 1);
-            recipe.AddIngredient(ModContent.ItemType<MeldBlob>(), 12);
+            recipe.AddIngredient(ItemID.ChlorophyteClaymore, 1);
+            recipe.AddIngredient(ItemID.SoulofNight, 12);
             recipe.AddTile(TileID.LunarCraftingStation);
             recipe.Register();
         }
@@ -83,7 +81,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => base.Texture;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.width = Projectile.height = 110;
             Projectile.MaxUpdates = 4;
             Projectile.localNPCHitCooldown = -1;
@@ -120,7 +118,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 if (Main.myPlayer == Projectile.owner)
                 {
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<RevelationExplode>(), Projectile.damage, 0, Projectile.owner, 100 * Projectile.scale);
-                    if (!Projectile.Calamity().stealthStrike)
+                    if (!Projectile.IsEmpowered())
                     {
                         int sType = ModContent.ProjectileType<RevelationBolt>();
                         float rj = CEUtils.randomRot();
@@ -135,7 +133,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             int BackTime = 4 * 20;
             if (Counter > flyTime)
             {
-                if (Projectile.Calamity().stealthStrike)
+                if (Projectile.IsEmpowered())
                 {
                     NPC homing = CEUtils.FindTarget_HomingProj(Projectile, player.Center, 2000);
                     if (homing != null)
@@ -176,14 +174,14 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override bool? CanDamage()
         {
-            return (Projectile.Calamity().stealthStrike && Counter < 4 * 22) ? false : null;
+            return (Projectile.IsEmpowered() && Counter < 4 * 22) ? false : null;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             CEUtils.PlaySound("DemonSwordImpact2", Main.rand.NextFloat(1.4f, 1.8f), target.Center, 8, 0.5f);
             SpawnVParticles(6, 2);
             RevelationExplode.ExpParticle(Projectile.Center, 90, 0.5f);
-            if(Projectile.Calamity().stealthStrike)
+            if(Projectile.IsEmpowered())
             {
                 Projectile.Kill();
                 if (Projectile.ai[2] > 0)
@@ -245,7 +243,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => CEUtils.ItemTexPath<Revelation>();
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.width = Projectile.height = 240;
             Projectile.MaxUpdates = 4;
             Projectile.localNPCHitCooldown = -1;
@@ -281,7 +279,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             if(Projectile.Entropy().FirstFrames)
             {
-                Projectile.Calamity().stealthStrike = true;
+                //各端首帧本地打标，无需补发同步
+                Projectile.SetEmpowered(false);
                 GigaExplode();
             }
             Player player = Projectile.GetOwner();
@@ -376,7 +375,7 @@ namespace CalamityEntropy.Content.Items.Weapons
     {
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.width = 32;
             Projectile.height = 32;
             Projectile.timeLeft = 200;
@@ -453,9 +452,9 @@ namespace CalamityEntropy.Content.Items.Weapons
                     width = p / 0.8f;
                 else
                     width = CEUtils.Parabola(0.5f + (p - 0.8f) / 0.4f, 1);
-                vp.Add(new CEUtils.VertexPointSets(odp[i], Color.White * alpha, 15 * Projectile.scale * width * (Projectile.Calamity().stealthStrike ? 1.8f : 1), 0));
+                vp.Add(new CEUtils.VertexPointSets(odp[i], Color.White * alpha, 15 * Projectile.scale * width * (Projectile.IsEmpowered() ? 1.8f : 1), 0));
             }
-            DrawBlackTrail(vp, Color.Black, CEUtils.getExtraTex("MegaStreakBacking2b"), 2f);
+            DrawBlackTrail(vp, Color.Black, CEExtraAssets.MegaStreakBacking2b, 2f);
             if (vp.Count > 6)
             {
                 vp = new();
@@ -468,7 +467,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                         width = p / 0.8f;
                     else
                         width = CEUtils.Parabola(0.5f + (p - 0.8f) / 0.4f, 1);
-                    vp.Add(new CEUtils.VertexPointSets(odp[i], Color.White * alpha, 15 * Projectile.scale * width * (Projectile.Calamity().stealthStrike ? 1.8f : 1), 0));
+                    vp.Add(new CEUtils.VertexPointSets(odp[i], Color.White * alpha, 15 * Projectile.scale * width * (Projectile.IsEmpowered() ? 1.8f : 1), 0));
                 }
                 ThalassianWaterBolt.DrawTrail(vp, Color.White, Color.LightGreen);
             }
@@ -486,7 +485,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.timeLeft = 5;
             Projectile.localNPCHitCooldown = -1;
         }
@@ -507,7 +506,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             PRTLoader.NewParticle<PRT_DetailedExplosionCal>(pos, Vector2.Zero, Color.Black * alpha, 0f).Configure(Vector2.One, Main.rand.NextFloat(-5f, 5f), ExplosionRadius * 0.003f + 0.1f, Main.rand.Next(15, 22), useAdditiveBlend: false);
             for (int i = 0; i < 4; i++)
             {
-                PRTLoader.NewParticle<PRT_CustomPulse>(pos, Vector2.Zero, color1, 0f).Configure("CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, ExplosionRadius * 0.005f + 0.05f, 25, renderLayer: PRTRenderLayer.AfterPlayers);
+                PRTLoader.NewParticle<PRT_CustomPulse>(pos, Vector2.Zero, color1, 0f).Configure("CalamityEntropy/Assets/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, ExplosionRadius * 0.005f + 0.05f, 25, renderLayer: PRTRenderLayer.AfterPlayers);
             }
 
             float num = ExplosionRadius * 0.1f + 10f;

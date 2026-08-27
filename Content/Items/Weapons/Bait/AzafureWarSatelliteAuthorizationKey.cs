@@ -1,15 +1,13 @@
-﻿using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Typeless;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -36,7 +34,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             Item.knockBack = 0;
             Item.shootSpeed = 36;
             Item.useAnimation = Item.useTime = 32;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.width = 38;
             Item.height = 50; 
@@ -63,7 +61,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
         {
             CreateRecipe()
                 .AddIngredient<AzafureMicroBeacon>()
-                .AddIngredient<ScoriaBar>(8)
+                .AddIngredient(ItemID.HallowedBar, 8)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
@@ -109,7 +107,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                 npc.GetGlobalNPC<WhipDebuffNPC>().BaitStick = 2;
                 if (IsActive)
                 {
-                    Projectile.GetOwner().Calamity().mouseWorldListener = true;
+                    Projectile.GetOwner().Entropy().MouseWorldListener = true;
                     npc.GetGlobalNPC<WhipDebuffNPC>().ClearBaitTags();
                     npc.GetGlobalNPC<WhipDebuffNPC>().Tags.Add(new WhipTag(this.GetType().Name, 5, this.TagDamage, 1, 0, this.GetType().Name) { IsABaitTag = true });
                     if (ActiveCounter % 20 == 0)
@@ -142,7 +140,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             if (activeEffectAlpha >= 0.01f)
             {
                 Main.spriteBatch.UseAdditiveClamp();
-                Texture2D pulse = CEUtils.getExtraTex("HollowCircleSoftEdge");
+                Texture2D pulse = CEExtraAssets.HollowCircleSoftEdge;
                 for(float i = 0; i < 1f; i += 0.5f)
                 {
                     float scale = CEUtils.Frac(i + Main.GlobalTimeWrappedHourly * 2f);
@@ -162,8 +160,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             target.AddBuff<MechanicalTrauma>(260);
             Projectile.tileCollide = false;
             OnHitEffect(Projectile.Center); 
-            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/WulfrumPing"), target.Center);
-            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/WulfrumProsthesisSucc") with { Volume = 0.34f}, target.Center);
+            SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/WulfrumPingReady"), target.Center);
+            SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/cellheal") with { Volume = 0.34f}, target.Center);
             Projectile.velocity *= 0;
             StickNPC = target.whoAmI;
             StickOffset = Projectile.Center - target.Center;
@@ -239,8 +237,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             }
             else
             {
-                player.Calamity().mouseWorldListener = true;
-                Vector2 targetPos = (target == null ? player.Calamity().mouseWorld : target.Center);
+                player.Entropy().MouseWorldListener = true;
+                Vector2 targetPos = (target == null ? player.Entropy().MouseWorld : target.Center);
 
                 Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, (targetPos - Projectile.Center).ToRotation(), 0.04f, true);
                 Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, (targetPos - Projectile.Center).ToRotation(), 0.05f, false);
@@ -299,7 +297,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                     l = 0;
             }
             Main.spriteBatch.UseAdditiveClamp();
-            Texture2D bloom = CEUtils.getExtraTex("BloomRing");
+            Texture2D bloom = CEExtraAssets.BloomRing;
             if (ChargeTime > 0)
                 Main.spriteBatch.Draw(bloom, Projectile.Center + Projectile.rotation.ToRotationVector2() * 54 - Main.screenPosition, null, new Color(255, 150, 150) * (1 - (ChargeTime / 100f) * (ChargeTime / 100f)), 0, bloom.Size() * 0.5f, (ChargeTime / 100f) * 1.6f, SpriteEffects.None, 0);
             Main.spriteBatch.ExitShaderRegion();
@@ -344,7 +342,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             {
                 CEUtils.PlaySound("CruiserDash", 1f, Projectile.Center);
                 CEUtils.PlaySound("DoGLaserWallSpawn", 1f, Projectile.Center);
-                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/TeslaCannonFire") with { Pitch = 0.6f }, Projectile.Center);
+                SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/pulseBlast") with { Pitch = 0.6f }, Projectile.Center);
             }
             Projectile.ai[2] = CEUtils.Parabola(Projectile.timeLeft / (120f + (Projectile.GetOwner().AzafureEnhance() ? 60 : 0)), 1);
             Projectile.ai[2] = (1 - Projectile.ai[2]);

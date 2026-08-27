@@ -1,5 +1,3 @@
-﻿using CalamityMod.Items;
-using CalamityMod.Items.Accessories.Wings;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -8,7 +6,7 @@ using Terraria.ModLoader;
 namespace CalamityEntropy.Content.Items.Accessories
 {
     [AutoloadEquip(EquipType.Wings)]
-    public class TheRevelation : BaseWings
+    public class TheRevelation : CEBaseWings
     {
         public static int Damage = 40;
         public override void SetStaticDefaults()
@@ -20,7 +18,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             base.SetDefaults();
             Item.width = 52;
             Item.height = 52;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1);
             Item.rare = ItemRarityID.Green;
             Item.accessory = true;
 

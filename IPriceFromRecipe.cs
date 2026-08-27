@@ -1,6 +1,4 @@
-﻿using CalamityEntropy.Common;
-using CalamityEntropy.Content.Buffs;
-using InnoVault;
+﻿using InnoVault;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -39,10 +37,6 @@ namespace CalamityEntropy
 
         private void endLoad()
         {
-            if (MaliciousCode.CALAMITY__OVERHAUL)
-            {
-                CWRWeakRef.CWRRef.SetupFishSkillBM();
-            }
             Inited = true;
             for (int i = 0; i < ItemLoader.ItemCount; i++)
             {

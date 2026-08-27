@@ -1,6 +1,4 @@
 using CalamityEntropy.Content.Particles;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -16,7 +14,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             base.SetDefaults();
             Item.rare = ItemRarityID.Orange;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Snowgrave");
         public override EBookProjectileEffect getEffect()
@@ -149,11 +147,6 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override bool? CanHitNPC(NPC target)
         {
             return Projectile.timeLeft < 330;
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff<FrozenLungs>(250);
         }
 
         public override bool PreDraw(ref Color lightColor)

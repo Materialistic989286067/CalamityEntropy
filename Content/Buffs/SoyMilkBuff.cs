@@ -1,4 +1,3 @@
-using CalamityMod;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -19,9 +18,9 @@ namespace CalamityEntropy.Content.Buffs
 
         public override void Update(Player player, ref int buffIndex)
         {
+            // 灾厄潜行清零随潜行系统退役移除
             player.GetAttackSpeed(DamageClass.Generic) *= 3;
             player.GetDamage(DamageClass.Generic) *= 0.30f;
-            player.Calamity().rogueStealth = 0;
             player.pickSpeed -= 0.6f;
         }
     }

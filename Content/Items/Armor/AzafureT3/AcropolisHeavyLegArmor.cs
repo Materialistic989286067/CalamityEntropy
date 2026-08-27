@@ -1,6 +1,4 @@
-﻿using CalamityEntropy.Content.Items.Armor.Azafure;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using CalamityEntropy.Content.Items.Armor.Azafure;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,7 +12,7 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
         {
             Item.width = 34;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1);
             Item.defense = 18;
             Item.rare = ItemRarityID.Red;
         }
@@ -29,7 +27,7 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
             CreateRecipe()
                 .AddIngredient<AzafureSteamKnightLeggings>()
                 .AddIngredient(ItemID.LunarBar, 10)
-                .AddIngredient<UnholyEssence>(4)
+                .AddIngredient<NihilityFragments>(4)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

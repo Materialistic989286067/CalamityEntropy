@@ -1,11 +1,11 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Projectiles.Prophet;
 using CalamityEntropy.Content.UI.EntropyBookUI;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.NPCs.AstrumDeus;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -25,9 +25,11 @@ namespace CalamityEntropy.Content.Items.Books
             Item.mana = 7;
             Item.rare = ItemRarityID.Yellow;
             Item.expert = true;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.value = Item.buyPrice(gold: 60);
         }
-        public override Texture2D BookMarkTexture => ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/EntropyBookUI/PM").Value;
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/PM")]
+        internal static Asset<Texture2D> BookMarkSlotTex;
+        public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<ProphecyMasterpieceHeld>();
         public override int SlotCount => 4;
     }
@@ -156,8 +158,8 @@ namespace CalamityEntropy.Content.Items.Books
                         }
                     }
                 }
-                Projectile.GetOwner().Calamity().mouseWorldListener = true;
-                Projectile.Center = Projectile.GetOwner().MountedCenter + Projectile.GetOwner().gfxOffY * Vector2.UnitY + (Projectile.GetOwner().Calamity().mouseWorld - Projectile.GetOwner().Center).normalize() * 80;
+                Projectile.GetOwner().Entropy().MouseWorldListener = true;
+                Projectile.Center = Projectile.GetOwner().MountedCenter + Projectile.GetOwner().gfxOffY * Vector2.UnitY + (Projectile.GetOwner().Entropy().MouseWorld - Projectile.GetOwner().Center).normalize() * 80;
 
             }
             if (Projectile.owner != Main.myPlayer)
@@ -191,8 +193,6 @@ namespace CalamityEntropy.Content.Items.Books
             modifiers.SourceDamage *= width2;
             if (target.realLife >= 0)
                 modifiers.SourceDamage *= 0.75f;
-            if (target.ModNPC != null && target.ModNPC is AstrumDeusBody)
-                modifiers.SourceDamage *= 0.3f;
         }
         public override bool PreDraw(ref Color lightColor)
         {
@@ -212,7 +212,7 @@ namespace CalamityEntropy.Content.Items.Books
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             {
-                Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/MegaStreakBacking2").Value;
+                Texture2D tx = CEExtraAssets.MegaStreakBacking2;
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = new Color(60, 60, 170);
 
@@ -242,13 +242,13 @@ namespace CalamityEntropy.Content.Items.Books
             }
 
             Main.spriteBatch.End();
-            var effect = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/fableeyelaser", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            var effect = CEEffectAssets.fableeyelaser;
             effect.Parameters["yofs"].SetValue(yx);
 
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, effect, Main.GameViewMatrix.TransformationMatrix);
             effect.CurrentTechnique.Passes["fableeyelaser"].Apply();
             {
-                Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/TurbulentNoise").Value;
+                Texture2D tx = CEExtraAssets.TurbulentNoise;
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = Color.SkyBlue * 0.66f;
                 float p = -Main.GlobalTimeWrappedHourly;
@@ -279,7 +279,7 @@ namespace CalamityEntropy.Content.Items.Books
             }
             effect.Parameters["yofs"].SetValue(-yx);
             {
-                Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/EternityStreak").Value;
+                Texture2D tx = CEExtraAssets.EternityStreak;
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = new Color(255, 255, 255) * 0.66f;
                 float p = -Main.GlobalTimeWrappedHourly * 2;

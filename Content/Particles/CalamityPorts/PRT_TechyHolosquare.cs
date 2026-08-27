@@ -1,4 +1,3 @@
-using CalamityMod;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -6,7 +5,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.Particles.CalamityPorts
 {
-    //TechyHolosquareParticle,GeneralParticleHandler搬来(Calamity类名拼成Holoysquare)
+    //TechyHolosquareParticle,旧版粒子系统搬来(Calamity类名拼成Holoysquare)
     public class PRT_TechyHolosquare : BasePRT
     {
         public float MistOpacity;
@@ -25,7 +24,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             Frame = default;
         }
 
-        //@CalamityMod/Particles/TechyHolosquare → PRTSharedAssets,色差Draw一行没动
+        //Assets/Particles/TechyHolosquare → PRTSharedAssets,色差Draw一行没动
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_TechyHolosquare Configure(int lifetime, float opacity = 1f)
@@ -69,7 +68,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         public override bool PreDraw(SpriteBatch spriteBatch)
         {
             Texture2D baseTex = PRTSharedAssets.TechyHolosquare.Value;   //TechyHolosquare,色差Draw原样搬的
-            CalamityUtils.DrawChromaticAberration(Vector2.UnitX.RotatedBy(Rotation), 1.5f, delegate (Vector2 offset, Color colorMod)
+            CEParticleUtils.DrawChromaticAberration(Vector2.UnitX.RotatedBy(Rotation), 1.5f, delegate (Vector2 offset, Color colorMod)
             {
                 spriteBatch.Draw(baseTex, Position + offset - Main.screenPosition, Frame,
                     Color.MultiplyRGB(colorMod) * MistOpacity, Rotation, Frame.Size() / 2f, Scale / 2f, SpriteEffects.None, 0);

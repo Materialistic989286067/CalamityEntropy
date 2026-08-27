@@ -8,31 +8,7 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Projectiles
 {
-    public class SolarArrowSpawner : ModProjectile
-    {
-        public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, penetrate: -1);
-            Projectile.timeLeft = 21;
-        }
-        public override bool? CanHitNPC(NPC target)
-        {
-            return false;
-        }
-        public override void AI()
-        {
-            Projectile.Center = Projectile.GetOwner().Center;
-            if (Projectile.timeLeft % 2 == 0 && Projectile.owner == Main.myPlayer)
-            {
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, (Main.MouseWorld - Projectile.GetOwner().Center).normalize().RotatedBy((float)Math.Cos(Main.GameUpdateCount * 0.2f) * 0.8f) * -10, ModContent.ProjectileType<SolarArrow>(), Projectile.damage, 1, Projectile.owner);
-            }
-        }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            return false;
-        }
-    }
+    //脱离灾厄死代码裁决:SolarArrowSpawner全仓零引用(WorshipRelic新效果直接生成SolarArrow),整类删除
     public class SolarArrow : ModProjectile
     {
         public override void SetStaticDefaults()
@@ -41,7 +17,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = CEUtils.RogueDC;
+            Projectile.DamageType = DamageClass.Throwing;
             Projectile.width = 64;
             Projectile.height = 64;
             Projectile.friendly = true;

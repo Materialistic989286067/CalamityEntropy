@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Buffs;
-using CalamityMod;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -23,7 +22,7 @@ public class YharimsStimulants : ModItem
         Item.UseSound = SoundID.Item3;
         Item.consumable = true;
         Item.buffType = ModContent.BuffType<YharimPower>();
-        Item.buffTime = CalamityUtils.SecondsToFrames(1800f);
+        Item.buffTime = CEUtils.SecondsToFrames(1800f);
         Item.value = Item.buyPrice(0, 2, 0, 0);
     }
 }

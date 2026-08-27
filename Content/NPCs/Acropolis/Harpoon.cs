@@ -1,5 +1,4 @@
-﻿using CalamityEntropy.Content.Buffs;
-using CalamityMod;
+using CalamityEntropy.Content.Buffs;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -13,7 +12,8 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
         {
             Main.npcFrameCount[NPC.type] = 1;
             NPCID.Sets.MustAlwaysDraw[NPC.type] = true;
-            this.HideFromBestiary();
+            // 图鉴隐藏:原灾厄隐藏扩展的原版等价写法
+            NPCID.Sets.NPCBestiaryDrawOffset[Type] = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
             NPCID.Sets.MPAllowedEnemies[Type] = true;
         }
 
@@ -152,7 +152,8 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D harpoonOutline = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Acropolis/HarpoonOutline");
+            //复用 AcropolisMachine 声明的轮廓贴图字段
+            Texture2D harpoonOutline = AcropolisMachine.harpoonOutlineTex.Value;
             if (OnLauncher)
                 return false;
             CEUtils.drawChain(NPC.Center, ((AcropolisMachine)owner.ModNPC).HarpoonPos - ((AcropolisMachine)owner.ModNPC).harpoon.Seg2Rot.ToRotationVector2() * 72 * NPC.scale, 18, "CalamityEntropy/Content/NPCs/Acropolis/HarpoonChain");

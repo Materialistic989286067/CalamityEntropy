@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Common;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -45,7 +44,7 @@ namespace CalamityEntropy.Content.Items.Vanity
             Item.width = 22;
             Item.height = 24;
             Item.accessory = true;
-            Item.value = CalamityMod.Items.CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Red;
             Item.vanity = true;
         }
@@ -65,9 +64,15 @@ namespace CalamityEntropy.Content.Items.Vanity
 
         public override void AddRecipes()
         {
+            // 血珠按映射拆为脊椎骨/腐肉双平行配方
             CreateRecipe()
-                .AddIngredient<AncientBoneDust>(6)
-                .AddIngredient<BloodOrb>(2)
+                .AddIngredient(ItemID.Bone, 6)
+                .AddIngredient(ItemID.Vertebrae, 2)
+                .AddTile(TileID.Anvils)
+                .Register();
+            CreateRecipe()
+                .AddIngredient(ItemID.Bone, 6)
+                .AddIngredient(ItemID.RottenChunk, 2)
                 .AddTile(TileID.Anvils)
                 .Register();
         }

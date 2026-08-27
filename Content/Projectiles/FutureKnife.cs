@@ -1,6 +1,6 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
+using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
 using Terraria;
 using Terraria.ModLoader;
@@ -15,7 +15,8 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = CEUtils.RogueDC;
+            //盗贼并入远程(rogue-weapons: ProphecyFlyingKnife→远程)
+            Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 64;
             Projectile.height = 64;
             Projectile.friendly = true;
@@ -35,18 +36,18 @@ namespace CalamityEntropy.Content.Projectiles
                 if (trail == null)
                 {
                     //TrailParticle不开CanPool,odp轨迹List池化会闪上一条
-                    trail = PRTLoader.NewParticle<PRT_TrailParticle>(Projectile.Center, Vector2.Zero, Color.AliceBlue * 0.6f, Projectile.scale * 0.6f * (Projectile.Calamity().stealthStrike ? 2 : 1)).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0);
+                    trail = PRTLoader.NewParticle<PRT_TrailParticle>(Projectile.Center, Vector2.Zero, Color.AliceBlue * 0.6f, Projectile.scale * 0.6f * (Projectile.IsEmpowered() ? 2 : 1)).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0);
                     trail.maxLength = 16;
                 }
                 trail.Lifetime = 16;
                 trail.AddPoint(Projectile.Center + Projectile.velocity);
             }
-            if (Projectile.Calamity().stealthStrike)
+            if (Projectile.IsEmpowered())
             {
                 Projectile.scale = 2.4f;
             }
             Projectile.rotation = Projectile.velocity.ToRotation();
-            if (Projectile.timeLeft < 246 && !Projectile.Calamity().stealthStrike)
+            if (Projectile.timeLeft < 246 && !Projectile.IsEmpowered())
             {
                 var target = CEUtils.FindTarget_HomingProj(Projectile, Projectile.Center, 800);
                 if (target != null)
@@ -72,14 +73,14 @@ namespace CalamityEntropy.Content.Projectiles
             }
             CEUtils.PlaySound("crystalsound" + Main.rand.Next(1, 3).ToString(), Main.rand.NextFloat(0.7f, 1.3f), target.Center, 10, 0.4f);
             target.AddBuff(ModContent.BuffType<SoulDisorder>(), 300);
-            if (Projectile.Calamity().stealthStrike)
+            if (Projectile.IsEmpowered())
             {
                 for (float j = 0; j < 360f; j += 60)
                 {
                     int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<ProphecyRune>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, MathHelper.ToRadians(j), 0, Main.rand.Next(1, 12));
                     if (p.WithinBounds(Main.maxProjectiles))
                     {
-                        Main.projectile[p].Calamity().stealthStrike = true;
+                        Main.projectile[p].SetEmpowered();
                         p.ToProj().netUpdate = true;
                     }
                 }

@@ -20,7 +20,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             AffectedByGravity = false;   //CanPool,InitialColor和重力开关都得Reset清
         }
 
-        //真图DrainLineBloom走PRTSharedAssets,@CalamityMod路径HasAsset认不出,Texture只能指白图
+        //真图DrainLineBloom走PRTSharedAssets,Texture只能指白图
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_LineCal Configure(bool affectedByGravity, int lifetime)

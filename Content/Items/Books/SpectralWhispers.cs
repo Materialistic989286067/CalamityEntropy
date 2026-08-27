@@ -1,9 +1,11 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Items;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.IO;
 using Terraria;
@@ -22,12 +24,14 @@ namespace CalamityEntropy.Content.Items.Books
             Item.crit = 4;
             Item.mana = 12;
             Item.rare = ItemRarityID.Blue;
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.value = Item.buyPrice(gold: 1);
             Item.width = 40;
             Item.height = 52;
             Item.shootSpeed = 40;
         }
-        public override Texture2D BookMarkTexture => ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/EntropyBookUI/SW").Value;
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/SW")]
+        internal static Asset<Texture2D> BookMarkSlotTex;
+        public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<SpectralWhispersHeld>();
         public override int SlotCount => 1;
 
@@ -57,7 +61,7 @@ namespace CalamityEntropy.Content.Items.Books
         public override void AI()
         {
             base.AI();
-            Projectile.GetOwner().Calamity().mouseWorldListener = true;
+            Projectile.GetOwner().Entropy().MouseWorldListener = true;
         }
         public override bool Shoot()
         {
@@ -135,7 +139,7 @@ namespace CalamityEntropy.Content.Items.Books
             if (Projectile.localAI[0] < 24)
             {
                 Projectile.position += Projectile.GetOwner().velocity / 2;
-                Projectile.velocity = (Projectile.GetOwner().Calamity().mouseWorld - Projectile.Center).normalize() * Projectile.velocity.Length();
+                Projectile.velocity = (Projectile.GetOwner().Entropy().MouseWorld - Projectile.Center).normalize() * Projectile.velocity.Length();
             }
             if (Projectile.localAI[0] > 24 && stick == -1)
             {
@@ -159,7 +163,7 @@ namespace CalamityEntropy.Content.Items.Books
                 return false;
             Texture2D tex1 = Projectile.GetTexture();
             Texture2D tex2 = this.getTextureAlt();
-            Texture2D tex3 = CEUtils.getExtraTex("Diamond");
+            Texture2D tex3 = CEExtraAssets.Diamond;
             float scale = size * Projectile.scale;
             CEUtils.DrawGlow(Projectile.Center, color, scale * 1.4f);
             Main.spriteBatch.UseBlendState(BlendState.Additive);
@@ -181,7 +185,7 @@ namespace CalamityEntropy.Content.Items.Books
             {
                 for (float i = 0; i <= 1; i += 0.05f)
                 {
-                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(color * 4.5f, color, i) * 0.8f, 0.005f).Configure("CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, i * 0.165f * Projectile.scale, (int)((1.2f - i) * 20));
+                    PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(color * 4.5f, color, i) * 0.8f, 0.005f).Configure("CalamityEntropy/Assets/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, i * 0.165f * Projectile.scale, (int)((1.2f - i) * 20));
                 }
                 SoundEngine.PlaySound(SoundID.Item122 with { PitchRange = (1.2f, 1.6f) }, Projectile.Center);
             }

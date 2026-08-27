@@ -1,7 +1,4 @@
 ﻿using CalamityEntropy.Content.NPCs.LuminarisMoth;
-using CalamityMod;
-using CalamityMod.Events;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -34,7 +31,8 @@ namespace CalamityEntropy.Content.Items
 
         public override bool CanUseItem(Player player)
         {
-            return !NPC.AnyNPCs(ModContent.NPCType<Luminaris>()) && !BossRushEvent.BossRushActive && player.Calamity().ZoneAstral;
+            // 星辉群系判定改为夜间发光蘑菇群系（与星辉鳞尘的产地闭环）
+            return !NPC.AnyNPCs(ModContent.NPCType<Luminaris>()) && player.ZoneGlowshroom && !Main.dayTime;
         }
 
         public override bool? UseItem(Player player)
@@ -50,7 +48,7 @@ namespace CalamityEntropy.Content.Items
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<StarblightSoot>(), 6).
+                AddIngredient(ModContent.ItemType<StarlitScaleDust>(), 6).
                 AddIngredient(ItemID.FallenStar, 2).
                 AddTile(TileID.WorkBenches).
                 Register();

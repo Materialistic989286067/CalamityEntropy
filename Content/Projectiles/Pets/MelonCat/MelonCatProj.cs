@@ -1,5 +1,7 @@
 ﻿using CalamityEntropy.Content.Buffs.Pets;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -9,6 +11,13 @@ namespace CalamityEntropy.Content.Projectiles.Pets.MelonCat
 {
     public class MelonCatProj : ModProjectile
     {
+        //贴图在加载期一次就位,不再在 PreDraw 里逐帧请求;flying/walk 是横向多帧的雪碧图
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/MelonCat/MelonCatProj")]
+        internal static Asset<Texture2D> MenuTex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/MelonCat/flying")]
+        internal static Asset<Texture2D> FlyingTex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/MelonCat/walk")]
+        internal static Asset<Texture2D> WalkTex;
         public float counter = 0;
         public override void SetStaticDefaults()
         {
@@ -30,7 +39,7 @@ namespace CalamityEntropy.Content.Projectiles.Pets.MelonCat
 
             if (Main.gameMenu)
             {
-                Texture2D txd = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/MelonCat/MelonCatProj").Value;
+                Texture2D txd = MenuTex.Value;
                 Main.EntitySpriteDraw(txd, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, new Vector2(txd.Width, txd.Height) / 2, Projectile.scale, SpriteEffects.FlipHorizontally, 0);
 
                 return false;
@@ -40,11 +49,11 @@ namespace CalamityEntropy.Content.Projectiles.Pets.MelonCat
             Texture2D tx;
             if (Projectile.ai[1] == 1)
             {
-                tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/MelonCat/flying").Value;
+                tx = FlyingTex.Value;
             }
             else
             {
-                tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/MelonCat/walk").Value;
+                tx = WalkTex.Value;
                 tc = 6;
             }
             if (Projectile.velocity.X > -2 && Projectile.velocity.X < 2f)

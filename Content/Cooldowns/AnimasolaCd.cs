@@ -1,10 +1,10 @@
-﻿using CalamityMod.Cooldowns;
+﻿using CalamityEntropy.Core.Cooldowns;
 using Terraria.Audio;
 using Terraria.Localization;
 
 namespace CalamityEntropy.Content.Cooldowns
 {
-    public class AnimasolaCd : CooldownHandler
+    public class AnimasolaCd : CECooldownHandler
     {
         public static new string ID => "AnimasolaCd";
         public override bool ShouldDisplay => true;

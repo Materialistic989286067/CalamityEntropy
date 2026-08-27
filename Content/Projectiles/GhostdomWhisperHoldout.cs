@@ -1,3 +1,4 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Particles.CalamityPorts;
@@ -104,7 +105,7 @@ namespace CalamityEntropy.Content.Projectiles
                     }
                     if (Projectile.ai[1] >= maxCharge)
                     {
-                        SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/ArtAttackCast"), Projectile.Center);
+                        SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/CastTriangles"), Projectile.Center);
                     }
                 }
 
@@ -157,12 +158,12 @@ namespace CalamityEntropy.Content.Projectiles
 
                     }
                     backspeed = 3.5f * (Projectile.ai[1] / (float)maxCharge);
-                    SoundStyle SwingSound = new SoundStyle("CalamityMod/Sounds/Item/TerratomereSwing");
+                    SoundStyle SwingSound = new SoundStyle("CalamityEntropy/Assets/Sounds/HellkiteSwing", 2);
                     SwingSound.Volume = 0.6f;
                     SwingSound.Pitch = 0.4f + 2f * (Projectile.ai[1] / (float)maxCharge);
                     if (Projectile.ai[1] >= maxCharge)
                     {
-                        SwingSound = new("CalamityMod/Sounds/NPCKilled/DevourerDeathImpact");
+                        SwingSound = new("CalamityEntropy/Assets/Sounds/DevourerDeathImpact");
                         SwingSound.Pitch = 1.2f;
                         SwingSound.Volume = 0.46f;
 
@@ -229,8 +230,8 @@ namespace CalamityEntropy.Content.Projectiles
             Vector2 up = Projectile.Center + (new Vector2(-27, -64) * scaled).RotatedBy(Projectile.rotation) + new Vector2(-back, 0).RotatedBy(Projectile.rotation);
             Vector2 down = Projectile.Center + (new Vector2(-27, 64) * scaled).RotatedBy(Projectile.rotation) + new Vector2(-back, 0).RotatedBy(Projectile.rotation);
             Vector2 middle = Projectile.Center + new Vector2(-27 * scaleX - Projectile.ai[1] * 0.64f + Main.rand.NextFloat(-bamp, bamp), 0).RotatedBy(Projectile.rotation) + new Vector2(-back, 0).RotatedBy(Projectile.rotation);
-            CEUtils.drawLine(Main.spriteBatch, ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value, middle, up, Color.Purple, 2, 2);
-            CEUtils.drawLine(Main.spriteBatch, ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value, middle, down, Color.Purple, 2, 2);
+            CEUtils.drawLine(Main.spriteBatch, CEExtraAssets.white, middle, up, Color.Purple, 2, 2);
+            CEUtils.drawLine(Main.spriteBatch, CEExtraAssets.white, middle, down, Color.Purple, 2, 2);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
@@ -276,7 +277,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-                Texture2D star = CEUtils.getExtraTex("StarTexture");
+                Texture2D star = CEExtraAssets.StarTexture;
 
                 float sx = (float)(Math.Cos(Main.GlobalTimeWrappedHourly * 24) * 0.15f + 0.9f);
                 Main.spriteBatch.Draw(star, Projectile.Center - Main.screenPosition + new Vector2(-Projectile.ai[1] * 0.64f - 18 * scaleX, 0).RotatedBy(Projectile.rotation) + new Vector2(-back, 0).RotatedBy(Projectile.rotation), null, Color.White, Projectile.rotation, star.Size() / 2, Projectile.scale * scaled * new Vector2(0.35f, 0.35f) * sx * (Projectile.ai[1] / maxCharge), SpriteEffects.None, 0);

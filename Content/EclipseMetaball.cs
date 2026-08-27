@@ -1,16 +1,14 @@
-﻿
-using CalamityMod.Enums;
-using CalamityMod.Graphics.Metaballs;
+﻿using CalamityEntropy.Assets.Register;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content
 {
-    public class EclipseMetaball : Metaball
+    // 脱离灾厄:原继承灾厄 Metaball 融球框架,现自立为 ModSystem;
+    // 黑色同色实心圆叠画视觉等价于融球,描边用底层放大一圈的描边色近似
+    public class EclipseMetaball : ModSystem
     {
         public class EclipseParticle
         {
@@ -34,9 +32,8 @@ namespace CalamityEntropy.Content
                 Velocity *= 0.96f;
             }
         }
-        public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.BeforeProjectiles;
 
-        private static List<Asset<Texture2D>> layerAssets;
+        public static readonly Color EdgeColor = new(255, 206, 60);
 
         public static List<EclipseParticle> Particles
         {
@@ -44,55 +41,43 @@ namespace CalamityEntropy.Content
             private set;
         } = new();
 
-        public override bool AnythingToDraw => Particles.Count > 0;
+        public static void SpawnParticle(Vector2 position, Vector2 velocity, float size) =>
+            Particles.Add(new(position, velocity, size));
 
-        public override IEnumerable<Texture2D> Layers
-        {
-            get
-            {
-                for (int i = 0; i < layerAssets.Count; i++)
-                    yield return layerAssets[i].Value;
-            }
-        }
+        public override void ClearWorld() => Particles.Clear();
 
-        public override Color EdgeColor => new(255, 206, 60);
+        public override void Unload() => Particles = null;
 
-        public override void Load()
-        {
-            if (Main.netMode == NetmodeID.Server)
-                return;
-
-            layerAssets = new() { CEUtils.getExtraTexAsset("black") };
-        }
-
-        public override void ClearInstances() => Particles.Clear();
-
-        public override void Update()
+        public override void PostUpdateEverything()
         {
             for (int i = 0; i < Particles.Count; i++)
                 Particles[i].Update();
             Particles.RemoveAll(p => p.Size <= 2.5f);
         }
 
-        public static void SpawnParticle(Vector2 position, Vector2 velocity, float size) =>
-            Particles.Add(new(position, velocity, size));
-
-        public override Vector2 CalculateManualOffsetForLayer(int layerIndex)
+        public override void PostDrawTiles()
         {
-            return Vector2.Zero;
-        }
+            if (Main.dedServ || Particles.Count == 0)
+                return;
 
-        public override void DrawInstances()
-        {
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle").Value;
+            Texture2D tex = CEExtraAssets.SmallGreyscaleCircle;
+            Vector2 origin = tex.Size() * 0.5f;
 
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            // 先整体画一圈描边色,再覆盖黑色主体,簇内接缝被主体盖掉,近似融球描边
             foreach (EclipseParticle particle in Particles)
             {
                 Vector2 drawPosition = particle.Center - Main.screenPosition;
-                Vector2 origin = tex.Size() * 0.5f;
-                Vector2 scale = Vector2.One * particle.Size / tex.Size();
-                Main.spriteBatch.Draw(tex, drawPosition, null, Color.White, 0f, origin, scale, 0, 0f);
+                Vector2 scale = Vector2.One * (particle.Size + 4f) / tex.Size();
+                Main.spriteBatch.Draw(tex, drawPosition, null, EdgeColor, 0f, origin, scale, 0, 0f);
             }
+            foreach (EclipseParticle particle in Particles)
+            {
+                Vector2 drawPosition = particle.Center - Main.screenPosition;
+                Vector2 scale = Vector2.One * particle.Size / tex.Size();
+                Main.spriteBatch.Draw(tex, drawPosition, null, Color.Black, 0f, origin, scale, 0, 0f);
+            }
+            Main.spriteBatch.End();
         }
     }
 }

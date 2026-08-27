@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Common;
-using CalamityMod.Items;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
@@ -11,27 +10,11 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 {
     public class BookmarkStarwreckage : BookMark
     {
-        public static int MetallicChunk
-        {
-            get
-            {
-                if (ModLoader.TryGetMod("NoxusBoss", out Mod nb) && nb.TryFind<ModItem>("MetallicChunk", out var item))
-                    return item.Type;
-                return -1;
-            }
-        }
         public override void SetDefaults()
         {
             base.SetDefaults();
             Item.rare = ItemRarityID.Red;
-            if (ModLoader.TryGetMod("NoxusBoss", out Mod nb))
-            {
-                if (nb.TryFind<ModRarity>("AvatarRarity", out var rare))
-                {
-                    Item.rare = rare.Type;
-                }
-            }
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Starwreckage");
         public override EBookProjectileEffect getEffect()
@@ -40,12 +23,9 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override void AddRecipes()
         {
-            int type = MetallicChunk;
-            if (type > 0)
-            {
-                CreateRecipe().AddIngredient(type)
-                    .AddTile(TileID.WorkBenches).Register();
-            }
+            // 原联动模组金属块原料, 脱钩后改用自有虚空锭
+            CreateRecipe().AddIngredient<VoidBar>()
+                .AddTile(TileID.WorkBenches).Register();
         }
 
         public override Color tooltipColor => Color.DarkRed;
@@ -108,16 +88,10 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            int type = BookmarkStarwreckage.MetallicChunk;
-            if (type > 0)
-            {
-                Main.instance.LoadItem(type);
-                Texture2D tex = TextureAssets.Item[type].Value;
-                Main.EntitySpriteDraw(Projectile.getDrawData(lightColor, tex));
-            }
-            {
-
-            }
+            int type = ModContent.ItemType<VoidBar>();
+            Main.instance.LoadItem(type);
+            Texture2D tex = TextureAssets.Item[type].Value;
+            Main.EntitySpriteDraw(Projectile.getDrawData(lightColor, tex));
             return false;
         }
     }

@@ -1,7 +1,9 @@
-﻿using CalamityEntropy.Content.Buffs;
-using CalamityMod;
-using CalamityMod.Graphics.Primitives;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.Graphics.Shaders;
@@ -81,8 +83,9 @@ namespace CalamityEntropy.Content.Projectiles.Prophet
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new PrimitiveSettings(WidthFunction, ColorFunction, (_, _) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
+            // texture-map未落盘,暂用自有渐隐条带近似原ScarletDevilStreak(TrailStreak只采样红通道)
+            GameShaders.Misc["CalamityEntropy:TrailStreak"].SetShaderTexture(CEExtraAssets.StreakFadedAsset);
+            CEPrimitiveRenderer.RenderTrail(Projectile.oldPos, new CEPrimitiveSettings(WidthFunction, ColorFunction, (_, _) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityEntropy:TrailStreak"]), 30);
 
             Main.spriteBatch.UseBlendState(BlendState.AlphaBlend);
             Texture2D t = Projectile.GetTexture();

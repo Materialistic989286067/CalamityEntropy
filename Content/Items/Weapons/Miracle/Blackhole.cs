@@ -1,8 +1,11 @@
-﻿using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -117,7 +120,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Miracle
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D trail1 = CEUtils.getExtraTex("Streak2Trans");
+            Texture2D trail1 = CEExtraAssets.Streak2Trans;
             CEUtils.DrawGlow(Projectile.Center, Color.MediumVioletRed * 2, 0.4f * Projectile.ai[0]);
             CEUtils.DrawGlow(Projectile.Center, Color.MediumVioletRed * 2, 0.4f * Projectile.ai[0]);
             DrawRing(Projectile.Center - Main.screenPosition, trail1, new Vector2(64, 64) * Projectile.ai[0], new Vector2(1, 1) * Projectile.ai[0], Color.Violet * 1.3f, BlendState.Additive);
@@ -126,6 +129,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Miracle
     }
     public class Blackhole : ModProjectile
     {
+        //黑洞遮罩贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Extra/VoidMask")]
+        internal static Asset<Texture2D> VoidMaskTex;
         public override string Texture => CEUtils.WhiteTexPath;
         public override void SetDefaults()
         {
@@ -265,8 +271,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Miracle
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D trail1 = CEUtils.getExtraTex("Streak2Trans");
-            Texture2D trail2 = CEUtils.getExtraTex("MegaStreakBacking2b");
+            Texture2D trail1 = CEExtraAssets.Streak2Trans;
+            Texture2D trail2 = CEExtraAssets.MegaStreakBacking2b;
             if (scale2 > 0)
             {
                 CEUtils.DrawGlow(Projectile.Center, Color.Black, scale2 * 6f, false);
@@ -279,7 +285,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Miracle
                 float width = 260;
                 float hmul = 1.9f;
                 float wm = 0.82f;
-                Texture2D circle = CEUtils.getExtraTex("VoidMask");
+                Texture2D circle = VoidMaskTex.Value;
                 Vector2 sq = new Vector2(1, (float)Math.Pow(Math.Abs(Projectile.Center.Y - Main.LocalPlayer.Center.Y) * 0.00016f, 0.5f) * ((Projectile.Center.Y - Main.LocalPlayer.Center.Y) > 0 ? 1 : -1));
                 CEUtils.DrawGlow(Projectile.Center, Color.White * 0.8f, 6 * scale);
                 float num = 2.4f;

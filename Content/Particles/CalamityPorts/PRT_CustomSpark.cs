@@ -5,10 +5,10 @@ using Terraria;
 
 namespace CalamityEntropy.Content.Particles.CalamityPorts
 {
-    //CustomSpark,GeneralParticleHandler那批,贴图路径构造参数传入和CustomPulse同款
+    //CustomSpark,旧版粒子系统那批,贴图路径构造参数传入和CustomPulse同款
     public class PRT_CustomSpark : BasePRT
     {
-        public string TexPath = "CalamityMod/Particles/GlowSpark";
+        public string TexPath = "CalamityEntropy/Assets/Particles/GlowSpark";
         public Color InitialColor;
         public bool AffectedByGravity;
         public Vector2 Stretch = new Vector2(0.5f, 1.6f);
@@ -29,7 +29,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         public override void Reset()
         {
             base.Reset();
-            TexPath = "CalamityMod/Particles/GlowSpark";
+            TexPath = "CalamityEntropy/Assets/Particles/GlowSpark";
             InitialColor = default;
             AffectedByGravity = false;
             Stretch = new Vector2(0.5f, 1.6f);
@@ -114,7 +114,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
         public override bool PreDraw(SpriteBatch spriteBatch)
         {
-            Texture2D texture = PRTPathTextures.Get(TexPath);   //调用点传的CalamityMod/Particles/xxx,缓存别每帧Request
+            Texture2D texture = PRTPathTextures.Get(TexPath);   //调用点传的CalamityEntropy/Assets/Particles/xxx,缓存别每帧Request
             Vector2 drawScale = Stretch * Scale;
             Color drawColor = Color;
             if (AffectedByLight)

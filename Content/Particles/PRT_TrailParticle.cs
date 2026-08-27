@@ -1,11 +1,8 @@
-﻿using CalamityMod;
-using CalamityMod.Graphics.Primitives;
-using InnoVault.PRT;
+﻿using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.Graphics.Shaders;
 
 namespace CalamityEntropy.Content.Particles
 {
@@ -161,7 +158,7 @@ namespace CalamityEntropy.Content.Particles
 
         public override void AI()
         {
-            //Calamity RenderTrail吃尾追加序列,跟上面odp Insert(0)那套方向相反,别混用
+            //尾追加序列,index 0是最老点,跟上面odp Insert(0)那套方向相反,别混用
             trailPositions.Add(Position);
             if (trailPositions.Count > trailLength)
                 trailPositions.RemoveAt(0);
@@ -169,14 +166,33 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool PreDraw(SpriteBatch sb)
         {
-            if (trailPositions is null)
+            //原先走灾厄PrimitiveRenderer+TrailStreak shader,脱离灾厄后换成自有BasicTrail贴图的三角带,同为渐隐流光
+            if (trailPositions is null || trailPositions.Count < 3)
                 return false;
 
-            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(PRTSharedAssets.BasicTrail);
-            sb.EnterShaderRegion();
-            PrimitiveRenderer.RenderTrail(trailPositions, new(WidthFunction, ColorFunction, (_, _) => Vector2.One * Scale * 0.5f, false, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), trailLength);
-            sb.ExitShaderRegion();
-            //TrailStreak shader会动SpriteBatch,Exit后还得End再让框架按PRTDrawMode重开
+            GraphicsDevice gd = Main.graphics.GraphicsDevice;
+            sb.End();
+            sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+            Texture2D tex = PRTSharedAssets.BasicTrail.Value;
+            //旧RenderTrail的offset函数是每点加Vector2.One*Scale*0.5f,保持这个常量位移
+            Vector2 posOffset = Vector2.One * Scale * 0.5f;
+            List<ColoredVertex> ve = new List<ColoredVertex>();
+            for (int i = 1; i < trailPositions.Count; i++)
+            {
+                float c = i / (trailPositions.Count - 1f);
+                float width = WidthFunction(c, Vector2.Zero);
+                Color col = ColorFunction(c, Vector2.Zero);
+                Vector2 normal = (trailPositions[i] - trailPositions[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.PiOver2);
+                Vector2 basePos = trailPositions[i] + posOffset - Main.screenPosition;
+                ve.Add(new ColoredVertex(basePos + normal * width, new Vector3(c, 1, 1), col));
+                ve.Add(new ColoredVertex(basePos - normal * width, new Vector3(c, 0, 1), col));
+            }
+            if (ve.Count >= 3)
+            {
+                gd.Textures[0] = tex;
+                gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
+            }
+            //End完接回PRT批次,别让后面同桶粒子吃到Immediate状态
             sb.End();
             PRTLoader.BeginDrawingWithMode(PRTDrawMode, sb);
             return false;

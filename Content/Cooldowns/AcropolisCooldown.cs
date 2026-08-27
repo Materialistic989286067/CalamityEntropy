@@ -1,10 +1,10 @@
-﻿using CalamityMod.Cooldowns;
+﻿using CalamityEntropy.Core.Cooldowns;
 using Terraria.Audio;
 using Terraria.Localization;
 
 namespace CalamityEntropy.Content.Cooldowns
 {
-    public class AcropolisCooldown : CooldownHandler
+    public class AcropolisCooldown : CECooldownHandler
     {
         public static new string ID => "AcropolisCooldown";
         public override bool ShouldDisplay => true;

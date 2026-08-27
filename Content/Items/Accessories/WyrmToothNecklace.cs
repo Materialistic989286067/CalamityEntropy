@@ -1,8 +1,7 @@
-﻿using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod.Items;
-using CalamityMod.Items.Accessories;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Accessories
@@ -14,7 +13,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.width = 46;
             Item.height = 46;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1, gold: 50);
             Item.rare = ModContent.RarityType<AbyssalBlue>();
         }
 
@@ -27,7 +26,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ReaperToothNecklace>().
+                AddIngredient(ItemID.SharkToothNecklace).
                 AddIngredient<WyrmTooth>(9).
                 AddIngredient<FadingRunestone>().
                 AddTile(ModContent.TileType<AbyssalAltarTile>()).

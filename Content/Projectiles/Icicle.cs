@@ -1,7 +1,8 @@
-﻿using CalamityEntropy.Content.Dusts;
-using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Dusts;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -12,6 +13,9 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class Icicle : ModProjectile
     {
+        //冰锥本体贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Icicle")]
+        internal static Asset<Texture2D> IcicleTex;
         public bool d = false;
         public int j = 0;
         public int counter;
@@ -109,7 +113,7 @@ namespace CalamityEntropy.Content.Projectiles
                 Util.drawLine(Main.spriteBatch, ModContent.Request<Texture2D>("CalamityEntropy/Extra/white").Value, this.odp[i], this.odp[i - 1], cl * ((float)i / (float)odp.Count), size);
                 size -= sizej;
             }*/
-            Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Icicle").Value;
+            Texture2D tx = IcicleTex.Value;
             float x = 0f;
             for (int i = 0; i < odp.Count; i++)
             {
@@ -167,7 +171,7 @@ namespace CalamityEntropy.Content.Projectiles
 
             }
 
-            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/NPCHit/CryogenHit", 3), Projectile.Center);
+            SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/CryogenHit", 3), Projectile.Center);
         }
     }
 

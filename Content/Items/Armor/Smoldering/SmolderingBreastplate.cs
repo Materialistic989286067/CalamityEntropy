@@ -1,4 +1,3 @@
-using CalamityMod.Items;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,7 +12,7 @@ namespace CalamityEntropy.Content.Items.Armor.Smoldering
         {
             Item.width = 44;
             Item.height = 40;
-            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+            Item.value = Item.buyPrice(gold: 10);
             Item.defense = 10;
             Item.rare = ItemRarityID.LightRed;
         }

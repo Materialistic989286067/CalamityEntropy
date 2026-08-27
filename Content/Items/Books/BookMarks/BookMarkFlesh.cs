@@ -1,6 +1,4 @@
-﻿using CalamityMod.Items;
-using CalamityMod.Projectiles.Magic;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,7 +11,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             base.SetDefaults();
             Item.rare = ItemRarityID.Pink;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Flesh");
         public override void ModifyStat(EBookStatModifer modifer)
@@ -35,7 +33,8 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, CEUtils.randomRot().ToRotationVector2() * 4, ModContent.ProjectileType<BloodBeam>(), (damageDone / 9).Softlimitation(200), projectile.knockBack / 3, projectile.owner);
+                    // 原灾厄 BloodBeam 改用自有 BloodSpray
+                    Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, CEUtils.randomRot().ToRotationVector2() * 4, ModContent.ProjectileType<BloodSpray>(), (damageDone / 9).Softlimitation(200), projectile.knockBack / 3, projectile.owner);
                 }
             }
         }

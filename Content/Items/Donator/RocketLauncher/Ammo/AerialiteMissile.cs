@@ -1,5 +1,4 @@
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod.Items.Materials;
 using InnoVault.PRT;
 using System;
 using Terraria;
@@ -27,8 +26,9 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
 
         public override void AddRecipes()
         {
+            // 灾厄原料按 material-map.md 替换：AerialiteBar→陨石锭
             CreateRecipe(100)
-                .AddIngredient(ModContent.ItemType<AerialiteBar>(), 1)
+                .AddIngredient(ItemID.MeteoriteBar, 1)
                 .AddIngredient(ModContent.ItemType<OsseousRemains>())
                 .AddTile(TileID.Anvils)
                 .Register();
@@ -48,9 +48,9 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             float scale = ExplodeRadius / 40f;
             //CustomPulse贴图路径现传,CalamityPorts走PRTPathTextures
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.SkyBlue * 1.2f, 0.005f).Configure("CalamityMod/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Gold, 0.005f).Configure("CalamityMod/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 18);
-            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(234, 240, 210), 0.005f).Configure("CalamityMod/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.02f, 15);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.SkyBlue * 1.2f, 0.005f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Gold, 0.005f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 18);
+            PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, new Color(234, 240, 210), 0.005f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.02f, 15);
         }
         public override void SpawnParticle(Vector2 vel)
         {

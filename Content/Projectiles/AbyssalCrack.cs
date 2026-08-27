@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityEntropy.Assets.Register;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
@@ -68,7 +69,7 @@ namespace CalamityEntropy.Content.Projectiles
             {
                 return;
             }
-            Texture2D px = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value;
+            Texture2D px = CEExtraAssets.white;
             float jd = 1;
             float lw = Projectile.timeLeft / 30f;
             Color color = Color.White;

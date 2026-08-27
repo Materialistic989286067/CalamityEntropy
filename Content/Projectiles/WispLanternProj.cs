@@ -1,5 +1,5 @@
-﻿using CalamityEntropy.Common;
-using CalamityMod;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
@@ -216,7 +216,7 @@ namespace CalamityEntropy.Content.Projectiles
                 }
                 float rot = Projectile.owner.ToPlayer().Entropy().CasketSwordRot * 0.3f;
                 SpriteBatch sb = Main.spriteBatch;
-                Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Wisp", AssetRequestMode.ImmediateLoad).Value;
+                Effect shader = CEEffectAssets.Wisp;
                 shader.Parameters["minColor"].SetValue(new Color(40, 6, 100).ToVector4());
                 shader.Parameters["maxColor"].SetValue(new Color(255, 220, 255).ToVector4());
                 sb.End();
@@ -237,7 +237,9 @@ namespace CalamityEntropy.Content.Projectiles
 
 
                     Texture2D itex = TextureAssets.Item[item.type].Value;
-                    Main.spriteBatch.Draw(itex, pos + Vector2.UnitY * yoffset, item.GetFrame(itex), Color.White, 0, new Vector2(item.GetFrame(itex).Width, item.GetFrame(itex).Height) / 2, (14f / item.GetFrame(itex).Width + 14f / item.GetFrame(itex).Height), SpriteEffects.None, 0);
+                    // 原灾厄 GetFrame 扩展的等价展开：取物品动画当前帧
+                    Rectangle iframe = Main.itemAnimations[item.type] == null ? itex.Frame() : Main.itemAnimations[item.type].GetFrame(itex);
+                    Main.spriteBatch.Draw(itex, pos + Vector2.UnitY * yoffset, iframe, Color.White, 0, new Vector2(iframe.Width, iframe.Height) / 2, (14f / iframe.Width + 14f / iframe.Height), SpriteEffects.None, 0);
 
                     rot += MathHelper.ToRadians(360f / (float)(items.Count));
 
@@ -248,7 +250,7 @@ namespace CalamityEntropy.Content.Projectiles
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-                Texture2D light = CEUtils.getExtraTex("lightball");
+                Texture2D light = CEExtraAssets.lightball;
                 Main.spriteBatch.Draw(light, Projectile.Center - Main.screenPosition + Vector2.UnitY * yoffset, null, new Color(200, 160, 255) * (0.6f + (float)(Math.Cos(Main.GameUpdateCount * 0.07f)) * 0.05f), Projectile.rotation, light.Size() / 2, Projectile.scale * 1f, SpriteEffects.None, 0);
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);

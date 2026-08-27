@@ -42,7 +42,8 @@ namespace CalamityEntropy.Content.Skies
             if (SCalIndex != -1)
             {
                 UseTargetPosition(Main.npc[SCalIndex].Center);
-                Filters.Scene["CalamityMod:SupremeCalamitas"].GetShader().UseColor(1f, 1f, 1f);
+                // 脱离灾厄:原句从灾厄 SCal 屏效抄来,本就是给自身染色的自引用残留,直接改自身赋色
+                UseColor(1f, 1f, 1f);
             }
             base.Apply();
         }

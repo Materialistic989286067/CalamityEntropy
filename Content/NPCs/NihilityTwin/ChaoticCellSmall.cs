@@ -2,7 +2,6 @@
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Utilities;
-using CalamityMod.World;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
@@ -45,11 +44,8 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
                 NPC.damage += 2;
             }
             NPC.lifeMax = 2200;
-            if (CalamityWorld.death)
-            {
-                NPC.damage += 2;
-            }
-            else if (CalamityWorld.revenge)
+            // 难度收敛:原复仇/死亡加成同值,按 difficulty-map 代入后化简为专家档(大师蕴含专家)
+            if (Main.expertMode)
             {
                 NPC.damage += 2;
             }
@@ -152,7 +148,8 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-                gd.Textures[0] = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/NihilityTwin/NihRope").Value;
+                //复用同命名空间下 NihilityActeriophage 声明的绳索贴图字段
+                gd.Textures[0] = NihilityActeriophage.nihRopeTex.Value;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);

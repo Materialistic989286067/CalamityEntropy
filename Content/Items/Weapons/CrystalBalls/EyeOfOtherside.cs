@@ -1,7 +1,5 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
+using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -23,8 +21,8 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
             Item.knockBack = 6f;
             Item.UseSound = CEUtils.GetSound("soulshine");
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
-            Item.rare = ModContent.RarityType<PureGreen>();
+            Item.value = Item.buyPrice(1, 75);
+            Item.rare = ModContent.RarityType<GlowGreen>();
             Item.shoot = ModContent.ProjectileType<EyeOfOthersideHoldout>();
             Item.shootSpeed = 16f;
             Item.mana = 3;
@@ -33,8 +31,7 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<Necroplasm>(), 15)
-                .AddIngredient(ModContent.ItemType<RuinousSoul>(), 5)
+                .AddIngredient(ModContent.ItemType<NihilityFragments>(), 20)
                 .AddIngredient(ItemID.CrystalBall, 1)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();

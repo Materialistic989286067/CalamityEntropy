@@ -1,3 +1,4 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Biomes;
 using CalamityEntropy.Content.Buffs;
@@ -12,11 +13,7 @@ using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.Cruiser;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod;
-using CalamityMod.Events;
-using CalamityMod.Items.Potions;
-using CalamityMod.NPCs.PrimordialWyrm;
-using CalamityMod.World;
+using CalamityEntropy.Core.Graphics;
 using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -38,7 +35,34 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
 
     public class CruiserHead : ModNPC
     {
+        //绘制用贴图,加载期由 VaultLoaden 赋值;白化着色器读共享基座 CEEffectAssets(只在客户端绘制路径读取)
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/P2b", 1, 7, AssetMode = AssetMode.TextureValueArray)]
+        private static Texture2D[] p2BodyFrames;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/Head2")]
+        private static Asset<Texture2D> head2Tex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawUp2")]
+        private static Asset<Texture2D> jawUp2Tex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawDown2")]
+        private static Asset<Texture2D> jawDown2Tex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/Flagellum")]
+        private static Asset<Texture2D> flagellumTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserTail")]
+        private static Asset<Texture2D> cruiserTailTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserBodyAlt")]
+        private static Asset<Texture2D> cruiserBodyAltTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserBody")]
+        private static Asset<Texture2D> cruiserBodyTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserHead")]
+        private static Asset<Texture2D> cruiserHeadTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawUp")]
+        private static Asset<Texture2D> jawUpTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawDown")]
+        private static Asset<Texture2D> jawDownTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/T3")]
+        private static Asset<Texture2D> t3Tex;
         public static float ProjDamageReduce = 0.5f;
+        // 原灾厄全局 DR 字段的本地等效:承伤按 (1-DR) 结算,随阶段调整并走 SendExtraAI 同步
+        public float DamageReduction = 0.54f;
         public class HitRecord
         {
             public int Timeleft = 200;
@@ -125,7 +149,6 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
-            NPCID.Sets.MPAllowedEnemies[ModContent.NPCType<PrimordialWyrmHead>()] = true;
             NPCID.Sets.ImmuneToRegularBuffs[Type] = true;
         }
         int tdamage = 0;
@@ -138,8 +161,8 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         }
         public override void SetDefaults()
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.Calamity().DR = 0.54f;
+            // 原灾厄 DR 体系本地化:一阶段减伤 54%,二阶段 42%(见 DamageReduction/ModifyIncomingHit)
+            DamageReduction = 0.54f;
             NPC.boss = true;
             NPC.width = 96;
             NPC.height = 96;
@@ -154,12 +177,13 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             }
             NPC.defense = 80;
             NPC.lifeMax = 1120000;
-            if (CalamityWorld.death)
+            // 难度映射:死亡→大师、复仇→专家(difficulty-map)
+            if (Main.masterMode)
             {
                 NPC.damage += 4;
                 length += 4;
             }
-            else if (CalamityWorld.revenge)
+            else if (Main.expertMode)
             {
                 NPC.damage += 2;
                 length += 3;
@@ -202,35 +226,56 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         }
         public override void BossLoot(ref int potionType)
         {
-            potionType = ModContent.ItemType<OmegaHealingPotion>();
+            // 灾厄至尊回复药水→原版超级治疗药水(misc-map)
+            potionType = ItemID.SuperHealingPotion;
         }
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<CruiserBag>()));
 
-            npcLoot.DefineConditionalDropSet(() => true).Add(DropHelper.PerPlayer(ModContent.ItemType<OmegaHealingPotion>(), 1, 5, 15), hideLootReport: true);
+            // 原灾厄欧米茄回复药水→超级治疗药水,数量 5-15 按 misc-map ×1.5 取整为 8-23;隐藏图鉴条目
+            npcLoot.Add(new DropPerPlayerOnThePlayer(ItemID.SuperHealingPotion, 1, 8, 23, new HiddenDropCondition()));
 
-
-            var normalOnly = npcLoot.DefineNormalOnlyDropSet();
+            LeadingConditionRule normalOnly = new LeadingConditionRule(new Conditions.NotExpert());
             {
-                normalOnly.Add(ModContent.ItemType<BottledFissure>(), new Fraction(3, 5));
-                normalOnly.Add(ModContent.ItemType<VoidRelics>(), new Fraction(3, 5));
-                normalOnly.Add(ModContent.ItemType<VoidElytra>(), new Fraction(3, 5));
-                normalOnly.Add(ModContent.ItemType<VoidEcho>(), new Fraction(3, 5));
-                normalOnly.Add(ModContent.ItemType<Silence>(), new Fraction(3, 5));
-                normalOnly.Add(ModContent.ItemType<VoidAnnihilate>(), new Fraction(3, 5));
-                normalOnly.Add(ModContent.ItemType<WindOfUndertaker>(), new Fraction(2, 5));
-                normalOnly.Add(ModContent.ItemType<WingsOfHush>(), new Fraction(3, 5));
-                normalOnly.Add(ModContent.ItemType<VoidCandle>(), new Fraction(3, 5));
-                normalOnly.Add(ModContent.ItemType<VoidMonolith>(), 3);
-                normalOnly.Add(ModContent.ItemType<VoidToy>(), 3);
-                normalOnly.Add(ModContent.ItemType<VoidScales>(), new Fraction(1, 1), 88, 128);
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<BottledFissure>(), 5, 1, 1, 3));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<VoidRelics>(), 5, 1, 1, 3));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<VoidElytra>(), 5, 1, 1, 3));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<VoidEcho>(), 5, 1, 1, 3));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<Silence>(), 5, 1, 1, 3));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<VoidAnnihilate>(), 5, 1, 1, 3));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<WindOfUndertaker>(), 5, 1, 1, 2));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<WingsOfHush>(), 5, 1, 1, 3));
+                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<VoidCandle>(), 5, 1, 1, 3));
+                normalOnly.OnSuccess(ItemDropRule.Common(ModContent.ItemType<VoidMonolith>(), 3));
+                normalOnly.OnSuccess(ItemDropRule.Common(ModContent.ItemType<VoidToy>(), 3));
+                normalOnly.OnSuccess(ItemDropRule.Common(ModContent.ItemType<VoidScales>(), 1, 88, 128));
             }
-            npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<CruiserRelic>());
+            npcLoot.Add(normalOnly);
+            // 遗物:原灾厄复仇/大师条件对齐原版大师掉落惯例(difficulty-map)
+            npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsMasterMode(), ModContent.ItemType<CruiserRelic>()));
 
-            npcLoot.Add(ModContent.ItemType<CruiserTrophy>(), 10);
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<CruiserTrophy>(), 10));
 
-            npcLoot.AddConditionalPerPlayer(() => !EDownedBosses.downedCruiser, ModContent.ItemType<CruiserLore>());
+            // 首杀传记:承接原灾厄按人实例掉落语义
+            // 龙牙 65-80 与 BookmarkMarivium 的原始飞龙职能承接已在 EGlobalNPC 统一登记,此处不重复
+            npcLoot.Add(new DropPerPlayerOnThePlayer(ModContent.ItemType<CruiserLore>(), 1, 1, 1, new LoreFirstKill()));
+        }
+
+        // 恒真但隐藏图鉴条目的条件:对应原 hideLootReport 语义
+        private class HiddenDropCondition : IItemDropRuleCondition, IProvideItemConditionDescription
+        {
+            public bool CanDrop(DropAttemptInfo info) => true;
+            public bool CanShowItemDropInUI() => false;
+            public string GetConditionDescription() => null;
+        }
+
+        // 首杀传记条件:对应 downed 旗标未置位时每名玩家各掉一份
+        private class LoreFirstKill : IItemDropRuleCondition, IProvideItemConditionDescription
+        {
+            public bool CanDrop(DropAttemptInfo info) => !EDownedBosses.downedCruiser;
+            public bool CanShowItemDropInUI() => true;
+            public string GetConditionDescription() => null;
         }
         public override void SendExtraAI(BinaryWriter writer)
         {
@@ -252,6 +297,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             writer.Write(DeathAnm);
             writer.Write(DeathAnmCount);
             writer.Write(NPC.dontTakeDamage);
+            writer.Write(DamageReduction);
         }
         public override void ReceiveExtraAI(BinaryReader reader)
         {
@@ -273,6 +319,12 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             DeathAnm = reader.ReadBoolean();
             DeathAnmCount = reader.ReadInt32();
             NPC.dontTakeDamage = reader.ReadBoolean();
+            DamageReduction = reader.ReadSingle();
+        }
+        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
+        {
+            // 原灾厄 DR 减伤的本地结算
+            modifiers.FinalDamage *= 1f - DamageReduction;
         }
         public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)
         {
@@ -381,7 +433,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             else
             {
                 NPC.defense = 50;
-                NPC.Calamity().DR = 0.42f;
+                DamageReduction = 0.42f;
                 aiRound++;
                 if (aiRound >= 10)
                 {
@@ -502,7 +554,8 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                 {
                     PRTLoader.NewParticle<PRT_RealisticExplosion>(NPC.Center, Vector2.Zero, Color.White, 10).Configure(1, true, PRTDrawModeEnum.AlphaBlend, 0, -1);
                 }
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = 16;
+                // 原灾厄全局屏震改自有 ScreenShaker
+                ScreenShaker.AddShake(new ScreenShaker.ScreenShake(Vector2.Zero, 16));
 
             }
         }
@@ -1191,7 +1244,8 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                 {
                     foreach(var plr in Main.ActivePlayers)
                     {
-                        plr.Calamity().infiniteFlight = true;
+                        // 原灾厄无限飞行改每帧回满翅膀时间(player-api)
+                        plr.wingTime = plr.wingTimeMax;
                     }
                     var r = Main.rand;
                     for (int i = 0; i < 4; i++)
@@ -1233,13 +1287,14 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                         int num = 8;
                         int counts = 3;
                         float speed = 9;
-                        if (CalamityWorld.revenge)
+                        // 难度映射:复仇→专家、死亡→大师(difficulty-map)
+                        if (Main.expertMode)
                         {
                             num = 11;
                             counts = 4;
                             speed = 12;
                         }
-                        if (CalamityWorld.death)
+                        if (Main.masterMode)
                         {
                             num = 11;
                             counts = 5;
@@ -1370,10 +1425,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         {
             if (!EDownedBosses.downedCruiser)
             {
-                if (!BossRushEvent.BossRushActive)
-                {
-                    VoidOreSystem.BlessWorldWithOre();
-                }
+                VoidOreSystem.BlessWorldWithOre();
             }
 
             NPC.SetEventFlagCleared(ref EDownedBosses.downedCruiser, -1);
@@ -1400,7 +1452,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             }
             if (whiteLerp > 0)
             {
-                Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/WhiteTrans", AssetRequestMode.ImmediateLoad).Value;
+                Effect shader = CEEffectAssets.WhiteTrans;
                 shader.Parameters["strength"].SetValue(whiteLerp);
                 Main.spriteBatch.EnterShaderRegion(BlendState.AlphaBlend, shader);
                 shader.CurrentTechnique.Passes[0].Apply();
@@ -1427,7 +1479,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                     Vector2 pos = bodies[d];
 
                     Texture2D tx;
-                    tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Cruiser/P2b" + (bd + 1).ToString()).Value;
+                    tx = p2BodyFrames[bd];
 
                     spriteBatch.Draw(tx, pos - screenPosition, null, Color.White * alpha, rot, new Vector2(tx.Width, tx.Height) / 2, NPC.scale, SpriteEffects.None, 0f);
 
@@ -1435,9 +1487,9 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
 
 
                 }
-                Texture2D txd = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Cruiser/Head2").Value;
-                Texture2D j2 = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawUp2").Value;
-                Texture2D j1 = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawDown2").Value;
+                Texture2D txd = head2Tex.Value;
+                Texture2D j2 = jawUp2Tex.Value;
+                Texture2D j1 = jawDown2Tex.Value;
                 Vector2 joffset = new Vector2(54, 54);
                 Vector2 ofs2 = joffset * new Vector2(1, -1);
                 float roth = mouthRot * 0.8f;
@@ -1464,10 +1516,10 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                         rot = (bodies[d - 1] - bodies[d]).ToRotation();
                     }
                     Vector2 pos = bodies[d];
-                    Texture2D f1 = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Cruiser/Flagellum").Value;
+                    Texture2D f1 = flagellumTex.Value;
                     if (d == bodies.Count - 1)
                     {
-                        Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Cruiser/CruiserTail").Value;
+                        Texture2D tx = cruiserTailTex.Value;
                         spriteBatch.Draw(tx, pos - screenPosition, null, Color.White * alpha, rot, new Vector2(tx.Width, tx.Height) / 2, NPC.scale, SpriteEffects.None, 0f);
 
                     }
@@ -1476,11 +1528,11 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                         Texture2D tx;
                         if (d % 2 == 1)
                         {
-                            tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Cruiser/CruiserBodyAlt").Value;
+                            tx = cruiserBodyAltTex.Value;
                         }
                         else
                         {
-                            tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Cruiser/CruiserBody").Value;
+                            tx = cruiserBodyTex.Value;
                         }
                         spriteBatch.Draw(tx, pos - screenPosition, null, Color.White * alpha, rot, new Vector2(tx.Width, tx.Height) / 2, NPC.scale, SpriteEffects.None, 0f);
 
@@ -1493,9 +1545,9 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                     }
 
                 }
-                Texture2D txd = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Cruiser/CruiserHead").Value;
-                Texture2D j2 = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawUp").Value;
-                Texture2D j1 = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawDown").Value;
+                Texture2D txd = cruiserHeadTex.Value;
+                Texture2D j2 = jawUpTex.Value;
+                Texture2D j1 = jawDownTex.Value;
                 Vector2 joffset = new Vector2(42, 42);
                 Vector2 ofs2 = joffset * new Vector2(1, -1);
                 float roth = mouthRot;
@@ -1515,7 +1567,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             if (WarningAlpha > 0.002f)
             {
                 Main.spriteBatch.UseBlendState(BlendState.Additive);
-                Texture2D w = CEUtils.getExtraTex("T3");
+                Texture2D w = t3Tex.Value;
                 Main.spriteBatch.Draw(w, NPC.Center - Main.screenPosition, null, Color.AliceBlue * 0.7f * WarningAlpha, NPC.rotation, new Vector2(0, w.Height / 2f), new Vector2(20, (phase == 1 ? 0.6f : 0.8f) * WarningAlpha), SpriteEffects.None, 0);
                 Main.spriteBatch.Draw(w, NPC.Center - Main.screenPosition, null, Color.AliceBlue * 0.7f * WarningAlpha, NPC.rotation, new Vector2(0, w.Height / 2f), new Vector2(20, (phase == 1 ? 0.5f : 0.65f) * WarningAlpha * WarningAlpha * WarningAlpha), SpriteEffects.None, 0);
                 Main.spriteBatch.ExitShaderRegion();

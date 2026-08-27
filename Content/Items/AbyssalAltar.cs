@@ -1,6 +1,5 @@
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod.Items.Placeables.Furniture.CraftingStations;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -26,8 +25,8 @@ namespace CalamityEntropy.Content.Items
 
         public override void AddRecipes()
         {
+            // 灾厄诅咒祭坛原料随脱离灾厄移除；门槛由龙牙（巡游者掉落）与虚空井站台把关
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<AltarOfTheAccursedItem>())
                 .AddIngredient(ModContent.ItemType<WyrmTooth>(), 10)
                 .AddTile<VoidWellTile>()
                 .Register();

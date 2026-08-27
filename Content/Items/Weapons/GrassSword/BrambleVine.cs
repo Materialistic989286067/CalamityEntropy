@@ -1,7 +1,8 @@
 ﻿using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.IO;
 using Terraria;
@@ -11,6 +12,9 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
 {
     public class BrambleVine : ModProjectile
     {
+        //剑体贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Content/Items/Weapons/GrassSword/Bramblecleave")]
+        internal static Asset<Texture2D> BramblecleaveTex;
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/GrassSword/Vine";
         public override void SetDefaults()
         {
@@ -233,7 +237,7 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
             }
             if (Projectile.ai[0] == 2)
             {
-                Texture2D sword = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/GrassSword/Bramblecleave");
+                Texture2D sword = BramblecleaveTex.Value;
                 Main.EntitySpriteDraw(sword, e - Main.screenPosition + Projectile.rotation.ToRotationVector2() * 64, null, Color.Lerp(lightColor, Color.White, 0.6f), Projectile.rotation + MathHelper.PiOver4, sword.Size() / 2f, 1.6f + 0.1f * Bramblecleave.GetLevel(), SpriteEffects.None);
             }
             return false;
@@ -281,7 +285,6 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
             Color impactColor = Color.LightGreen;
             float impactParticleScale = Main.rand.NextFloat(2f, 3f);
 
-            //EParticle.spawnNew→PRTLoader.NewParticle,spawn点和数值迁移纪律:一个不改
             PRTLoader.NewParticle<PRT_SparkleCal>(Projectile.GetOwner().Center, Vector2.Zero, impactColor, impactParticleScale).Configure(Color.LawnGreen, 12, 0, 5f);
             Projectile.GetOwner().velocity = Projectile.GetOwner().velocity.normalize() * -20;
             Projectile.GetOwner().itemTime = Projectile.GetOwner().itemAnimation = 30;

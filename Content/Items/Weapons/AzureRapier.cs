@@ -1,15 +1,16 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Cooldowns;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using CalamityEntropy.Core.Cooldowns;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -34,15 +35,14 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAnimation = 7;
             Item.autoReuse = true;
             Item.scale = 1f;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.damage = 10;
             Item.knockBack = 5;
             Item.crit = 6;
             Item.shoot = ModContent.ProjectileType<AzureRapierHeld>();
             Item.shootSpeed = 16;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(0, 2);
             Item.rare = ModContent.RarityType<Soulight>();
-            Item.Calamity().devItem = true;
             Item.ArmorPenetration = 16;
         }
         public override bool AltFunctionUse(Player player)
@@ -74,9 +74,9 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient<PearlShard>(4)
-                .AddIngredient<SeaPrism>(6)
-                .AddIngredient<CalamityMod.Items.Placeables.SunkenSea.PrismShard>(10)
+            CreateRecipe().AddIngredient(ItemID.WhitePearl, 4)
+                .AddIngredient(ItemID.Coral, 6)
+                .AddIngredient(ItemID.CrystalShard, 10)
                 .AddTile(TileID.Anvils)
                 .Register();
         }
@@ -95,8 +95,10 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             CEUtils.PlaySound("spearImpact", Main.rand.NextFloat(1.2f, 1.6f), target.Center);
+            // 原灾厄 Eutrophication 对 NPC 唯一效果是 +0.05 减速，与自研 GalvanicCorrosion 同值；
+            // 原 RiptideDebuff 对 NPC 无机制效果（纯玩家减益），施加行随脱离灾厄删除
             if (Main.rand.NextBool(6))
-                target.AddBuff<Eutrophication>(12 * 60);
+                target.AddBuff<GalvanicCorrosion>(12 * 60);
 
             if (Main.rand.NextBool(6))
                 target.AddBuff<ArmorCrunch>(12 * 60);
@@ -106,10 +108,6 @@ namespace CalamityEntropy.Content.Items.Weapons
 
             if (Main.rand.NextBool(6))
                 target.AddBuff(BuffID.Bleeding, 16 * 60);
-
-
-            if (Main.rand.NextBool(6))
-                target.AddBuff<RiptideDebuff>(10 * 60);
         }
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
         {
@@ -157,7 +155,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             if (MaxTime < 5)
                 MaxTime = 5;
             Texture2D tex = Projectile.GetTexture();
-            Texture2D glow = CEUtils.getExtraTex("SpearArrowGlow2");
+            Texture2D glow = CEExtraAssets.SpearArrowGlow2;
             float alpha = 1 - ((float)counter / MaxTime);
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation + MathHelper.PiOver4, new Vector2(4, tex.Height - 4), Projectile.scale, SpriteEffects.None);
             Main.spriteBatch.UseBlendState(BlendState.Additive);
@@ -252,6 +250,9 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class AzureRapierBlock : ModProjectile
     {
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/AzureRapier";
+        //格挡闪光贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Content/Particles/ThinEndedLine")]
+        internal static Asset<Texture2D> ThinEndedLineTex;
         public override void SetDefaults()
         {
             Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
@@ -298,7 +299,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Texture2D tex = Projectile.GetTexture();
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation + MathHelper.PiOver4, tex.Size() / 2f, Projectile.scale, SpriteEffects.None);
             Main.spriteBatch.UseBlendState(BlendState.Additive);
-            Texture2D glow = CEUtils.RequestTex("CalamityEntropy/Content/Particles/ThinEndedLine");
+            Texture2D glow = ThinEndedLineTex.Value;
             Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition, null, Color.Aqua * TAlpha * 2, Projectile.rotation + MathHelper.PiOver2, glow.Size() / 2f, new Vector2(1f, TScale), SpriteEffects.None, 0);
             Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition, null, Color.White * TAlpha * 2, Projectile.rotation + MathHelper.PiOver2, glow.Size() / 2f, new Vector2(0.75f, TScale), SpriteEffects.None, 0);
             Main.spriteBatch.ExitShaderRegion();

@@ -15,9 +15,8 @@ Items: {
 					Throws a spinning scythe that rapidly slows in midair,
 					then explodes and fires two homing Revelation Beams before returning to the player
 					On return, it deals damage again if hitting an enemy
-					Stealth attack throws three scythes that home in on the nearest enemy;
-					on hit they merge into a giant scythe which strikes that enemy multiple times
-					Each giant scythe hit creates a large explosion
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: hurls 3 homing revelation scythes that relay-slash on hit
 					'''
 			}
 
@@ -26,7 +25,8 @@ Items: {
 				Tooltip:
 					'''
 					Throw a [ceeffect/cruiser:void-chained frisbee] that pulls itself back to enemies on hit after a short delay before exploding on impact]
-					Stealth strikes cause the frisbee to stick to the hit enemy once chained, creating a [ceeffect/cruiser:void vortex] that rapidly damages in a large area]
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: fires a specialized blade of silence that chains the target and unfolds a devouring vortex
 					'''
 			}
 
@@ -35,7 +35,8 @@ Items: {
 				Tooltip:
 					'''
 					Throws a void-infused javelin that creates a small burst on impact
-					Stealth strikes pierce, deal increased damage and create a larger burst on impact
+					Hitting enemies builds momentum; when full, your next attack becomes an ultimate
+					Ultimate: the lance pierces infinitely and flies faster
 					Inflicts [cebuff:CalamityEntropy/VoidTouch]
 					'''
 			}
@@ -45,7 +46,8 @@ Items: {
 				Tooltip:
 					'''
 					Throws a javelin that spawns water bullets when hit
-					Stealth strikes pierce, shed homing crystals as they fly, and spawn more homing water bullets when hit
+					Hitting enemies builds momentum; when full, your next attack becomes an ultimate
+					Ultimate: an empowered throw that pierces up to 5 enemies
 					'''
 			}
 
@@ -54,7 +56,8 @@ Items: {
 				Tooltip:
 					'''
 					Throws a blessed javelin
-					Stealth strikes release a spinning holy light
+					Hitting enemies builds momentum; when full, your next attack becomes an ultimate
+					Ultimate: an empowered throw that pierces up to 5 enemies
 					'''
 			}
 
@@ -62,8 +65,9 @@ Items: {
 				DisplayName: Abyssal Piercer
 				Tooltip:
 					'''
-					Throws a drowned javelin that erupts into homing abyssal water on impact and inflicts [cbuff:CalamityMod/CrushDepth]
-					Stealth strikes unleash grasping tentacles that pierce enemies
+					Throws a drowned javelin that erupts into homing abyssal water on impact and inflicts [cebuff:CalamityEntropy/CrushDepth]
+					Hitting enemies builds momentum; when full, your next attack becomes an ultimate
+					Ultimate: an empowered throw that pierces up to 5 enemies
 					'''
 			}
 
@@ -72,7 +76,8 @@ Items: {
 				Tooltip:
 					'''
 					Throws a light-infused javelin
-					Stealth strikes create a burst of homing feathers
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: launches a ring of 12 firmament feathers; the main bolt pierces up to 5 enemies
 					'''
 			}
 
@@ -81,7 +86,8 @@ Items: {
 				Tooltip:
 					'''
 					Throws an exploding javelin
-					Stealth strikes cause the javelin to lodge into struck targets before making a larger explosion
+					Usable only when the ultimate is ready; needs a moment to recharge after release
+					Ultimate: hurls an empowered arbitrator blade
 					'''
 			}
 
@@ -90,7 +96,8 @@ Items: {
 				Tooltip:
 					'''
 					Swings a void-touched scythe
-					Stealth strikes teleport you to your cursor and release a damaging shockwave
+					Hitting enemies builds momentum; when full, your next attack becomes an ultimate
+					Ultimate: fires an empowered void bolt dealing double damage
 					'''
 			}
 
@@ -104,7 +111,8 @@ Items: {
 					These debuffs both stack up to 8 times, when the opposite debuff is applied, that amount of Eclipse or Echo souls are created
 					Eclipsed Souls return to you, restoring 4 life each and briefly granting the [cebuff:CalamityEntropy/ServiceBuff] buff
 					Echo Souls relentlessly assault enemies for a short time
-					Stealth strikes add two homing knives and unleash a swarm of both souls on impact
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: throws both blades at once, each dealing full damage
 					'''
 			}
 
@@ -113,7 +121,8 @@ Items: {
 				Tooltip:
 					'''
 					Alternates between piercing and bouncing throws
-					Stealth strikes create a shockwave on impact and always bounce
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: throws an empowered frisbee with greatly increased damage and velocity
 					'''
 			}
 
@@ -122,15 +131,17 @@ Items: {
 				Tooltip:
 					'''
 					Flings 4 daggers in a random arc that fly towards enemies after a moment in the air
-					Stealth strikes throw a spread of 3 larger knives that spawn 6 collapsing runes on hit and inflict [cebuff:CalamityEntropy/SoulDisorder]
+					Hitting enemies builds momentum; when full, your next attack becomes an ultimate
+					Ultimate: the main dagger deals double damage, flanked by volleys of side daggers
 					'''
 			}
 
 			TheDeadCut: {
 				Tooltip:
 					'''
-					Swings a decaying scythe that restores stealth on hit
-					Stealth strikes unleash a momentous slice
+					Swings a decaying scythe that leaves a dead slice on hit
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: the dead slice gains rapid hits and homing; on hit, teleports to relay-slash up to 10 times
 					'''
 				DisplayName: The Dead Cut
 			}
@@ -140,7 +151,8 @@ Items: {
 				Tooltip:
 					'''
 					Throws a lunar plank to strike enemies 
-					Stealth strikes create a pulse and release homing stars on impact
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: the plank grows larger; its impact triggers a starlight explosion and homing star bolts
 					'''
 			}
 
@@ -150,22 +162,28 @@ Items: {
 					'''
 					Throws a blade that lodges itself into enemies and bursts after a short delay
 					The blade inflicts [cebuff:CalamityEntropy/MechanicalTrauma] and bursts after a short time
-					Stealth strikes send out numerous homing blades that additionally inflict [cbuff:CalamityMod/GalvanicCorrosion] on burst
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: fires a volley of 6 wall-piercing homing javelins that unleash red tesla chains on hit
 					'''
 			}
 
 			TlipocasScythe: {
 				DisplayName: Tlipoca's Scythe
-				Tooltip: NOT IMPLEMENTED AT THIS STAGE
+				Tooltip:
+					'''
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: the spinning scythe is fully empowered, with larger and heavier slashes
+					'''
 			}
 
 			AzafureLightMachineGun: {
 				DisplayName: Azafure Light Machine Gun
 				Tooltip:
 					'''
-					Fires a continuous laser that restores stealth on hit
-					Stealth strikes fire a high damage grenade
-					Both inflict the [cebuff:CalamityEntropy/MechanicalTrauma] debuff
+					Fires a continuous laser
+					Hitting enemies builds momentum; when full, your next attack becomes an ultimate
+					Ultimate: the next shot fires a sniper round dealing 6x damage
+					Attacks inflict the [cebuff:CalamityEntropy/MechanicalTrauma] debuff
 					'''
 			}
 
@@ -174,7 +192,8 @@ Items: {
 				Tooltip:
 					'''
 					Throws a sickle that embeds itself into enemies and inficts [cebuff:CalamityEntropy/MechanicalTrauma]
-					Stealth strikes throw a sickle that repeatedly tracks and slices the target
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: the sickle latches on and drags around the enemy far longer
 					'''
 			}
 
@@ -182,8 +201,10 @@ Items: {
 				DisplayName: Crystal Spike
 				Tooltip:
 					'''
-					Throws vile crystals that embed themselves into enemies
-					Stealth strikes rip the embedded crystals out of the enemy before rapidly throwing them
+					Throws vile crystals that embed themselves into enemies, up to [S] per target
+					When [U] crystals are planted, your next throw recalls and empowers them all
+					Recalled crystals become empowered shots and are thrown again
+					Ignores 4 points of defense
 					'''
 			}
 
@@ -192,8 +213,9 @@ Items: {
 				Tooltip:
 					'''
 					Throws a chakram that pierces and explodes into shards in midair
-					Chakrams inflict [cbuff:OnFire] on impact
-					Stealth strikes let the chakram release fireballs before homing in on enemies
+					Chakrams inflict [cebuff:OnFire] on impact
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: the chakram lingers on enemies with continuous slicing, releasing a ring of homing tectonic shards on burst
 					'''
 			}
 
@@ -202,8 +224,8 @@ Items: {
 				Tooltip:
 					'''
 					Throws hot embers that melt into targets and explode on hit
-					Stealth strikes rip the embedded embers out of the enemy enemy before rapidly throwing them
-					Stealth strike hits create homing tectonic shards on hit
+					Hitting enemies builds momentum; when full, your next attack becomes an ultimate
+					Ultimate: spikes bounce up to 5 times and release homing tectonic shards on burst
 					Ignores 8 points of defense
 					'''
 			}
@@ -214,7 +236,8 @@ Items: {
 					'''
 					[c/FF69B4:Throw a bomb that bounces off blocks]
 					[c/FF69B4:After hitting a target, it bounces to a position that can hit as many targets as possible and explodes in a cross pattern]
-					[c/FF69B4:Stealth strikes increase the explosion radius and can hurt players]
+					[c/FF69B4:Usable only when the ultimate is ready; needs a moment to recharge after release]
+					[c/FF69B4:Ultimate: a bigger, fiercer explosion with a wider and longer cross shockwave]
 					[c/FF69B4:Players who are hit by the explosion will receive 2.5 seconds of invincibility]
 					[c/FF69B4:"A detonator with cat ears, somehow it emits cat meows"]
 					'''
@@ -226,7 +249,8 @@ Items: {
 					'''
 					Throw a sawblade that on hit or after some time stops in place and starts spinning
 					The sawblade deals damage in a large area when spinning and will return after some time
-					Stealth strikes fly out faster and generate a larger spin that lasts longer
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: a much larger spin that lasts longer
 					'''
 			}
 
@@ -236,8 +260,9 @@ Items: {
 					'''
 					Throw a sawblade that on hit or after some time stops in place, releasing a homing flame bolt before spinning
 					The sawblade deals damage in a large area when spinning and will return after some time
-					Stealth strikes fly out faster and generate a larger spin that lasts longer, releasing a torrent of homing flame bolts
-					Attacks inflict [cbuff:OnFire3] on hit
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: a larger spin, spewing flames in 8 directions on deployment
+					Attacks inflict [cebuff:OnFire3] on hit
 					'''
 			}
 
@@ -247,8 +272,8 @@ Items: {
 					'''
 					Throw a sawblade that on hit or after some time stops in place, releasing a pair of homing missiles before spinning
 					The sawblade deals damage in a large area when spinning and will return after some time
-					Stealth strikes fly out faster and generate a larger spin that lasts longer, releasing a swarm of 8 missiles
-					Stealth strikes on return will also fire the spinning blade at the closest enemy
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: a larger spin, bursting a ring of homing fire bolts on deployment
 					Attacks inflict [cebuff:CalamityEntropy/MechanicalTrauma] on hit
 					'''
 			}
@@ -259,8 +284,8 @@ Items: {
 					'''
 					Throw a sawblade that on hit or after some time stops in place, releasing a pair of homing blades before spinning
 					The sawblade deals damage in a large area when spinning and will return after some time
-					Stealth strikes fly out faster and generate a larger spin that lasts longer and homes onto enemies
-					Stealth strikes on return will also fire 4 spinning blades at the closest enemy
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: a larger spin that homes onto enemies, firing extra ice blades on return
 					Attacks inflict [cebuff:CalamityEntropy/Deceive] on hit
 					'''
 			}
@@ -271,8 +296,8 @@ Items: {
 					'''
 					Throw a sawblade that on hit or after some time stops in place, releasing a swarm of homing rune bolts before spinning
 					The sawblade deals damage in a large area when spinning and will return after some time
-					Stealth strikes fly out faster and generate a much larger spin that lasts longer
-					Stealth strikes on return will also fire a swarm of stronger homing rune bolts at the closest enemy
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: unfolds a rotating ring of rune bolts around the spin, firing runes in all directions on return
 					Attacks inflict [cebuff:CalamityEntropy/SoulDisorder] on hit
 					'''
 			}
@@ -283,8 +308,9 @@ Items: {
 					'''
 					Throw a sawblade that on hit or after some time stops in place, releasing a holy heatwave before spinning
 					The sawblade deals damage in a large area when spinning and will return after some time
-					Stealth strikes fly out faster and generate a much larger spin and holy heatwave that lasts longer
-					Attacks inflict [cbuff:CalamityMod/HolyFlames] on hit
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: a much larger and longer spin, spewing holy fire in 8 directions
+					Attacks inflict [cebuff:CalamityEntropy/HolyFlames] on hit
 					'''
 			}
 
@@ -295,9 +321,9 @@ Items: {
 					Throw a sawblade that on hit or after some time stops in place, releasing 4 more smaller blades before spinning
 					The sawblades deals damage in a large area when spinning and will return after some time
 					Smaller blades on return release homing cosmic bolts at the closest enemy
-					Stealth strikes fly out faster and send out the smaller blades further away, converging back to the larger blade after some time
-					Upon converging, the sawblade flies towards the closest enemy for increased damage
-					Attacks inflict [cbuff:CalamityMod/GodSlayerInferno] on hit
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: locks a distant target and performs the Macrocosm Slash, a devastating strike dealing 8x damage
+					Attacks inflict [cebuff:CalamityEntropy/GodSlayerInferno] on hit
 					'''
 			}
 
@@ -308,7 +334,8 @@ Items: {
 					Flies for a while or hits an enemy, then deploys a multi-hit sawblade that shrinks over time
 					If deployed by enemy contact, the ringblade sticks to that enemy
 					As the sawblade shrinks, it fires smaller homing sawblades that stop tracking after one hit
-					Stealth attack increases deployment range and duration, and fires a larger persistent homing sawblade at the end
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: a larger spin that keeps firing homing sawblades while deployed
 					'''
 			}
 
@@ -318,8 +345,8 @@ Items: {
 					'''
 					Deploys a multi-hit sawblade when flies for a while or hits an enemy 
 					Each hit of the sawblade summons an Abyss Spike from below to pierce the target
-					Stealth attack deals high-damage impact and knocks back on hit,
-					then charges and fires many spikes to pierce targets
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: a much larger and longer spin; on hit, recoils to charge and re-enter, calling down a rain of spikes
 					'''
 			}
 		}
@@ -330,8 +357,8 @@ Items: {
 		Tooltip:
 			'''
 			Create a blizzard of frost and ice
-			Hits inflict [cbuff:Frostburn] and grant the user [cbuff:CalamityMod/CosmicFreeze], increasing life regeneration and freezing nearby enemies
-			Occasionally shoots large ice shards that inflict [cbuff:CalamityMod/MarkedforDeath]
+			Hits inflict [cebuff:Frostburn] and grant the user [cebuff:CalamityEntropy/CosmicFreeze], increasing life regeneration and freezing nearby enemies
+			Occasionally shoots large ice shards that inflict [cebuff:CalamityEntropy/MarkedforDeath]
 			'''
 	}
 
@@ -484,12 +511,12 @@ Items: {
 
 	EnslavedStar: {
 		DisplayName: Enslaved Star
-		Tooltip: Inflicts [cbuff:CalamityMod/Plague] and occasionally releases homing plague bees
+		Tooltip: Inflicts [cebuff:CalamityEntropy/Plague] and occasionally releases homing plague bees
 	}
 
 	Euangelion: {
 		DisplayName: Euangelion
-		Tooltip: Inflicts [cbuff:CalamityMod/Nightwither] and occasionally releases homing balls of light
+		Tooltip: Inflicts [cebuff:CalamityEntropy/Nightwither] and occasionally releases homing balls of light
 	}
 
 	Pioneer: {
@@ -597,7 +624,6 @@ Items: {
 			'''
 			Multiplies attack speed by 3
 			Divides damage dealt by 3
-			Disables stealth gain while the buff is active
 			'''
 	}
 
@@ -649,7 +675,7 @@ Items: {
 			[CR]% increased critical strike chance
 			15% increased movement speed
 			+[HP] max life
-			+[ST] max stealth
+			[ST]% increased damage
 			-30% mana cost
 			Reduces damage taken by 5%
 			Increases armor penetration by [AP]
@@ -665,7 +691,7 @@ Items: {
 		DisplayName: Oracle Card 『Metropolis』
 		Tooltip:
 			'''
-			+10 max stealth
+			5% increased damage
 			'Sleight shall be found in deep and darker places'
 			'''
 	}
@@ -806,17 +832,9 @@ Items: {
 		DisplayName: Odin's Refuge
 		Tooltip:
 			'''
-			Allows the ability to ram dash, empowered by the cosmic inferno
-			This dash can slam through enemies without taking damage
-			Grants immunity to knockback and fire blocks
-			Grants immunity to the vast majority of debuffs, including God Slayer Inferno
-			Causes stars to fall and increases length of invincibility after taking damage
-			Grants bonus invincibility frames based on your missing health
-			This effect scales from 10 frames while at full HP to 40 frames while at 25% or less HP
-			Being struck for over 200 damage grants 30 additional invincibility frames
-			Puts a shell around the owner when below 50% life that reduces damage taken
-			Absorbs 25% of damage done to players on your team while above 25% life
-			Provide you with a Holy Shield that can withstand damage once with a 150sec cooldown
+			Grants immunity to knockback and fire-type burning debuffs, and lets you walk on fire blocks
+			5% increased damage reduction and +4 HP/s life regeneration
+			Blocks one attack dealing over 100 damage, with a 150 second cooldown
 			Hold shift and Right Click to toggle [i:PanicNecklace] [c/aaaaaa:Panic Necklace's effect]
 			[TOGGLE]
 			'''
@@ -919,8 +937,8 @@ Items: {
 		DisplayName: Entropic Faquir Lurker Mask
 		Tooltip:
 			'''
-			25% increased rogue damage
-			25% increased rogue critical strike chance
+			25% increased damage
+			25% increased critical strike chance
 			'''
 	}
 
@@ -978,7 +996,7 @@ Items: {
 
 	RailPulseBow: {
 		DisplayName: Rail Pulse Bow
-		Tooltip: Arrows release chain lightning on hit that has a chance to inflict [cbuff:CalamityMod/GalvanicCorrosion]
+		Tooltip: Arrows release chain lightning on hit that has a chance to inflict [cebuff:CalamityEntropy/GalvanicCorrosion]
 	}
 
 	JailerWhip: {
@@ -988,7 +1006,7 @@ Items: {
 			{$CommonItemTooltip.SummonTagDamage}
 			2% summon tag critical strike chance
 			{$CommonItemTooltip.Whips}
-			Inflicts [cbuff:CalamityMod/BurningBlood] and [cebuff:CalamityEntropy/FlamingBlood], which causes enemies to explode on death
+			Inflicts [cebuff:CalamityEntropy/BurningBlood] and [cebuff:CalamityEntropy/FlamingBlood], which causes enemies to explode on death
 			'''
 	}
 
@@ -997,8 +1015,7 @@ Items: {
 		Tooltip:
 			'''
 			Grants 2HP/s increased life regeneration
-			Incoming defense damage is halved
-			-Death Mode-
+			- Master Mode exclusive -
 			'''
 	}
 
@@ -1067,7 +1084,7 @@ Items: {
 
 	Mercy: {
 		DisplayName: Mercy
-		Tooltip: Conjures up to 6 accursed hands to spew brimstone flames at your opponent that inflict [cbuff:CalamityMod/VulnerabilityHex]
+		Tooltip: Conjures up to 6 accursed hands to spew brimstone flames at your opponent that inflict [cebuff:CalamityEntropy/VulnerabilityHex]
 	}
 
 	CannedCarrion: {
@@ -1094,7 +1111,7 @@ Items: {
 		DisplayName: Horizons' Key
 		Tooltip:
 			'''
-			Sends an array of swords to attack nearby enemies and inflict [cbuff:CalamityMod/Nightwither]
+			Sends an array of swords to attack nearby enemies and inflict [cebuff:CalamityEntropy/Nightwither]
 			[c/d9bd1b:The strength of this weapon increases as the game progresses]
 			[c/d9bd1b:Affected by all classes' damage bonuses]
 			'''
@@ -1146,7 +1163,7 @@ Items: {
 			Transforms damage recieved into Astral Erosion, which deals that damage over time
 			Your attacks transfer astral erosion to the target, allowing them to deal additional damage
 			Your life regeneration is halved
-			- Death -
+			- Master Mode exclusive -
 			'''
 	}
 
@@ -1178,8 +1195,8 @@ Items: {
 		DisplayName: Phantom Card - Barren
 		Tooltip:
 			'''
-			Your rogue projectiles now home
-			5% decreased rogue damage and critical strike chance
+			Your throwing projectiles now home
+			5% decreased damage and critical strike chance
 			'Hunting the withered eats at your skill...'
 			'''
 	}
@@ -1255,7 +1272,7 @@ Items: {
 		DisplayName: Tainted Deck
 		Tooltip:
 			'''
-			Your rogue projectiles home in on enemies
+			Your throwing projectiles home in on enemies
 			Your attacks launch homing dark embers, inflict [cebuff:CalamityEntropy/VoidTouch], and inflict [cebuff:CalamityEntropy/Deceive]
 			3% increased damage for each summon slot you have
 			30% increased damage
@@ -1378,7 +1395,7 @@ Items: {
 
 	LightWisper: {
 		DisplayName: Light Wisper
-		Tooltip: Bellows an inferno of [cebuff:CalamityMod/GodSlayerInferno] and [cebuff:CalamityEntropy/VoidTouch] that passes through tiles
+		Tooltip: Bellows an inferno of [cebuff:CalamityEntropy/GodSlayerInferno] and [cebuff:CalamityEntropy/VoidTouch] that passes through tiles
 	}
 
 	Oblivion: {
@@ -1412,7 +1429,7 @@ Items: {
 
 	OverloadLunar: {
 		DisplayName: Lunar Limit
-		Tooltip: Rapidly generates homing moonlight that inflicts [cbuff:CalamityMod/Nightwither]
+		Tooltip: Rapidly generates homing moonlight that inflicts [cebuff:CalamityEntropy/Nightwither]
 	}
 
 	EyeOfOtherside: {
@@ -1519,7 +1536,7 @@ Items: {
 			'''
 			{$CommonItemTooltip.SummonTagDamage}
 			{$CommonItemTooltip.Whips}
-			Struck enemies are inflicted with [cbuff:CalamityMod/Dragonfire] and erupt homing flames on minion hit
+			Struck enemies are inflicted with [cebuff:CalamityEntropy/Dragonfire] and erupt homing flames on minion hit
 			'''
 	}
 
@@ -1529,7 +1546,7 @@ Items: {
 			'''
 			{$CommonItemTooltip.SummonTagDamage}
 			{$CommonItemTooltip.Whips}
-			Sends two halves of the whip to collide at your cursor, inflicting [cbuff:CalamityMod/ArmorCrunch] on hit
+			Sends two halves of the whip to collide at your cursor, inflicting [cebuff:CalamityEntropy/ArmorCrunch] on hit
 			Homing stars release from the collision point
 			'''
 	}
@@ -1583,7 +1600,7 @@ Items: {
 			{$CommonItemTooltip.SummonTagDamage}
 			12% summon tag critical strike chance
 			{$CommonItemTooltip.Whips}
-			Summons a phantom Eilodon Wyrm that inflicts [cebuff:CalamityMod/MarkedforDeath] and [cebuff:CalamityEntropy/LifeOppress] on hit
+			Summons a phantom Eilodon Wyrm that inflicts [cebuff:CalamityEntropy/MarkedforDeath] and [cebuff:CalamityEntropy/LifeOppress] on hit
 			'''
 	}
 
@@ -1622,19 +1639,14 @@ Items: {
 
 	HeartOfStorm: {
 		DisplayName: Core of Storms
-		Tooltip:
-			'''
-			Enemy hits have a chance to release piercing lightning that deals 10% of the original attack's damage
-			- Death -
-			'''
-		CWRGanged: Calamity Overhaul synergy effect: Summons the Storm Weaver’s lingering soul to fight alongside you.
+		Tooltip: Enemy hits have a chance to release piercing lightning that deals 10% of the original attack's damage
 	}
 
 	Nyxolithraken: {
 		DisplayName: Nyxolithraken
 		Tooltip:
 			'''
-			Summon a Nyxolith Dragon that charges at enemies and inflicts [cebuff:CalamityEntropy/LifeOppress] and [cebuff:CalamityMod/WhisperingDeath]
+			Summon a Nyxolith Dragon that charges at enemies and inflicts [cebuff:CalamityEntropy/LifeOppress] and [cebuff:CalamityEntropy/WhisperingDeath]
 			Uses 5 minion slots
 			'''
 	}
@@ -1683,7 +1695,7 @@ Items: {
 		Tooltip:
 			'''
 			Summons hellish vortexes that fire blood lasers at enemies
-			Blood lasers inflict [cbuff:CalamityMod/BrimstoneFlames]
+			Blood lasers inflict [cebuff:CalamityEntropy/BrimstoneFlames]
 			'''
 	}
 
@@ -1696,7 +1708,7 @@ Items: {
 		DisplayName: Bookmark - Macabre
 		Tooltip:
 			'''
-			Projectiles burst into damaging blood beams on hit that inflict [cbuff:CalamityMod/BurningBlood]
+			Projectiles burst into damaging blood beams on hit that inflict [cebuff:CalamityEntropy/BurningBlood]
 			Increases armor penetration by 1
 			This book's projectiles steal life from enemies
 			'''
@@ -1704,7 +1716,7 @@ Items: {
 
 	BookMarkIce: {
 		DisplayName: Bookmark - Icy
-		Tooltip: Flings an ice sword at the target on hit that inflicts [cbuff:Frostburn]
+		Tooltip: Flings an ice sword at the target on hit that inflicts [cebuff:Frostburn]
 	}
 
 	InfiniteBook: {
@@ -1781,7 +1793,7 @@ Items: {
 
 	BookMarkAuric: {
 		DisplayName: Bookmark - Auric
-		Tooltip: Attacks have a chance to burst into dragonfire and inflict [cbuff:CalamityMod/Dragonfire]
+		Tooltip: Attacks have a chance to burst into dragonfire and inflict [cebuff:CalamityEntropy/Dragonfire]
 	}
 
 	BookMarkSilva: {
@@ -1807,7 +1819,7 @@ Items: {
 		DisplayName: Bookmark - Corruption
 		Tooltip:
 			'''
-			Enemy hits have a chance to spawn piercing tentacles that inflict [cbuff:ShadowFlame]
+			Enemy hits have a chance to spawn piercing tentacles that inflict [cebuff:ShadowFlame]
 			Increases armor penetration by 6
 			'''
 	}
@@ -1816,7 +1828,7 @@ Items: {
 		DisplayName: Bookmark - Crimson
 		Tooltip:
 			'''
-			Enemy hits have a chance to summon blood geysers from below that inflict [cbuff:CalamityMod/HeavyBleeding]
+			Enemy hits have a chance to summon blood geysers from below that inflict [cebuff:CalamityEntropy/HeavyBleeding]
 			Gives a 17% chance to heal for 1 life on hit
 			4% increased critical strike chance
 			'''
@@ -1939,12 +1951,12 @@ Items: {
 
 	BookmarkPactOfDecay: {
 		DisplayName: Pact of Decay
-		Tooltip: Attacks spawn a Whispering Maelstrom that homes onto enemies and inflicts [cbuff:CalamityMod/VulnerabilityHex]
+		Tooltip: Attacks spawn a Whispering Maelstrom that homes onto enemies and inflicts [cebuff:CalamityEntropy/VulnerabilityHex]
 	}
 
 	BookmarkPactOfWar: {
 		DisplayName: Pact of War
-		Tooltip: Holding this book spawns a set of Mini Exo Twins that hunt enemies and inflict [cbuff:CalamityMod/MiracleBlight]
+		Tooltip: Holding this book spawns a set of Mini Exo Twins that hunt enemies and inflict [cebuff:CalamityEntropy/MiracleBlight]
 	}
 
 	UpdraftTome: {
@@ -1980,7 +1992,7 @@ Items: {
 
 	AshTranscript: {
 		DisplayName: Profaned Transcript
-		Tooltip: Fires an instantaneous beam of cleansing fire that inflicts [cbuff:CalamityMod/HolyFlames]
+		Tooltip: Fires an instantaneous beam of cleansing fire that inflicts [cebuff:CalamityEntropy/HolyFlames]
 	}
 
 	VoidOde: {
@@ -1993,7 +2005,7 @@ Items: {
 		Tooltip:
 			'''
 			Fire out a homing exo shuriken that fires bolts at nearby enemies before returning to you
-			The shuriken and its bolts inflict [cbuff:CalamityMod/MiracleBlight]
+			The shuriken and its bolts inflict [cebuff:CalamityEntropy/MiracleBlight]
 			'''
 	}
 
@@ -2003,7 +2015,7 @@ Items: {
 			'''
 			Fires a brimstone vortex that explodes into homing brimstone embers
 			Summons a trio of soul seekers that shoot brimstone flames, the flames heal 1 life on hit
-			All attacks inflict [cbuff:CalamityMod/VulnerabilityHex]
+			All attacks inflict [cebuff:CalamityEntropy/VulnerabilityHex]
 			'''
 	}
 
@@ -2061,7 +2073,7 @@ Items: {
 		Tooltip:
 			'''
 			Fires three solar arrows alongside a burst of short-ranged embers
-			Enemy hits inflict both the [cbuff:CalamityMod/HolyFlames] and [cbuff:CalamityMod/Daybroken]
+			Enemy hits inflict both the [cebuff:CalamityEntropy/HolyFlames] and [cebuff:Daybroken]
 			'''
 	}
 
@@ -2071,7 +2083,7 @@ Items: {
 			'''
 			{$CommonItemTooltip.SummonTagDamage}
 			{$CommonItemTooltip.Whips}
-			Throws forward and then retracts, tearing through enemies in its path and inflicting [cbuff:CalamityMod/BurningBlood]
+			Throws forward and then retracts, tearing through enemies in its path and inflicting [cebuff:CalamityEntropy/BurningBlood]
 			Minions tear chunks of flesh out of tagged enemies when attacking
 			'''
 	}
@@ -2091,7 +2103,7 @@ Items: {
 			'''
 			{$CommonItemTooltip.SummonTagDamage}
 			{$CommonItemTooltip.Whips}
-			Throws a far reaching swipe that latches into the first enemy hit before being torn back out, inflicting [cbuff:CalamityMod/BrainRot]
+			Throws a far reaching swipe that latches into the first enemy hit before being torn back out, inflicting [cebuff:CalamityEntropy/BrainRot]
 			Minion attacks summon a flurry of shadow slashes on tagged enemy hit
 			'''
 	}
@@ -2311,7 +2323,7 @@ Items: {
 
 	HiveBullet: {
 		DisplayName: Hive Bullet
-		Tooltip: Enemy hits release tracking bees on hit that inflict [cbuff:Poisoned] and ignore 50% of the target's defense
+		Tooltip: Enemy hits release tracking bees on hit that inflict [cebuff:Poisoned] and ignore 50% of the target's defense
 	}
 
 	SolarStorm: {
@@ -2386,7 +2398,7 @@ Items: {
 		Tooltip:
 			'''
 			Spins the sword around you, summoning small homing stars, before firing a sword apparition to pierce foes
-			Attacks inflict [cbuff:CalamityMod/ElementalMix]
+			Attacks inflict [cebuff:CalamityEntropy/ElementalMix]
 			'[c/ff00a6:You have infused primoridial essence into this blade...]'
 			'''
 	}
@@ -2397,7 +2409,7 @@ Items: {
 			'''
 			Release homing swords that call down stars from the heavens on hit
 			Every other swing sends out a star that bursts into homing fragments
-			Attacks inflict [cbuff:CalamityMod/AstralInfectionDebuff]
+			Attacks inflict [cebuff:CalamityEntropy/AstralInfectionDebuff]
 			'[c/dd00ff:Constellations of your design fade in and out...]'
 			'''
 	}
@@ -2407,7 +2419,7 @@ Items: {
 		Tooltip:
 			'''
 			Releases three homing abyssal blobs and a bluewater slash
-			Inflicts [cbuff:CalamityMod/CrushDepth]
+			Inflicts [cebuff:CalamityEntropy/CrushDepth]
 			'[c/7045ff:It only gets darker the longer you look at it...]'
 			'''
 	}
@@ -2448,7 +2460,7 @@ Items: {
 
 	BurntLostClassics: {
 		DisplayName: Lost Fables
-		Tooltip: Casts a spread of 3 bouncing brimstone orbs that inflict [cbuff:CalamityMod/BrimstoneFlames]
+		Tooltip: Casts a spread of 3 bouncing brimstone orbs that inflict [cebuff:CalamityEntropy/BrimstoneFlames]
 	}
 
 	ProphecyMasterpiece: {
@@ -2472,7 +2484,7 @@ Items: {
 		DisplayName: Nemesis
 		Tooltip:
 			'''
-			Calls down a storm of infernal feathers that inflict [cebuff:CalamityEntropy/LifeOppress] and [cebuff:CalamityMod/Dragonfire]
+			Calls down a storm of infernal feathers that inflict [cebuff:CalamityEntropy/LifeOppress] and [cebuff:CalamityEntropy/Dragonfire]
 			Infernal feathers will also return to the player on hit, restoring between 10 and 14 life
 			Every 7th swing instead calls down a giant blade that inflicts [cebuff:BetsysCurse]
 			Holding Right Click will charge the blade, releasing Right Click at full charge will release a torrent of fire slashes
@@ -2660,9 +2672,9 @@ Items: {
 			'''
 			Generates 3 vortexes around the player
 			Projectiles passing through vortexes will become vortex-tipped
-			Vortex-tipped projectiles will home in on nearby enemies, gain 10% increased damage, inflict [cbuff:CalamityMod/CrushDepth] and charge the hit vortex
+			Vortex-tipped projectiles will home in on nearby enemies, gain 10% increased damage, inflict [cebuff:CalamityEntropy/CrushDepth] and charge the hit vortex
 			Fully charged vortexes will pursue nearby enemies and deal immense damage
-			-Death Mode-
+			- Master Mode exclusive -
 			'''
 	}
 
@@ -2676,7 +2688,7 @@ Items: {
 		Tooltip:
 			'''
 			Perform a flurry of 3 stabs that fire astral glimmers
-			Attacks inflict [cbuff:CalamityMod/AstralInfectionDebuff]
+			Attacks inflict [cebuff:CalamityEntropy/AstralInfectionDebuff]
 			'''
 	}
 
@@ -2709,7 +2721,7 @@ Items: {
 		DisplayName: Luminar
 		Tooltip:
 			'''
-			Fires homing stars that inflict [cbuff:CalamityMod/AstralInfectionDebuff]
+			Fires homing stars that inflict [cebuff:CalamityEntropy/AstralInfectionDebuff]
 			These stars inherit the effects of the arrows consumed
 			'''
 	}
@@ -2721,7 +2733,7 @@ Items: {
 
 	AzafureAntiaircraftGun: {
 		DisplayName: Azafure Anti-aircraft Gun
-		Tooltip: Fire a piercing shell that inflicts [cebuff:CalamityMod/ArmorCrunch] and [cebuff:CalamityEntropy/MechanicalTrauma]
+		Tooltip: Fire a piercing shell that inflicts [cebuff:CalamityEntropy/ArmorCrunch] and [cebuff:CalamityEntropy/MechanicalTrauma]
 	}
 
 	RockBullet: {
@@ -2767,7 +2779,7 @@ Items: {
 			'''
 			Hold Left Click to charge and load up to 5 shots
 			Release Left Click to unleash all loaded shots in a volley
-			These shots pierce infinitely and inflict [cebuff:CalamityMod/ArmorCrunch] and [cebuff:CalamityEntropy/MechanicalTrauma]
+			These shots pierce infinitely and inflict [cebuff:CalamityEntropy/ArmorCrunch] and [cebuff:CalamityEntropy/MechanicalTrauma]
 			'''
 	}
 
@@ -2784,9 +2796,9 @@ Items: {
 		DisplayName: Shadow Mantle
 		Tooltip:
 			'''
-			Increases stealth regeneration based on your movement speed
-			Press [KEY] to consume all rogue stealh, dash towards the cursor position for a distance before slashing passed through enemies 
-			Damage increases with the amount of stealth consumed
+			Press [KEY] to shadow-dash towards your cursor, slashing enemies along the path
+			The slash deals 25 base damage, with a 30 second cooldown
+			Gain 10% increased damage for 1.5 seconds after the dash
 			'''
 	}
 
@@ -2794,8 +2806,9 @@ Items: {
 		DisplayName: Mine Box
 		Tooltip:
 			'''
-			[D]% increased rogue damage
-			Stealth strikes will plant a delayed explosion mine on first hit at the enemies location
+			[D]% increased ranged damage
+			Every 5 seconds, plants a mine at the feet of a random enemy within 800 pixels
+			Mines deal 75 base damage, scale with ranged bonuses, and explode after 1.5 seconds
 			'''
 	}
 
@@ -2803,10 +2816,10 @@ Items: {
 		DisplayName: Lurkers Charm
 		Tooltip:
 			'''
-			[A]% increased rogue damage
+			[A]% increased damage
 			[B]% increased movement speed
-			[C]% increased stealth regeneration
-			[D]% increased damage reduction if your steath is higher than 80% of max stealth
+			[C]% increased weapon ultimate charge rate
+			[D]% decreased damage taken
 			'''
 	}
 
@@ -2814,11 +2827,10 @@ Items: {
 		DisplayName: Pocketwatch of Eclipse
 		Tooltip:
 			'''
-			[A]% increased rogue damage
+			[A]% increased damage
 			[B]% increased movement speed
-			[C]% increased stealth regeneration
-			Rogue stealth can be overfilled to double max stealth
-			Overfilled stealth will not increase rogue damage
+			[C]% increased weapon ultimate charge rate
+			10% extra damage during solar eclipses
 			'''
 	}
 
@@ -2826,8 +2838,9 @@ Items: {
 		DisplayName: Gale Wristblades
 		Tooltip:
 			'''
-			Rogue weapons on a half second cooldown grant 1 stack of [cebuff:CalamityEntropy/WindPressure] on hit
-			At 5 or more stacks of [cebuff:CalamityEntropy/WindPressure], the next attack consumes all stacks to unleash a small tornado
+			4% increased movement speed
+			Critical hits release a pair of homing wind blades dealing 12 base damage
+			This effect has a 0.5 second internal cooldown
 			'''
 	}
 
@@ -2835,9 +2848,10 @@ Items: {
 		DisplayName: Worship Relic
 		Tooltip:
 			'''
-			Rogue stealth no longer regenerates passively, instead regenerating on rogue weapon hits
-			When stealth is full, your attack becomes a stealth strike and fires additional homing solar arrows
-			Halves your maximum stealth and removes rogue critical hits
+			Hits have a 1 in 4 chance to call down a holy arrow dealing 180 base damage
+			This effect has a 0.5 second internal cooldown
+			+1 max bait charge
+			You can no longer deal critical hits
 			'''
 	}
 
@@ -2845,11 +2859,9 @@ Items: {
 		DisplayName: Shadow Pact
 		Tooltip:
 			'''
-			[A]% increased rogue damage
-			Replaces rogue stealth with the shadow gauge
-			The shadow gauge fills at a fixed rate
-			When full, your next attack with a rogue weapon consumes it to fire a homing shadow orb
-			On hit, the orb spawns multiple shadow daggers to attack the hit enemy
+			[A]% increased damage
+			The first hit on enemies at or above 90% life triggers a shadow burst
+			The burst deals 16 base damage and only triggers once per enemy
 			'''
 	}
 
@@ -2975,7 +2987,8 @@ Items: {
 		DisplayName: Celestial Chronometer
 		Tooltip:
 			'''
-			Inherits the effects of [i:CalamityMod/ChaliceOfTheBloodGod] Chalice of the Blood God, [i:CalamityMod/TheAbsorber] The Absorber and [i:CalamityMod/Radiance] Radiance
+			Grants an extra +2 HP/s life regeneration and 5% increased damage reduction
+			Hitting enemies heals you for 1% of your maximum life
 			If visibility is enabled, grows herbs beneath your feet
 			Grants 20% damage reduction and 4 life every second while standing on herbs
 			Grants +4 HP/s life regeneration
@@ -2984,7 +2997,7 @@ Items: {
 
 	TerrorOfAbyss: {
 		DisplayName: Abyssal Tearer
-		Tooltip: Swings a blade of abyssal teeth that inflicts [cbuff:CalamityMod/CrushDepth] and [cbuff:CalamityMod/HeavyBleeding]
+		Tooltip: Swings a blade of abyssal teeth that inflicts [cebuff:CalamityEntropy/CrushDepth] and [cebuff:CalamityEntropy/HeavyBleeding]
 	}
 
 	ScorchingShoot: {
@@ -2992,7 +3005,7 @@ Items: {
 		Tooltip:
 			'''
 			Fires high velocity bullets that inherit the effects of the ammo consumed
-			Every 7th shot, fire an overheated bullet that inflicts [cbuff:CalamityMod/MarkedforDeath] and [cbuff:CalamityMod/Dragonfire]
+			Every 7th shot, fire an overheated bullet that inflicts [cebuff:CalamityEntropy/MarkedforDeath] and [cebuff:CalamityEntropy/Dragonfire]
 			'''
 	}
 
@@ -3066,7 +3079,7 @@ Items: {
 		Level3: After consuming mana equivalent to 50% of your maximum mana, gain a stack of mana mania, which increases enhanced mana by 4% (stacks up to 5 times)
 		Level4:
 			'''
-			Effects of [cbuff:ManaSickness] and [cbuff:CalamityMod/ManaBurn] are halved
+			Effects of [cebuff:ManaSickness] are halved
 			Every 2 stacks of mana mania grant 0.03% damage reduction
 			Increases life regeneration when hit while restoring mana
 			'''
@@ -3362,7 +3375,7 @@ Items: {
 			'''
 			Forms a bubble around you that protects you from the first instance of damage above 10 while the book is held
 			Taking more than 10 damage at once will burst the bubble, reforming after 60 seconds
-			While there is no bubble your attacks inflict [cebuff:CalamityMod/Irradiated]
+			While there is no bubble your attacks inflict [cebuff:CalamityEntropy/Irradiated]
 			'''
 	}
 
@@ -3389,9 +3402,9 @@ Items: {
 		DisplayName: Dedicated Oracle
 		Tooltip:
 			'''
-			This can only be used as a stealth strike
-			Stealth strikes grant full invincibility while dashing towards the nearest enemy and attacking with a flurry of slices
-			When the flurry ends, the user will be unable to generate stealth for a short time and is launched back the direction they dashed from
+			Usable only when the ultimate is ready; needs a moment to recharge after release
+			Ultimate: blink-slash to the target, triggering a large explosion before recoiling away
+			This weapon only has an ultimate and cannot be used before it is ready
 			'''
 	}
 
@@ -3433,9 +3446,9 @@ Items: {
 		DisplayName: Ruinous Pursuit
 		Tooltip:
 			'''
-			This can only be used as a stealth strike
-			Stealth strikes grant full invincibility while dashing towards the nearest enemy and unleashing a torrent of slashes that ends in a slam
-			After the slam, the user will be unable to generate stealth for a short time and is launched back the direction they dashed from
+			Usable only when the ultimate is ready; needs a moment to recharge after release
+			Ultimate: executes a hunting strike on targets near your cursor
+			This weapon only has an ultimate and cannot be used before it is ready
 			'''
 	}
 
@@ -3449,7 +3462,7 @@ Items: {
 		Tooltip:
 			'''
 			Rapidly swings a holographic laser blade
-			Inflicts [cebuff:Electrified], [cebuff:CalamityEntropy/MechanicalTrauma], [cebuff:CalamityMod/Crumbling], and [cebuff:CalamityMod/GalvanicCorrosion] on hit
+			Inflicts [cebuff:Electrified], [cebuff:CalamityEntropy/MechanicalTrauma], [cebuff:CalamityEntropy/Crumbling], and [cebuff:CalamityEntropy/GalvanicCorrosion] on hit
 			'''
 	}
 
@@ -3462,7 +3475,7 @@ Items: {
 		DisplayName: Starbreaker
 		Tooltip:
 			'''
-			Rapidly stabs enemies with a spear that inflicts [cbuff:CalamityMod/MarkedforDeath]
+			Rapidly stabs enemies with a spear that inflicts [cebuff:CalamityEntropy/MarkedforDeath]
 			Hold RMB for swinging up and down, then followed by a sprint forward, 
 			during which you are invulnerable
 			'''
@@ -3470,11 +3483,7 @@ Items: {
 
 	Gungnir: {
 		DisplayName: Gungnir
-		Tooltip:
-			'''
-			Throws a spear that summons stars and astral bolts on hit
-			Attacks inflict [cbuff:CalamityMod/AstralInfectionDebuff] and [cbuff:CalamityMod/StaticDischarge]
-			'''
+		Tooltip: Throws a spear that summons stars and astral bolts on hit
 	}
 
 	ChaosCore: {
@@ -3497,7 +3506,7 @@ Items: {
 		DisplayName: Azure Rapier
 		Tooltip:
 			'''
-			Left Click to unleash rapid stabbing attacks that inflict [cbuff:CalamityMod/Eutrophication], [cbuff:CalamityMod/Crumbling], [cbuff:CalamityMod/ArmorCrunch], and [cbuff:CalamityMod/RiptideDebuff]
+			Left Click to unleash rapid stabbing attacks that inflict [cebuff:CalamityEntropy/Crumbling] and [cebuff:CalamityEntropy/ArmorCrunch]
 			Right Click to block an attacks damage entirely on a 10 second cooldown and counter with a flurry of slashes with full invincibility
 			Blocking an attack while off cooldown will just allow for the flurry of slashes, while still taking full damage
 			'''
@@ -3509,7 +3518,7 @@ Items: {
 			'''
 			Teleports you to the closest target and lets out a gouging slash, granting temporary invincibility
 			On a minute and 12 second cooldown, mulitply the next slash's damage by 100 and deal additional damage equal to 2.5% of the enemies max life
-			Inflicts [cebuff:CalamityMod/MarkedforDeath] and grants [cebuff:CalamityEntropy/Koishi] to both the user and target
+			Inflicts [cebuff:CalamityEntropy/MarkedforDeath] and grants [cebuff:CalamityEntropy/Koishi] to both the user and target
 			'''
 	}
 
@@ -3632,7 +3641,7 @@ Items: {
 
 	BookmarkStarwreckage: {
 		DisplayName: Bookmark - Iron Star
-		Tooltip: While shooting, occasionally fire out a metallic chunk that ignores invincibility frames
+		Tooltip: While shooting, occasionally fire out a void bar that ignores invincibility frames
 	}
 
 	BookmarkLacewings: {
@@ -3644,8 +3653,8 @@ Items: {
 		DisplayName: Bookmark - Wulfrum
 		Tooltip:
 			'''
-			Firing occasionally launches a wulfrum drone that shoots scrap at nearby enemies
-			The wulfrum drone will crash and explode on contact with tiles, flinging out a volley of scrap
+			Firing occasionally launches a wulfrum drone that shoots metal shards at nearby enemies
+			The wulfrum drone will crash and explode on contact with tiles, flinging out a volley of shards
 			'''
 	}
 
@@ -3654,7 +3663,7 @@ Items: {
 		Tooltip:
 			'''
 			While firing, a God Slayer Wyrm will occasionally appear to rush the enemy
-			The God Slayer Wyrm's dashes inflict [cbuff:CalamityMod/MarkedforDeath] and [cbuff:CalamityMod/GodSlayerInferno]
+			The God Slayer Wyrm's dashes inflict [cebuff:CalamityEntropy/MarkedforDeath] and [cebuff:CalamityEntropy/GodSlayerInferno]
 			'''
 	}
 
@@ -3742,7 +3751,7 @@ Items: {
 
 	CosmicBlessing: {
 		DisplayName: Cosmic Blessing
-		Tooltip: Summon pairs of interdimensional piercing lasers that inflict [cbuff:CalamityMod/GodSlayerInferno]
+		Tooltip: Summon pairs of interdimensional piercing lasers that inflict [cebuff:CalamityEntropy/GodSlayerInferno]
 	}
 
 	CharredMissile: {
@@ -3778,7 +3787,7 @@ Items: {
 		DisplayName: Endless Craving
 		Tooltip:
 			'''
-			Missiles fired inflict [cbuff:CalamityMod/BrimstoneFlames] on hit
+			Missiles fired inflict [cebuff:CalamityEntropy/BrimstoneFlames] on hit
 			{$MissileLauncherDescTooltip}
 			{$MissileLauncherMaxStickTooltip}
 			'''
@@ -3790,7 +3799,7 @@ Items: {
 			'''
 			{$MissileLauncherDescTooltip}
 			{$MissileLauncherMaxStickTooltip}
-			Missiles fired inflict [cbuff:CalamityMod/BrimstoneFlames] on hit
+			Missiles fired inflict [cebuff:CalamityEntropy/BrimstoneFlames] on hit
 			Missiles split into six homing brimstone darts on detonation
 			[c/304fff:'Vindicate the ideals of your people, and in return they shall empower yours']
 			'''
@@ -3803,7 +3812,7 @@ Items: {
 			{$MissileLauncherDescTooltip}
 			{$MissileLauncherMaxStickTooltip}
 			Missiles are fired in pairs and fly inaccurately before homing in on nearby enemies
-			Missiles additionally inflict [cbuff:CalamityMod/Crumbling] and split into three homing plague missiles on detonation
+			Missiles additionally inflict [cebuff:CalamityEntropy/Crumbling] and split into three homing plague missiles on detonation
 			'''
 	}
 
@@ -3949,7 +3958,7 @@ Items: {
 			{$CommonItemTooltip.Whips}
 			Hits have a chance to summon a Daylight Sun
 			Minion attacks cause the Daylight Sun to release sunbeams at the hit enemy
-			Whip attacks and sunbeams inflict [cbuff:OnFire3]
+			Whip attacks and sunbeams inflict [cebuff:OnFire3]
 			'''
 	}
 
@@ -4015,7 +4024,7 @@ Items: {
 
 	PressureEsoterica: {
 		DisplayName: Pressure Esoterica
-		Tooltip: Casts homing deep sea currents that inflict [cbuff:CalamityMod/CrushDepth]
+		Tooltip: Casts homing deep sea currents that inflict [cebuff:CalamityEntropy/CrushDepth]
 	}
 
 	SpectralWhispers: {
@@ -4027,7 +4036,7 @@ Items: {
 		DisplayName: Bookmark - Bloodthirsty
 		Tooltip:
 			'''
-			Gain 1 rage on enemy hit
+			Hits build bloodthirsty fervor, temporarily boosting attack speed
 			Resets attack cooldowns and gain temporary attack speed on taking damage
 			Attack speed gained is based on the amount of damage you take
 			Attacks have a 10% chance to restore 1 life on hit
@@ -4072,7 +4081,7 @@ Items: {
 		DisplayName: Talisman of the Azure Abyss
 		Tooltip:
 			'''
-			You can breathe in the abyss and are immune to [cbuff:CalamityMod/HadopelagicPressure] and [cbuff:CalamityMod/CrushDepth]
+			You can breathe in the abyss and are immune to [cebuff:CalamityEntropy/HadopelagicPressure] and [cebuff:CalamityEntropy/CrushDepth]
 			15% increased damage and movement speed
 			Grants +2.5HP/s life regeneration
 			Increases visibility, speed, and flight time while in the Abyss
@@ -4097,8 +4106,8 @@ Items: {
 			'''
 			{$MissileLauncherDescTooltip}
 			{$MissileLauncherMaxStickTooltip}
-			Missiles inflict [cbuff:CalamityMod/BrimstoneFlames], [cbuff:CalamityMod/HolyFlames], [cbuff:CalamityEntropy/SoulDisorder], and [cbuff:CalamityMod/Daybroken] on hit
-			Right Click to release a singular, more powerful missile that heals 5 life on detonation and additionally inflicts [cbuff:CalamityMod/Dragonfire], [cbuff:CalamityMod/GodSlayerInferno] and [cbuff:CalamityMod/Plague] on hit
+			Missiles inflict [cebuff:CalamityEntropy/BrimstoneFlames], [cebuff:CalamityEntropy/HolyFlames], [cbuff:CalamityEntropy/SoulDisorder], and [cebuff:Daybroken] on hit
+			Right Click to release a singular, more powerful missile that heals 5 life on detonation and additionally inflicts [cebuff:CalamityEntropy/Dragonfire], [cebuff:CalamityEntropy/GodSlayerInferno] and [cebuff:CalamityEntropy/Plague] on hit
 			'''
 	}
 
@@ -4127,7 +4136,7 @@ Items: {
 		Tooltip:
 			'''
 			Every 5 shots, the gun jams and is unable to shoot
-			Left Click while the gun is jammed to explode the gun, knocking you back and releasing wulfrum scraps
+			Left Click while the gun is jammed to explode the gun, knocking you back and releasing scorched iron shards
 			'''
 	}
 
@@ -4176,7 +4185,7 @@ Items: {
 		Tooltip:
 			'''
 			Every four swings the sword shatters into homing shards, reforming after a short time
-			Inflicts [cbuff:OnFire3] on hit
+			Inflicts [cebuff:OnFire3] on hit
 			'''
 	}
 
@@ -4185,7 +4194,7 @@ Items: {
 		Tooltip:
 			'''
 			Summons a tectonic spirit that spits magmatic debris at enemies
-			Striking enemies with a whip causes the spirit to shoot a fireball that inflicts [cbuff:OnFire3]
+			Striking enemies with a whip causes the spirit to shoot a fireball that inflicts [cebuff:OnFire3]
 			Increases your maximum number of minions by 1
 			'''
 	}
@@ -4210,7 +4219,7 @@ Items: {
 		Tooltip:
 			'''
 			5% increased damage for each lodged missile
-			Missiles inflict [cbuff:OnFire3] on hit
+			Missiles inflict [cebuff:OnFire3] on hit
 			'''
 	}
 
@@ -4234,7 +4243,7 @@ Items: {
 			'''
 			This bow charges as it fires, becoming unable to fire at full charge
 			When you stop firing at full charge, release a beam of concentrated heat
-			Attacks inflict [cbuff:OnFire3] on hit
+			Attacks inflict [cebuff:OnFire3] on hit
 			'''
 	}
 
@@ -4244,7 +4253,7 @@ Items: {
 			'''
 			Grants +2HP/s life regeneration
 			Reduces damage taken by 8%
-			Grants immunity to [cbuff:OnFire], [cbuff:OnFire3], fire blocks and lava
+			Grants immunity to [cebuff:OnFire], [cebuff:OnFire3], fire blocks and lava
 			'''
 	}
 
@@ -4266,7 +4275,7 @@ Items: {
 		DisplayName: Cinder Shot
 		Tooltip:
 			'''
-			This gun converts ammo into fireballs that inflict [cbuff:OnFire3], charging as it fires
+			This gun converts ammo into fireballs that inflict [cebuff:OnFire3], charging as it fires
 			At full charge, empowers the next three fireballs to deal heavily increased damage
 			'''
 	}
@@ -4276,23 +4285,23 @@ Items: {
 		Tooltip:
 			'''
 			Releases a volley of ash clumps on swing
-			Ash clumps after a short time burst into homing fireballs that inflict [cbuff:OnFire3]
+			Ash clumps after a short time burst into homing fireballs that inflict [cebuff:OnFire3]
 			'''
 	}
 
 	EmberBolt: {
 		DisplayName: Ember Bolt
-		Tooltip: Casts an explosive fireball that inflicts [cbuff:OnFire3] on hit and burst into homing tectonic shards
+		Tooltip: Casts an explosive fireball that inflicts [cebuff:OnFire3] on hit and burst into homing tectonic shards
 	}
 
 	RemnantsStaff: {
 		DisplayName: Infernal Remnant
-		Tooltip: Casts three homing heat stars that explode on impact and inflict [cbuff:OnFire3]
+		Tooltip: Casts three homing heat stars that explode on impact and inflict [cebuff:OnFire3]
 	}
 
 	CinderLantern: {
 		DisplayName: Cinder Lantern
-		Tooltip: Summons a cinder core to shoot fireballs that inflict [cbuff:OnFire3] at nearby enemies
+		Tooltip: Summons a cinder core to shoot fireballs that inflict [cebuff:OnFire3] at nearby enemies
 	}
 
 	Fuusen: {
@@ -4320,7 +4329,7 @@ Items: {
 		Tooltip:
 			'''
 			Summons a combat drone that shoots armor-piercing rounds at enemies
-			Rounds inflict [cebuff:CalamityMod/ArmorCrunch] and [cebuff:CalamityEntropy/MechanicalTrauma]
+			Rounds inflict [cebuff:CalamityEntropy/ArmorCrunch] and [cebuff:CalamityEntropy/MechanicalTrauma]
 			'''
 	}
 
@@ -4381,7 +4390,7 @@ Items: {
 		DisplayName: Ba Xing Chong
 		Tooltip:
 			'''
-			Launches two barrages of homing missiles that explode on impact, inflicting [cbuff:CalamityMod/MiracleBlight], [cbuff:CalamityMod/TrueVulnerabilityHex] and [cbuff:OnFire3]
+			Launches two barrages of homing missiles that explode on impact, inflicting [cebuff:CalamityEntropy/MiracleBlight], [cebuff:CalamityEntropy/TrueVulnerabilityHex] and [cebuff:OnFire3]
 			[c/ff7f50:"Former owner of this gun? You mean that guy covered by cyberware except his brain?"]
 			'''
 	}
@@ -4486,7 +4495,7 @@ Items: {
 			'''
 			{$CommonItemTooltip.SummonTagDamage}
 			{$CommonItemTooltip.Whips}
-			Inflicts [cbuff:OnFire3] and your minions gain a 20% chance to generate a tectonic shard on hit
+			Inflicts [cebuff:OnFire3] and your minions gain a 20% chance to generate a tectonic shard on hit
 			Tectonic shard home in on enemies and deal 70% of minion damage
 			'''
 	}
@@ -4698,6 +4707,296 @@ Items: {
 		DisplayName: Astral Sample
 		Tooltip: ""
 	}
+
+	AzafureCircuitry: {
+		DisplayName: Azafure Circuitry
+		Tooltip:
+			'''
+			The core wiring of Azafure machinery, its fine traces still hot to the touch
+			Has a chance to be extracted from Hell Industrial Components in an Extractinator
+			'''
+	}
+
+	AzafurePlating: {
+		DisplayName: Azafure Plating
+		Tooltip:
+			'''
+			A heat-resistant slice of Azafure armor, bullet scars still on its edge
+			Has a chance to be extracted from Hell Industrial Components in an Extractinator
+			'''
+	}
+
+	StarlitScaleDust: {
+		DisplayName: Starlit Scale Dust
+		Tooltip:
+			'''
+			Scale dust shed from glowing moth wings, like a handful of starlight
+			Dropped at night by glowing mushroom biome enemies and lightning bugs
+			'''
+	}
+
+	WraithSoulEssence: {
+		DisplayName: Wraith Soul Essence
+		Tooltip:
+			'''
+			Soul marrow drawn from the remains of the Abyssal Wraith, cold enough to burn
+			Obtained by defeating the Abyssal Wraith
+			'''
+	}
+
+	AbyssalSigil: {
+		DisplayName: Abyssal Sigil
+		Tooltip:
+			'''
+			Use at night to unfold a summoning circle above you, calling forth the Abyssal Wraith
+			The circle takes a few seconds to charge; stand your ground until it flares
+			Not consumable
+			'''
+	}
+
+	EntropyStarterBag: {
+		DisplayName: Gift of Entropy
+		Tooltip:
+			'''
+			Right Click to open
+			Holds gifts from the contributors
+			'''
+	}
+
+	BigShotsWing: {
+		DisplayName: Big Shots Wing
+		Tooltip: ""
+	}
+
+	IceShardWing: {
+		DisplayName: Ice Shard Wing
+		Tooltip: ""
+	}
+
+	PhantomLightWing: {
+		DisplayName: Phantom Light Wing
+		Tooltip: ""
+	}
+
+	RuneWing: {
+		DisplayName: Rune Wing
+		Tooltip: ""
+	}
+
+	TheRevelation: {
+		DisplayName: The Revelation
+		Tooltip: ""
+	}
+
+	VoidElytra: {
+		DisplayName: Void Elytra
+		Tooltip: ""
+	}
+
+	FlowingLight: {
+		DisplayName: Flowing Light
+		Tooltip: ""
+	}
+
+	TlipocasScythe: {
+		DisplayName: Tlipocas Scythe
+		Tooltip: ""
+	}
+
+	CruiserLore: {
+		DisplayName: Cruiser Lore
+		Tooltip: ""
+	}
+
+	LoreAcropolis: {
+		DisplayName: Lore Acropolis
+		Tooltip: ""
+	}
+
+	LoreApsychos: {
+		DisplayName: Lore Apsychos
+		Tooltip: ""
+	}
+
+	LuminarisLore: {
+		DisplayName: Luminaris Lore
+		Tooltip: ""
+	}
+
+	NihilityTwinLore: {
+		DisplayName: Nihility Twin Lore
+		Tooltip: ""
+	}
+
+	ProphetLore: {
+		DisplayName: Prophet Lore
+		Tooltip: ""
+	}
+
+	RoaringDye: {
+		DisplayName: Roaring Dye
+		Tooltip: ""
+	}
+
+	SpiritDye: {
+		DisplayName: Spirit Dye
+		Tooltip: ""
+	}
+
+	VoidCruiseDye: {
+		DisplayName: Void Cruise Dye
+		Tooltip: ""
+	}
+
+	AbyssalPiercer: {
+		DisplayName: Abyssal Piercer
+		Tooltip: ""
+	}
+
+	AmethystFrisbee: {
+		DisplayName: Amethyst Frisbee
+		Tooltip: ""
+	}
+
+	Aquashard: {
+		DisplayName: Aquashard
+		Tooltip: ""
+	}
+
+	ArbitratorII: {
+		DisplayName: Arbitrator I I
+		Tooltip: ""
+	}
+
+	AzafureAirReaper: {
+		DisplayName: Azafure Air Reaper
+		Tooltip: ""
+	}
+
+	AzafureLightMachineGun: {
+		DisplayName: Azafure Light Machine Gun
+		Tooltip: ""
+	}
+
+	AzafureSurgeRod: {
+		DisplayName: Azafure Surge Rod
+		Tooltip: ""
+	}
+
+	AzureOfFirmament: {
+		DisplayName: Azure Of Firmament
+		Tooltip: ""
+	}
+
+	CrystalSpike: {
+		DisplayName: Crystal Spike
+		Tooltip: ""
+	}
+
+	EmberSpike: {
+		DisplayName: Ember Spike
+		Tooltip: ""
+	}
+
+	LunarPlank: {
+		DisplayName: Lunar Plank
+		Tooltip: ""
+	}
+
+	MewMewBomb: {
+		DisplayName: Mew Mew Bomb
+		Tooltip: ""
+	}
+
+	ProphecyFlyingKnife: {
+		DisplayName: Prophecy Flying Knife
+		Tooltip: ""
+	}
+
+	Revelation: {
+		DisplayName: Revelation
+		Tooltip: ""
+	}
+
+	ScorchingChakram: {
+		DisplayName: Scorching Chakram
+		Tooltip: ""
+	}
+
+	ShadewindLance: {
+		DisplayName: Shadewind Lance
+		Tooltip: ""
+	}
+
+	Silence: {
+		DisplayName: Silence
+		Tooltip: ""
+	}
+
+	SpearOfRadiance: {
+		DisplayName: Spear Of Radiance
+		Tooltip: ""
+	}
+
+	Apeirokyklos: {
+		DisplayName: Apeirokyklos
+		Tooltip: ""
+	}
+
+	AzafureSwirlblade: {
+		DisplayName: Azafure Swirlblade
+		Tooltip: ""
+	}
+
+	BlazingSwirlblade: {
+		DisplayName: Blazing Swirlblade
+		Tooltip: ""
+	}
+
+	BrillianceSwirlblade: {
+		DisplayName: Brilliance Swirlblade
+		Tooltip: ""
+	}
+
+	ExergySwirlblade: {
+		DisplayName: Exergy Swirlblade
+		Tooltip: ""
+	}
+
+	FlamingSwirlblade: {
+		DisplayName: Flaming Swirlblade
+		Tooltip: ""
+	}
+
+	GlacierSwirlblade: {
+		DisplayName: Glacier Swirlblade
+		Tooltip: ""
+	}
+
+	RunicSwirlblade: {
+		DisplayName: Runic Swirlblade
+		Tooltip: ""
+	}
+
+	SawofMacrocosm: {
+		DisplayName: Sawof Macrocosm
+		Tooltip: ""
+	}
+
+	TheBeginingAndTheEnd: {
+		DisplayName: The Begining And The End
+		Tooltip: ""
+	}
+
+	TheDeadCut: {
+		DisplayName: The Dead Cut
+		Tooltip: ""
+	}
+
+	Voidseeker: {
+		DisplayName: Voidseeker
+		Tooltip: ""
+	}
 }
 
 BaitCommonTooltip1: Charge when held. Usable when fully charged
@@ -4708,9 +5007,9 @@ BaitCommonTooltip2:
 	'''
 SmolderingSetBonus:
 	'''
-	Gain a demonic tail that attacks nearby enemies and inflicts [cbuff:OnFire3]
+	Gain a demonic tail that attacks nearby enemies and inflicts [cebuff:OnFire3]
 	Increases your maximum number of minions by 1
-	+80 maximum stealth
+	8% increased weapon ultimate charge rate
 	'''
 ChaoticSetBonus:
 	'''
@@ -4722,6 +5021,7 @@ ChaoticSetBonus:
 	Cells will chase and attack enemies before returning and converting into 7 life each
 	Press [KEY] to consume 80 life and spawn three cells
 	You can have a maximum of [LIMIT] cells active at a time
+	12% increased weapon ultimate charge rate
 	'''
 VoidEaterBonus:
 	'''
@@ -4733,7 +5033,7 @@ VoidEaterBonus:
 	Increases your max number of minions by 2
 	Maximum mana increased by 100
 	14% increased damage and critical strike chance
-	+120 maximum stealth
+	12% increased weapon ultimate charge rate
 	'''
 VoidEaterSet: Void Eater Set
 ChaoticSet: Chaotic Set
@@ -4775,15 +5075,15 @@ MariviniumSet:
 	'''
 	Increases your max number of minions by 10
 	75% increased summon Damage
-	+135 maximum stealth
+	13.5% increased weapon ultimate charge rate
 	Increased life regeneration when standing still
 	Immunity to most debuffs
 	When holding a true melee weapon, gain 10% increased damage reduction and 15 defense
-	Stealth strike has a probability of causing a water explosion
 	Obtain 2 layers of shields, which will take 36 seconds to recover after being shattered
 	After shields shatter, consume 100 life for 50% increased damage for 10 seconds
 	'''
-DeathMode: Death Mode
+DeathMode: Master Mode
+ChargeReady: Ultimate Ready
 CdMantle: Holy Mantle Cooldown
 MissileLauncherDescTooltip: Launch missiles that get lodged into enemies and cause damage over time
 MissileLauncherMaxStickTooltip: Up to {0} can be lodged in the same enemy
@@ -5521,6 +5821,17 @@ Projectiles: {
 	AzafureSawSpark.DisplayName: Azafure Saw Spark
 	VFChargeFXProj.DisplayName: V F Charge F X Proj
 	VoidFaquirEnergyBallMelee.DisplayName: Void Faquir Energy Ball Melee
+	AbyssalSigilRitual.DisplayName: Abyssal Sigil
+	PartySparkle.DisplayName: Party Sparkle
+	TyrantPhantomBlade.DisplayName: Tyrant Phantom Blade
+	GaleWindBlade.DisplayName: Gale Wind Blade
+	AquariusWaterBolt.DisplayName: Aquarius Water Bolt
+	SunkenAquashard.DisplayName: Sunken Aquashard
+	ExobeamSlashBurst.DisplayName: Exobeam Slash Burst
+	AbyssBladeSplitProjectile.DisplayName: Abyss Blade Split Projectile
+	AquashardSplit.DisplayName: Aquashard Split
+	PlaguenadeBee.DisplayName: Plaguenade Bee
+	GhastlySoulLarge.DisplayName: Ghastly Soul Large
 }
 
 LegendTooltip: - Legend -
@@ -5802,12 +6113,6 @@ Buffs: {
 		Description: ""
 	}
 
-	WindPressure: {
-		DisplayName: Wind Pressure
-		Description: The whirlwind winds around your weapon
-		ItemTooltip: 3% increased damage and rogue attack speed
-	}
-
 	PenMountBuff: {
 		DisplayName: Replica Pen
 		Description: I'm proud of you.
@@ -6010,6 +6315,161 @@ Buffs: {
 		DisplayName: Flowery Buff
 		Description: Glue!
 	}
+
+	AstralInfectionDebuff: {
+		DisplayName: Astral Infection
+		Description: Astral energy erodes your flesh, losing about 38 life per second
+	}
+
+	Dragonfire: {
+		DisplayName: Dragonfire
+		Description: Burned by holy dragonfire, losing 480 life per second
+	}
+
+	HolyFlames: {
+		DisplayName: Holy Flames
+		Description: Scorched by sacred fire, losing 150 life per second
+	}
+
+	GodSlayerInferno: {
+		DisplayName: God Slayer Inferno
+		Description: Consumed by god-slaying fire, losing 250 life per second
+	}
+
+	BrimstoneFlames: {
+		DisplayName: Brimstone Flames
+		Description: Burned by brimstone fire, losing 30 life per second
+	}
+
+	Plague: {
+		DisplayName: Plague
+		Description: Ravaged by pestilence, losing 50 life per second
+	}
+
+	MiracleBlight: {
+		DisplayName: Miracle Blight
+		Description: Corroded by a miracle, losing 1500 life per second
+	}
+
+	CrushDepth: {
+		DisplayName: Crush Depth
+		Description: Crushed by abyssal pressure, losing 50 life per second
+	}
+
+	SulphuricPoisoning: {
+		DisplayName: Sulphuric Poisoning
+		Description: Corroded by acid water, losing 175 life per second
+	}
+
+	Nightwither: {
+		DisplayName: Nightwither
+		Description: Seared by moonlight, losing 100 life per second
+	}
+
+	BurningBlood: {
+		DisplayName: Burning Blood
+		Description: Your blood is burning, losing 20 life per second
+	}
+
+	BrainRot: {
+		DisplayName: Brain Rot
+		Description: Your mind is rotting, losing 20 life per second
+	}
+
+	BanishingFire: {
+		DisplayName: Banishing Fire
+		Description: Your existence is being erased, losing at least 2000 life per second; extremely high max life worsens the damage
+	}
+
+	Voidfrost: {
+		DisplayName: Voidfrost
+		Description: Chilled by void frost, losing 250 life per second
+	}
+
+	VulnerabilityHex: {
+		DisplayName: Vulnerability Hex
+		Description: Hexed, losing 1332 life per second and slowed
+	}
+
+	TrueVulnerabilityHex: {
+		DisplayName: True Vulnerability Hex
+		Description: An unblockable hex, losing 1332 life per second and slowed
+	}
+
+	ElementalMix: {
+		DisplayName: Elemental Mix
+		Description: Eroded by chaotic elements, losing 200 life per second
+	}
+
+	HadopelagicPressure: {
+		DisplayName: Hadopelagic Pressure
+		Description: Crushed by hadal pressure, losing 175 life per second
+	}
+
+	HeavyBleeding: {
+		DisplayName: Heavy Bleeding
+		Description: The wound will not stop bleeding, losing 40 life per second
+	}
+
+	VermillionFlux: {
+		DisplayName: Vermillion Flux
+		Description: Vermillion current surges through you, losing 150 life per second while moving, reduced to 37 while still
+	}
+
+	AuricRebuke: {
+		DisplayName: Auric Rebuke
+		Description: Bound by auric punishment, losing 400 life per second while moving, reduced to 100 while still
+	}
+
+	GalvanicCorrosion: {
+		DisplayName: Galvanic Corrosion
+		Description: Electrolytic corrosion slows your movement
+	}
+
+	WindChilled: {
+		DisplayName: Wind Chilled
+		Description: Chilled by cold wind, losing 6 life per second; being wet increases the damage by half
+	}
+
+	Irradiated: {
+		DisplayName: Irradiated
+		Description: Irradiated, losing 10 life per second
+	}
+
+	ArmorCrunch: {
+		DisplayName: Armor Crunch
+		Description: Your armor is crunched, reducing defense by 15
+	}
+
+	Crumbling: {
+		DisplayName: Crumbling
+		Description: Your shell is crumbling, reducing defense by 8
+	}
+
+	MarkedforDeath: {
+		DisplayName: Marked for Death
+		Description: Chosen by death, all damage taken increased by 10%
+	}
+
+	TemporalSadness: {
+		DisplayName: Temporal Sadness
+		Description: Time turns viscous, greatly slowing your movement
+	}
+
+	WhisperingDeath: {
+		DisplayName: Whispering Death
+		Description: Death whispers in your ear
+	}
+
+	CosmicFreeze: {
+		DisplayName: Cosmic Freeze
+		Description: Guarded by cosmic cold; damage over time is halved while standing still
+	}
+
+	Laceration: {
+		DisplayName: Laceration
+		Description: Torn open, losing 200 life per second
+	}
 }
 
 Uh: ""
@@ -6017,10 +6477,9 @@ Uh: ""
 NPCs: {
 	LotteryMachine.DisplayName: Lottery Machine
 	CruiserTail.DisplayName: Cruiser
+	CruiserHead.DisplayName: Cruiser
 
-	CruiserHead: {
-		DisplayName: Cruiser
-
+	Cruiser: {
 		BossChecklistIntegration: {
 			EntryName: Cruiser
 			SpawnInfo: Use [i:CalamityEntropy/VoidBottle] to summon
@@ -6029,7 +6488,17 @@ NPCs: {
 	}
 
 	CruiserBody.DisplayName: Cruiser
-	AbyssalWraith.DisplayName: Abyssal Wraith
+
+	AbyssalWraith: {
+		DisplayName: Abyssal Wraith
+
+		BossChecklistIntegration: {
+			EntryName: Abyssal Wraith
+			SpawnInfo: Use [i:CalamityEntropy/AbyssalSigil] at night to summon
+			DespawnMessage: ""
+		}
+	}
+
 	VoidCultistAssassin.DisplayName: Void Cultist Assassin
 	VoidPope.DisplayName: Void Pope
 	VoidPopeHand.DisplayName: Void Pope Hand
@@ -6044,11 +6513,10 @@ NPCs: {
 			HateCrowded: There are many people here.
 			LikeNPC_Princess: I like {NPCName}.
 			Princess_LovesNPC: I like {NPCName}.
-			MonumentNearby: Where did that ugly monument come from? I don't want to see it anymore.
 		}
 
 		DisplayName: Wyrm-Chan
-		Census.SpawnCondition: After defeating the primordial wyrm
+		Census.SpawnCondition: After defeating Cruiser
 	}
 
 	NihilityActeriophage: {
@@ -6097,7 +6565,7 @@ NPCs: {
 
 		BossChecklistIntegration: {
 			EntryName: Acropolis Machine
-			SpawnInfo: Naturally spawn in brimstone crags
+			SpawnInfo: Rarely spawns naturally in the Underworld
 			DespawnMessage: ""
 		}
 	}
@@ -6128,7 +6596,7 @@ WyrmChat5: You said there is a group of people who follow me? How interesting...
 WyrmChat6: The abyss is really oppressive, sometimes it's nice to come out and get some fresh air.
 WyrmChat7: Why should I follow you In order to prevent the thief who usurped the light from succeeding.
 WyrmChat8: Life in the abyss is just too boring.
-WyrmChat9: Do you think who is stronger between me and that Witch.
+WyrmChat9: Do you think who is stronger between me and that void serpent.
 WyrmChat10: You asked me why I attacked you at that time? My mission is to protect that sacred object.
 WyrmChat11: Chaos always makes me feel uncomfortable.
 WyrmChatDonors: Thank you to [0] for support, thank you all!
@@ -6160,6 +6628,9 @@ Keybinds: {
 	CommandMinions.DisplayName: Command Minions
 	NihilityAndChaoticArmorConnectKey.DisplayName: Nihility & Chaotic Armor Connect Key
 	AcropolisMechTransformation.DisplayName: Acropolis Mecha Transformation
+	ArmorSetBonus.DisplayName: Armor Set Bonus
+	Dash.DisplayName: Dash
+	AccessoryAbility.DisplayName: Accessory Ability
 }
 
 ProphetLoreEffect:
@@ -6169,6 +6640,9 @@ ProphetLoreEffect:
 	'''
 Enabled: Enabled
 Disabled: Disabled
+KeyNotBound: Not bound
+LoreHoldShift: Hold Shift to read the lore
+Status.Death.AuricRejection: "{0} was torn apart by the auric repulsion"
 CdMoonlight: Moonlight Shield
 CdDS: Divine Shield Cooldown
 CdAntivoid: Antivoid Dash Cooldown
@@ -6176,7 +6650,7 @@ AbyssalStorm: Abyssal Storm Cooldoawn
 YoungMasterDashCD: Dash Cooldown
 CruiserBestiary:
 	'''
-	A supreme predator born from the void, bearing a resemblance to that Devourer of Gods you once encountered.
+	A supreme predator born from the void, cruising through the seams of reality in serpentine form.
 	It feasts on order, spreads chaos, and tears the world apart as its hunting ground... and you are no prey to be devoured.
 	'''
 AbyssalWraithBestiary: ???
@@ -6206,8 +6680,10 @@ Tiles: {
 	VoidOreTile.MapEntry: Void Ore Tile
 	VoidBarTile.MapEntry: Void Bar Tile
 	GiantBoulderTile.MapEntry: Giant Boulder Tile
+	LavaFountain: Lava Fountain
 }
 
+Misc.HotkeyNotBound: "[None]"
 VoidChargeBar: Void Charging Bar
 
 Configs: {
@@ -6240,11 +6716,6 @@ Configs: {
 			Tooltip: Display additional information about certain items like armor penetration, ammo type, etc
 		}
 
-		MariviumArmorSetOnlyProvideStealthBarWhenHoldingRogueWeapons: {
-			Tooltip: ""
-			Label: CalEntropy's Armor Set Only Provide Stealth Bar When Holding Rogue Weapons
-		}
-
 		EntropyMeleeWeaponSoundVolume: {
 			Label: Entropy Melee Weapon Sound Volume
 			Tooltip: ""
@@ -6275,9 +6746,14 @@ Configs: {
 			Tooltip: If you still want use retro light mode, set this to true. Ensure the Enable Pixel Effect option closed to show UI correct
 		}
 
-		CalamityTextEffectCompatibilityFix: {
-			Label: Calamity Text Effect Compatibility Fix
-			Tooltip: ""
+		TextEffects: {
+			Label: Chat Text Effects
+			Tooltip: When enabled, special text in chat and dialogue (such as Cruiser speech) is drawn with dynamic effects; when disabled, it is drawn as plain text
+		}
+
+		ScreenShakePower: {
+			Label: Screen Shake Power
+			Tooltip: Overall intensity multiplier for this mod's screen shake effects; 0 disables them, 1 is default, 2 is maximum
 		}
 	}
 
@@ -6300,19 +6776,9 @@ Configs: {
 			Tooltip: ""
 		}
 
-		ClearStealthWhenChangeEquipSet: {
-			Label: Clear Stealth When Change Equip Set
-			Tooltip: ""
-		}
-
 		ExtraItemsInStarterBag: {
 			Label: Extra Items In Starter Bag
 			Tooltip: Starter bag provide additional useful items
-		}
-
-		RogueAccessoriesProvide40Stealth: {
-			Label: Rogue Accessories Provide 40 Stealth
-			Tooltip: If you hasn't wearing rogue armors and you equiped any rogue accessories, you will have at least 40 stealth
 		}
 
 		EnableArmorPrefix: {
@@ -6334,7 +6800,7 @@ vfb:
 helmvfc:
 	'''
 	25% reduced mana cost
-	Magic projectiles hits reduce [cbuff:ManaSickness] time by half a second
+	Magic projectiles hits reduce [cebuff:ManaSickness] time by half a second
 	'''
 helmvfd:
 	'''
@@ -6346,8 +6812,7 @@ helmvfs: Projectile damage increases over time
 helmvfl:
 	'''
 	15% increased movement speed
-	+135 maximum stealth
-	Stealth strikes will generate additional void charge
+	13.5% increased weapon ultimate charge rate
 	'''
 helmvfe:
 	'''
@@ -6439,7 +6904,7 @@ ArmorPrefixSacrificalDescription:
 	99% reduced defense
 	'''
 ArmorPrefixSilenceName: Camouflaged
-ArmorPrefixSilenceDescription: +2 maximum stealth
+ArmorPrefixSilenceDescription: 1% increased damage
 ArmorPrefixMagicalName: Wondrous
 ArmorPrefixMagicalDescription:
 	'''
@@ -6484,7 +6949,7 @@ ArmorPrefixHeatDeathDescription:
 	[c/ff0000:You health begins to leak over time...]
 	'''
 ArmorPrefixArmorPrefixEchoName: Echoing
-ArmorPrefixArmorPrefixEchoDescription: +4% increased stealth generation
+ArmorPrefixArmorPrefixEchoDescription: 6% increased weapon ultimate charge rate
 ArmorPrefixTheBodyName: Vital
 ArmorPrefixTheBodyDescription: Increases max life by 20%
 ArmorPrefixTheMindName: Mindful
@@ -6523,7 +6988,6 @@ HaveTaintedDeck: When Tainted Deck is in inventory
 HaveSoulDeck: When Soul Deck is in inventory
 DownloadBOI: Have played The Binding of Isaac: Repentance
 IsaacLock: You can't equip this before you played The Binding of Isaac Repentance LOL
-PWSpawnInfo: Enter the Abyss with Chaos State debuff
 CdAS: Amima Sola Cooldown
 XythCharge: Xytheron Charge
 KilledByVoidVirus: Only Nihility remains in {0}'s blood
@@ -6551,8 +7015,8 @@ EBookTooltip:
 SetHomeCommandError: Error: invalid parameters
 HomeCommandError: Cannot find home
 EntropyModeName: Entropy
-EntropyModeDescShort: "[c/aa12e1:More challenging than death mode]"
-EntropyModeDesc: "[c/aa12e1:More challenging than death mode, Less Health, Less Damage]"
+EntropyModeDescShort: "[c/aa12e1:More challenging than Master Mode]"
+EntropyModeDesc: "[c/aa12e1:More challenging than Master Mode, Less Health, Less Damage]"
 EntropyModeActive: Entropy Mode is active. You shall fade in due time...
 EntropyModeDeactive: Entropy Mode is inactive. Afraid of being forgotten?
 MissedInVoid: missed in the void
@@ -6576,7 +7040,7 @@ AmmoStyngerBolt: Stynger Bolt
 AmmoBoulders: Boulder
 AmmoAle: Ale
 AmmoBloodrune: Blood Rune
-AmmoStarblightSoot: Starblight Soot
+AmmoStarblightSoot: Starlit Scale Dust
 AmmoType: Ammo type
 AmmoMissile: Missile
 AmmoSouls: Souls
@@ -6589,122 +7053,20 @@ AmmoLifeTime: Life Time
 AmmoShootSpeed: Shoot Speed
 AmmoPenetrate: Penetrate times
 AmmoPenetrateInfinite: Infinite
-PrefixEchoDescr: +12 maximum stealth
-PrefixVigorousDescr: stealth generates 15% faster
+PrefixEchoDescr: 6% increased damage
+PrefixVigorousDescr: 22.5% increased weapon ultimate charge rate
 WikiURL: https://terrariamods.wiki.gg/wiki/Calamity_Entropy/
 GameTips.VoidOreTip: Void ore will spawn high in the sky after defeated Cruiser
-LoreAwakeningDesc: Slightly increase movement speed and jump height
-LoreKingSlimeDesc: Increases jump height
-LoreDesertScourgeDesc: Increases breath time
-LoreCrimsonDesc: +{1} max life
-LoreCrabulonDesc: Obtain the [cbuff:CalamityMod/Mushy] buff for {1} seconds after injury
-LoreEyeofCthulhuDesc: Reduce dash cooldown by {1}%
-LoreCorruptionDesc: Gain {1}% increased damage reduction
-LoreBrainofCthulhuDesc: Immunity to [cbuff:Bleeding]
-LoreQueenBeeDesc: Gain {1}% Increased damage, but {2}% reduced critical strike chance
 LuminarisLoreDesc: Gain {1}% increased maximum flight time
-LoreHiveMindDesc: For {1} seconds after taking damage, gain {2}% increased damage
-LorePerforatorsDesc: Gain a {1}% chance to heal {2} life after taking damage
-LoreEaterofWorldsDesc: Immunity to [cbuff:CursedInferno]
-LoreSkeletronDesc: Ammo with more than {1} held gain a {2}% chance to not be consumed on use
-LoreSlimeGodDesc: Increases jump height
-LoreUnderworldDesc: Grants {1} seconds of immunity to lava
-LoreWallofFleshDesc: Reduces incoming damage by {1}% on a {2} second cooldown
-LoreBloodMoonDesc: Slightly improves vision
-LoreQueenSlimeDesc: Grants {1}% increased fall speed
-LoreArchmageDesc: Reduces the duration of the [cbuff:Frozen] debuff on the player
-LoreMechsDesc: Grants {1} defense
-LoreTwinsDesc: Grants {1} defense
-LoreDestroyerDesc: Grants {1} defense
-LoreSkeletronPrimeDesc: Gain {1}% increased damage reduction
-LoreSulphurSeaDesc: Immunity to [cbuff:Venom]
-LoreAzafureDesc: Grants {1}% increased critical strike chance
-LoreCalamitasCloneDesc: Grants {1}% increased melee speed
-LorePlanteraDesc: Grants +0.5HP/s life regeneration
-LoreAquaticScourgeDesc: Increase breath time
-LoreAbyssDesc: Increased visibility in the abyss
-LoreLeviathanAnahitaDesc: Grants +1HP/s life regeneration when in water
-LoreAstrumAureusDesc: Reduces the duration of the [cbuff:CalamityMod/AstralInfectionDebuff] debuff on the player
-LoreBrimstoneElementalDesc: Grants 1% increased damage reduction
-LoreGolemDesc: Grants {1}% increased damage reduction
-LorePlaguebringerGoliathDesc: Reduces the duration of the [cbuff:CalamityMod/Plague] debuff on the player
-LoreEmpressofLightDesc: During daytime, grants {1} defense
-LoreDukeFishronDesc: Grants uninhibited water movement
-LoreRavagerDesc: Increased movement speed by 2%
-LorePreludeDesc: Slightly improves vision
-LoreAstralInfectionDesc: Grants {1}% increased flight time
-LoreAstrumDeusDesc: Grants {1}% increased flight speed
-LoreApsychosDesc: Immunity to [cbuff:OnFire] and [cbuff:OnFire3]
-
-DraedonDialogs: {
-	Void: {
-		Inquiry: The Void
-		Response:
-			'''
-			The void has always been a subject of mine, long before I ever interacted extensively with this world.
-			During my collaboration with Yharim, I proposed a more in-depth study of the Void, and therefore he went to find the best spiritual prophet of the land, who he had locked in the dungeon for dealing with the gods.
-			Tests on the man led to a rather grim fate, however such results were no deterrent to my pursuit of knowledge.
-			When Yharim learned of this, he expressed strong opposition, but I nevertheless opened a rift to the Void and deployed a reconnaissance drone. 
-			Shortly after entering the Void, the transmission of footage was lost, leaving only static and ethereal whispers in its place.
-			From then on, I was forbidden from further research without heavy oversight, which I cannot easilly obtain.
-			Perhaps you shall truly explore this forbidden frontier.
-			'''
-	}
-}
-
+LoreApsychosDesc: Immunity to [cebuff:OnFire] and [cebuff:OnFire3]
 SlotInfo2: InsertItem
 LightModeTip: Warning: Other lighting modes will cause some projectiles and NPCs of Calamity Entropy to become invisible. Best to use color mode.
-KilledByBloodBoiling: "{0}'s blood is boiling"
-BloodBoiling: Boiling Blood
-BloodBoilingDescr: Continuously using items increases attack speed, but it will cause sustained damage to yourself
 PrefixHeavyDesc: +10% increased fall speed
 DamageReduceCD: Damage Reduction Cooldown
 DeltaruneCH5ShadowCrystal: Get shadow crystal in Deltarune chapter5
-
-InfernumIntros: {
-	NihilityTwin:
-		'''
-		Virulent Voiden Duo
-		Nihility Twins
-		'''
-	Cruiser:
-		'''
-		Interdimensional Greatwyrm
-		Cruiser
-		'''
-	Prophet:
-		'''
-		Soul That Delved Too Deep
-		The Prophet
-		'''
-	Luminaris:
-		'''
-		Constellation on Blighted Wings
-		Luminaris
-		'''
-	Apsychos:
-		'''
-		Vessel of Hellish Essence
-		Apsychos
-		'''
-}
-
 Donor: Donor:
 Owner: Owner:
 ShadowDashCD: Shadow Dash Cooldown
-ShiftMoreInfo: Hold Left Shift for more info
-ShadowBar: Shadow Bar
-SolarBar: Solar Bar
-ShadowBarInfo:
-	'''
-	Growing at a constant rate
-	When full, the attack will release the Shadow Ball that summons the Shadow Knife after hitting target
-	'''
-SolarBarInfo:
-	'''
-	After hitting the target with Rogue weapons, there is an increase in solar energy
-	When fully charged, the attack will release some tracking Solar Arrows
-	'''
 RPDonorName: 冷级
 Acropolis: ""
 OblivionThretherCooldown: Oblivion Thresher Dash Cooldown
@@ -6743,101 +7105,20 @@ TScytheSpecialName: Scarlet
 TScytheSpecialName2: Kanna's Scythe
 TScytheZenithDesc: "'Crown me, my king, and the world will welcome the end of the night'"
 TScytheDesc: "'A scarlet scythe with tlipoca's soul adhering'"
-TSL1:
-	'''
-	The big evil eye seems to have ill intentions towards me...
-	Let's go kill him!
-	'''
-TSL2:
-	'''
-	Strange spirits resembling brains and worms?
-	Can I take it home to make a specimen？
-	'''
-TSL3:
-	'''
-	God of slime? It looks sticky, dirty, and bubbling...
-	Shall we give it a bath？
-	'''
-TSL4:
-	'''
-	A flesh and blood creation sealed with the spirit of the gods?
-	It seems that completing this task can bring a lot of souls...
-	'''
-TSL5:
-	'''
-	Many souls are floating in the brimstone crag, howling in sorrow...
-	Continuously talking about a catastrophe from a hundred years ago...
-	Let's end their pain!
-	'''
-TSL6:
-	'''
-	There is a terrifying red monster hovering in the night sky,
-	I can only feel madness from his soul. Or...Is that really a soul?
-	'''
-TSL7:
-	'''
-	There're so much spirits in the dungeon...
-	Hey，there's a sealed spirit with strange scent
-	I can't help but want to communicate with them!
-	'''
-TSL8:
-	'''
-	How many strands of soul are attached to twisted flesh and blood? 
-	Some Disgusting, drive them back to their dreams!
-	'''
-TSL9:
-	'''
-	These crazy cultists emit an aura similar to that prophet...
-	What are they worshiping? 
-	It feels like sending them to worship the Grim Reaper is a good idea
-	'''
-TSL10: A huge, multi eyed octopus? Is this a monster that came out of a dream?
-TSL11:
-	'''
-	The faceless man wearing a purple cloak carried a lantern with a prophetic aura ..
-	I'm a little curious, I want to grab the lantern!
-	'''
-TSL12:
-	'''
-	In the enchanted dungeon, these souls can never rest in peace
-	It's so pitiful, let's take it away!
-	'''
-TSL13:
-	'''
-	There is a purple serpent
-	It want to devour the soul of we!
-	Don't even try this!
-	'''
-TSL14:
-	'''
-	The strange lantern pointed towards this spatial fissure
-	What will it bring?
-	'''
-TSL15:
-	'''
-	A witch and a robot came to here，
-	Snatch their souls and my goal might be achieved！
-	'''
-TSL16:
-	'''
-	The cultist asked us to use the discord wand in the abyss...
-	What will happen?
-	'''
-TSLEnd: Finally paid off the debt, the task was perfectly completed!
 TSA1: Hold Up and attack will push a certain distance towards the mouse direction
-TSA1B: After killing slime god, Gain invincible time and deal damage to the targets you come into contact with
+TSA1B: After killing Apsychos, Gain invincible time and deal damage to the targets you come into contact with
 TSU1: Need to kill the Eye of Cthulhu
 TSA2: Press Left Click to throw the scythe and causing multiple injuries
 TSA2B:
 	'''
-	After killing Brimstone Elemental, Press Left Click when throwing to teleport to the cursor and launch a larger slash
+	After killing all three mechanical bosses, Press Left Click when throwing to teleport to the cursor and launch a larger slash
 	This skill has a 30 second cooldown. The cooldown time will shrink to 20 after killing Cruiser
 	'''
 TSU2: Need to kill any evil boss
 TSA3:
 	'''
 	When thrown out, press Right Click to let the scythe follow your curser
-	Stealth strikes will heal you for 7 life
+	Ultimate hits will heal you for 7 life
 	'''
 TSU3: Need to kill Prophet
 TSA4:
@@ -6851,18 +7132,18 @@ TSA5:
 	'''
 	Leave a shadow when performing a teleport strike, the shadow will attack alongside you
 	Slash dash will generate an additional slash perpendicular to the original
-	Increased the healing value of steal strikes
+	Ultimate hits heal for 10 life instead
 	'''
-TSU5: Need to kill Polterghast
+TSU5: Need to kill the Nihility Twins
 TSA6: Leave behind a rift when dashing. The rift will continuously damaie enemies in radius
-TSU6: Need to kill the Devourer of Gods
+TSU6: Need to kill the Abyssal Wraith
 TSA7: Survive a fatal injury and restore your health to half of your maximum health on a 5 minute cooldown
-TSU7: Need to kill Yharon
+TSU7: Need to kill Cruiser
 TSA8: Attack will cause [cebuff:CalamityEntropy/VoidTouch]
 TSU8: Need to kill Cruiser
 TSA9: The closer the distance to the target, the higher the damage dealt, with a maximum damage increase of 25%
 PressShiftForMoreInfo: Press shift for more info...
-TSU9: Need to kill Supreme Calamitas
+TSU9: Need to kill Cruiser
 AchievementBookmarkInsertName: Good reading habits
 AchievementBookmarkInsertDesc: Insert any bookmark into a customizable spellbook
 LMDialog1: Howdy, my friend.
@@ -6879,7 +7160,6 @@ LMDialog11: Here's your reward;)
 LMDialog12: Why don't took it out earlier......
 LMDialog13: Why don't took it out earlier.....You are truly wealthy.
 LMDialog14: You know what is it.
-LMDialog15: This item's design is a failure...You shouldn't use it.
 LMDialog16: Don't you see that [NAME]? What are you doing here!
 LMDialog17: I don't want your garbage.
 LMDialog18: What is this? You need a coin!
@@ -6895,12 +7175,12 @@ HallowedEnemiesDrop: Drops from underground hallowed enemies
 EvilEnemiesDrop: Drops from undergronud evil biomes' enemies
 DungeonEnemiesDrop: Drops from undergronud dungeon's enemies
 VoidOreMine: Generates in space layer after defeating Cruiser boss
-AbyssalPiercerObt: Drops from giant squid after defeating aquatic scourge
+AbyssalPiercerObt: Obtained by fishing in the ocean in Hardmode
 AstralFishing: Fishing from astral infection
 AzafureSet:
 	'''
 	All azafure equipment receive enhancements to thier abilities
-	Replaces adrenaline with the durability bar
+	Gain a durability bar
 	The Durability bar provides up to 12 defense and 16% damage reduction, while slowing your movement speed
 	Durability is consumed based on damage taken when hit
 	Durability slowly regenerates 5 seconds after taking damage
@@ -6909,12 +7189,12 @@ AzafureSet:
 AzafureSet2:
 	'''
 	All azafure equipment receive enhancements to thier abilities
-	Replaces adrenaline with the durability bar
+	Gain a durability bar
 	The durability bar provides up to 24 defense and 20% damage reduction
 	Durability is consumed based on damage taken when hit
 	Durability slowly regenerates 5 seconds after taking damage
 	When the durability bar is depleted, it becomes inactive and requires time to restore functionality
-	+80 maximum stealth
+	8% increased weapon ultimate charge rate
 	10% increased movement speed
 	Increases max number of minions by 1
 	'''
@@ -6922,12 +7202,12 @@ AzafureSet3:
 	'''
 	Negates fall damage
 	All azafure equipment receive enhancements to thier abilities
-	Replaces adrenaline with the durability bar
+	Gain a durability bar
 	The durability bar provides up to 36 defense and 24% damage reduction
 	Durability is consumed based on damage taken when hit
 	Durability slowly regenerates 5 seconds after taking damage
 	When the durability bar is depleted, it becomes inactive and requires time to restore functionality
-	+120 maximum stealth
+	12% increased weapon ultimate charge rate
 	Press [KEY] to transform into an acropolis mecha
 	Press again to cancel the transformation
 	The mecha can be activated after leaving it on a 1 minute cooldown
@@ -6958,7 +7238,7 @@ AzafureEnhances: {
 	AzafureSurgeRod: The projectile delivers an additional electric shock to a target
 	AzafureTeslaGun: Increased arc damage
 	AzafureElectrocauteryWand: Increased charging speed
-	AzafureLightMachineGun: Increased stealth generation on hit
+	AzafureLightMachineGun: Increased ultimate charge rate
 	AzafurePowerSaw: Increased damage and duration
 	AzafureDrill: Increased pick power and pick range
 	AzafureEKatana: Increased attack range
@@ -7001,10 +7281,8 @@ FetalDreamDamage: Koishi Damage
 NihilityShield: Nihility Shield
 CardsDesc: There should be a complete set of cards similar to it
 VoidCoreShield: Void Shield
-CrossModSupportFish: Cross mod support: You can also put it in customizable spellbooks as a bookmark
 CdAcr: Acropolis Mech Cooldown
 SpecialThanks: Special Thanks
-PassedBossRush: Passed Boss Rush
 BloodthirstyRequirement: You need at least 200 health points to craft this item
 BloodthirstyKilled: "{0} bled out"
 Luminariswarm: Luminariswarm

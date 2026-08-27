@@ -5,7 +5,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.Particles.CalamityPorts
 {
-    //DetailedExplosion,GeneralParticleHandler搬来,pulse曲线和BloomCal同款,数值别动
+    //DetailedExplosion,旧版粒子系统搬来,pulse曲线和BloomCal同款,数值别动
     public class PRT_DetailedExplosionCal : BasePRT
     {
         public float OriginalScale;
@@ -29,7 +29,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             opacity = 0f;
         }
 
-        //@CalamityMod/Particles/DetailedExplosion → PRTSharedAssets,HasAsset认不出@,Texture指白图
+        //Assets/Particles/DetailedExplosion → PRTSharedAssets,Texture指白图占位
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_DetailedExplosionCal Configure(Vector2 squish, float rotation, float finalScale, int lifetime,

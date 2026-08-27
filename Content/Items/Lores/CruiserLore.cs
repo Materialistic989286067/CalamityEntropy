@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items.LoreItems;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using Terraria;
@@ -11,16 +10,13 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Lores
 {
-    public class CruiserLore : LoreItem
+    public class CruiserLore : CELoreItem
     {
         public const int LifeBoost = 20;
         public const int ManaBoost = 50;
-        public override void SetStaticDefaults()
-        {
-            base.SetStaticDefaults();
-        }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
+            base.ModifyTooltips(tooltips);
             if (Keyboard.GetState().IsKeyDown(Keys.LeftShift))
                 return;
             if (LoreEffect.Enabled)
@@ -33,14 +29,6 @@ namespace CalamityEntropy.Content.Items.Lores
                 tooltipLineE.OverrideColor = Main.LocalPlayer.Entropy().CruiserLoreBonus ? Color.Yellow : Color.Gray;
                 tooltips.Add(tooltipLineE);
             }
-
-            /*TooltipLine tooltipLine = new TooltipLine(base.Mod, "CalamityMod:Lore", Language.GetTextValue("Mods.CalamityEntropy.loreCruiser"));
-            if (ExtensionIndicatorColor.HasValue)
-            {
-                tooltipLine.OverrideColor = ExtensionIndicatorColor.Value;
-            }
-
-            CEUtils.HoldShiftTooltip(tooltips, new TooltipLine[1] { tooltipLine }, hideNormalTooltip: true);*/
         }
         public override void SetDefaults()
         {

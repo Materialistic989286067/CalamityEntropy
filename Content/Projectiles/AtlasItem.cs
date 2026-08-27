@@ -1,7 +1,7 @@
-﻿using CalamityMod;
-using CalamityMod.Items.DraedonMisc;
-using CalamityMod.NPCs.ExoMechs.Thanatos;
+﻿using CalamityEntropy.Assets.Register;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -52,11 +52,11 @@ namespace CalamityEntropy.Content.Projectiles
             counter++;
             if (counter == 15)
             {
-                SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/SevensStrikerRoulette"), Projectile.Center);
+                SoundEngine.PlaySound(new("CalamityEntropy/Assets/Sounds/spin1"), Projectile.Center);
             }
             if (counter == 160)
             {
-                SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/SevensStrikerTriples"), Projectile.Center);
+                SoundEngine.PlaySound(SoundID.Coins with { Pitch = 0.4f }, Projectile.Center);
             }
             if (counter < 160)
             {
@@ -90,7 +90,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                     if (Projectile.frame == 8)
                     {
-                        SoundEngine.PlaySound(ThanatosHead.VentSound, Projectile.Top);
+                        SoundEngine.PlaySound(new Terraria.Audio.SoundStyle("CalamityEntropy/Assets/Sounds/steam"), Projectile.Top);
                         if (Main.rand.NextDouble() < 0.01f)
                         {
                             if (Main.netMode == NetmodeID.SinglePlayer || Main.netMode == NetmodeID.Server)
@@ -118,47 +118,22 @@ namespace CalamityEntropy.Content.Projectiles
                         }
                         else
                         {
-                            if (Projectile.Entropy().AtlasItemType == ModContent.ItemType<CodebreakerBase>())
+                            // 灾厄 CodebreakerBase 套装特判已随奖池重做删除（misc-map §二 p7），统一走通用掉落
+                            Item ispawn = new Item(Projectile.Entropy().AtlasItemType, Projectile.Entropy().AtlasItemStack);
+                            if (Main.netMode == NetmodeID.SinglePlayer)
                             {
-                                List<int> itemdrop = new List<int>();
-                                itemdrop.Add(ModContent.ItemType<CodebreakerBase>());
-                                itemdrop.Add(ModContent.ItemType<DecryptionComputer>());
-                                itemdrop.Add(ModContent.ItemType<LongRangedSensorArray>());
-                                itemdrop.Add(ModContent.ItemType<AdvancedDisplay>());
-                                itemdrop.Add(ModContent.ItemType<VoltageRegulationSystem>());
-                                itemdrop.Add(ModContent.ItemType<AuricQuantumCoolingCell>());
-                                for (int i = 0; i < itemdrop.Count; i++)
-                                {
-                                    Item ispawn = new Item(itemdrop[i], 1);
-                                    if (Main.netMode == NetmodeID.SinglePlayer)
-                                    {
-                                        int np = Item.NewItem(Projectile.GetSource_FromAI(), Projectile.getRect(), ispawn);
-                                    }
-                                    if (Main.netMode == NetmodeID.Server)
-                                    {
-                                        int np = Item.NewItem(Projectile.GetSource_FromAI(), Projectile.getRect(), ispawn);
-                                        NetMessage.SendData(MessageID.SyncItem, -1, -1, null, np);
-                                    }
-                                }
+                                int np = Item.NewItem(Projectile.GetSource_FromAI(), Projectile.getRect(), ispawn);
                             }
-                            else
+                            if (Main.netMode == NetmodeID.Server)
                             {
-                                Item ispawn = new Item(Projectile.Entropy().AtlasItemType, Projectile.Entropy().AtlasItemStack);
-                                if (Main.netMode == NetmodeID.SinglePlayer)
+                                int np = Item.NewItem(Projectile.GetSource_FromAI(), Projectile.getRect(), ispawn);
+                                NetMessage.SendData(MessageID.SyncItem, -1, -1, null, np);
+                            }
+                            if (Projectile.Entropy().AtlasItemType == ItemID.PoopBlock)
+                            {
+                                for (int i = 0; i < 5; i++)
                                 {
-                                    int np = Item.NewItem(Projectile.GetSource_FromAI(), Projectile.getRect(), ispawn);
-                                }
-                                if (Main.netMode == NetmodeID.Server)
-                                {
-                                    int np = Item.NewItem(Projectile.GetSource_FromAI(), Projectile.getRect(), ispawn);
-                                    NetMessage.SendData(MessageID.SyncItem, -1, -1, null, np);
-                                }
-                                if (Projectile.Entropy().AtlasItemType == ItemID.PoopBlock)
-                                {
-                                    for (int i = 0; i < 5; i++)
-                                    {
-                                        Projectile.NewProjectile(Wiring.GetProjectileSource((int)Projectile.Center.X / 16, (int)Projectile.Center.Y / 16), Projectile.Center.X, Projectile.Center.Y, 0f, 0f, ProjectileID.ToiletEffect, 0, 0f, Main.myPlayer);
-                                    }
+                                    Projectile.NewProjectile(Wiring.GetProjectileSource((int)Projectile.Center.X / 16, (int)Projectile.Center.Y / 16), Projectile.Center.X, Projectile.Center.Y, 0f, 0f, ProjectileID.ToiletEffect, 0, 0f, Main.myPlayer);
                                 }
                             }
                         }
@@ -196,7 +171,7 @@ namespace CalamityEntropy.Content.Projectiles
 
             SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, Projectile.Center);
 
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = Utils.Remap(Main.LocalPlayer.Distance(Projectile.Center), 1800f, 1000f, 0f, 4.5f);
+            CEUtils.SetShake(Projectile.Center, 4.5f, 1800);
         }
 
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
@@ -224,7 +199,7 @@ namespace CalamityEntropy.Content.Projectiles
                 return false;
             }
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/AtlasMunitionsDropPodGlow").Value;
+            Texture2D glowmask = CEExtraAssets.AtlasMunitionsDropPodGlow;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Vector2 scale = Projectile.scale * new Vector2(SquishFactor, 1f / SquishFactor);

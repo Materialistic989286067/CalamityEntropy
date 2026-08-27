@@ -1,10 +1,8 @@
 using CalamityEntropy.Common;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Rarities;
+using CalamityEntropy.Content.Rarities;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -21,7 +19,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override void SetDefaults()
         {
             base.SetDefaults();
-            Item.rare = ModContent.RarityType<CosmicPurple>();
+            Item.rare = ModContent.RarityType<AbyssalBlue>();
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Cosmic");
         public override EBookProjectileEffect getEffect()
@@ -108,7 +106,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             }
             if (portalParticle)
             {
-                var sound = new SoundStyle("CalamityMod/Sounds/NPCKilled/DevourerDeathImpact");
+                var sound = new SoundStyle("CalamityEntropy/Assets/Sounds/DevourerDeathImpact");
                 sound.Pitch = 0f;
                 sound.Volume = 0.5f;
                 SoundEngine.PlaySound(sound, Projectile.Center);

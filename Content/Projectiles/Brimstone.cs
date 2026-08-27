@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityEntropy.Assets.Register;
+using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -9,6 +12,25 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class Brimstone : ModProjectile
     {
+        //硫火激光分段贴图(数字+b 两套后缀,数组批量吃不下,逐字段声明),加载期就位
+        [VaultLoaden("CalamityEntropy/Assets/Extra/brimstone/brimstone1")]
+        internal static Asset<Texture2D> Seg1Tex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/brimstone/brimstone1b")]
+        internal static Asset<Texture2D> Seg1bTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/brimstone/brimstone2")]
+        internal static Asset<Texture2D> Seg2Tex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/brimstone/brimstone2b")]
+        internal static Asset<Texture2D> Seg2bTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/brimstone/brimstone3")]
+        internal static Asset<Texture2D> Seg3Tex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/brimstone/brimstone3b")]
+        internal static Asset<Texture2D> Seg3bTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/brimstone/brimstone4")]
+        internal static Asset<Texture2D> Seg4Tex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/brimstone/brimstone4b")]
+        internal static Asset<Texture2D> Seg4bTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/brimstone/start")]
+        internal static Asset<Texture2D> StartTex;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
@@ -167,7 +189,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D lend = CEUtils.getExtraTex("vlend");
+            Texture2D lend = CEExtraAssets.vlend;
             counter++;
             if (!CEUtils.isAir(Projectile.Center))
             {
@@ -179,14 +201,14 @@ namespace CalamityEntropy.Content.Projectiles
                 return false;
             }
 
-            Texture2D tx1 = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/brimstone/brimstone1").Value;
-            Texture2D tx1b = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/brimstone/brimstone1b").Value;
-            Texture2D tx2 = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/brimstone/brimstone2").Value;
-            Texture2D tx2b = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/brimstone/brimstone2b").Value;
-            Texture2D tx3 = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/brimstone/brimstone3").Value;
-            Texture2D tx3b = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/brimstone/brimstone3b").Value;
-            Texture2D tx4 = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/brimstone/brimstone4").Value;
-            Texture2D tx4b = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/brimstone/brimstone4b").Value;
+            Texture2D tx1 = Seg1Tex.Value;
+            Texture2D tx1b = Seg1bTex.Value;
+            Texture2D tx2 = Seg2Tex.Value;
+            Texture2D tx2b = Seg2bTex.Value;
+            Texture2D tx3 = Seg3Tex.Value;
+            Texture2D tx3b = Seg3bTex.Value;
+            Texture2D tx4 = Seg4Tex.Value;
+            Texture2D tx4b = Seg4bTex.Value;
             List<Texture2D> txl = new List<Texture2D>();
 
             txl.Add(tx4b);
@@ -198,7 +220,7 @@ namespace CalamityEntropy.Content.Projectiles
             txl.Add(tx1b);
             txl.Add(tx1);
 
-            Texture2D start = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/brimstone/start").Value;
+            Texture2D start = StartTex.Value;
 
             List<Vector2> point = new List<Vector2>();
 

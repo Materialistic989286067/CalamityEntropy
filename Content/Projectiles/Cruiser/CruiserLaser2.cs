@@ -1,6 +1,8 @@
-﻿using CalamityEntropy.Content.Buffs;
-using CalamityMod;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -94,7 +96,7 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
                     }
                 }
             }
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = Utils.Remap(Main.LocalPlayer.Distance(Projectile.Center), 9000f, 1000f, 0f, 4.5f) * 10;
+            CEUtils.SetShake(Projectile.Center, 45, 9000);
             if (Projectile.ai[0] >= 0)
             {
                 if (ownern == null) { ownern = ((int)(Projectile.ai[0])).ToNPC(); }
@@ -169,11 +171,11 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
                     break;
                 }
             }
-            Texture2D tb = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/clback").Value;
-            Texture2D px = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value;
-            Texture2D tl = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/cllight").Value;
-            Texture2D th = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/clinghth").Value;
-            Texture2D tl2 = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/cllight2").Value;
+            Texture2D tb = CEExtraAssets.clback;
+            Texture2D px = CEExtraAssets.white;
+            Texture2D tl = CEExtraAssets.cllight;
+            Texture2D th = CEExtraAssets.clinghth;
+            Texture2D tl2 = CEExtraAssets.cllight2;
             Main.spriteBatch.Draw(tb, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, new Vector2(0, tb.Height / 2), new Vector2(length, width), SpriteEffects.None, 0);
             foreach (Vector2 ps in p)
             {

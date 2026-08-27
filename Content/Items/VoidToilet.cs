@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -28,7 +27,7 @@ namespace CalamityEntropy.Content.Items
             CreateRecipe().
                 AddIngredient(ItemID.Toilet).
                 AddIngredient<VoidBar>(5).
-                AddTile<VoidCondenser>().
+                AddTile<VoidWellTile>().
                 Register();
         }
     }

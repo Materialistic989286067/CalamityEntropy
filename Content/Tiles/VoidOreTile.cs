@@ -1,6 +1,4 @@
-﻿using CalamityMod;
-using CalamityMod.Tiles.Ores;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Threading;
 using Terraria;
@@ -21,13 +19,14 @@ namespace CalamityEntropy.Content.Tiles
             Main.tileOreFinderPriority[base.Type] = 1200;
             Main.tileShine[base.Type] = 3500;
             Main.tileShine2[base.Type] = false;
-            CalamityUtils.MergeWithGeneral(base.Type);
+            CEUtils.MergeWithGeneral(base.Type);
             TileID.Sets.Ore[Type] = true;
             base.DustType = 173;
             AddMapEntry(Color.DarkBlue, CreateMapEntryName());
             base.MineResist = 5f;
             base.MinPick = 250;
-            base.HitSound = AuricOre.MineSound;
+            // 脱离灾厄:原灾厄 AuricMine,按 sound-map 替换
+            base.HitSound = SoundID.Tink with { Pitch = 0.3f, PitchVariance = 0.25f };
         }
         public override bool IsTileBiomeSightable(int i, int j, ref Color sightColor)
         {

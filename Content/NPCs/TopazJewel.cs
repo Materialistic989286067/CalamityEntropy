@@ -1,8 +1,4 @@
-﻿using CalamityMod;
-using CalamityMod.CalPlayer;
-using CalamityMod.Events;
-using CalamityMod.Projectiles.Boss;
-using CalamityMod.World;
+﻿using CalamityEntropy.Content.NPCs.FriendFinderNPC;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -14,7 +10,6 @@ namespace CalamityEntropy.Content.NPCs
     {
         private const int BoltShootGateValue = 30;
         private const int BoltShootGateValue_Death = 24;
-        private const int BoltShootGateValue_BossRush = 18;
         private const float LightTelegraphDuration = 45f;
         public override void SetStaticDefaults()
         {
@@ -31,18 +26,14 @@ namespace CalamityEntropy.Content.NPCs
             NPC.width = 22;
             NPC.height = 22;
             NPC.defense = 10;
-            NPC.DR_NERD(0.1f);
 
             NPC.lifeMax = 120;
-            double HPBoost = CalamityServerConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
 
             NPC.knockBackResist = 0.8f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.HitSound = SoundID.NPCHit5;
             NPC.DeathSound = SoundID.NPCDeath15;
-            NPC.Calamity().VulnerableToSickness = false;
         }
         public int shootingTime = 0;
         public override void AI()
@@ -52,7 +43,7 @@ namespace CalamityEntropy.Content.NPCs
             {
                 shootingTime = 200;
             }
-            if (!CalamityPlayer.areThereAnyDamnBosses)
+            if (!Main.CurrentFrameFlags.AnyActiveBossNPC)
             {
                 NPC.life = 0;
                 NPC.HitEffect();
@@ -81,7 +72,7 @@ namespace CalamityEntropy.Content.NPCs
             {
                 NPC.ai[0] += 1.6f;
             }
-            if (NPC.ai[0] >= (BossRushEvent.BossRushActive ? BoltShootGateValue_BossRush : CalamityWorld.death ? BoltShootGateValue_Death : BoltShootGateValue))
+            if (NPC.ai[0] >= (Main.masterMode ? BoltShootGateValue_Death : BoltShootGateValue))
             {
                 NPC.ai[0] = 0f;
 
@@ -175,7 +166,8 @@ namespace CalamityEntropy.Content.NPCs
 
     public class TopazJewelProjectile : ModProjectile
     {
-        public override string Texture => new JewelProjectile().Texture;
+        // 本弹幕 PreDraw 恒 false 不绘制贴图，占位贴图用自有透明图即可等效
+        public override string Texture => "CalamityEntropy/Assets/Extra/Ports/Invisible";
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[base.Projectile.type] = 2;

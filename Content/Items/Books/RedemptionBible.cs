@@ -1,10 +1,12 @@
 ﻿using CalamityEntropy.Common;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.UI.EntropyBookUI;
-using CalamityMod.Dusts;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.IO;
 using Terraria;
@@ -22,7 +24,9 @@ namespace CalamityEntropy.Content.Items.Books
             Item.crit = 10;
             Item.mana = 18;
         }
-        public override Texture2D BookMarkTexture => ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/EntropyBookUI/BookMark3").Value;
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/BookMark3")]
+        internal static Asset<Texture2D> BookMarkSlotTex;
+        public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<RedemptionBibleHeld>();
         public override int SlotCount => 3;
 

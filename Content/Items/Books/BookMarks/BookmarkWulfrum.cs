@@ -1,8 +1,6 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -20,7 +18,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             base.SetDefaults();
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Wulfrum");
         public override EBookProjectileEffect getEffect()
@@ -31,8 +29,9 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override Color tooltipColor => new Color(160, 170, 120);
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient<WulfrumMetalScrap>(4)
-                .AddIngredient<EnergyCore>()
+            // 铁锭用配方组兼容铅锭世界
+            CreateRecipe().AddRecipeGroup(RecipeGroupID.IronBar, 4)
+                .AddIngredient<AzafureCircuitry>()
                 .AddIngredient(ItemID.FallenStar, 2)
                 .AddTile(TileID.Anvils)
                 .Register();
@@ -175,9 +174,9 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            int type = ModContent.ItemType<WulfrumMetalScrap>();
-            Main.instance.LoadItem(type);
-            Texture2D tex = TextureAssets.Item[type].Value;
+            // 原灾厄废铁贴图改画铁锭 (与配方替换一致)
+            Main.instance.LoadItem(ItemID.IronBar);
+            Texture2D tex = TextureAssets.Item[ItemID.IronBar].Value;
             Main.EntitySpriteDraw(Projectile.getDrawData(lightColor, tex));
             return false;
         }

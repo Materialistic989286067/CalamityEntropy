@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -11,6 +13,11 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
 {
     public class CyanSunshine : SamsaraSword
     {
+        //光辉贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/SamsaraCasket/csglow")]
+        internal static Asset<Texture2D> GlowTex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/SamsaraCasket/csglow1")]
+        internal static Asset<Texture2D> Glow1Tex;
         public float xscale = 1;
         public float light2;
         public float light = 0;
@@ -155,7 +162,7 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
             SpriteBatch sb = Main.spriteBatch;
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-            tex = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/csglow1").Value;
+            tex = Glow1Tex.Value;
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, new Color(153, 200, 193) * light2, Projectile.rotation + MathHelper.PiOver4, tex.Size() / 2, Projectile.scale * xscale, SpriteEffects.None, 0);
 
             sb.End();
@@ -165,7 +172,7 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
 
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-            tex = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/csglow").Value;
+            tex = GlowTex.Value;
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, Color.White * light, Projectile.rotation + MathHelper.PiOver4, tex.Size() / 2, Projectile.scale * xscale, SpriteEffects.None, 0);
 
             sb.End();

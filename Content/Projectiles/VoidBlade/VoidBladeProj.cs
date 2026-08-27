@@ -1,8 +1,8 @@
 using CalamityEntropy.Common;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Dusts;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -14,6 +14,9 @@ namespace CalamityEntropy.Content.Projectiles.VoidBlade
 {
     public class VoidBladeProj : ModProjectile
     {
+        //刀光帧动画(f0~f12,按 ai[1] 取帧),加载期就位,PreDraw 不再拼接路径逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/VoidBlade/f", 0, 13, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] Frames;
         SoundStyle hitSound = new("CalamityEntropy/Assets/Sounds/vb_hit");
         SoundStyle hs = new("CalamityEntropy/Assets/Sounds/vbuse");
         public override void SetStaticDefaults()
@@ -24,7 +27,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidBlade
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 200;
             Projectile.height = 200;
             Projectile.friendly = true;
@@ -203,7 +206,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidBlade
 
         public override bool PreDraw(ref Color dc)
         {
-            Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/VoidBlade/f" + ((int)Projectile.ai[1]).ToString(), ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Texture2D tx = Frames[(int)Projectile.ai[1]];
             Main.spriteBatch.Draw(tx, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, new Vector2(200, 200), new Vector2(Projectile.scale, Projectile.scale), SpriteEffects.None, 0);
             return false;
         }

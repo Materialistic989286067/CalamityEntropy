@@ -1,12 +1,11 @@
-﻿using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -34,7 +33,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             Item.knockBack = 0;
             Item.shootSpeed = 44;
             Item.useAnimation = Item.useTime = 22;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1);
             Item.rare = ItemRarityID.Red;
             Item.width = 38;
             Item.height = 38; 
@@ -105,7 +104,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                 npc.GetGlobalNPC<WhipDebuffNPC>().BaitStick = 2;
                 if (IsActive)
                 {
-                    Projectile.GetOwner().Calamity().mouseWorldListener = true;
+                    Projectile.GetOwner().Entropy().MouseWorldListener = true;
                     npc.GetGlobalNPC<WhipDebuffNPC>().ClearBaitTags();
                     npc.GetGlobalNPC<WhipDebuffNPC>().Tags.Add(new WhipTag(this.GetType().Name, 5, this.TagDamage, 1, 0, this.GetType().Name) { IsABaitTag = true });
                 }
@@ -153,7 +152,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             if (activeEffectAlpha >= 0.01f)
             {
                 Main.spriteBatch.UseAdditiveClamp();
-                Texture2D pulse = CEUtils.getExtraTex("SoftRoundExplosion");
+                Texture2D pulse = CEExtraAssets.SoftRoundExplosion;
                 for(float i = 0; i < 1f; i += 0.5f)
                 {
                     float scale = CEUtils.Frac(i + Main.GlobalTimeWrappedHourly);
@@ -468,7 +467,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                 CEUtils.PlaySound("CruiserDash", 1f, Projectile.Center);
                 CEUtils.PlaySound("DoGLaserWallSpawn", 1f, Projectile.Center);
 
-                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/TeslaCannonFire") with { Pitch = 0.6f}, Projectile.Center);
+                SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/pulseBlast") with { Pitch = 0.6f}, Projectile.Center);
             }
             Projectile.ai[2] = CEUtils.Parabola(Projectile.timeLeft / 34f, 1);
             Projectile.ai[2] = (1 - Projectile.ai[2]);

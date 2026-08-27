@@ -1,10 +1,12 @@
-﻿using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Items;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,7 +30,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             Item.knockBack = 0;
             Item.shootSpeed = 26;
             Item.useAnimation = Item.useTime = 20;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Green;
             Item.width = 38;
             Item.height = 38; 
@@ -99,7 +101,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                 npc.GetGlobalNPC<WhipDebuffNPC>().BaitStick = 2;
                 if (IsActive)
                 {
-                    Projectile.GetOwner().Calamity().mouseWorldListener = true;
+                    Projectile.GetOwner().Entropy().MouseWorldListener = true;
                     npc.GetGlobalNPC<WhipDebuffNPC>().ClearBaitTags();
                     npc.GetGlobalNPC<WhipDebuffNPC>().Tags.Add(new WhipTag(this.GetType().Name, 5, this.TagDamage, 1, 0, this.GetType().Name) { IsABaitTag = true });
                 }
@@ -130,7 +132,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             if (activeEffectAlpha >= 0.01f)
             {
                 Main.spriteBatch.UseAdditiveClamp();
-                Texture2D pulse = CEUtils.getExtraTex("SoftRoundExplosion");
+                Texture2D pulse = CEExtraAssets.SoftRoundExplosion;
                 for(float i = 0; i < 1f; i += 0.5f)
                 {
                     float scale = CEUtils.Frac(i + Main.GlobalTimeWrappedHourly);
@@ -168,7 +170,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             for(int i = 0; i < 2; i++)
             {
                 float scale = 0.05f + 0.02f * i;
-                PRTLoader.NewParticle<PRT_CustomPulse>(pos, Vector2.Zero, Color.Lerp(Color.SandyBrown, new Color(230, 198, 104), (i / 2f)), scale * 0.2f).Configure("CalamityMod/Particles/FlameExplosion2", Vector2.One, CEUtils.randomRot(), scale * 0.2f, scale, 12 + i * 4);
+                PRTLoader.NewParticle<PRT_CustomPulse>(pos, Vector2.Zero, Color.Lerp(Color.SandyBrown, new Color(230, 198, 104), (i / 2f)), scale * 0.2f).Configure("CalamityEntropy/Assets/Particles/FlameExplosion2", Vector2.One, CEUtils.randomRot(), scale * 0.2f, scale, 12 + i * 4);
             }
         }
         public override void OnKill(int timeLeft)
@@ -181,6 +183,15 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
     }
     public class DesertNuisanceFriendly : ModProjectile, iWyrmSeg
     {
+        //各体节贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Content/Items/Weapons/Bait/DN/DesertNuisanceBodyYoung2")]
+        internal static Asset<Texture2D> Body2Tex;
+        [VaultLoaden("CalamityEntropy/Content/Items/Weapons/Bait/DN/DesertNuisanceBodyYoung3")]
+        internal static Asset<Texture2D> Body3Tex;
+        [VaultLoaden("CalamityEntropy/Content/Items/Weapons/Bait/DN/DesertNuisanceBodyYoung4")]
+        internal static Asset<Texture2D> Body4Tex;
+        [VaultLoaden("CalamityEntropy/Content/Items/Weapons/Bait/DN/DesertNuisanceTailYoung")]
+        internal static Asset<Texture2D> TailTex;
         public float rot { get { return Projectile.rotation; }
             set { Projectile.rotation = value; } }
         public Vector2 Center { get { return Projectile.Center; } 
@@ -229,7 +240,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                 }
                 else
                 {
-                    targetPos = player.Calamity().mouseWorld;
+                    targetPos = player.Entropy().MouseWorld;
                 }
                 Projectile.velocity = (targetPos - Projectile.Center).normalize() * 36;
             }
@@ -327,10 +338,10 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D s1 = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/Bait/DN/DesertNuisanceBodyYoung2");
-            Texture2D s2 = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/Bait/DN/DesertNuisanceBodyYoung3");
-            Texture2D s3 = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/Bait/DN/DesertNuisanceBodyYoung4");
-            Texture2D s4 = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/Bait/DN/DesertNuisanceTailYoung");
+            Texture2D s1 = Body2Tex.Value;
+            Texture2D s2 = Body3Tex.Value;
+            Texture2D s3 = Body4Tex.Value;
+            Texture2D s4 = TailTex.Value;
             if (segs != null)
             {
                 for(int i = segs.Count - 1; i >= 0; i--)

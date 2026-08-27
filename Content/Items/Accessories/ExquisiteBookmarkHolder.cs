@@ -1,3 +1,5 @@
+using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -7,6 +9,9 @@ namespace CalamityEntropy.Content.Items.Accessories
 {
     public class ExquisiteBookmarkHolder : ModItem
     {
+        //额外书签槽外观贴图,加载期就位;仅在 !Main.dedServ 分支读取
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/Extra2")]
+        internal static Texture2D SlotTex;
         public static float MAGECRIT = 5;
         public override void SetDefaults()
         {
@@ -22,7 +27,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             player.Entropy().AdditionalBookmarkSlot += 1;
             player.GetCritChance(DamageClass.Magic) += MAGECRIT;
             if (!Main.dedServ)
-                player.Entropy().BookmarkHolderSpecialTextures.Add(CEUtils.RequestTex("CalamityEntropy/Content/UI/EntropyBookUI/Extra2"));
+                player.Entropy().BookmarkHolderSpecialTextures.Add(SlotTex);
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {

@@ -1,7 +1,7 @@
 ﻿using CalamityEntropy.Content.Items.Accessories;
-using CalamityMod;
-using CalamityMod.Buffs.StatBuffs;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.DataStructures;
@@ -11,6 +11,12 @@ namespace CalamityEntropy.Common.DrawLayers
 {
     public class BigShotWingLayer : PlayerDrawLayer
     {
+        //翅膀与吊线贴图在加载期就位,不再每帧走 getExtraTex 查表
+        [VaultLoaden("CalamityEntropy/Assets/Extra/BSW/W")]
+        internal static Asset<Texture2D> WingTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/jl")]
+        internal static Asset<Texture2D> StringTex;
+
         public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
         {
             //return false;
@@ -27,10 +33,11 @@ namespace CalamityEntropy.Common.DrawLayers
         protected override void Draw(ref PlayerDrawSet drawInfo)
         {
             var player = drawInfo.drawPlayer;
-            Texture2D texture = CEUtils.getExtraTex("BSW/W");
+            Texture2D texture = WingTex.Value;
             Color GC(Color color)
             {
-                return Color.Lerp(Lighting.GetColor((player.Center / 16).ToPoint(), color) * 0.4f, Color.White, ((float)(0.5f + 0.5f * (Math.Cos(Main.GameUpdateCount * 0.14f))) * (player.HasBuff<AdrenalineMode>() ? 1f : (player.HasBuff<RageMode>() ? 0.5f : 0))));
+                //脱离灾厄:灾厄肾上腺素/暴怒增益的白闪已随系统裁撤,恒走基础光照色
+                return Lighting.GetColor((player.Center / 16).ToPoint(), color) * 0.4f;
             }
             float num = player.GetModPlayer<BigShotWingPlayer>().Num;
             float cCount = player.GetModPlayer<BigShotWingPlayer>().cCount;
@@ -45,7 +52,7 @@ namespace CalamityEntropy.Common.DrawLayers
             void drawLine(Vector2 start)
             {
                 Vector2 end = start + new Vector2((start.X - origin.X) + player.GetModPlayer<BigShotWingPlayer>().StringsOffset, -1000);
-                _drawInfo.DrawDataCache.Add(new DrawData(CEUtils.getExtraTex("jl"), start - Main.screenPosition, null, new Color(60, 255, 60) * (visual == 0 ? 0.6f : 0.2f), (end - start).ToRotation(), new Vector2(0, 0.5f), new Vector2(CEUtils.getDistance(start, end) / 1024f, 2), SpriteEffects.None));
+                _drawInfo.DrawDataCache.Add(new DrawData(StringTex.Value, start - Main.screenPosition, null, new Color(60, 255, 60) * (visual == 0 ? 0.6f : 0.2f), (end - start).ToRotation(), new Vector2(0, 0.5f), new Vector2(CEUtils.getDistance(start, end) / 1024f, 2), SpriteEffects.None));
             }
             if (visual != 2)
             {
@@ -79,7 +86,8 @@ namespace CalamityEntropy.Common.DrawLayers
         public float StringsOffset = 0;
         public float Num = 1;
         public float cCount = 0;
-        public float scaleBoost => Player.HasBuff<AdrenalineMode>() ? 1.8f : (Player.HasBuff<RageMode>() ? 1.3f : 1);
+        //脱离灾厄:肾上腺素/暴怒的放大加成随系统裁撤,恒为基础尺寸
+        public float scaleBoost => 1;
         public float scale = 1;
         public override void PostUpdate()
         {

@@ -1,8 +1,6 @@
-﻿using CalamityEntropy.Content.Items.Donator;
+using CalamityEntropy.Content.Items.Donator;
+using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod.Items;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Rarities;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -18,8 +16,8 @@ namespace CalamityEntropy.Content.Items.Accessories
         {
             Item.width = 40;
             Item.height = 40;
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.rare = ModContent.RarityType<Turquoise>();
+            Item.value = Item.buyPrice(platinum: 1, gold: 50);
+            Item.rare = ModContent.RarityType<NihilityBlue>();
             Item.accessory = true;
             Item.defense = 28;
         }
@@ -82,17 +80,19 @@ namespace CalamityEntropy.Content.Items.Accessories
                     player.endurance += 0.2f;
                 }
             }
-            ContentSamples.ItemsByType[ModContent.ItemType<ChaliceOfTheBloodGod>()].ModItem.UpdateAccessory(player, hideVisual);
-            ContentSamples.ItemsByType[ModContent.ItemType<TheAbsorber>()].ModItem.UpdateAccessory(player, hideVisual);
-            ContentSamples.ItemsByType[ModContent.ItemType<Radiance>()].ModItem.UpdateAccessory(player, hideVisual);
+            // 脱离灾厄:原委托三件灾厄回复饰品(血神圣杯/吸收者/光辉)的效果,改为等价自有回复包(表外裁定,数值供收尾实测调)
+            player.Entropy().lifeRegenPerSec += 2;
+            player.endurance += 0.05f;
+            player.Entropy().LifeStealP += 0.01f;
         }
 
         public override void AddRecipes()
         {
+            // 脱离灾厄:三件灾厄回复饰品原料改为原版回复饰品(misc-map 同类先例)
             CreateRecipe().
-                    AddIngredient<ChaliceOfTheBloodGod>().
-                    AddIngredient<TheAbsorber>().
-                    AddIngredient<Radiance>().
+                    AddIngredient(ItemID.CharmofMyths).
+                    AddIngredient(ItemID.FrozenTurtleShell).
+                    AddIngredient(ItemID.CelestialShell).
                     AddIngredient(5295).
                     AddIngredient<FadingRunestone>(3).
                     AddTile<VoidWellTile>().

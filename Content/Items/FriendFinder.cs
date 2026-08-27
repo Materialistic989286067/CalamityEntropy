@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Content.NPCs.FriendFinderNPC;
-using CalamityMod;
-using CalamityMod.Items;
+using CalamityEntropy.Core.Cooldowns;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -11,7 +10,7 @@ namespace CalamityEntropy.Content.Items
     public class FriendFinder : ModItem
     {
         public static List<int> summonList;
-        public static int CooldownSec = CalamityUtils.SecondsToFrames(20);
+        public static int CooldownSec = CEUtils.SecondsToFrames(20);
         public override void SetStaticDefaults()
         {
             summonList = new List<int>() { ModContent.NPCType<AeroSlimeFriendly>(), ModContent.NPCType<DespairStoneFriendly>(), ModContent.NPCType<IceClasperFriendly>(), ModContent.NPCType<ScryllarFriendly>(), ModContent.NPCType<SkyfinFriendly>(), ModContent.NPCType<SoulSlurperFriendly>() };
@@ -25,7 +24,7 @@ namespace CalamityEntropy.Content.Items
             Item.useAnimation = 22;
             Item.useStyle = ItemUseStyleID.RaiseLamp;
             Item.noMelee = true;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Green;
             Item.scale = 0.6f;
         }

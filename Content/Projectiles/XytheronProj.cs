@@ -1,7 +1,8 @@
-﻿using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -31,7 +32,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -57,7 +58,7 @@ namespace CalamityEntropy.Content.Projectiles
             CalamityEntropy.Instance.screenShakeAmp = 5;
             for (int i = 0; i < 3; i++)
             {
-                //AbyssalLine旧GeneralParticleHandler spawn,现走BasePRT,参数照抄
+                //AbyssalLine旧版粒子系统 spawn,现走BasePRT,参数照抄
                 PRTLoader.NewParticle<PRT_AbyssalLine>(target.Center, Vector2.Zero, Color.White, 1).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, CEUtils.randomRot());  //AbyssalLine带lifetime的Configure是CalamityPorts签名
             }
             if (Projectile.owner.ToPlayer().HeldItem.ModItem is Xytheron xr)
@@ -185,10 +186,6 @@ namespace CalamityEntropy.Content.Projectiles
             owner.heldProj = Projectile.whoAmI;
             owner.itemTime = 2;
             owner.itemAnimation = 2;
-            if (Projectile.GetOwner().Calamity().bladeArmEnchant)
-            {
-                owner.itemAnimation = int.Max(1, owner.itemAnimationMax - Projectile.Entropy().Lifetime);
-            }
         }
         public float alpha = 1;
         public override bool ShouldUpdatePosition()
@@ -213,7 +210,7 @@ namespace CalamityEntropy.Content.Projectiles
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Main.EntitySpriteDraw(CEUtils.getExtraTex("StarlessNightGlow"), Projectile.owner.ToPlayer().MountedCenter - Main.screenPosition, null, new Color(180, 180, 255) * glowalpha * 0.8f, Projectile.rotation + (float)Math.PI * 0.25f, new Vector2(32, 168), Projectile.scale * 3f * scaleD, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(CEExtraAssets.StarlessNightGlow, Projectile.owner.ToPlayer().MountedCenter - Main.screenPosition, null, new Color(180, 180, 255) * glowalpha * 0.8f, Projectile.rotation + (float)Math.PI * 0.25f, new Vector2(32, 168), Projectile.scale * 3f * scaleD, SpriteEffects.None, 0);
 
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
@@ -231,9 +228,9 @@ namespace CalamityEntropy.Content.Projectiles
             GraphicsDevice gd = Main.graphics.GraphicsDevice;
             Player player = Main.player[Projectile.owner];
 
-            Texture2D tail = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Extra_201").Value;
-            Texture2D tail2 = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/B1").Value;
-            Texture2D tail3 = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Noise_10").Value;
+            Texture2D tail = CEExtraAssets.Extra_201;
+            Texture2D tail2 = CEExtraAssets.B1;
+            Texture2D tail3 = CEExtraAssets.Noise_10;
             var r = Main.rand;
             List<float> odr_ = new List<float>();
             List<float> ods_ = new List<float>();
@@ -274,7 +271,7 @@ namespace CalamityEntropy.Content.Projectiles
                           new Vector3((float)i / (float)odr_.Count, 0, 1),
                           b));
                 }
-                Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/SlashTrans2", AssetRequestMode.ImmediateLoad).Value;
+                Effect shader = CEEffectAssets.SlashTrans2;
 
                 sb.End();
                 sb.Begin(0, sb.GraphicsDevice.BlendState, sb.GraphicsDevice.SamplerStates[0], sb.GraphicsDevice.DepthStencilState, sb.GraphicsDevice.RasterizerState, shader, Main.GameViewMatrix.TransformationMatrix);

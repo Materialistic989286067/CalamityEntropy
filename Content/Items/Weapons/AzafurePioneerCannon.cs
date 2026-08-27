@@ -3,12 +3,10 @@ using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -35,7 +33,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAnimation = 90;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 16;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(1, 0);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.UseSound = null;
             Item.noMelee = true;
@@ -55,7 +53,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             CreateRecipe()
                 .AddIngredient<AzafureAntiaircraftGun>()
                 .AddIngredient<HellIndustrialComponents>(4)
-                .AddIngredient<DivineGeode>(6)
+                .AddIngredient<NihilityFragments>(6)
                 .AddIngredient(ItemID.LunarBar, 8)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
@@ -63,6 +61,9 @@ namespace CalamityEntropy.Content.Items.Weapons
     }
     public class ApcHoldout : ModProjectile
     {
+        //飞轮贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Content/Items/Weapons/Flywheel")]
+        internal static Asset<Texture2D> FlywheelTex;
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             return false;
@@ -178,7 +179,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                         }
                         for (int i = 0; i < 14; i++)
                         {
-                            Color smokeColor = CalamityUtils.MulticolorLerp(Main.rand.NextFloat(), new Color[3] { Color.White, Color.Gray, Color.LightGray });
+                            Color smokeColor = CEUtils.MulticolorLerp(Main.rand.NextFloat(), new Color[3] { Color.White, Color.Gray, Color.LightGray });
                             smokeColor = Color.Lerp(smokeColor, Color.Gray, 0.6f) * 0.65f;
                             //带Cal后缀是CalamityPorts,Configure签名对齐Calamity原构造不是统一五参
                             PRTLoader.NewParticle<PRT_HeavySmokeCal>(Projectile.Center - Projectile.velocity.normalize() * 100, Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(1.2f) * -1 * Main.rand.NextFloat(16, 24), smokeColor, 1f).Configure(1f, 40, 0.03f, true, 0.075f);
@@ -221,8 +222,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             BarrelOffset *= 0.8f;
             player.itemAnimation = player.itemTime = 3;
             Projectile.Center = player.MountedCenter + player.gfxOffY * Vector2.UnitY - Projectile.velocity.normalize() * 32 + new Vector2(0, -20);
-            player.Calamity().mouseWorldListener = true;
-            float targetRot = (player.Calamity().mouseWorld - player.MountedCenter).ToRotation();
+            player.Entropy().MouseWorldListener = true;
+            float targetRot = (player.Entropy().MouseWorld - player.MountedCenter).ToRotation();
             Projectile.velocity = CEUtils.RotateTowardsAngle(Projectile.velocity.ToRotation(), targetRot, MathHelper.ToRadians(4), true).ToRotationVector2() * player.HeldItem.shootSpeed;
             player.direction = Math.Sign(Projectile.velocity.X);
             Projectile.rotation = Projectile.velocity.ToRotation();
@@ -240,7 +241,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Main.EntitySpriteDraw(alt, Projectile.Center - Projectile.rotation.ToRotationVector2() * BarrelOffset * Projectile.scale - Main.screenPosition, null, lightColor, Projectile.rotation, alt.Size() / 2f, Projectile.scale, Projectile.velocity.X > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);
             Rectangle frame = new Rectangle(0, tex.Height / 4 * FrameCount, tex.Width, tex.Height / 4);
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, lightColor, Projectile.rotation, tex.Size() / new Vector2(2, 8), Projectile.scale, Projectile.velocity.X > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);
-            Texture2D Flywheel = CEUtils.RequestTex("CalamityEntropy/Content/Items/Weapons/Flywheel");
+            Texture2D Flywheel = FlywheelTex.Value;
             Main.EntitySpriteDraw(Flywheel, Projectile.Center - Main.screenPosition - new Vector2(58, 0).RotatedBy(Projectile.rotation) * Projectile.scale, null, lightColor, Projectile.rotation - (FlywheelAddRot + FlywheelRot) * (Projectile.velocity.X > 0 ? 1 : -1), Flywheel.Size() / 2f, Projectile.scale, SpriteEffects.None);
             return false;
         }

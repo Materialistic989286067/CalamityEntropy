@@ -1,7 +1,7 @@
-﻿using CalamityMod;
-using CalamityMod.NPCs.ExoMechs.Thanatos;
-using CalamityMod.Projectiles.Boss;
+﻿using CalamityEntropy.Assets.Register;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -77,14 +77,15 @@ namespace CalamityEntropy.Content.Projectiles
 
                     if (Projectile.frame == 8)
                     {
-                        SoundEngine.PlaySound(ThanatosHead.VentSound, Projectile.Top);
+                        SoundEngine.PlaySound(new Terraria.Audio.SoundStyle("CalamityEntropy/Assets/Sounds/steam"), Projectile.Top);
                         if (Main.myPlayer == Projectile.owner)
                         {
-                            int type = ModContent.ProjectileType<AresGaussNukeProjectile>();
+                            // 灾厄 Ares 核弹改为原版敌对火箭，保留"朝玩家直飞并爆炸"的惩罚语义
+                            int type = ProjectileID.RocketSkeleton;
                             Vector2 gaussNukeVelocity = Vector2.Normalize(Main.LocalPlayer.Center - Projectile.Center) * 16;
                             int damage = 99999;
                             float offset = 40f;
-                            Projectile.NewProjectile(Main.npc[Projectile.owner].GetSource_FromAI(), Projectile.Center + Vector2.Normalize(gaussNukeVelocity) * offset, gaussNukeVelocity, type, damage, 0f, Main.myPlayer, 0f, Main.LocalPlayer.Center.Y);
+                            Projectile.NewProjectile(Main.npc[Projectile.owner].GetSource_FromAI(), Projectile.Center + Vector2.Normalize(gaussNukeVelocity) * offset, gaussNukeVelocity, type, damage, 0f, Main.myPlayer);
                         }
                     }
                 }
@@ -119,7 +120,7 @@ namespace CalamityEntropy.Content.Projectiles
 
             SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, Projectile.Center);
 
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = Utils.Remap(Main.LocalPlayer.Distance(Projectile.Center), 1800f, 1000f, 0f, 4.5f);
+            CEUtils.SetShake(Projectile.Center, 4.5f, 1800);
         }
 
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
@@ -140,7 +141,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/AtlasMunitionsDropPodGlow").Value;
+            Texture2D glowmask = CEExtraAssets.AtlasMunitionsDropPodGlow;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Vector2 scale = Projectile.scale * new Vector2(SquishFactor, 1f / SquishFactor);

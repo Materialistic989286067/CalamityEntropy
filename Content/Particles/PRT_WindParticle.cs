@@ -1,10 +1,7 @@
-﻿using CalamityMod;
-using CalamityMod.Graphics.Primitives;
-using InnoVault.PRT;
+﻿using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.Graphics.Shaders;
 
 namespace CalamityEntropy.Content.Particles
 {
@@ -64,13 +61,32 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool PreDraw(SpriteBatch sb)
         {
-            sb.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:ArtAttack"].SetShaderTexture(PRTSharedAssets.Wind);
-            GameShaders.Misc["CalamityMod:ArtAttack"].Apply();
-            //180是RenderTrail最大段数上限,旧drawAll同样传的,跟odp实际16点不是一回事
-            PrimitiveRenderer.RenderTrail(odp, new PrimitiveSettings(TrailWidth, TrailColor, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityMod:ArtAttack"]), 180);
-            sb.ExitShaderRegion();
-            //ArtAttack+RenderTrail会End内部批次,Exit后还得End再BeginDrawingWithMode接回去
+            //原先走灾厄PrimitiveRenderer+ArtAttack shader,脱离灾厄后换成自有Wind贴图的三角带
+            //宽度/颜色带保持原TrailWidth/TrailColor曲线,风痕淡入淡出形状不变
+            if (odp.Count < 3)
+                return false;
+
+            GraphicsDevice gd = Main.graphics.GraphicsDevice;
+            sb.End();
+            sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+            Texture2D tex = PRTSharedAssets.Wind.Value;
+            List<ColoredVertex> ve = new List<ColoredVertex>();
+            for (int i = 1; i < odp.Count; i++)
+            {
+                float c = i / (odp.Count - 1f);
+                float halfWidth = TrailWidth(c, Vector2.Zero) * 0.5f;
+                Color col = TrailColor(c, Vector2.Zero);
+                Vector2 normal = (odp[i] - odp[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.PiOver2);
+                Vector2 basePos = odp[i] - Main.screenPosition;
+                ve.Add(new ColoredVertex(basePos + normal * halfWidth, new Vector3(c, 1, 1), col));
+                ve.Add(new ColoredVertex(basePos - normal * halfWidth, new Vector3(c, 0, 1), col));
+            }
+            if (ve.Count >= 3)
+            {
+                gd.Textures[0] = tex;
+                gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
+            }
+            //End完接回PRT批次,别让后面同桶粒子吃到Immediate状态
             sb.End();
             PRTLoader.BeginDrawingWithMode(PRTDrawMode, sb);
             return false;

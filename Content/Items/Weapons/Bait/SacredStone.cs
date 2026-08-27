@@ -1,16 +1,17 @@
-﻿using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
-using CalamityMod.Rarities;
+using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -36,8 +37,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             Item.knockBack = 0;
             Item.shootSpeed = 44;
             Item.useAnimation = Item.useTime = 24;
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.rare = ModContent.RarityType<Turquoise>();
+            Item.value = Item.buyPrice(platinum: 1, gold: 50);
+            Item.rare = ModContent.RarityType<NihilityBlue>();
             Item.width = 52;
             Item.height = 54; 
             Item.autoReuse = false;
@@ -107,7 +108,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                 npc.GetGlobalNPC<WhipDebuffNPC>().BaitStick = 2;
                 if (IsActive)
                 {
-                    Projectile.GetOwner().Calamity().mouseWorldListener = true;
+                    Projectile.GetOwner().Entropy().MouseWorldListener = true;
                     npc.GetGlobalNPC<WhipDebuffNPC>().ClearBaitTags();
                     npc.GetGlobalNPC<WhipDebuffNPC>().Tags.Add(new WhipTag(this.GetType().Name, 5, this.TagDamage, 1, 0, this.GetType().Name) { IsABaitTag = true });
                 }
@@ -153,8 +154,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             if (activeEffectAlpha >= 0.01f)
             {
                 Main.spriteBatch.UseAdditiveClamp();
-                Texture2D pulse = CEUtils.getExtraTex("SoftRoundExplosion");
-                Texture2D pulse2 = CEUtils.getExtraTex("ShatteredExplosion");
+                Texture2D pulse = CEExtraAssets.SoftRoundExplosion;
+                Texture2D pulse2 = CEExtraAssets.ShatteredExplosion;
                 for (float i = 0; i < 1f; i += 0.2f)
                 {
                     float scale = CEUtils.Frac(i + Main.GlobalTimeWrappedHourly * 12);
@@ -174,7 +175,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             Main.EntitySpriteDraw(Projectile.getDrawData(lightColor));
 
             Main.spriteBatch.UseAdditiveClamp();
-            Texture2D star = CEUtils.getExtraTex("StarChromatic");
+            Texture2D star = CEExtraAssets.StarChromatic;
             float sc = Projectile.scale;
             Main.spriteBatch.Draw(star, Projectile.Center - Main.screenPosition, null, Color.White, 0, star.Size() * 0.5f, pn * sc * 0.18f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(star, Projectile.Center - Main.screenPosition, null, Color.Orange, 0, star.Size() * 0.5f, pn * sc * 0.24f, SpriteEffects.None, 0);
@@ -272,7 +273,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
         {
             float pn = 0.2f + 0.1f * (float)(Math.Sin(Counter * 1.5f)) + Projectile.timeLeft / 130f;
             Main.spriteBatch.UseAdditiveClamp();
-            Texture2D star = CEUtils.getExtraTex("StarChromatic");
+            Texture2D star = CEExtraAssets.StarChromatic;
             float sc = Projectile.scale * float.Min(1, Projectile.timeLeft / 20f);
             Main.spriteBatch.Draw(star, Projectile.Center - Main.screenPosition, null, Color.White, 0, star.Size() * 0.5f, pn * sc * 0.18f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(star, Projectile.Center - Main.screenPosition, null, Color.Orange, 0, star.Size() * 0.5f, pn * sc * 0.24f, SpriteEffects.None, 0);

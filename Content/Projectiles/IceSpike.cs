@@ -1,6 +1,5 @@
-﻿using CalamityEntropy.Content.Dusts;
-using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Dusts;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
@@ -36,7 +35,6 @@ namespace CalamityEntropy.Content.Projectiles
                 Dust.NewDust(Projectile.Center, 8, 8, ModContent.DustType<IcePiece1>());
             }
             CEUtils.PlaySound("CryogenHit" + Main.rand.Next(1, 4), 1, Projectile.Center);
-            target.AddBuff(ModContent.BuffType<FrozenLungs>(), 600);
             target.AddBuff(BuffID.Frostburn, 1080);
             Main.player[Projectile.owner].AddBuff(ModContent.BuffType<CosmicFreeze>(), 600);
         }

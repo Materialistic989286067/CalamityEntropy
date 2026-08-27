@@ -24,7 +24,7 @@ namespace CalamityEntropy.Content.Items.Vanity.Luminar
             Item.width = 22;
             Item.height = 30;
             Item.accessory = true;
-            Item.value = CalamityMod.Items.CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ModContent.RarityType<Lunarblight>();
             Item.vanity = true;
         }

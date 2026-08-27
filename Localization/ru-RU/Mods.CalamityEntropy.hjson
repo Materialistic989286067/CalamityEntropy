@@ -190,7 +190,8 @@ Items: {
 					'''
 					Throw a sawblade that on hit or after some time stops in place and starts spinning
 					The sawblade deals damage in a large area when spinning and will return after some time
-					Stealth strikes fly out faster and generate a larger spin that lasts longer
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: a much larger spin that lasts longer
 					''' */
 			}
 
@@ -236,8 +237,8 @@ Items: {
 					'''
 					Throw a sawblade that on hit or after some time stops in place, releasing a swarm of homing rune bolts before spinning
 					The sawblade deals damage in a large area when spinning and will return after some time
-					Stealth strikes fly out faster and generate a much larger spin that lasts longer
-					Stealth strikes on return will also fire a swarm of stronger homing rune bolts at the closest enemy
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: unfolds a rotating ring of rune bolts around the spin, firing runes in all directions on return
 					Attacks inflict [cebuff:CalamityEntropy/SoulDisorder] on hit
 					''' */
 			}
@@ -248,8 +249,9 @@ Items: {
 					'''
 					Throw a sawblade that on hit or after some time stops in place, releasing a holy heatwave before spinning
 					The sawblade deals damage in a large area when spinning and will return after some time
-					Stealth strikes fly out faster and generate a much larger spin and holy heatwave that lasts longer
-					Attacks inflict [cbuff:CalamityMod/HolyFlames] on hit
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: a much larger and longer spin, spewing holy fire in 8 directions
+					Attacks inflict [cebuff:CalamityEntropy/HolyFlames] on hit
 					''' */
 			}
 
@@ -283,8 +285,8 @@ Items: {
 					'''
 					Deploys a multi-hit sawblade when flies for a while or hits an enemy 
 					Each hit of the sawblade summons an Abyss Spike from below to pierce the target
-					Stealth attack deals high-damage impact and knocks back on hit,
-					then charges and fires many spikes to pierce targets
+					Charges while held; when full, your next attack becomes an ultimate
+					Ultimate: a much larger and longer spin; on hit, recoils to charge and re-enter, calling down a rain of spikes
 					''' */
 			}
 		}
@@ -1488,12 +1490,7 @@ Items: {
 
 	HeartOfStorm: {
 		DisplayName: Сердце шторма
-		Tooltip:
-			'''
-			Атакуйте врага, чтобы высвободить цепную молнию, наносящую 10% урона
-			- Смерть -
-			'''
-		CWRGanged: Эффект капитального ремонта: Вызовите богиню шторма, чтобы сражаться с вами
+		Tooltip: Атакуйте врага, чтобы высвободить цепную молнию, наносящую 10% урона
 	}
 
 	Nyxolithraken: {
@@ -4091,7 +4088,7 @@ Items: {
 		// DisplayName: Ba Xing Chong
 		/* Tooltip:
 			'''
-			Launches two barrages of homing missiles that explode on impact, inflicting [cbuff:CalamityMod/MiracleBlight], [cbuff:CalamityMod/TrueVulnerabilityHex] and [cbuff:OnFire3]
+			Launches two barrages of homing missiles that explode on impact, inflicting [cebuff:CalamityEntropy/MiracleBlight], [cebuff:CalamityEntropy/TrueVulnerabilityHex] and [cebuff:OnFire3]
 			[c/ff7f50:"Former owner of this gun? You mean that guy covered by cyberware except his brain?"]
 			''' */
 	}
@@ -4197,7 +4194,7 @@ Items: {
 			'''
 			{$CommonItemTooltip.SummonTagDamage}
 			{$CommonItemTooltip.Whips}
-			Inflicts [cbuff:OnFire3] and your minions gain a 20% chance to generate a tectonic shard on hit
+			Inflicts [cebuff:OnFire3] and your minions gain a 20% chance to generate a tectonic shard on hit
 			Tectonic shard home in on enemies and deal 70% of minion damage
 			''' */
 	}
@@ -4410,6 +4407,296 @@ Items: {
 		// DisplayName: Astral Sample
 		// Tooltip: ""
 	}
+
+	AzafureCircuitry: {
+		// DisplayName: Azafure Circuitry
+		/* Tooltip:
+			'''
+			The core wiring of Azafure machinery, its fine traces still hot to the touch
+			Has a chance to be extracted from Hell Industrial Components in an Extractinator
+			''' */
+	}
+
+	AzafurePlating: {
+		// DisplayName: Azafure Plating
+		/* Tooltip:
+			'''
+			A heat-resistant slice of Azafure armor, bullet scars still on its edge
+			Has a chance to be extracted from Hell Industrial Components in an Extractinator
+			''' */
+	}
+
+	StarlitScaleDust: {
+		// DisplayName: Starlit Scale Dust
+		/* Tooltip:
+			'''
+			Scale dust shed from glowing moth wings, like a handful of starlight
+			Dropped at night by glowing mushroom biome enemies and lightning bugs
+			''' */
+	}
+
+	WraithSoulEssence: {
+		// DisplayName: Wraith Soul Essence
+		/* Tooltip:
+			'''
+			Soul marrow drawn from the remains of the Abyssal Wraith, cold enough to burn
+			Obtained by defeating the Abyssal Wraith
+			''' */
+	}
+
+	AbyssalSigil: {
+		// DisplayName: Abyssal Sigil
+		/* Tooltip:
+			'''
+			Use at night to unfold a summoning circle above you, calling forth the Abyssal Wraith
+			The circle takes a few seconds to charge; stand your ground until it flares
+			Not consumable
+			''' */
+	}
+
+	EntropyStarterBag: {
+		// DisplayName: Gift of Entropy
+		/* Tooltip:
+			'''
+			Right Click to open
+			Holds gifts from the contributors
+			''' */
+	}
+
+	BigShotsWing: {
+		// DisplayName: Big Shots Wing
+		// Tooltip: ""
+	}
+
+	IceShardWing: {
+		// DisplayName: Ice Shard Wing
+		// Tooltip: ""
+	}
+
+	PhantomLightWing: {
+		// DisplayName: Phantom Light Wing
+		// Tooltip: ""
+	}
+
+	RuneWing: {
+		// DisplayName: Rune Wing
+		// Tooltip: ""
+	}
+
+	TheRevelation: {
+		// DisplayName: The Revelation
+		// Tooltip: ""
+	}
+
+	VoidElytra: {
+		// DisplayName: Void Elytra
+		// Tooltip: ""
+	}
+
+	FlowingLight: {
+		// DisplayName: Flowing Light
+		// Tooltip: ""
+	}
+
+	TlipocasScythe: {
+		// DisplayName: Tlipocas Scythe
+		// Tooltip: ""
+	}
+
+	CruiserLore: {
+		// DisplayName: Cruiser Lore
+		// Tooltip: ""
+	}
+
+	LoreAcropolis: {
+		// DisplayName: Lore Acropolis
+		// Tooltip: ""
+	}
+
+	LoreApsychos: {
+		// DisplayName: Lore Apsychos
+		// Tooltip: ""
+	}
+
+	LuminarisLore: {
+		// DisplayName: Luminaris Lore
+		// Tooltip: ""
+	}
+
+	NihilityTwinLore: {
+		// DisplayName: Nihility Twin Lore
+		// Tooltip: ""
+	}
+
+	ProphetLore: {
+		// DisplayName: Prophet Lore
+		// Tooltip: ""
+	}
+
+	RoaringDye: {
+		// DisplayName: Roaring Dye
+		// Tooltip: ""
+	}
+
+	SpiritDye: {
+		// DisplayName: Spirit Dye
+		// Tooltip: ""
+	}
+
+	VoidCruiseDye: {
+		// DisplayName: Void Cruise Dye
+		// Tooltip: ""
+	}
+
+	AbyssalPiercer: {
+		// DisplayName: Abyssal Piercer
+		// Tooltip: ""
+	}
+
+	AmethystFrisbee: {
+		// DisplayName: Amethyst Frisbee
+		// Tooltip: ""
+	}
+
+	Aquashard: {
+		// DisplayName: Aquashard
+		// Tooltip: ""
+	}
+
+	ArbitratorII: {
+		// DisplayName: Arbitrator I I
+		// Tooltip: ""
+	}
+
+	AzafureAirReaper: {
+		// DisplayName: Azafure Air Reaper
+		// Tooltip: ""
+	}
+
+	AzafureLightMachineGun: {
+		// DisplayName: Azafure Light Machine Gun
+		// Tooltip: ""
+	}
+
+	AzafureSurgeRod: {
+		// DisplayName: Azafure Surge Rod
+		// Tooltip: ""
+	}
+
+	AzureOfFirmament: {
+		// DisplayName: Azure Of Firmament
+		// Tooltip: ""
+	}
+
+	CrystalSpike: {
+		// DisplayName: Crystal Spike
+		// Tooltip: ""
+	}
+
+	EmberSpike: {
+		// DisplayName: Ember Spike
+		// Tooltip: ""
+	}
+
+	LunarPlank: {
+		// DisplayName: Lunar Plank
+		// Tooltip: ""
+	}
+
+	MewMewBomb: {
+		// DisplayName: Mew Mew Bomb
+		// Tooltip: ""
+	}
+
+	ProphecyFlyingKnife: {
+		// DisplayName: Prophecy Flying Knife
+		// Tooltip: ""
+	}
+
+	Revelation: {
+		// DisplayName: Revelation
+		// Tooltip: ""
+	}
+
+	ScorchingChakram: {
+		// DisplayName: Scorching Chakram
+		// Tooltip: ""
+	}
+
+	ShadewindLance: {
+		// DisplayName: Shadewind Lance
+		// Tooltip: ""
+	}
+
+	Silence: {
+		// DisplayName: Silence
+		// Tooltip: ""
+	}
+
+	SpearOfRadiance: {
+		// DisplayName: Spear Of Radiance
+		// Tooltip: ""
+	}
+
+	Apeirokyklos: {
+		// DisplayName: Apeirokyklos
+		// Tooltip: ""
+	}
+
+	AzafureSwirlblade: {
+		// DisplayName: Azafure Swirlblade
+		// Tooltip: ""
+	}
+
+	BlazingSwirlblade: {
+		// DisplayName: Blazing Swirlblade
+		// Tooltip: ""
+	}
+
+	BrillianceSwirlblade: {
+		// DisplayName: Brilliance Swirlblade
+		// Tooltip: ""
+	}
+
+	ExergySwirlblade: {
+		// DisplayName: Exergy Swirlblade
+		// Tooltip: ""
+	}
+
+	FlamingSwirlblade: {
+		// DisplayName: Flaming Swirlblade
+		// Tooltip: ""
+	}
+
+	GlacierSwirlblade: {
+		// DisplayName: Glacier Swirlblade
+		// Tooltip: ""
+	}
+
+	RunicSwirlblade: {
+		// DisplayName: Runic Swirlblade
+		// Tooltip: ""
+	}
+
+	SawofMacrocosm: {
+		// DisplayName: Sawof Macrocosm
+		// Tooltip: ""
+	}
+
+	TheBeginingAndTheEnd: {
+		// DisplayName: The Begining And The End
+		// Tooltip: ""
+	}
+
+	TheDeadCut: {
+		// DisplayName: The Dead Cut
+		// Tooltip: ""
+	}
+
+	Voidseeker: {
+		// DisplayName: Voidseeker
+		// Tooltip: ""
+	}
 }
 
 // BaitCommonTooltip1: Charge when held. Usable when fully charged
@@ -4500,6 +4787,7 @@ MariviniumSet:
 	После разрушения щита: восстанавливает 140 ед. здоровья и удваивает урон на 5 секунд
 	'''
 DeathMode: Смерть
+// ChargeReady: Ultimate Ready
 CdMantle: Перезарядка Святой Мантии
 MissileLauncherDescTooltip: Запускайте ракеты, которые могут быть прикреплены к врагам.
 MissileLauncherMaxStickTooltip: Каждый монстр прилипает {0}
@@ -5237,6 +5525,17 @@ Projectiles: {
 	// AzafureSawSpark.DisplayName: Azafure Saw Spark
 	// VFChargeFXProj.DisplayName: V F Charge F X Proj
 	// VoidFaquirEnergyBallMelee.DisplayName: Void Faquir Energy Ball Melee
+	// AbyssalSigilRitual.DisplayName: Abyssal Sigil
+	// PartySparkle.DisplayName: Party Sparkle
+	// TyrantPhantomBlade.DisplayName: Tyrant Phantom Blade
+	// GaleWindBlade.DisplayName: Gale Wind Blade
+	// AquariusWaterBolt.DisplayName: Aquarius Water Bolt
+	// SunkenAquashard.DisplayName: Sunken Aquashard
+	// ExobeamSlashBurst.DisplayName: Exobeam Slash Burst
+	// AbyssBladeSplitProjectile.DisplayName: Abyss Blade Split Projectile
+	// AquashardSplit.DisplayName: Aquashard Split
+	// PlaguenadeBee.DisplayName: Plaguenade Bee
+	// GhastlySoulLarge.DisplayName: Ghastly Soul Large
 }
 
 LegendTooltip: - Легенда -
@@ -5518,12 +5817,6 @@ Buffs: {
 		Description: ""
 	}
 
-	WindPressure: {
-		DisplayName: давление ветра
-		Description: На твоем оружии вихрь.
-		// ItemTooltip: 3% increased damage and rogue attack speed
-	}
-
 	PenMountBuff: {
 		DisplayName: Автомат
 		Description: Я горжусь тобой.
@@ -5726,6 +6019,161 @@ Buffs: {
 		// DisplayName: Flowery Buff
 		// Description: Glue!
 	}
+
+	AstralInfectionDebuff: {
+		// DisplayName: Astral Infection
+		// Description: Astral energy erodes your flesh, losing about 38 life per second
+	}
+
+	Dragonfire: {
+		// DisplayName: Dragonfire
+		// Description: Burned by holy dragonfire, losing 480 life per second
+	}
+
+	HolyFlames: {
+		// DisplayName: Holy Flames
+		// Description: Scorched by sacred fire, losing 150 life per second
+	}
+
+	GodSlayerInferno: {
+		// DisplayName: God Slayer Inferno
+		// Description: Consumed by god-slaying fire, losing 250 life per second
+	}
+
+	BrimstoneFlames: {
+		// DisplayName: Brimstone Flames
+		// Description: Burned by brimstone fire, losing 30 life per second
+	}
+
+	Plague: {
+		// DisplayName: Plague
+		// Description: Ravaged by pestilence, losing 50 life per second
+	}
+
+	MiracleBlight: {
+		// DisplayName: Miracle Blight
+		// Description: Corroded by a miracle, losing 1500 life per second
+	}
+
+	CrushDepth: {
+		// DisplayName: Crush Depth
+		// Description: Crushed by abyssal pressure, losing 50 life per second
+	}
+
+	SulphuricPoisoning: {
+		// DisplayName: Sulphuric Poisoning
+		// Description: Corroded by acid water, losing 175 life per second
+	}
+
+	Nightwither: {
+		// DisplayName: Nightwither
+		// Description: Seared by moonlight, losing 100 life per second
+	}
+
+	BurningBlood: {
+		// DisplayName: Burning Blood
+		// Description: Your blood is burning, losing 20 life per second
+	}
+
+	BrainRot: {
+		// DisplayName: Brain Rot
+		// Description: Your mind is rotting, losing 20 life per second
+	}
+
+	BanishingFire: {
+		// DisplayName: Banishing Fire
+		// Description: Your existence is being erased, losing at least 2000 life per second; extremely high max life worsens the damage
+	}
+
+	Voidfrost: {
+		// DisplayName: Voidfrost
+		// Description: Chilled by void frost, losing 250 life per second
+	}
+
+	VulnerabilityHex: {
+		// DisplayName: Vulnerability Hex
+		// Description: Hexed, losing 1332 life per second and slowed
+	}
+
+	TrueVulnerabilityHex: {
+		// DisplayName: True Vulnerability Hex
+		// Description: An unblockable hex, losing 1332 life per second and slowed
+	}
+
+	ElementalMix: {
+		// DisplayName: Elemental Mix
+		// Description: Eroded by chaotic elements, losing 200 life per second
+	}
+
+	HadopelagicPressure: {
+		// DisplayName: Hadopelagic Pressure
+		// Description: Crushed by hadal pressure, losing 175 life per second
+	}
+
+	HeavyBleeding: {
+		// DisplayName: Heavy Bleeding
+		// Description: The wound will not stop bleeding, losing 40 life per second
+	}
+
+	VermillionFlux: {
+		// DisplayName: Vermillion Flux
+		// Description: Vermillion current surges through you, losing 150 life per second while moving, reduced to 37 while still
+	}
+
+	AuricRebuke: {
+		// DisplayName: Auric Rebuke
+		// Description: Bound by auric punishment, losing 400 life per second while moving, reduced to 100 while still
+	}
+
+	GalvanicCorrosion: {
+		// DisplayName: Galvanic Corrosion
+		// Description: Electrolytic corrosion slows your movement
+	}
+
+	WindChilled: {
+		// DisplayName: Wind Chilled
+		// Description: Chilled by cold wind, losing 6 life per second; being wet increases the damage by half
+	}
+
+	Irradiated: {
+		// DisplayName: Irradiated
+		// Description: Irradiated, losing 10 life per second
+	}
+
+	ArmorCrunch: {
+		// DisplayName: Armor Crunch
+		// Description: Your armor is crunched, reducing defense by 15
+	}
+
+	Crumbling: {
+		// DisplayName: Crumbling
+		// Description: Your shell is crumbling, reducing defense by 8
+	}
+
+	MarkedforDeath: {
+		// DisplayName: Marked for Death
+		// Description: Chosen by death, all damage taken increased by 10%
+	}
+
+	TemporalSadness: {
+		// DisplayName: Temporal Sadness
+		// Description: Time turns viscous, greatly slowing your movement
+	}
+
+	WhisperingDeath: {
+		// DisplayName: Whispering Death
+		// Description: Death whispers in your ear
+	}
+
+	CosmicFreeze: {
+		// DisplayName: Cosmic Freeze
+		// Description: Guarded by cosmic cold; damage over time is halved while standing still
+	}
+
+	Laceration: {
+		// DisplayName: Laceration
+		// Description: Torn open, losing 200 life per second
+	}
 }
 
 Uh: ""
@@ -5733,19 +6181,28 @@ Uh: ""
 NPCs: {
 	LotteryMachine.DisplayName: Лотерейный автомат
 	CruiserTail.DisplayName: Крейсер
+	CruiserHead.DisplayName: Крейсер
 
-	CruiserHead: {
-		DisplayName: Крейсер
-
+	Cruiser: {
 		BossChecklistIntegration: {
 			EntryName: Крейсер
 			SpawnInfo: Используй [i:CalamityEntropy/VoidBottle] для призыва
-			DespawnMessage: Крейсер потерпел поражение
+			DespawnMessage: ""
 		}
 	}
 
 	CruiserBody.DisplayName: Крейсер
-	AbyssalWraith.DisplayName: Призрак бездны
+
+	AbyssalWraith: {
+		DisplayName: Призрак бездны
+
+		BossChecklistIntegration: {
+			// EntryName: Abyssal Wraith
+			// SpawnInfo: Use [i:CalamityEntropy/AbyssalSigil] at night to summon
+			// DespawnMessage: ""
+		}
+	}
+
 	VoidCultistAssassin.DisplayName: Ассассин культистов Пустоты
 	VoidPope.DisplayName: Патриарх Пустоты
 	VoidPopeHand.DisplayName: Длань Патриарха Пустоты
@@ -5760,7 +6217,6 @@ NPCs: {
 			HateCrowded: Здесь много людей.
 			LikeNPC_Princess: Мне нравиться {NPCName}.
 			Princess_LovesNPC: Мне нравиться {NPCName}.
-			// MonumentNearby: Where did that ugly monument come from? I don't want to see it anymore.
 		}
 
 		DisplayName: Первозданный змей
@@ -5920,6 +6376,9 @@ Keybinds: {
 	CommandMinions.DisplayName: Служащий команды
 	NihilityAndChaoticArmorConnectKey.DisplayName: Подключение Factor & Chaos
 	AcropolisMechTransformation.DisplayName: Активировать броню в Акрополе.
+	// ArmorSetBonus.DisplayName: Armor Set Bonus
+	// Dash.DisplayName: Dash
+	// AccessoryAbility.DisplayName: Accessory Ability
 }
 
 ProphetLoreEffect:
@@ -5929,6 +6388,9 @@ ProphetLoreEffect:
 	'''
 Enabled: Включенный
 Disabled: Выключенный
+// KeyNotBound: Not bound
+// LoreHoldShift: Hold Shift to read the lore
+// Status.Death.AuricRejection: "{0} was torn apart by the auric repulsion"
 CdMoonlight: Лунный Щит
 CdDS: Перезарядка Божественного Щита
 CdAntivoid: охлаждение с обратным спринтом
@@ -5966,8 +6428,10 @@ Tiles: {
 	VoidOreTile.MapEntry: Плитка из пустотной руды
 	VoidBarTile.MapEntry: Плитка из пустотного слитка
 	// GiantBoulderTile.MapEntry: Giant Boulder Tile
+	// LavaFountain: Lava Fountain
 }
 
+// Misc.HotkeyNotBound: "[None]"
 VoidChargeBar: Индикатор зарядки пустоты
 
 Configs: {
@@ -5998,11 +6462,6 @@ Configs: {
 		ItemAdditionalInfo: {
 			Label: Дополнительная информация о предмете
 			Tooltip: Отображение дополнительной информации о некоторых предметах, таких как бронепробиваемость, тип боеприпасов и т.д
-		}
-
-		MariviumArmorSetOnlyProvideStealthBarWhenHoldingRogueWeapons: {
-			Tooltip: ""
-			Label: Комплект брони Маривиния предоставляет шкалу скрытности только при использовании оружия разбойника.
 		}
 
 		EntropyMeleeWeaponSoundVolume: {
@@ -6040,9 +6499,14 @@ Configs: {
 				'''
 		}
 
-		CalamityTextEffectCompatibilityFix: {
-			// Label: Calamity Text Effect Compatibility Fix
-			// Tooltip: ""
+		TextEffects: {
+			// Label: Chat Text Effects
+			// Tooltip: When enabled, special text in chat and dialogue (such as Cruiser speech) is drawn with dynamic effects; when disabled, it is drawn as plain text
+		}
+
+		ScreenShakePower: {
+			// Label: Screen Shake Power
+			// Tooltip: Overall intensity multiplier for this mod's screen shake effects; 0 disables them, 1 is default, 2 is maximum
 		}
 	}
 
@@ -6065,19 +6529,9 @@ Configs: {
 			Tooltip: Исходя из вашего максимального значения жизни, каждый удар вычитает по крайней мере определенное значение жизни, по умолчанию 0, то есть не вступает в силу
 		}
 
-		ClearStealthWhenChangeEquipSet: {
-			Label: Очистить скрытые полосы при переключении оборудования
-			Tooltip: ""
-		}
-
 		ExtraItemsInStarterBag: {
 			Label: Новые сумки Дополнительные предметы
 			Tooltip: Новые сумки предоставят некоторые дополнительные полезные предметы (например, волшебное хранилище, волшебные палочки для лучшего опыта и т. Д.)
-		}
-
-		RogueAccessoriesProvide40Stealth: {
-			Label: Грабители предлагают минимум 40 скрытых значений.
-			Tooltip: Если вы носите какие - либо воровские украшения, у вас будет по крайней мере 20 скрытых значений.
 		}
 
 		EnableArmorPrefix: {
@@ -6249,7 +6703,7 @@ ArmorPrefixHeatDeathDescription:
 	[c/ff0000:Ваши атаки вызывают эффект тепловой смерти, но здоровье будет постоянно истощаться]
 	'''
 ArmorPrefixArmorPrefixEchoName: Отзывы
-ArmorPrefixArmorPrefixEchoDescription: + 4% Потенциальная скорость восстановления
+// ArmorPrefixArmorPrefixEchoDescription: 6% increased weapon ultimate charge rate
 ArmorPrefixTheBodyName: Тело
 ArmorPrefixTheBodyDescription: + 10% Максимальная стоимость жизни
 ArmorPrefixTheMindName: Мышление
@@ -6288,7 +6742,6 @@ HaveTaintedDeck: Когда испорченная колода находитс
 HaveSoulDeck: Когда колода душ будет в инвентаре
 DownloadBOI: Have played The Binding of Isaac: Repentance
 IsaacLock: You can't equip this before you played The Binding of Isaac Repentance LOL
-PWSpawnInfo: Войдите в Бездну с эффектом ослабления 'Состояние Хаоса'
 CdAS: Перезарядка 'Анима Сола'
 XythCharge: Заряд Кситерона
 KilledByVoidVirus: В крови остается только ничто.
@@ -6354,124 +6807,20 @@ AmmoLifeTime: Время жизни снаряда
 AmmoShootSpeed: Скорость стрельбы
 AmmoPenetrate: Число пробитий
 AmmoPenetrateInfinite: Бесконечность
-PrefixEchoDescr: +12 максимальной скрытности
-PrefixVigorousDescr: +15% к регенерации скрытности
+// PrefixEchoDescr: 6% increased damage
+// PrefixVigorousDescr: 22.5% increased weapon ultimate charge rate
 WikiURL: https://terrariamods.wiki.gg/wiki/Calamity_Entropy/
 GameTips.VoidOreTip: Руда пустоты появится высоко в небе после поражения крейсера
-LoreAwakeningDesc: Немного увеличивает скорость передвижения и высоту прыжка
-LoreKingSlimeDesc: Увеличивает высоту прыжка, но снижает скорость передвижения
-LoreDesertScourgeDesc: Увеличивает время задержки дыхания
-LoreCrimsonDesc: +{1} максимального здоровья
-LoreCrabulonDesc: После получения урона вы становитесь уязвимым на {1} секунду
-LoreEyeofCthulhuDesc: Уменьшает перезарядку рывка на {1}%
-LoreCorruptionDesc: Даёт {1}% к снижению получаемого урона
-LoreBrainofCthulhuDesc: +{1}% критического удара, но -{2}% Урона
-LoreQueenBeeDesc: +{2}% Урона, но -{1}% критического удара
 LuminarisLoreDesc: + {1}% Максимальное время полёта
-LoreHiveMindDesc: Увеличить {2}% повреждение в течение {1} секунд после травмы
-LorePerforatorsDesc: Вероятность восстановления после травмы {1% {2}
-LoreEaterofWorldsDesc: Это избавит тебя от проклятия огня.
-LoreSkeletronDesc: Боеприпасы с количеством укладки более 1% {2}% вероятности не расходуются
-LoreSlimeGodDesc: Добавьте немного высоты прыжка.
-LoreUnderworldDesc: До входа в магму {1} секунд не повредится.
-LoreWallofFleshDesc: Уменьшение полученной травмы {1%, время охлаждения {2} секунд
-LoreBloodMoonDesc: Расширение возможностей ночного видения
-LoreQueenSlimeDesc: + {1}% Скорость падения
-LoreArchmageDesc: Увеличить скорость замедления потока в холодной системе
-LoreMechsDesc: + {1} Оборона
-LoreTwinsDesc: + {1} Оборона
-LoreDestroyerDesc: + {1} Оборона
-LoreSkeletronPrimeDesc: + {1}% Уменьшение вреда
-LoreSulphurSeaDesc: Иммунитет против кислотного яда
-LoreAzafureDesc: + {1}% Процент вспышек
-LoreCalamitasCloneDesc: + {1}% скорость ближнего боя
-LorePlanteraDesc: + 0.5 / с Возрождение жизни
-LoreAquaticScourgeDesc: Увеличить время дыхания
-LoreAbyssDesc: Увеличить видимость в пропасти
-LoreLeviathanAnahitaDesc: Увеличение 1 / s регенерации жизни в воде
-LoreAstrumAureusDesc: Увеличить скорость, с которой происходит сокращение числа случаев заражения & lt; & lt; Мирандом & gt; & gt;
-LoreBrimstoneElementalDesc: + 1% Снижение вреда
-LoreGolemDesc: + {1}% Уменьшение вреда
-LorePlaguebringerGoliathDesc: Эпидемия проходит быстрее.
-LoreEmpressofLightDesc: Увеличить {1} защиту в течение дня
-LoreDukeFishronDesc: Движение игнорирует сопротивление воды
-LoreRavagerDesc: Увеличение скорости движения на 2%
-LorePreludeDesc: + 5% Свет
-LoreAstralInfectionDesc: + {1}% Время полёта
-LoreAstrumDeusDesc: + {1}% скорость полёта
 LoreApsychosDesc: Это избавляет тебя от огня и огня.
-
-DraedonDialogs: {
-	Void: {
-		Inquiry: Пустота
-		Response:
-			'''
-			Я всегда проводил исследования Пустоты, задолго до того, как встретил Ихарима 
-
-			Во время моего сотрудничества с Яримом я предложил более глубокое изучение Пустоты, поэтому Ярим нашел Пророка и попросил его заглянуть в нее 
-
-			Хотя впоследствии пророка постигла довольно мрачная участь, это не помешало мне продолжить мои исследования 
-
-			Когда Ярим узнал об этом, он высказался резко против, но я все же открыл разлом в Пустоту и запустил туда разведывательный дрон. 
-
-			Вскоре после входа в Пустоту передача видеозаписей пропала, оставив вместо себя лишь статический шум и бесплотный шепот.
-			'''
-	}
-}
-
 SlotInfo2: InsertItem
 LightModeTip: Внимание: При других режимах освещения некоторые снаряды и NPC Calamity Entropy становятся невидимыми. Лучше всего использовать цветовой режим.
-KilledByBloodBoiling: " кровь закипает"
-BloodBoiling: Кипящая кровь
-BloodBoilingDescr: Постоянное использование предметов увеличивает скорость атаки, но наносит постепенный урон.
 PrefixHeavyDesc: +10% к скорости падения
 DamageReduceCD: Охлаждение от повреждений
 // DeltaruneCH5ShadowCrystal: Get shadow crystal in Deltarune chapter5
-
-InfernumIntros: {
-	NihilityTwin:
-		'''
-		Formidable From The Void
-		Nihility Twins
-		'''
-	Cruiser:
-		'''
-		Unexpected Creature
-		Cruiser
-		'''
-	Prophet:
-		'''
-		Shattered Soul
-		The Prophet
-		'''
-	Luminaris:
-		'''
-		Небесное крыло
-		Галлюциногенная моль
-		'''
-	Apsychos:
-		'''
-		Дьявольский хвост
-		Грязная грязь
-		'''
-}
-
 Donor: Донор:
 Owner: Владелец:
 ShadowDashCD: Теневое внезапное охлаждение
-ShiftMoreInfo: Нажмите « Левый Shift», чтобы узнать больше об этой специальной полосе зарядки
-ShadowBar: Темное значение
-SolarBar: Яркое число
-ShadowBarInfo:
-	'''
-	Рост с постоянной скоростью
-	Атака при полной зарядке высвобождает теневой шар, а после удара вызывает множество теневых кинжалов, которые проходят сквозь цель.
-	'''
-SolarBarInfo:
-	'''
-	Рост использования воровского оружия при попадании в цель
-	При полной зарядке атака вызывает скрытую атаку и запускает дополнительные лучи слежения.
-	'''
 RPDonorName: Холодный уровень
 Acropolis: Атакующие машины Asaffoler, которые использовались в крупномасштабных войнах
 OblivionThretherCooldown: Внезапное охлаждение винтовой пилы
@@ -6510,55 +6859,6 @@ TScytheSpecialName: Красный.
 TScytheSpecialName2: Серп.
 TScytheZenithDesc: '''"Коронуй меня, мой царь, и весь мир будет ждать всю ночь".'''
 TScytheDesc: '''"Алый серп, к которому прикреплена душа маленькой смерти"'''
-TSL1: Злые глаза, кажется, злые. Мы его убьем!
-TSL2: Странная злобная душа в виде мозга и червей? Могу я взять домой образец? А...?
-TSL3: Бог Слейма, похоже, липкая грязь все еще пузырится. Может, помоешься с ним?
-TSL4: Кровь и плоть, запечатанные божественным духом, похоже, что после этого можно получить много душ. Это...
-TSL5:
-	'''
-	В серных скалах плывут души. Мы постоянно говорим о катастрофе столетней давности. Это...
-	Давайте покончим с их страданиями!
-	'''
-TSL6:
-	'''
-	В ночном небе бродит страшный красный монстр.
-	Я чувствую безумие только в его душе. Действительно ли это душа?
-	'''
-TSL7:
-	'''
-	Концентрация души в подземелье очень высока. Это...
-	Ах, есть запечатанное, немного странное тело, которое не может не хотеть с ним общаться!
-	'''
-TSL8: Сколько нитей души прикреплено к искаженной плоти и крови? Некоторые. Отвратительно, возвращайте их в свои сны!
-TSL9:
-	'''
-	От этих сумасшедших злодеев пахло так же, как и от пророков. Это...
-	Чем они поклоняются? Это хорошая идея - отправлять их поклоняться смерти.
-	'''
-TSL10: Огромный, многоглазый осьминог? Это монстр из сновидений?
-TSL11:
-	'''
-	Фонарь, который носил безликий человек в фиолетовом плаще, пах как пророк. Это...
-	Немного любопытно, хочется украсть фонарь!
-	'''
-TSL12:
-	'''
-	В темнице, в которой была применена магия, эти души никогда не смогут покоиться с миром.
-	Жаль. Давайте заберем это с собой.
-	'''
-TSL13: Это фиолетовый питон. Хочу поглотить душу! Никогда не причиняйте вреда!
-TSL14: Странный фонарь указывает на эту пространственную трещину. ...Что это принесет?
-TSL15:
-	'''
-	Милая девушка и странный робот пришли,
-	Забирайте их души, и рабочая нагрузка скоро достигнет стандарта!
-	'''
-TSL16:
-	'''
-	Пытал злодея, сказал он. Просто используйте жезл хаоса в бездне,
-	И там будет бесконечная душа на всю жизнь. Дай - ка я попробую. ...?
-	'''
-TSLEnd: Наконец - то погасить долг души, задача выполнена идеально.
 TSA1: Нажмите на кнопку, чтобы начать атаку, и вы выберете на некоторое расстояние в направлении мыши.
 TSA1B: Победив бога Слейма, вы получите непобедимое время и нанесете вред цели.
 TSU1: Нужно победить глаз Ксавье.
@@ -6604,7 +6904,6 @@ LMDialog11: Дай, это твоя награда;)
 LMDialog12: Эй, почему бы не вытащить его раньше. ......
 LMDialog13: Эй, почему бы не вытащить его раньше. ...Ты такой богатый.
 LMDialog14: Ты знаешь, что это такое.
-LMDialog15: Дизайн этого предмета провалился. Вы не должны его использовать.
 LMDialog16: Разве ты не видишь это? (NAME) Не знаю.
 LMDialog17: Я не беру мусор, спасибо.
 LMDialog18: Что ты засунул?
@@ -6681,7 +6980,7 @@ AzafureEnhances: {
 	AzafureSurgeRod: Стрельба может привести к дополнительному удару по цели.
 	AzafureTeslaGun: Увеличить повреждение дуги
 	AzafureElectrocauteryWand: Увеличение скорости зарядки
-	AzafureLightMachineGun: Увеличить скрытое значение ответа после обычной атаки
+	// AzafureLightMachineGun: Increased ultimate charge rate
 	AzafurePowerSaw: Увеличьте повреждение цепной пилы и не перегревайтесь.
 	AzafureDrill: Увеличить силу кирки и объем раскопок
 	AzafureEKatana: Увеличить дальность атаки
@@ -6724,10 +7023,8 @@ FetalDreamDamage: Бессознательное повреждение
 NihilityShield: Фаговый щит
 CardsDesc: Похожие карточки должны быть целыми.
 VoidCoreShield: Щит пустого ядра
-CrossModSupportFish: Камбала Умение рыба также может быть помещена в книгу Любая энтропия для использования в качестве закладки
 CdAcr: Охлаждение броней Акрополя
 SpecialThanks: Особая благодарность
-PassedBossRush: Компания Boss Rush
 BloodthirstyRequirement: Вам нужно как минимум 200 жизней, чтобы сделать этот предмет.
 BloodthirstyKilled: "{0} Засохла кровь."
 Luminariswarm: Волшебные моли

@@ -1,10 +1,9 @@
-﻿using CalamityEntropy.Content.Items.Books.BookMarks;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+﻿using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Items.Books.BookMarks;
+using CalamityEntropy.Content.Rarities;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -20,19 +19,21 @@ namespace CalamityEntropy.Content.Items.Books
             Item.useAnimation = Item.useTime = 25;
             Item.crit = 10;
             Item.mana = 20;
-            Item.rare = ModContent.RarityType<Turquoise>();
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+            Item.rare = ModContent.RarityType<NihilityBlue>();
+            Item.value = Item.buyPrice(platinum: 1, gold: 50);
         }
-        public override Texture2D BookMarkTexture => ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/EntropyBookUI/BookMark5").Value;
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/BookMark5")]
+        internal static Asset<Texture2D> BookMarkSlotTex;
+        public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<AshTranscriptHeld>();
         public override int SlotCount => 4;
 
         public override void AddRecipes()
         {
             CreateRecipe().AddIngredient<NightEpic>()
-                .AddIngredient<DivineGeode>(6)
+                .AddIngredient<NihilityFragments>(6)
                 .AddIngredient(ItemID.Ectoplasm, 6)
-                .AddTile<ProfanedCrucible>()
+                .AddTile(TileID.AdamantiteForge)
                 .Register();
         }
     }

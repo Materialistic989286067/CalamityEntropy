@@ -1,8 +1,9 @@
 ﻿using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -12,6 +13,13 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class VoidBottleThrow : ModProjectile
     {
+        //瓶子三形态贴图(首张无序号后缀,数组吃不下,逐字段声明),加载期就位
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/VoidBottleThrow")]
+        internal static Asset<Texture2D> Bottle0Tex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/VoidBottleThrow1")]
+        internal static Asset<Texture2D> Bottle1Tex;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/VoidBottleThrow2")]
+        internal static Asset<Texture2D> Bottle2Tex;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 1;
@@ -27,6 +35,8 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.timeLeft = 1000;
             Projectile.penetrate = -1;
         }
+        // 持续屏震：随蓄力时间增强，存活期间每帧刷新幅度
+        private ScreenShaker.ScreenShake shake = null;
         public override void AI()
         {
             Projectile.ai[0]++;
@@ -50,7 +60,14 @@ namespace CalamityEntropy.Content.Projectiles
                     Dust.NewDust(Projectile.Center, 8, 8, ModContent.DustType<GlassBreak>());
                 }
             }
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = Utils.Remap(Main.LocalPlayer.Distance(Projectile.Center), 1800f, 1000f, 0f, 4.5f) * Projectile.ai[0] / 60f;
+            if (!Main.dedServ)
+            {
+                float shakeAmp = Utils.Remap(Main.LocalPlayer.Distance(Projectile.Center), 1800f, 1000f, 0f, 4.5f) * Projectile.ai[0] / 60f;
+                if (shake == null || !shake.active)
+                    shake = ScreenShaker.AddShake(Vector2.Zero, shakeAmp);
+                else
+                    shake.amplitude = shakeAmp;
+            }
             if (Projectile.ai[0] > 200)
             {
                 for (int i = 0; i < 9; i++)
@@ -97,9 +114,9 @@ namespace CalamityEntropy.Content.Projectiles
         public override bool PreDraw(ref Color lightColor)
         {
 
-            Texture2D tx1 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/VoidBottleThrow").Value;
-            Texture2D tx2 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/VoidBottleThrow1").Value;
-            Texture2D tx3 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/VoidBottleThrow2").Value;
+            Texture2D tx1 = Bottle0Tex.Value;
+            Texture2D tx2 = Bottle1Tex.Value;
+            Texture2D tx3 = Bottle2Tex.Value;
             Texture2D tx = tx1;
             if (Projectile.ai[1] == 1)
             {

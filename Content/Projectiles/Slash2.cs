@@ -1,7 +1,9 @@
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod.Buffs.StatDebuffs;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ModLoader;
@@ -10,6 +12,9 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class Slash2 : ModProjectile
     {
+        //斩击贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Slash2")]
+        internal static Asset<Texture2D> SlashTex;
         public bool sPlayerd = false;
         public override void SetStaticDefaults()
         {
@@ -68,7 +73,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override bool PreDraw(ref Color lightColor)
         {
 
-            Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Slash2").Value;
+            Texture2D tx = SlashTex.Value;
             Main.spriteBatch.Draw(tx, Projectile.Center - Main.screenPosition + new Vector2((Projectile.ai[0] + Projectile.ai[1]) / 2 - 300, 0).RotatedBy(Projectile.rotation), null, Color.White, Projectile.rotation, new Vector2(tx.Width, tx.Height) / 2, new Vector2((Projectile.ai[0] - Projectile.ai[1]) / tx.Width, 1.2f), SpriteEffects.None, 0);
 
             return false;

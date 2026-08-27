@@ -1,10 +1,6 @@
-﻿using CalamityEntropy.Content.Items.Armor.Azafure;
+using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
@@ -20,14 +16,14 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             Item.damage = 23;
             Item.crit = 4;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.width = 86;
             Item.height = 28;
             Item.useTime = 46;
             Item.useAnimation = 46;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 10;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(0, 5);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.UseSound = null;
             Item.noMelee = true;
@@ -45,8 +41,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(4)
-                .AddIngredient<DubiousPlating>(10)
-                .AddIngredient<AerialiteBar>(5)
+                .AddIngredient<AzafurePlating>(10)
+                .AddIngredient(ItemID.MeteoriteBar, 5)
                 .AddIngredient(ItemID.HellstoneBar, 18)
                 .AddTile(TileID.Anvils)
                 .Register();

@@ -1,5 +1,5 @@
 ﻿using CalamityEntropy.Content.Particles;
-using CalamityMod.Buffs.DamageOverTime;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;

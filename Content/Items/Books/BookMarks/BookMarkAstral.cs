@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -13,7 +12,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             base.SetDefaults();
             Item.rare = ItemRarityID.Cyan;
-            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
+            Item.value = Item.buyPrice(gold: 80);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Astral");
         public override void modifyShootCooldown(ref int shootCooldown)

@@ -66,7 +66,7 @@ namespace CalamityEntropy.Content.Projectiles
                 Projectile.velocity.X = -oldVelocity.X * 2.5f;
                 if (Projectile.velocity.Length() > 3)
                 {
-                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"));
+                    SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/shockBlast"));
                 }
             }
             if (Projectile.velocity.Y == 0 && oldVelocity.Y != 0)
@@ -74,7 +74,7 @@ namespace CalamityEntropy.Content.Projectiles
                 Projectile.velocity.Y = -oldVelocity.Y * 2.5f;
                 if (Projectile.velocity.Length() > 3)
                 {
-                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"));
+                    SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/shockBlast"));
                 }
             }
             if (Projectile.timeLeft < 2800)
@@ -83,7 +83,7 @@ namespace CalamityEntropy.Content.Projectiles
                 for (int i = 0; i < 16; i++)
                 {
                     Dust.NewDust(Projectile.Center, 32, 32, DustID.Pixie, 0, 0);
-                    SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/AuricMine", 3), Projectile.Center);
+                    SoundEngine.PlaySound(SoundID.Tink with { Pitch = 0.3f, PitchVariance = 0.25f }, Projectile.Center);
                 }
             }
             return false;
@@ -91,12 +91,12 @@ namespace CalamityEntropy.Content.Projectiles
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/AuricMine", 3), Projectile.Center);
+            SoundEngine.PlaySound(SoundID.Tink with { Pitch = 0.3f, PitchVariance = 0.25f }, Projectile.Center);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/AuricMine", 3), Projectile.Center);
+            SoundEngine.PlaySound(SoundID.Tink with { Pitch = 0.3f, PitchVariance = 0.25f }, Projectile.Center);
         }
     }
 }

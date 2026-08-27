@@ -1,3 +1,4 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -57,7 +58,7 @@ namespace CalamityEntropy.Content.Projectiles.ApsychosProjs
         }
         public void DrawEnergyBall(Vector2 pos, float size, float alpha)
         {
-            Texture2D tex = CEUtils.getExtraTex("a_circle");
+            Texture2D tex = CEExtraAssets.a_circle;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, (Projectile.ai[0] == 1 ? new Color(200, 130, 100) : new Color(160, 160, 255)) * alpha, 0, tex.Size() * 0.5f, size * 0.24f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, (Projectile.ai[0] == 1 ? new Color(180, 40, 20) : new Color(34, 34, 180)) * alpha, 0, tex.Size() * 0.5f, size * 0.36f, SpriteEffects.None, 0);

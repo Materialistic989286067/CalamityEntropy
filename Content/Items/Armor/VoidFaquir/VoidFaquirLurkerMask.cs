@@ -1,8 +1,6 @@
-﻿using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
+using CalamityEntropy.Core.Weapons;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -21,7 +19,7 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
             Item.defense = 30;
             Item.rare = ModContent.RarityType<VoidPurple>();
         }
@@ -38,10 +36,9 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
 
         public override void UpdateArmorSet(Player player)
         {
-
-            player.Calamity().wearingRogueArmor = true;
             player.GetArmorPenetration(DamageClass.Generic) += 20;
-            player.Calamity().rogueStealthMax += 1.35f;
+            // 潜行体系退役:原潜行条(上限1.35)按容量×10%换算为大招充能速度
+            player.GetModPlayer<CEChargePlayer>().ChargeRateMult += 0.135f;
             player.Entropy().VFSet = true;
             player.Entropy().VFHelmRogue = true;
         }
@@ -49,8 +46,9 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
         public override void UpdateEquip(Player player)
         {
             player.Entropy().rogueVF = true;
-            player.GetDamage(CEUtils.RogueDC) += 0.25f;
-            player.GetCritChance(CEUtils.RogueDC) += 25;
+            // 脱离灾厄:原盗贼伤害/暴击按「盗贼→全伤害」规则转通用
+            player.GetDamage(DamageClass.Generic) += 0.25f;
+            player.GetCritChance(DamageClass.Generic) += 25;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
@@ -60,9 +58,10 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
 
         public override void AddRecipes()
         {
+            // 脱离灾厄:TwistingNether→幽渊魂髓(material-map)
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<VoidBar>(), 14)
-                .AddIngredient(ModContent.ItemType<TwistingNether>(), 4)
+                .AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 4)
                 .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();
         }

@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
@@ -6,10 +7,7 @@ using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
+using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Graphics.PackedVector;
@@ -40,7 +38,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             Item.knockBack = 0;
             Item.shootSpeed = 44;
             Item.useAnimation = Item.useTime = 36;
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2);
             Item.rare = ModContent.RarityType<VoidPurple>();
             Item.width = 60;
             Item.height = 60; 
@@ -111,7 +109,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                 npc.GetGlobalNPC<WhipDebuffNPC>().BaitStick = 2;
                 if (IsActive)
                 {
-                    Projectile.GetOwner().Calamity().mouseWorldListener = true;
+                    Projectile.GetOwner().Entropy().MouseWorldListener = true;
                     npc.GetGlobalNPC<WhipDebuffNPC>().ClearBaitTags();
                     npc.GetGlobalNPC<WhipDebuffNPC>().Tags.Add(new WhipTag(this.GetType().Name, 5, this.TagDamage, 1, 0, this.GetType().Name) { IsABaitTag = true });
                 }
@@ -177,7 +175,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             if (activeEffectAlpha >= 0.01f)
             {
                 Main.spriteBatch.UseAdditiveClamp();
-                Texture2D pulse = CEUtils.getExtraTex("ShatteredExplosion");
+                Texture2D pulse = CEExtraAssets.ShatteredExplosion;
                 for (float i = 0; i < 1f; i += 0.2f)
                 {
                     float scale = CEUtils.Frac(i + Main.GlobalTimeWrappedHourly * 12);
@@ -371,7 +369,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
         public void DrawVortex(Vector2 pos, Color color, float Size = 1, float glow = 1f)
         {
             Main.spriteBatch.End();
-            Effect effect = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Vortex", AssetRequestMode.ImmediateLoad).Value;
+            Effect effect = CEEffectAssets.Vortex;
             effect.Parameters["Center"].SetValue(new Vector2(0.5f, 0.5f));
             effect.Parameters["Strength"].SetValue(22);
             effect.Parameters["AspectRatio"].SetValue(1);
@@ -383,7 +381,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             effect.Parameters["enhanceLightAlpha"].SetValue(0.8f);
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             effect.CurrentTechnique.Passes[0].Apply();
-            Main.spriteBatch.Draw(CEUtils.getExtraTex("VoronoiShapes"), pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12, CEUtils.getExtraTex("VoronoiShapes").Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(CEExtraAssets.VoronoiShapes, pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12, CEExtraAssets.VoronoiShapes.Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
             CEUtils.DrawGlow(pos, Color.White * 0.4f * glow, 0.8f * Size * glow);
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
@@ -395,13 +393,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             DrawVortex(PortalPos, new Color(200, 180, 255) * PortalAlpha, Scale * PortalAlpha * 2);
             DrawVortex(PortalPos, Color.White * PortalAlpha, Scale * 0.6f * PortalAlpha * 2);
             Main.spriteBatch.UseAdditiveClamp();
-            Texture2D g = CEUtils.getExtraTex("Circle");
+            Texture2D g = CEExtraAssets.Circle;
             Main.spriteBatch.Draw(g, PortalPos - Main.screenPosition, null, new Color(80, 80, 255) * PortalAlpha, 0, g.Size() * 0.5f, new Vector2(1, 0.06f) * 0.6f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(g, PortalPos - Main.screenPosition, null, new Color(255, 255, 255) * PortalAlpha, 0, g.Size() * 0.5f, new Vector2(1, 0.06f) * 0.5f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(g, PortalPos - Main.screenPosition, null, new Color(80, 80, 255) * PortalAlpha, 0, g.Size() * 0.5f, new Vector2(0.06f, 1) * 0.6f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(g, PortalPos - Main.screenPosition, null, new Color(255, 255, 255) * PortalAlpha, 0, g.Size() * 0.5f, new Vector2(0.06f, 1) * 0.5f, SpriteEffects.None, 0);
             Main.spriteBatch.UseBlendState(BlendState.NonPremultiplied);
-            Texture2D gt = CEUtils.getExtraTex("lightball");
+            Texture2D gt = CEExtraAssets.lightball;
             CEUtils.DrawGlow(PortalPos, Color.Black * PortalAlpha, 0.4f * Scale, false, gt);
             CEUtils.DrawGlow(PortalPos, Color.Black * PortalAlpha, 0.4f * Scale, false, gt);
             Main.spriteBatch.ExitShaderRegion();
@@ -409,7 +407,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
                 return false;
 
             Main.spriteBatch.UseAdditiveClamp();
-            Texture2D tex = CEUtils.getExtraTex("lightball");
+            Texture2D tex = CEExtraAssets.lightball;
             for(int i = 0; i < oldPos.Count; i++)
             {
                 float ap = (i + 1f) / oldPos.Count;

@@ -1,4 +1,3 @@
-﻿using CalamityMod.Items;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -13,7 +12,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.width = 52;
             Item.height = 28;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.value = Item.buyPrice(gold: 1);
             Item.rare = ItemRarityID.Blue;
         }
         public static string ID => "SanctuaryAmulet";

@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -26,7 +25,7 @@ namespace CalamityEntropy.Content.Items
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item28;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
             Item.rare = ModContent.RarityType<VoidPurple>();
             Item.shootSpeed = 20f;
         }

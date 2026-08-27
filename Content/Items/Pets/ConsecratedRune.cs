@@ -1,7 +1,6 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs.Pets;
 using CalamityEntropy.Content.Projectiles.Pets;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -30,10 +29,10 @@ namespace CalamityEntropy.Content.Items.Pets
 
         public override void AddRecipes()
         {
+            // 灾厄阳光精华并入光明之魂行
             CreateRecipe().
-                AddIngredient(ItemID.SoulofLight, 2).
+                AddIngredient(ItemID.SoulofLight, 3).
                 AddIngredient(ItemID.HallowedBar, 4).
-                AddIngredient<EssenceofSunlight>().
                 AddTile(TileID.WorkBenches).
                 Register();
         }

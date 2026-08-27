@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod.Items.Placeables.Furniture.CraftingStations;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -26,9 +25,10 @@ namespace CalamityEntropy.Content.Items
 
         public override void AddRecipes()
         {
+            // 解除对灾厄 VoidCondenser 的循环依赖：虚空之鳞出自巡游者袋，保持虚空井为终局站台
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<VoidCondenser>())
                 .AddIngredient(ModContent.ItemType<VoidScales>(), 10)
+                .AddIngredient(ItemID.LunarBar, 8)
                 .AddIngredient(ItemID.FragmentVortex, 6)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();

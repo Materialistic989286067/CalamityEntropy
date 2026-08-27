@@ -1,10 +1,10 @@
-﻿using CalamityMod.Cooldowns;
+﻿using CalamityEntropy.Core.Cooldowns;
 using Terraria.Audio;
 using Terraria.Localization;
 
 namespace CalamityEntropy.Content.Cooldowns
 {
-    public class RuneDashCD : CooldownHandler
+    public class RuneDashCD : CECooldownHandler
     {
         public static new string ID => "RuneDashCD";
         public override bool ShouldDisplay => true;
@@ -14,6 +14,7 @@ namespace CalamityEntropy.Content.Cooldowns
         public override Color CooldownStartColor => Color.SkyBlue;
         public override Color CooldownEndColor => Color.SkyBlue;
 
-        public override SoundStyle? EndSound => new("CalamityMod/Sounds/Item/CometShardUse");
+        // 占位音效:原为灾厄 CometShardUse,待 sound-map 定稿复核
+        public override SoundStyle? EndSound => new("CalamityEntropy/Assets/Sounds/MantleCDEnd");
     }
 }

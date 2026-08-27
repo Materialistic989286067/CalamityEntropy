@@ -28,7 +28,7 @@ namespace CalamityEntropy.Content.Menu
             }
         }
 
-        private static readonly string TexPath = "CalamityMod/Backgrounds/BlankPixel";
+        private static readonly string TexPath = "CalamityEntropy/Assets/Extra/Ports/Backgrounds/BlankPixel";
         public override int ChooseCloseTexture(ref float scale, ref double parallax, ref float a, ref float b) => BackgroundTextureLoader.GetBackgroundSlot(TexPath);
         public override int ChooseFarTexture() => BackgroundTextureLoader.GetBackgroundSlot(TexPath);
         public override int ChooseMiddleTexture() => BackgroundTextureLoader.GetBackgroundSlot(TexPath);

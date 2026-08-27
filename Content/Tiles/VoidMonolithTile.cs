@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Items;
-using CalamityMod.Dusts;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
@@ -30,7 +29,8 @@ namespace CalamityEntropy.Content.Tiles
             TileID.Sets.HasOutlines[Type] = true;
             AddMapEntry(new Color(63, 72, 200));
             TileID.Sets.DisableSmartCursor[Type] = false;
-            DustType = (int)CalamityDusts.PurpleCosmilite;
+            // 脱离灾厄:原用灾厄紫色宇宙尘,改原版紫炬光尘
+            DustType = DustID.PurpleTorch;
             AnimationFrameHeight = 52;
         }
 

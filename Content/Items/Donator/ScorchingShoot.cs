@@ -1,14 +1,8 @@
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Rarities;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityEntropy.Content.Rarities;
 using InnoVault.PRT;
 using System;
 using System.Collections.Generic;
@@ -39,8 +33,8 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 6f;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
+            Item.rare = ModContent.RarityType<Golden>();
             Item.UseSound = CEUtils.GetSound("gunshot_large");
             Item.autoReuse = true;
             Item.shoot = ProjectileID.Bullet;
@@ -85,27 +79,27 @@ namespace CalamityEntropy.Content.Items.Donator
             return false;
         }
         #region Animations
-        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
+        public override void HoldItem(Player player) => player.Entropy().MouseWorldListener = true;
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
-            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+            player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
             Vector2 itemPosition = player.MountedCenter + itemRotation.ToRotationVector2() * 18f + new Vector2(0, 14);
             Vector2 itemSize = new Vector2(Item.width, Item.height);
             Vector2 itemOrigin = new Vector2(-10, 18);
 
-            CalamityUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
+            CEUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
             base.UseStyle(player, heldItemFrame);
         }
 
         public override void UseItemFrame(Player player)
         {
-            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+            player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
 
             float animProgress = 1 - player.itemTime / (float)player.itemTimeMax;
-            float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
+            float rotation = (player.Center - player.Entropy().MouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
             if (animProgress < 0.5)
                 rotation += (-0.22f) * (float)Math.Pow((0.5f - animProgress) / 0.5f, 2) * player.direction;
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
@@ -123,12 +117,13 @@ namespace CalamityEntropy.Content.Items.Donator
 
         public override void AddRecipes()
         {
+            // 灾厄原料按 material-map.md 替换：AngelicShotgun→欢庆Mk2、Auralis→SDMG、AuricBar→虚空锭、DarksunFragment→日耀碎片；宇宙砧→远古操纵机
             CreateRecipe()
-                .AddIngredient<AngelicShotgun>()
-                .AddIngredient<Auralis>()
-                .AddIngredient<AuricBar>(5)
-                .AddIngredient<DarksunFragment>(20)
-                .AddTile<CosmicAnvil>()
+                .AddIngredient(ItemID.Celeb2)
+                .AddIngredient(ItemID.SDMG)
+                .AddIngredient<VoidBar>(5)
+                .AddIngredient(ItemID.FragmentSolar, 20)
+                .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
     }

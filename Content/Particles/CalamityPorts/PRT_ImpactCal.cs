@@ -1,4 +1,3 @@
-using CalamityMod;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -19,7 +18,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             AngularVelocity = 0f;   //池化复用,旋速忘了清下一朵出生就在转
         }
 
-        //StarProj在@CalamityMod/Projectiles/StarProj,VaultLoaden走PRTSharedAssets,Texture只能指白图
+        //StarProj自制贴图走PRTSharedAssets,Texture只能指白图
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_ImpactCal Configure(float angularVelocity, int lifetime)
@@ -46,7 +45,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
         public override bool PreDraw(SpriteBatch spriteBatch)
         {
-            float scaleFactor = CalamityUtils.Convert01To010(LifetimeCompletion) * 1.3f;   //缩放脉冲,Completion走Convert01To010不是线性
+            float scaleFactor = CEParticleUtils.Convert01To010(LifetimeCompletion) * 1.3f;   //缩放脉冲,Completion走Convert01To010不是线性
             Vector2 drawScale = new Vector2(0.3f, 1f) * scaleFactor;
             Texture2D texture = PRTSharedAssets.StarProj.Value;   //Impact三Draw叠StarProj,缩放走Convert01To010
 

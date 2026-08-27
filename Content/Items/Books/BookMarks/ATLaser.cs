@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityEntropy.Assets.Register;
+using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
@@ -7,6 +9,9 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 {
     public class ATLaser : EBookBaseLaser
     {
+        //激光条带贴图,加载期就位,不再逐帧请求;StreakSolid 已收编,StreakFire 单文件使用保留私有
+        [VaultLoaden("CalamityEntropy/Assets/Extra/StreakFire")]
+        internal static Texture2D StreakFireTex;
         public override string Texture => "CalamityEntropy/Assets/Extra/white";
         public float w = 1f;
         public override void AI()
@@ -31,7 +36,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             {
-                Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/StreakFire").Value;
+                Texture2D tx = StreakFireTex;
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = this.color * w;
                 float p = -Main.GlobalTimeWrappedHourly * 2;
@@ -57,7 +62,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             {
-                Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/StreakSolid").Value;
+                Texture2D tx = CEExtraAssets.StreakSolid;
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = new Color(255, 255, 255) * w;
                 float p = -Main.GlobalTimeWrappedHourly * 2;

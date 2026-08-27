@@ -5,7 +5,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.Particles.CalamityPorts
 {
-    //照CalamityMod的SparkParticle翻的,StarProj贴图走PRTSharedAssets
+    //灾厄SparkParticle的移植,StarProj贴图走PRTSharedAssets
     public class PRT_SparkCal : BasePRT
     {
         public Color InitialColor;

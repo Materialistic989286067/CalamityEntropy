@@ -1,8 +1,4 @@
 ﻿using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.NPCs.Crags;
-using CalamityMod.World;
 using InnoVault.PRT;
 using ReLogic.Utilities;
 using System;
@@ -17,9 +13,9 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
     {
         public SlotId ChainsawSoundSlot;
 
-        public static readonly SoundStyle ChainsawStartSound = new("CalamityMod/Sounds/Custom/ChainsawStart") { Volume = 0.15f };
+        public static readonly SoundStyle ChainsawStartSound = new("CalamityEntropy/Assets/Sounds/chainsaw") { Volume = 0.15f };
 
-        public static readonly SoundStyle ChainsawEndSound = new("CalamityMod/Sounds/Custom/ChainsawEnd") { Volume = 0.15f };
+        public static readonly SoundStyle ChainsawEndSound = new("CalamityEntropy/Assets/Sounds/chainsaw_break") { Volume = 0.15f };
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
@@ -39,9 +35,6 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.behindTiles = true;
             NPC.lavaImmune = true;
-            NPC.Calamity().VulnerableToHeat = false;
-            NPC.Calamity().VulnerableToCold = true;
-            NPC.Calamity().VulnerableToWater = true;
             NPC.friendly = true;
         }
 
@@ -66,7 +59,7 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             else
             {
                 NPC.ai[2] = 0f;
-                UnicornAI_DSF(NPC, Mod, true, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 5f, 0.2f);
+                UnicornAI_DSF(NPC, Mod, true, Main.masterMode ? 8f : Main.expertMode ? 6f : 4f, 5f, 0.2f);
             }
             if (NPC.lavaWet) NPC.velocity.Y += -0.8f;
         }
@@ -129,20 +122,16 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
 
         public override void HitEffect(NPC.HitInfo hit)
         {
+            // 硫火尘暂以原版红火把尘近似；灾厄 gore 资产不复存在，碎块演出删除
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.RedTorch, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 40; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, hit.HitDirection, -1f, 0, default, 1f);
-                }
-                if (Main.netMode != NetmodeID.Server)
-                {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, ModContent.GetInstance<CalamityMod.CalamityMod>().Find<ModGore>("DespairStone").Type, NPC.scale);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, ModContent.GetInstance<CalamityMod.CalamityMod>().Find<ModGore>("DespairStone2").Type, NPC.scale);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.RedTorch, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }
@@ -275,24 +264,7 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             if (!flag && npc.velocity.Y == 0f && Math.Abs(npc.velocity.X) > 3f && ((npc.Center.X < target.Center.X && npc.velocity.X > 0f) || (npc.Center.X > target.Center.X && npc.velocity.X < 0f)))
             {
                 npc.velocity.Y -= bounciness;
-                if (npc.type == ModContent.NPCType<DespairStone>())
-                {
-                    SoundEngine.PlaySound(in SoundID.Item14, npc.Center);
-                    for (int j = 0; j < 10; j++)
-                    {
-                        Dust.NewDust(npc.position, npc.width, npc.height, DustID.LifeDrain, 0f, -1f);
-                    }
-
-                    if (Main.zenithWorld)
-                    {
-                        float num5 = 2f * Utils.GetLerpValue(1300f, 0f, npc.Distance(Main.LocalPlayer.Center), clamped: true);
-                        if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < num5)
-                        {
-                            Main.LocalPlayer.Calamity().GeneralScreenShakePower = num5;
-                        }
-                    }
-                }
-
+                // 原灾厄 DespairStone 类型特判分支对本友好 NPC 恒为假（死代码），随脱离灾厄一并删除
 
                 if (flag2)
                 {
@@ -381,12 +353,12 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
                 position.X += npc.velocity.X;
                 int num7 = (int)((position.X + (float)(npc.width / 2) + (float)((npc.width / 2 + 1) * num6)) / 16f);
                 int num8 = (int)((position.Y + (float)npc.height - 1f) / 16f);
-                Tile tile = CalamityUtils.ParanoidTileRetrieval(num7, num8);
-                Tile tile2 = CalamityUtils.ParanoidTileRetrieval(num7, num8 - 1);
-                Tile tile3 = CalamityUtils.ParanoidTileRetrieval(num7, num8 - 2);
-                Tile tile4 = CalamityUtils.ParanoidTileRetrieval(num7, num8 - 3);
-                Tile tile5 = CalamityUtils.ParanoidTileRetrieval(num7 - num6, num8 - 3);
-                Tile tile6 = CalamityUtils.ParanoidTileRetrieval(num7, num8 - 4);
+                Tile tile = CEUtils.ParanoidTileRetrieval(num7, num8);
+                Tile tile2 = CEUtils.ParanoidTileRetrieval(num7, num8 - 1);
+                Tile tile3 = CEUtils.ParanoidTileRetrieval(num7, num8 - 2);
+                Tile tile4 = CEUtils.ParanoidTileRetrieval(num7, num8 - 3);
+                Tile tile5 = CEUtils.ParanoidTileRetrieval(num7 - num6, num8 - 3);
+                Tile tile6 = CEUtils.ParanoidTileRetrieval(num7, num8 - 4);
                 bool num9 = (float)(num7 * 16) < position.X + (float)npc.width && (float)(num7 * 16 + 16) > position.X;
                 bool flag6 = tile.HasUnactuatedTile && !tile.TopSlope && !tile2.TopSlope && Main.tileSolid[tile.TileType] && !Main.tileSolidTop[tile.TileType];
                 bool flag7 = tile2.IsHalfBlock && tile2.HasUnactuatedTile;

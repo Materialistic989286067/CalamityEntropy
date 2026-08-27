@@ -1,11 +1,9 @@
-﻿using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -30,7 +28,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.channel = true;
             Item.knockBack = 8f;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2, gold: 80);
             Item.rare = ModContent.RarityType<Soulight>();
             Item.shoot = ModContent.ProjectileType<HowlingBullet>();
             Item.shootSpeed = 16f;
@@ -71,10 +69,10 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<Norfleet>()
-                .AddIngredient<RuinousSoul>(4)
-                .AddIngredient<AscendantSpiritEssence>(6)
-                .AddTile<CosmicAnvil>()
+                .AddIngredient(ItemID.Celeb2)
+                .AddIngredient<NihilityFragments>(4)
+                .AddIngredient<WraithSoulEssence>(6)
+                .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
     }
@@ -122,9 +120,9 @@ namespace CalamityEntropy.Content.Items.Weapons
                     CEUtils.SetShake(Projectile.Center, 4);
                 }
 
-                player.Calamity().mouseWorldListener = true;
+                player.Entropy().MouseWorldListener = true;
                 Projectile.Center = player.GetDrawCenter();
-                Projectile.rotation = (player.Calamity().mouseWorld - Projectile.Center).ToRotation();
+                Projectile.rotation = (player.Entropy().MouseWorld - Projectile.Center).ToRotation();
                 player.heldProj = Projectile.whoAmI;
                 player.SetHandRot(Projectile.rotation);
             }
@@ -215,7 +213,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public void DrawEnergyBall(Vector2 pos, float size, float alpha)
         {
-            Texture2D tex = CEUtils.getExtraTex("a_circle");
+            Texture2D tex = CEExtraAssets.a_circle;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(90, 90, 165) * alpha, Projectile.rotation, tex.Size() * 0.5f, new Vector2(1 + (Projectile.velocity.Length() * 0.01f), 1) * size * 0.25f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(40, 40, 255) * alpha, Projectile.rotation, tex.Size() * 0.5f, new Vector2(1 + (Projectile.velocity.Length() * 0.01f), 1) * size * 0.4f, SpriteEffects.None, 0);
@@ -227,9 +225,11 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class HowlingLaser : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
+        //激光着色器,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Effects/ColorLerp", AssetMode.EffectValue, "Pass1")]
+        internal static Effect ColorLerpShader;
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            //EParticle.spawnNew→PRTLoader.NewParticle,spawn点和数值迁移纪律:一个不改
             PRTLoader.NewParticle<PRT_DirectionalPulseRing>(target.Center, Vector2.Zero, new Color(200, 160, 200), 0.2f).Configure(new Vector2(1, 1f), 0, 0.8f, 42);
             for (float i = 0; i < 360; i += 4)
             {
@@ -283,8 +283,8 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D laser = CEUtils.getExtraTex("DeathRay");
-            Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/ColorLerp", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Texture2D laser = CEExtraAssets.DeathRay;
+            Effect shader = ColorLerpShader;
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicWrap, DepthStencilState.None, Main.Rasterizer, shader, Main.GameViewMatrix.TransformationMatrix);
             shader.CurrentTechnique.Passes[0].Apply();

@@ -1,8 +1,5 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Rogue;
+using CalamityEntropy.Core.Weapons;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -10,8 +7,11 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
-    public class AzureOfFirmament : RogueWeapon
+    public class AzureOfFirmament : ModItem, ICEChargeWeapon
     {
+        // 充能条 5 秒；原潜伏乘数 伤害1.2/弹速1/击退3 并入释放乘数
+        public CEChargeProfile ChargeProfile => CEChargeProfile.ChargeBar(5f, 1.2f, 1f, 3f);
+
         public override void SetDefaults()
         {
             Item.width = 42;
@@ -26,33 +26,26 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.UseSound = null;
             Item.autoReuse = true;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<AzureOfFirmamentThrow>();
             Item.shootSpeed = 50f;
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Melee;
         }
-
-
-
-        public override float StealthDamageMultiplier => 1.2f;
-        public override float StealthVelocityMultiplier => 1f;
-        public override float StealthKnockbackMultiplier => 3f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.Calamity().StealthStrikeAvailable())
+            if (CEChargeWeapon.TryConsume(player, Item))
             {
                 for (int i = 0; i < 12; i++)
                 {
                     Projectile.NewProjectile(source, position, CEUtils.randomRot().ToRotationVector2() * 6, ModContent.ProjectileType<WelkinFeather>(), damage / 4, knockback, player.whoAmI, 0f, -1f);
                 }
                 int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
-                if (p.WithinBounds(Main.maxProjectiles))
+                if (p >= 0 && p < Main.maxProjectiles)
                 {
-                    Main.projectile[p].Calamity().stealthStrike = true;
-                    p.ToProj().netUpdate = true;
                     p.ToProj().penetrate = 5;
+                    CEChargeWeapon.Empower(p);
                 }
                 return false;
             }
@@ -61,7 +54,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AerialiteBar>(8).
+                AddIngredient(ItemID.MeteoriteBar, 8).
                 AddIngredient(ItemID.SunplateBlock, 6).
                 AddIngredient(ItemID.Feather, 2).
                 AddTile(TileID.Anvils).

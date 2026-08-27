@@ -35,7 +35,7 @@ namespace CalamityEntropy.Content.Items.Vanity
             Item.width = 30;
             Item.height = 26;
             Item.accessory = true;
-            Item.value = CalamityMod.Items.CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Green;
             Item.vanity = true;
             Item.Entropy().tooltipStyle = 8;

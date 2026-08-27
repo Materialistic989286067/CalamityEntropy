@@ -1,10 +1,4 @@
-﻿using CalamityEntropy.Content.Buffs;
-using CalamityEntropy.Content.Buffs.Wyrm;
-using CalamityEntropy.Content.Items.Donator;
-using CalamityMod;
-using CalamityMod.ChatTags;
-using CalamityMod.Rarities;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
 using System;
@@ -20,15 +14,14 @@ using Terraria.UI.Chat;
 
 namespace CalamityEntropy.Core.ChatTags
 {
-    public sealed class TextEffectHandler : AbstractTagHandler<TextEffectHandler>
+    public sealed class TextEffectHandler : CETagHandler<TextEffectHandler>
     {
         protected override string[] TagNames { get; } = ["ceeffect"];
 
         public override TextSnippet Parse(string text, Color baseColor = new(), string options = null)
         {
-            if (!CalamityClientConfig.Instance.TextEffects)
-                return new TextSnippet(text);
-            if (options.Equals("cruiser", StringComparison.OrdinalIgnoreCase))
+            // 特效开关走自有客户端配置 Config.TextEffects（重构时补的开关接线）
+            if (Common.Config.Instance.TextEffects && options.Equals("cruiser", StringComparison.OrdinalIgnoreCase))
                 return new CruiserSnippet(text);
             return new TextSnippet(text);
         }

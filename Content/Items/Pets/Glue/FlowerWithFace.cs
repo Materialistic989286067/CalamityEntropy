@@ -1,9 +1,11 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs.Pets;
 using CalamityEntropy.Content.Items.Donator;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles.Pets.Desert;
-using CalamityMod;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -14,7 +16,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies.RevengeanceAndDeathAI;
 
 namespace CalamityEntropy.Content.Items.Pets.Glue
 {
@@ -236,26 +237,26 @@ namespace CalamityEntropy.Content.Items.Pets.Glue
                                 dmg = 49;
                             if (Main.hardMode)
                                 dmg = 59;
-                            if ((NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3) || NPC.downedPlantBoss || DownedBossSystem.downedCalamitasClone)
+                            if ((NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3) || NPC.downedPlantBoss)
                                 dmg = 99;
                             if (NPC.downedGolemBoss)
                                 dmg = 219;
                             if (NPC.downedMoonlord)
                                 dmg = 329;
-                            if (DownedBossSystem.downedProvidence)
+                            if (EDownedBosses.downedNihilityTwin)
                                 dmg = 579;
-                            if (DownedBossSystem.downedDoG)
+                            if (EDownedBosses.downedAbyssalWraith)
                                 dmg = 729;
-                            if (DownedBossSystem.downedCalamitas || DownedBossSystem.downedExoMechs)
+                            if (EDownedBosses.downedCruiser)
                                 dmg = 999;
                             CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromThis(), player, JaronaTarget.ToNPC().Center, dmg, 160, DamageClass.Generic).ArmorPenetration = dmg;
                         }
                         for (int i = 0; i < 9; i++)
                             CombatText.NewText(JaronaTarget.ToNPC().getRect(), Color.Gold, 999, true);
                         CEUtils.PlaySound("HIT", 1, Projectile.Center);
-                        PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center + Projectile.velocity.normalize() * 10, Projectile.velocity.normalize() * 4, Color.Gold, 0.05f).Configure("CalamityMod/Particles/SoftRoundExplosion", new Vector2(0.3f, 1f), Projectile.velocity.ToRotation(), 0.05f, 0.16f, 24);
-                        PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center + Projectile.velocity.normalize() * 15, Projectile.velocity.normalize() * 7, Color.Gold, 0.05f).Configure("CalamityMod/Particles/SoftRoundExplosion", new Vector2(0.2f, 1f), Projectile.velocity.ToRotation(), 0.05f, 0.2f, 24);
-                        PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center + Projectile.velocity.normalize() * 20, Projectile.velocity.normalize() * 10, Color.Gold, 0.05f).Configure("CalamityMod/Particles/SoftRoundExplosion", new Vector2(0.15f, 1f), Projectile.velocity.ToRotation(), 0.05f, 0.24f, 24);
+                        PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center + Projectile.velocity.normalize() * 10, Projectile.velocity.normalize() * 4, Color.Gold, 0.05f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", new Vector2(0.3f, 1f), Projectile.velocity.ToRotation(), 0.05f, 0.16f, 24);
+                        PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center + Projectile.velocity.normalize() * 15, Projectile.velocity.normalize() * 7, Color.Gold, 0.05f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", new Vector2(0.2f, 1f), Projectile.velocity.ToRotation(), 0.05f, 0.2f, 24);
+                        PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center + Projectile.velocity.normalize() * 20, Projectile.velocity.normalize() * 10, Color.Gold, 0.05f).Configure("CalamityEntropy/Assets/Particles/SoftRoundExplosion", new Vector2(0.15f, 1f), Projectile.velocity.ToRotation(), 0.05f, 0.24f, 24);
                         for(int i = 0; i < 32; i++)
                         {
                             PRTLoader.NewParticle<PRT_AltLineCal>(Projectile.Center + Projectile.velocity, -Projectile.velocity.RotatedByRandom(1.9f) * Main.rand.NextFloat(0.4f, 1f), new Color(255, 235, 175), Main.rand.NextFloat(1.5f, 2f)).Configure(false, Main.rand.Next(26, 32));
@@ -431,11 +432,8 @@ namespace CalamityEntropy.Content.Items.Pets.Glue
         {
             CEUtils.PlaySound("VoiceClips/Random" + Main.rand.Next(0, 25), 1, Projectile.Center);
         }
-        public static Effect wt;
         public override bool PreDraw(ref Color lightColor)
         {
-            if (wt == null)
-                wt = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/WhiteTrans", AssetRequestMode.ImmediateLoad).Value;
             var dofs = new Vector2(0, anm == AnimationStyle.Run ? 12 : -2);
             Vector2 drawPos = Projectile.Center + dofs;
             Texture2D tex = GetTex();
@@ -443,9 +441,9 @@ namespace CalamityEntropy.Content.Items.Pets.Glue
             SpriteEffects ef = SprEf;
             float ta = float.Min(1, Projectile.velocity.Length() * 0.03f);
             Main.spriteBatch.End();
-            wt.Parameters["strength"].SetValue(1);
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, wt, Main.GameViewMatrix.TransformationMatrix);
-            wt.CurrentTechnique.Passes[0].Apply();
+            CEEffectAssets.WhiteTrans.Parameters["strength"].SetValue(1);
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, CEEffectAssets.WhiteTrans, Main.GameViewMatrix.TransformationMatrix);
+            CEEffectAssets.WhiteTrans.CurrentTechnique.Passes[0].Apply();
             for (int i = 0; i < oldStats.Count; i++)
             {
                 Color clr = Main.hslToRgb((Main.GameUpdateCount * 0.03f + i * 0.018f) % MathHelper.PiOver2, 1f, 0.5f) * 1f * ta * (i / (oldStats.Count + 1f));

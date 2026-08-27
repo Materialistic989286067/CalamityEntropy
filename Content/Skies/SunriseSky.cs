@@ -1,7 +1,7 @@
-﻿using CalamityMod;
+﻿using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.Graphics.Effects;
 using Terraria.ModLoader;
@@ -49,31 +49,24 @@ namespace CalamityEntropy.Content.Skies
             return Color.Lerp(inColor, Color.Lerp(new Color(25, 50, 50, 255), fColor, sunPos * 0.5f + 0.5f), opacity);
         }
         public static Color fColor = new Color(255, 240, 80);
+        //专用服务器上这些字段保持 null,与原先 !Main.dedServ 守卫等价
+        [VaultLoaden("CalamityEntropy/Assets/Sunrise/Background")]
         public static Texture2D Background;
+        [VaultLoaden("CalamityEntropy/Assets/Sunrise/Cliffs")]
         public static Texture2D Cliffs;
+        [VaultLoaden("CalamityEntropy/Assets/Sunrise/CloudsBack1")]
         public static Texture2D CloudsBack1;
+        [VaultLoaden("CalamityEntropy/Assets/Sunrise/CloudsBack2")]
         public static Texture2D CloudsBack2;
+        [VaultLoaden("CalamityEntropy/Assets/Sunrise/CloudsFore")]
         public static Texture2D CloudsFore;
+        [VaultLoaden("CalamityEntropy/Assets/Sunrise/CloudsMid")]
         public static Texture2D CloudsMid;
-        public static List<Texture2D> Fields;
+        //Field0~Field7 八张远景层,按数字后缀批量加载
+        [VaultLoaden("CalamityEntropy/Assets/Sunrise/Field", 0, 8, AssetMode = AssetMode.TextureValueArray)]
+        public static Texture2D[] Fields;
+        [VaultLoaden("CalamityEntropy/Assets/Sunrise/Sun")]
         public static Texture2D Sun;
-        public override void OnLoad()
-        {
-            if(!Main.dedServ)
-            {
-                string path = "CalamityEntropy/Assets/Sunrise/";
-                Background = CEUtils.RequestTex(path + "Background");
-                Cliffs = CEUtils.RequestTex(path + "Cliffs");
-                CloudsBack1 = CEUtils.RequestTex(path + "CloudsBack1");
-                CloudsBack2 = CEUtils.RequestTex(path + "CloudsBack2");
-                CloudsFore = CEUtils.RequestTex(path + "CloudsFore");
-                CloudsMid = CEUtils.RequestTex(path + "CloudsMid");
-                Sun = CEUtils.RequestTex(path + "Sun");
-                Fields = new List<Texture2D>();
-                for (int i = 0; i < 8; i++)
-                    Fields.Add(CEUtils.RequestTex(path + "Field" + i));
-            }
-        }
         public float sunPos = 0;
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {

@@ -1,178 +1,20 @@
 ﻿using CalamityEntropy.Content.NPCs;
-using CalamityMod;
-using CalamityMod.Events;
-using CalamityMod.NPCs.CeaselessVoid;
-using CalamityMod.NPCs.Crabulon;
-using CalamityMod.NPCs.Cryogen;
-using CalamityMod.NPCs.DesertScourge;
-using CalamityMod.NPCs.DevourerofGods;
-using CalamityMod.NPCs.Perforator;
-using CalamityMod.NPCs.Signus;
-using CalamityMod.NPCs.SlimeGod;
-using CalamityMod.NPCs.StormWeaver;
-using CalamityMod.Projectiles.Boss;
-using CalamityMod.World;
 using System;
-using System.Collections.Generic;
 using Terraria;
-using Terraria.Chat;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 
 namespace CalamityEntropy.Common
 {
+    //熵灾模式对原版Boss的强化(灾厄Boss分支已随脱离灾厄整体裁撤)
     public class EntropyModeGNPC : GlobalNPC
     {
         public override bool InstancePerEntity => true;
-        PrefEntropyAI perfAI = null;
 
-        public override bool PreAI(NPC npc)
-        {
-            if (CalamityEntropy.EntropyMode)
-            {
-                if (npc.ModNPC != null)
-                {
-                    if (npc.ModNPC is PerforatorHive pf)
-                    {
-                        if (perfAI == null)
-                            perfAI = new PrefEntropyAI();
-                        perfAI.PerfAI(pf);
-                        return false;
-                    }
-                    if (npc.ModNPC is Signus || npc.ModNPC is CeaselessVoid || npc.ModNPC is StormWeaverHead)
-                    {
-                        if (CEUtils.getDistance(npc.Center, Main.player[Player.FindClosest(npc.Center, 1000000, 1000000)].Center) > 6400)
-                        {
-                            Player plr = Main.player[Player.FindClosest(npc.Center, 1000000, 1000000)];
-                            npc.Center = plr.Center - CEUtils.normalize((plr.Center - npc.Center)) * 900;
-                        }
-                    }
-                    if (npc.ModNPC is StormWeaverHead sw && NPC.AnyNPCs(ModContent.NPCType<DevourerofGodsHead>()))
-                    {
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            var tailF = typeof(StormWeaverHead).GetField("tail", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                            var tail = (bool)tailF.GetValue(sw);
-                            if (!tail && npc.ai[0] == 0f)
-                            {
-                                int Previous = npc.whoAmI;
-                                int totalLength = (CalamityWorld.death ? 60 : CalamityWorld.revenge ? 50 : Main.expertMode ? 40 : 30) / 3;
-                                int npcCounts = 0;
-                                if (Main.zenithWorld) // use up every remaining npc but 20 for safety in the zenith seed
-                                {
-                                    for (int i = 0; i < Main.maxNPCs; i++)
-                                    {
-                                        if (!Main.npc[i].active)
-                                            npcCounts++;
-                                    }
-
-                                    totalLength = npcCounts - 20;
-                                }
-
-                                for (int segments = 0; segments < totalLength; segments++)
-                                {
-                                    int lol;
-                                    if (segments >= 0 && segments < totalLength - 1)
-                                        lol = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.position.X + (npc.width / 2), (int)npc.position.Y + (npc.height / 2), ModContent.NPCType<StormWeaverBody>(), npc.whoAmI);
-                                    else
-                                        lol = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.position.X + (npc.width / 2), (int)npc.position.Y + (npc.height / 2), ModContent.NPCType<StormWeaverTail>(), npc.whoAmI);
-
-                                    Main.npc[lol].realLife = npc.whoAmI;
-                                    Main.npc[lol].ai[2] = npc.whoAmI;
-                                    Main.npc[lol].ai[1] = Previous;
-                                    Main.npc[Previous].ai[0] = lol;
-                                    npc.netUpdate = true;
-                                    Previous = lol;
-                                }
-
-                                tailF.SetValue(sw, true);
-                            }
-                        }
-                    }
-                }
-            }
-            return true;
-        }
-        public static List<int> SlimeGodSlimes = new List<int>
-        {
-            NPCType<CrimulanPaladin>(),
-            NPCType<EbonianPaladin>(),
-            NPCType<SplitCrimulanPaladin>(),
-            NPCType<SplitEbonianPaladin>()
-        };
-        public override bool CheckActive(NPC npc)
-        {
-            if (CalamityEntropy.EntropyMode)
-            {
-                bool hasPlr = false;
-                foreach (var plr in Main.ActivePlayers)
-                {
-                    if (!plr.dead)
-                    {
-                        hasPlr = true;
-                        break;
-                    }
-                }
-                if (npc.ModNPC != null && hasPlr)
-                {
-                    if (npc.ModNPC is Signus || npc.ModNPC is CeaselessVoid || npc.ModNPC is StormWeaverHead || npc.ModNPC is StormWeaverTail || npc.ModNPC is StormWeaverBody)
-                    {
-                        return false;
-                    }
-                }
-            }
-            return !SlimeGodSlimes.Contains(npc.type);
-        }
-        public override void ModifyIncomingHit(NPC npc, ref NPC.HitModifiers modifiers)
-        {
-            if (CalamityEntropy.EntropyMode)
-            {
-                if (npc.ModNPC != null)
-                {
-                    if (npc.ModNPC is DevourerofGodsTail || npc.ModNPC is DevourerofGodsHead || npc.ModNPC is DevourerofGodsBody)
-                    {
-                        if (NPC.AnyNPCs(ModContent.NPCType<Signus>()) || NPC.AnyNPCs(ModContent.NPCType<CeaselessVoid>()) || NPC.AnyNPCs(ModContent.NPCType<StormWeaverHead>()))
-                        {
-                            modifiers.FinalDamage *= 0;
-                        }
-                    }
-                }
-            }
-        }
-        public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot)
-        {
-            if (CalamityEntropy.EntropyMode)
-            {
-                if (npc.ModNPC != null)
-                {
-                    if (npc.ModNPC is DevourerofGodsTail || npc.ModNPC is DevourerofGodsHead || npc.ModNPC is DevourerofGodsBody)
-                    {
-                        if (NPC.AnyNPCs(ModContent.NPCType<Signus>()) || NPC.AnyNPCs(ModContent.NPCType<CeaselessVoid>()) || NPC.AnyNPCs(ModContent.NPCType<StormWeaverHead>()))
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return true;
-        }
-        public bool EDogSpawnSignus = true;
-        public bool EDogSpawnSWeaver = true;
-        public bool EDogSpawnCVoid = true;
-        public int ImmuneTimeForAS = 300;
         public override void PostAI(NPC npc)
         {
             if (CalamityEntropy.EntropyMode)
             {
-                if (npc.ModNPC != null)
-                {
-                    if (npc.ModNPC is CeaselessVoid)
-                    {
-
-                    }
-                }
                 if (npc.type == NPCID.WallofFleshEye)
                 {
                     if (npc.Entropy().counter % 400 < 60 && npc.Entropy().counter % 6 == 0)
@@ -212,10 +54,6 @@ namespace CalamityEntropy.Common
                         npc.scale *= 1.4f;
                     }
                 }
-                if (SlimeGodSlimes.Contains(npc.type))
-                {
-                    npc.MaxFallSpeedMultiplier *= 12;
-                }
                 if (npc.type == NPCID.PlanterasHook)
                 {
                     if (Main.GameUpdateCount % 40 == 0 && Main.rand.NextBool(2))
@@ -247,7 +85,8 @@ namespace CalamityEntropy.Common
                     if (!this.ksFlag && npc.velocity.Y == 0f && !Main.dedServ)
                     {
                         CEUtils.PlaySound("ksLand", 1f, new Vector2?(npc.Center), 2, 1f);
-                        CalamityUtils.Calamity(Main.LocalPlayer).GeneralScreenShakePower = Utils.Remap(Main.LocalPlayer.Distance(npc.Center), 2000f, 1000f, 0f, 12f, true);
+                        //脱离灾厄:原灾厄GeneralScreenShakePower距离衰减震屏(1000~2000px内0~12),改用自有等价
+                        CEUtils.SetShake(npc.Center, 12f, 2000f);
                     }
                     this.ksFlag = (npc.velocity.Y == 0f);
                     if (npc.velocity.Y == 0f)
@@ -272,161 +111,8 @@ namespace CalamityEntropy.Common
 
                     }
                 }
-                if (npc.ModNPC != null)
-                {
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
-                        if (npc.ModNPC is CryogenShield)
-                        {
-                            if (npc.Entropy().counter % 22 == 0)
-                            {
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                {
-                                    int iceBlast = Main.zenithWorld ? ModContent.ProjectileType<BrimstoneBarrage>() : ModContent.ProjectileType<IceBlast>();
-
-                                    int totalProjectiles = BossRushEvent.BossRushActive ? 8 : 5;
-                                    float radians = MathHelper.TwoPi / totalProjectiles;
-                                    int type = iceBlast;
-                                    int damage = (int)(npc.GetProjectileDamage(type) * 0.7f);
-                                    float velocity = 26f;
-                                    float projectileVelocityToPass = 0f;
-                                    Vector2 spinningPoint = new Vector2(0f, -velocity);
-                                    for (int k = 0; k < totalProjectiles; k++)
-                                    {
-                                        Vector2 projSpreadRotation = spinningPoint.RotatedBy(radians * k + Main.GlobalTimeWrappedHourly);
-                                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + Vector2.Normalize(projSpreadRotation) * 30f, projSpreadRotation, type, damage, 0f, Main.myPlayer, 0f, 0f, projectileVelocityToPass);
-                                    }
-                                }
-                            }
-                        }
-                        if (npc.ModNPC is Cryogen)
-                        {
-                            if (!NPC.AnyNPCs(ModContent.NPCType<CryogenShield>()))
-                            {
-                                if (npc.Entropy().counter % 600 == 0)
-                                {
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    {
-                                        int totalProjectiles = 3;
-                                        float radians = MathHelper.TwoPi / totalProjectiles;
-                                        int type = ModContent.ProjectileType<IceBomb>();
-                                        int damage = (int)(npc.GetProjectileDamage(type) * 0.7f);
-                                        float velocity = 2f + npc.ai[0];
-                                        double angleA = radians * 0.5;
-                                        double angleB = MathHelper.ToRadians(90f) - angleA;
-                                        float velocityX = (float)(velocity * Math.Sin(angleA) / Math.Sin(angleB));
-                                        Vector2 spinningPoint = Main.rand.NextBool() ? new Vector2(0f, -velocity) : new Vector2(-velocityX, -velocity);
-                                        for (int k = 0; k < totalProjectiles; k++)
-                                        {
-                                            Vector2 projSpreadRotation = spinningPoint.RotatedBy(radians * k);
-                                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + Vector2.Normalize(projSpreadRotation) * 30f, projSpreadRotation, type, damage, 0f, Main.myPlayer);
-                                        }
-                                    }
-                                }
-                                if (npc.Entropy().counter % 6 == 0)
-                                {
-                                    if (npc.Entropy().counter % 30 == 0)
-                                    {
-                                        int iceBlast = ModContent.ProjectileType<IceBlast>();
-
-                                        int totalProjectiles = BossRushEvent.BossRushActive ? 6 : 4;
-                                        float radians = MathHelper.TwoPi / totalProjectiles;
-                                        int type = iceBlast;
-                                        int damage = npc.GetProjectileDamage(type);
-                                        float velocity = 10f;
-                                        float projectileVelocityToPass = 28f;
-                                        Vector2 spinningPoint = new Vector2(0f, -velocity);
-                                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                                        {
-
-                                            for (int k = 0; k < totalProjectiles; k++)
-                                            {
-                                                Vector2 projSpreadRotation = spinningPoint.RotatedBy(radians * k + Main.GlobalTimeWrappedHourly);
-                                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + Vector2.Normalize(projSpreadRotation) * 30f, projSpreadRotation, type, damage, 0f, Main.myPlayer, 0f, 0f, projectileVelocityToPass);
-                                            }
-                                        }
-                                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, (npc.target.ToPlayer().Center - npc.Center).normalize() * 20, type, damage, 0f, Main.myPlayer, 0f, 0f, projectileVelocityToPass);
-
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (npc.ModNPC is CrabShroom)
-                    {
-                        npc.dontTakeDamage = true;
-                    }
-                    if (npc.ModNPC is DesertScourgeHead && npc.localAI[2] == 1f && this.dScFLag)
-                    {
-                        this.dScFLag = false;
-                        NPC.SpawnOnPlayer(npc.FindClosestPlayer(), ModContent.NPCType<DesertNuisanceHead>());
-                        NPC.SpawnOnPlayer(npc.FindClosestPlayer(), ModContent.NPCType<DesertNuisanceHeadYoung>());
-                    }
-                    if (npc.ModNPC is Crabulon)
-                    {
-                        npc.MaxFallSpeedMultiplier *= 2f;
-                        if (npc.velocity.Length() < 40)
-                        {
-                            npc.velocity *= 1.01f;
-                        }
-                        if (this.ksFlag && npc.velocity.Y != 0f && npc.velocity.Y < 0f)
-                        {
-                            this.ksFlag2 = false;
-                            npc.velocity.Y = npc.velocity.Y * 1.34f;
-                            npc.velocity.X = npc.velocity.X * 1.5f;
-                            if (Utils.NextBool(Main.rand, 3))
-                            {
-                                npc.velocity.Y = npc.velocity.Y * 1.4f;
-                                this.ksFlag2 = true;
-                            }
-                        }
-                        if (npc.velocity.X != 0f && npc.velocity.Y != 0f && this.ksFlag2 && Math.Sign(npc.velocity.X) != Math.Sign(npc.target.ToPlayer().Center.X - npc.Center.X))
-                        {
-                            npc.velocity.X = npc.velocity.X * 0.1f;
-                            npc.velocity.Y = -4f;
-                            this.ksFlag2 = false;
-                        }
-                        this.ksFlag = (npc.velocity.Y == 0f);
-                        if (npc.velocity.Y == 0f)
-                        {
-                            this.vyAdd = 0f;
-                        }
-                        if (npc.velocity.Y != 0f)
-                        {
-                            this.vyAdd = 0.65f;
-                            if (this.ksFlag2)
-                            {
-                                this.vyAdd = 0.4f;
-                            }
-                            npc.velocity.Y = npc.velocity.Y + this.vyAdd;
-                        }
-                    }
-                }
             }
             init = false;
-        }
-        public static int SpawnBoss(int spawnPositionX, int spawnPositionY, int Type, int targetPlayerIndex)
-        {
-            int num = 200;
-            num = NPC.NewNPC(NPC.GetBossSpawnSource(targetPlayerIndex), spawnPositionX, spawnPositionY, Type, 1);
-
-
-            if (num == 200)
-                return -1;
-
-            Main.npc[num].target = targetPlayerIndex;
-            Main.npc[num].timeLeft *= 20;
-            string typeName = Main.npc[num].TypeName;
-            if (Main.netMode == 2 && num < 200)
-                NetMessage.SendData(23, -1, -1, null, num);
-
-
-
-            if (Main.netMode == 0)
-                Main.NewText(Language.GetTextValue("Announcement.HasAwoken", typeName), 175, 75);
-            else if (Main.netMode == 2)
-                ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasAwoken", Main.npc[num].GetTypeNetName()), new Color(175, 75, 255));
-            return num;
         }
 
         public bool SpawnAtHalfLife = true;
@@ -438,7 +124,5 @@ namespace CalamityEntropy.Common
         public bool init = true;
 
         public bool ksFlag2;
-
-        public bool dScFLag = true;
     }
 }

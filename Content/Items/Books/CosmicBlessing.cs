@@ -1,10 +1,10 @@
+using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Dusts;
+using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityEntropy.Content.Rarities;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -30,20 +30,22 @@ namespace CalamityEntropy.Content.Items.Books
             Item.crit = 10;
             Item.mana = 12;
             Item.ArmorPenetration = 32;
-            Item.rare = ModContent.RarityType<CosmicPurple>();
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.rare = ModContent.RarityType<AbyssalBlue>();
+            Item.value = Item.buyPrice(platinum: 2);
         }
-        public override Texture2D BookMarkTexture => ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/EntropyBookUI/CB").Value;
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/CB")]
+        internal static Asset<Texture2D> BookMarkSlotTex;
+        public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<CosmicBlessingHeld>();
         public override int SlotCount => 5;
 
         public override void AddRecipes()
         {
+            // 原灾厄原料: 宇宙晶锭×10 + 升华之魂精华×2 按映射同归幽渊魂髓, 合并为×12
             CreateRecipe()
                 .AddIngredient<SelenbiteVolume>()
-                .AddIngredient<CosmiliteBar>(10)
-                .AddIngredient<AscendantSpiritEssence>(2)
-                .AddTile<CosmicAnvil>()
+                .AddIngredient<WraithSoulEssence>(12)
+                .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
     }
@@ -151,14 +153,14 @@ namespace CalamityEntropy.Content.Items.Books
             {
                 for (int i = 0; i < 2; ++i)
                 {
-                    //CustomPulse叠BasicCircle+BloomRing,CalamityPorts Configure签名跟Calamity原构造对齐
-                    PRTLoader.NewParticle<PRT_CustomPulse>(dustPos, Vector2.Zero, Color.Black, 0.4f * speedMultiplier * scale).Configure("CalamityMod/ExtraTextures/BasicCircle", Vector2.One, 0, 0.4f * speedMultiplier * scale, 0.05f * speedMultiplier * scale, 12, PRTDrawModeEnum.AlphaBlend);
-                    PRTLoader.NewParticle<PRT_CustomPulse>(dustPos, Vector2.Zero, color, 0.15f * (1 + i * 0.2f) * speedMultiplier * scale).Configure("CalamityMod/Particles/BloomRing", Vector2.One, 0, 0.15f * (1 + i * 0.2f) * speedMultiplier * scale, 0.025f * (1 + i * 0.2f) * speedMultiplier * scale, 12);
+                    //CustomPulse叠圆形光斑+BloomRing,CalamityPorts Configure签名跟Calamity原构造对齐
+                    PRTLoader.NewParticle<PRT_CustomPulse>(dustPos, Vector2.Zero, Color.Black, 0.4f * speedMultiplier * scale).Configure("CalamityEntropy/Assets/Particles/BloomCircle", Vector2.One, 0, 0.4f * speedMultiplier * scale, 0.05f * speedMultiplier * scale, 12, PRTDrawModeEnum.AlphaBlend);
+                    PRTLoader.NewParticle<PRT_CustomPulse>(dustPos, Vector2.Zero, color, 0.15f * (1 + i * 0.2f) * speedMultiplier * scale).Configure("CalamityEntropy/Assets/Particles/BloomRing", Vector2.One, 0, 0.15f * (1 + i * 0.2f) * speedMultiplier * scale, 0.025f * (1 + i * 0.2f) * speedMultiplier * scale, 12);
                 }
             }
             else
             {
-                PRTLoader.NewParticle<PRT_CustomSpark>(dustPos, Vector2.Zero, color, 0.3f * scale * speedMultiplier).Configure("CalamityMod/Particles/BloomCircle", false, 10, new Vector2(1f, 1f), true, false, 0f, false, false);
+                PRTLoader.NewParticle<PRT_CustomSpark>(dustPos, Vector2.Zero, color, 0.3f * scale * speedMultiplier).Configure("CalamityEntropy/Assets/Particles/BloomCircle", false, 10, new Vector2(1f, 1f), true, false, 0f, false, false);
             }
 
 
@@ -196,7 +198,7 @@ namespace CalamityEntropy.Content.Items.Books
         public void DrawVortex(Vector2 pos, Color color, float Size = 1, float glow = 1f)
         {
             Main.spriteBatch.End();
-            Effect effect = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Vortex", AssetRequestMode.ImmediateLoad).Value;
+            Effect effect = CEEffectAssets.Vortex;
             effect.Parameters["Center"].SetValue(new Vector2(0.5f, 0.5f));
             effect.Parameters["Strength"].SetValue(22);
             effect.Parameters["AspectRatio"].SetValue(1);
@@ -208,7 +210,7 @@ namespace CalamityEntropy.Content.Items.Books
             effect.Parameters["enhanceLightAlpha"].SetValue(0.8f);
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             effect.CurrentTechnique.Passes[0].Apply();
-            Main.spriteBatch.Draw(CEUtils.getExtraTex("VoronoiShapes"), pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12, CEUtils.getExtraTex("VoronoiShapes").Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(CEExtraAssets.VoronoiShapes, pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12, CEExtraAssets.VoronoiShapes.Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
             CEUtils.DrawGlow(pos, Color.White * 0.4f * glow * (color.A / 255f), 0.8f * Size * glow);
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
@@ -257,8 +259,8 @@ namespace CalamityEntropy.Content.Items.Books
             float scale = 2;
             for (int i = 0; i < 2; ++i)
             {
-                PRTLoader.NewParticle<PRT_CustomPulse>(dustPos, Vector2.Zero, Color.Black, 0.4f * scale).Configure("CalamityMod/ExtraTextures/BasicCircle", Vector2.One, 0, 0.4f * scale, 0.05f * scale, 16, PRTDrawModeEnum.AlphaBlend);
-                PRTLoader.NewParticle<PRT_CustomPulse>(dustPos, Vector2.Zero, color, 0.15f * (1 + i * 0.2f) * scale).Configure("CalamityMod/Particles/BloomRing", Vector2.One, 0, 0.15f * (1 + i * 0.2f) * scale, 0.025f * (1 + i * 0.2f) * scale, 16);
+                PRTLoader.NewParticle<PRT_CustomPulse>(dustPos, Vector2.Zero, Color.Black, 0.4f * scale).Configure("CalamityEntropy/Assets/Particles/BloomCircle", Vector2.One, 0, 0.4f * scale, 0.05f * scale, 16, PRTDrawModeEnum.AlphaBlend);
+                PRTLoader.NewParticle<PRT_CustomPulse>(dustPos, Vector2.Zero, color, 0.15f * (1 + i * 0.2f) * scale).Configure("CalamityEntropy/Assets/Particles/BloomRing", Vector2.One, 0, 0.15f * (1 + i * 0.2f) * scale, 0.025f * (1 + i * 0.2f) * scale, 16);
             }
         }
         public List<Vector2> OldPos = new();

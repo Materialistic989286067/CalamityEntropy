@@ -1,8 +1,5 @@
 ﻿using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -22,9 +19,10 @@ namespace CalamityEntropy.Content.Items.Tools
             Item.useTime = 6;
             Item.useAnimation = 25;
             Item.pick = 70;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            // 灾厄真近战伤害类按全局裁定统一归 DamageClass.Melee
+            Item.DamageType = DamageClass.Melee;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.UseSound = SoundID.Item23;
             Item.autoReuse = true;
@@ -35,7 +33,7 @@ namespace CalamityEntropy.Content.Items.Tools
         {
             CreateRecipe().
                 AddIngredient<HellIndustrialComponents>(4).
-                AddIngredient<DubiousPlating>(6).
+                AddIngredient<AzafurePlating>(6).
                 AddRecipeGroup(CERecipeGroups.IronBar, 6).
                 AddTile(TileID.Anvils).
                 Register();
@@ -45,23 +43,23 @@ namespace CalamityEntropy.Content.Items.Tools
         {
             Item.pick = player.AzafureEnhance() ? 100 : 70;
             Item.tileBoost = player.AzafureEnhance() ? 3 : -1;
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
         }
         public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
-            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+            player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
             Vector2 itemPosition = player.MountedCenter + itemRotation.ToRotationVector2() * 6f;
             Vector2 itemSize = new Vector2(Item.width, Item.height);
             Vector2 itemOrigin = new Vector2(Main.rand.NextFloat(-2, 2), Main.rand.NextFloat(-2, 2));
 
-            CalamityUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
+            CEUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
             base.UseStyle(player, heldItemFrame);
         }
         public override void UseItemFrame(Player player)
         {
-            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
-            float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
+            player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
+            float rotation = (player.Center - player.Entropy().MouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
         }
     }

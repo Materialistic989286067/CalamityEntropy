@@ -1,3 +1,4 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault.PRT;
@@ -78,7 +79,7 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
             for (float i = 0; i <= 1; i += 0.1f)
             {
                 //CustomPulse贴图路径现传,走PRTPathTextures缓存,Configure第一个string是TexPath
-                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(Color.White, Color.BlueViolet, i), 0.01f).Configure("CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.01f, i * 0.16f, (int)(i * 30));
+                PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(Color.White, Color.BlueViolet, i), 0.01f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.01f, i * 0.16f, (int)(i * 30));
             }
         }
         public override bool PreDraw(ref Color lightColor)
@@ -86,7 +87,7 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
             SpriteBatch sb = Main.spriteBatch;
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-            Texture2D t = CEUtils.getExtraTex("a_circle");
+            Texture2D t = CEExtraAssets.a_circle;
             float alpha = 0.52f * (counter / 120f);
             if (Projectile.timeLeft <= 7)
                 alpha = Projectile.timeLeft / 7f;

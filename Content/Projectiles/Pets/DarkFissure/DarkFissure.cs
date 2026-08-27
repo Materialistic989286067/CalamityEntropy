@@ -1,7 +1,8 @@
 ﻿using CalamityEntropy.Content.Buffs.Pets;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,6 +11,19 @@ namespace CalamityEntropy.Content.Projectiles.Pets.DarkFissure
 {
     public class DarkFissure : ModProjectile
     {
+        //飞行首帧文件名不带序号(DarkFissure.png 同时是弹幕主贴图),数组标签只认「路径+数字」,首帧单独加载
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/DarkFissure")]
+        internal static Asset<Texture2D> FlyFrame1;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/DarkFissure", 2, 5, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] FlyFramesRest;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/s/DarkFissure")]
+        internal static Asset<Texture2D> FlyHatFrame1;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/s/DarkFissure", 2, 5, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] FlyHatFramesRest;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/walk", 1, 6, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] WalkFrames;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/s/walk", 1, 6, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] WalkHatFrames;
         public float counter = 0;
         public override void SetStaticDefaults()
         {
@@ -32,63 +46,29 @@ namespace CalamityEntropy.Content.Projectiles.Pets.DarkFissure
 
             if (Main.gameMenu)
             {
-                Texture2D txd = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/DarkFissure").Value;
+                Texture2D txd = FlyFrame1.Value;
                 Main.EntitySpriteDraw(txd, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, new Vector2(txd.Width, txd.Height) / 2, Projectile.scale, SpriteEffects.FlipHorizontally, 0);
 
                 return false;
             }
             Player player = Main.player[Projectile.owner];
-            List<Texture2D> list = new List<Texture2D>();
             if (counter > 36)
             {
                 counter -= 36;
             }
+            Texture2D tx;
             if (Projectile.ai[1] == 1)
             {
-                if (hat)
-                {
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/s/DarkFissure").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/s/DarkFissure2").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/s/DarkFissure3").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/s/DarkFissure4").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/s/DarkFissure5").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/s/DarkFissure6").Value);
-
-                }
-                else
-                {
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/DarkFissure").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/DarkFissure2").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/DarkFissure3").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/DarkFissure4").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/DarkFissure5").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/DarkFissure6").Value);
-
-                }
+                //飞行组共 6 帧:首帧 + 后 5 帧,按下标拼回原来的取帧顺序
+                Texture2D[] rest = hat ? FlyHatFramesRest : FlyFramesRest;
+                int frame = ((int)counter / 6) % (rest.Length + 1);
+                tx = frame == 0 ? (hat ? FlyHatFrame1 : FlyFrame1).Value : rest[frame - 1];
             }
             else
             {
-                if (hat)
-                {
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/s/walk1").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/s/walk2").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/s/walk3").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/s/walk4").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/s/walk5").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/s/walk6").Value);
-
-                }
-                else
-                {
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/walk1").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/walk2").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/walk3").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/walk4").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/walk5").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DarkFissure/walk6").Value);
-                }
+                Texture2D[] frames = hat ? WalkHatFrames : WalkFrames;
+                tx = frames[(((int)counter / 6) % frames.Length)];
             }
-            Texture2D tx = list[(((int)counter / 6) % list.Count)];
             if (Projectile.velocity.X > -2 && Projectile.velocity.X < 2f)
             {
                 if (player.Center.X > Projectile.Center.X)

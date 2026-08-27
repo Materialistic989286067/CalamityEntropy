@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,7 +15,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             Item.Entropy().NameColor = Color.LightBlue;
             Item.Entropy().strokeColor = Color.DarkBlue;
             Item.Entropy().tooltipStyle = 4;
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.value = Item.buyPrice(gold: 1);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Scorpio");
         public override Color tooltipColor => Color.LightBlue;

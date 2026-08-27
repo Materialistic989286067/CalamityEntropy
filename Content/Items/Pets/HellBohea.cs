@@ -1,4 +1,6 @@
-﻿using Terraria;
+﻿using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -38,8 +40,21 @@ namespace CalamityEntropy.Content.Items.Pets
     }
     public class ProfPet : ProfanedGuardianPet
     {
-        public override int texs => 6;
-        public override string TextureName => "";
+        //改为逐张单字段加载,首次绘制时缓存成数组
+        [VaultLoaden("CalamityEntropy/Content/Items/Pets/Prof/1")]
+        internal static Texture2D F1;
+        [VaultLoaden("CalamityEntropy/Content/Items/Pets/Prof/2")]
+        internal static Texture2D F2;
+        [VaultLoaden("CalamityEntropy/Content/Items/Pets/Prof/3")]
+        internal static Texture2D F3;
+        [VaultLoaden("CalamityEntropy/Content/Items/Pets/Prof/4")]
+        internal static Texture2D F4;
+        [VaultLoaden("CalamityEntropy/Content/Items/Pets/Prof/5")]
+        internal static Texture2D F5;
+        [VaultLoaden("CalamityEntropy/Content/Items/Pets/Prof/6")]
+        internal static Texture2D F6;
+        private static Texture2D[] framesCache;
+        internal override Texture2D[] Frames => framesCache ??= new[] { F1, F2, F3, F4, F5, F6 };
         public override float MS => 0.14f;
         public override Vector2 posOffset => new Vector2(-45, -30);
 

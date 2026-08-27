@@ -1,9 +1,9 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.LoreItems;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -25,7 +25,7 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
         public override void SetDefaults()
         {
             Item.damage = 10;
-            Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Item.DamageType = DamageClass.Melee;
             Item.width = 48;
             Item.height = 60;
             Item.useTime = 24;
@@ -33,7 +33,7 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
             Item.useAnimation = 24;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 2;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Green;
             Item.UseSound = null;
             Item.noMelee = true;
@@ -42,7 +42,6 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
             Item.shoot = ModContent.ProjectileType<BramblecleaveHeld>();
             Item.shootSpeed = 12f;
             Item.Entropy().Legend = true;
-            Item.Calamity().CannotBeEnchanted = true;
             LastLevel = -1;
             UpdateInventory(Main.LocalPlayer);
         }
@@ -113,8 +112,7 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<LoreAwakening>()
-                .AddIngredient<PlantyMush>(10)
+                .AddIngredient(ItemID.GlowingMushroom, 10)
                 .AddIngredient(ItemID.JungleSpores, 6)
                 .AddTile(TileID.Anvils)
                 .Register();
@@ -140,19 +138,19 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
             //All 15 levels
             Check(NPC.downedSlimeKing);
             Check(NPC.downedBoss1);
-            Check(DownedBossSystem.downedHiveMind || DownedBossSystem.downedPerforator);
-            Check(DownedBossSystem.downedSlimeGod);
+            Check(NPC.downedBoss2);
+            Check(EDownedBosses.downedApsychos);
             Check(Main.hardMode);
             Check(NPC.downedMechBossAny);
             Check(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3);
             Check(NPC.downedPlantBoss);
             Check(NPC.downedGolemBoss);
             Check(NPC.downedMoonlord);
-            Check(DownedBossSystem.downedProvidence);
-            Check(DownedBossSystem.downedDoG);
-            Check(DownedBossSystem.downedYharon);
-            Check(DownedBossSystem.downedExoMechs || DownedBossSystem.downedCalamitas);
-            Check(DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs);
+            Check(EDownedBosses.downedNihilityTwin);
+            Check(EDownedBosses.downedAbyssalWraith);
+            Check(EDownedBosses.downedCruiser);
+            Check(EDownedBosses.downedCruiser);
+            Check(EDownedBosses.downedCruiser);
 
             return Level;
 
@@ -194,7 +192,7 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
             if (player.HeldItem == Item)
             {
                 player.Entropy().BBarNoDecrease = 120;
-                player.Calamity().mouseWorldListener = true;
+                player.Entropy().MouseWorldListener = true;
             }
         }
         public override bool AllowPrefix(int pre)
@@ -211,7 +209,7 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
         {
             if (ModContent.GetInstance<ServerConfig>().BramblecleaveAlwaysUnlockAllSkill)
                 return true;
-            return DownedBossSystem.downedHiveMind || DownedBossSystem.downedPerforator;
+            return NPC.downedBoss2;
         }
         public static bool AllowStick()
         {
@@ -278,7 +276,7 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -419,7 +417,7 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
                     if (progress <= 1)
                     {
                         Vector2 position = Projectile.Center;
-                        Projectile.velocity = new Vector2(Projectile.velocity.Length(), 0).RotatedBy((owner.Calamity().mouseWorld - Projectile.Center).ToRotation());
+                        Projectile.velocity = new Vector2(Projectile.velocity.Length(), 0).RotatedBy((owner.mouseWorld() - Projectile.Center).ToRotation());
                         bool flag = false;
                         foreach (NPC n in Main.ActiveNPCs)
                         {
@@ -584,7 +582,7 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
                 return false;
             }
             Texture2D tex = Projectile.GetTexture();
-            Texture2D trail = CEUtils.getExtraTex("MotionTrail2");
+            Texture2D trail = CEExtraAssets.MotionTrail2;
             List<ColoredVertex> ve = new List<ColoredVertex>();
             float MaxUpdateTimes = Projectile.GetOwner().itemTimeMax * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
@@ -603,7 +601,7 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
             {
                 var gd = Main.graphics.GraphicsDevice;
                 SpriteBatch sb = Main.spriteBatch;
-                Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/SwordTrail", AssetRequestMode.ImmediateLoad).Value;
+                Effect shader = CEEffectAssets.SwordTrail;
                 sb.End();
                 sb.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                 shader.Parameters["color2"].SetValue((new Color(90, 255, 90)).ToVector4());
@@ -613,7 +611,7 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
 
                 gd.Textures[0] = trail;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-                trail = CEUtils.getExtraTex("SplitTrail");
+                trail = CEExtraAssets.SplitTrail;
                 gd.Textures[0] = trail;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
 

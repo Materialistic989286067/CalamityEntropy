@@ -1,17 +1,11 @@
-using CalamityEntropy.Common;
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityEntropy.Content.Projectiles;
-using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Rogue;
+using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System.Collections.Generic;
-using System.Runtime.Intrinsics.Arm;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -19,18 +13,21 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 {
-    public class BrillianceSwirlblade : RogueWeapon
+    public class BrillianceSwirlblade : ModItem, ICEChargeWeapon
     {
+        // 充能条 4 秒；原潜伏乘数 伤害1/弹速1.25 并入释放乘数
+        public CEChargeProfile ChargeProfile => CEChargeProfile.ChargeBar(4f, 1f, 1.25f);
+
         public override void SetDefaults()
         {
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 24;
             Item.width = 42;
             Item.height = 46;
             Item.damage = 7;
             Item.ArmorPenetration = 7;
             Item.UseSound = SoundID.Item1 with { Volume = 1.2f };
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<BrillianceSwirlbladeProj>();
             Item.shootSpeed = 42f;
@@ -41,25 +38,22 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Item.noMelee = true;
             Item.noUseGraphic = true;
         }
-        public override float StealthDamageMultiplier => 1.0f;
-        public override float StealthVelocityMultiplier => 1.25f;
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            bool ult = CEChargeWeapon.TryConsume(player, Item);
             int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            if (player.Calamity().StealthStrikeAvailable() && p.WithinBounds(Main.maxProjectiles))
+            if (ult && p >= 0 && p < Main.maxProjectiles)
             {
-                Main.projectile[p].Calamity().stealthStrike = true;
-                CEUtils.SyncProj(p);
+                CEChargeWeapon.Empower(p);
             }
             return false;
         }
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<PearlShard>(), 6)
-                .AddIngredient(ModContent.ItemType<SeaPrism>(), 10)
-                .AddIngredient(ModContent.ItemType<PrismShard>(), 6)
+                .AddIngredient(ItemID.WhitePearl, 6)
+                .AddIngredient(ItemID.Coral, 10)
+                .AddIngredient(ItemID.CrystalShard, 6)
                 .AddTile(TileID.Anvils)
                 .Register();
         }
@@ -76,8 +70,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             base.SetDefaults();
             Projectile.localNPCHitCooldown = 6;
         }
-        public override float Radius => 140 * (Projectile.Calamity().stealthStrike ? 1.7f : 1);
-        public override int SpreadTime => Projectile.Calamity().stealthStrike ? 34 : 17;
+        public override float Radius => 140 * (Projectile.IsEmpowered() ? 1.7f : 1);
+        public override int SpreadTime => Projectile.IsEmpowered() ? 34 : 17;
         public override void AI()
         {
             base.AI();
@@ -122,7 +116,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Main.EntitySpriteDraw(Projectile.getDrawData(lightColor, overridePos: Projectile.Center + (Spreaded ? CEUtils.randomPointInCircle(4) : Vector2.Zero)));
             if (BladeScale > 0)
             {
-                Texture2D smear = CEUtils.getExtraTex("CircularSmear");
+                Texture2D smear = CEExtraAssets.CircularSmear;
                 float scale = Radius / 78f * Projectile.scale * BladeScale;
                 float time = Main.GlobalTimeWrappedHourly;
                 Vector2 o = smear.Size() * 0.5f;

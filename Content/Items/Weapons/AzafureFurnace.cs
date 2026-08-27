@@ -1,8 +1,6 @@
 ﻿using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -27,14 +25,13 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.noMelee = true;
             Item.shoot = ModContent.ProjectileType<AzafureFurnaceHoldout>();
             Item.knockBack = 8f;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(0, 2);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.UseSound = null;
             Item.autoReuse = false;
             Item.shootSpeed = 25f;
             Item.channel = true;
             Item.noUseGraphic = true;
-            var modItem = Item.Calamity();
             Item.mana = 15;
         }
         public override void AddRecipes()

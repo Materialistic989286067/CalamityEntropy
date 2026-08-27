@@ -1,6 +1,7 @@
 ﻿using CalamityEntropy.Content.Buffs.Pets;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,6 +10,14 @@ namespace CalamityEntropy.Content.Projectiles.Pets.DoG
 {
     public class DoG : ModProjectile
     {
+        //无帽版首帧文件名不带序号(DoG.png 同时是弹幕主贴图),数组标签只认「路径+数字」,首帧单独加载
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/DoG/DoG")]
+        internal static Asset<Texture2D> Frame1;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/DoG/DoG", 2, 4, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] FramesRest;
+        //戴帽版从 1 开始编号,且只有 4 帧
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/DoG/s/DoG", 1, 4, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] HatFrames;
         public int counter = 0;
         public bool say = true;
         public float sayCount = 0;
@@ -31,29 +40,22 @@ namespace CalamityEntropy.Content.Projectiles.Pets.DoG
             bool hat = Projectile.owner.ToPlayer().Entropy().PetsHat;
             if (Main.gameMenu)
             {
-                Texture2D txd = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DoG/DoG").Value;
+                Texture2D txd = Frame1.Value;
                 Main.EntitySpriteDraw(txd, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, new Vector2(txd.Width, txd.Height) / 2, Projectile.scale, SpriteEffects.FlipHorizontally, 0);
 
                 return false;
             }
-            List<Texture2D> list = new List<Texture2D>();
+            Texture2D tx;
             if (hat)
             {
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DoG/s/DoG1").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DoG/s/DoG2").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DoG/s/DoG3").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DoG/s/DoG4").Value);
-
+                tx = HatFrames[(counter / 6) % HatFrames.Length];
             }
             else
             {
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DoG/DoG").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DoG/DoG2").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DoG/DoG3").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DoG/DoG4").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/DoG/DoG5").Value);
+                //无帽版共 5 帧:首帧 + 后 4 帧,按下标拼回原来的取帧顺序
+                int frame = (counter / 6) % (FramesRest.Length + 1);
+                tx = frame == 0 ? Frame1.Value : FramesRest[frame - 1];
             }
-            Texture2D tx = list[(counter / 6) % list.Count];
             if (Projectile.velocity.X > -2 && Projectile.velocity.X < 2f)
             {
                 if (Main.player[Projectile.owner].Center.X > Projectile.Center.X)

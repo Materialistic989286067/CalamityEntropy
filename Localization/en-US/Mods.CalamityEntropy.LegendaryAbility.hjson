@@ -13,12 +13,12 @@ TlipocasScytheLegend: {
 		TScytheA2B:
 			'''
 			Press Left Click when throwing to teleport to the mouse and launch a larger slash
-			This skill has a 30 second cooldown time
+			This skill has a 30 second cooldown time, reduced to 20 seconds after killing Cruiser
 			'''
 		TScytheA3:
 			'''
 			When thrown out, press Right Click to let the scythe follow your curser
-			Stealth strikes will heal you with 7
+			Ultimate hits will heal you for 7 life
 			'''
 		TScytheA4:
 			'''
@@ -30,7 +30,7 @@ TlipocasScytheLegend: {
 			'''
 			Leave a shadow when performing a teleport strike, the shadow will attack alongside you
 			Slash dash will generate an additional slash perpendicular to the original
-			Increased the healing value of steal strikes
+			Ultimate hits heal for 10 life instead
 			'''
 		TScytheA6: Leave rift when slash dash. The rift will continuously causing harm
 		TScytheA7: Resist a fatal injury and restore your health to half of your maximum health.Need 5 min to cooling
@@ -40,16 +40,16 @@ TlipocasScytheLegend: {
 
 	Downed: {
 		TScytheU1: Take down Eye of Cthulhu
-		TScytheU1B: Take down Slime God
+		TScytheU1B: Take down Apsychos
 		TScytheU2: Take down any evil boss
-		TScytheU2B: Take down Brimstone Elemental
+		TScytheU2B: Take down all mechanical bosses
 		TScytheU3: Take down Prophet
-		TScytheU4: Take down Void Twins
-		TScytheU5: Take down Polterghast
-		TScytheU6: Take down The Devourer of Gods
-		TScytheU7: Take down Yharon
+		TScytheU4: Take down the Nihility Twins
+		TScytheU5: Take down the Nihility Twins
+		TScytheU6: Take down the Abyssal Wraith
+		TScytheU7: Take down Cruiser
 		TScytheU8: Take down Cruiser
-		TScytheU9: Take down the Supreme Witch
+		TScytheU9: Take down Cruiser
 		TWOF: Take down the Wall of Flesh
 		TALLMECHBOSS: Take down all mechanical bosses
 		TLevel2: Reach level 2
@@ -68,8 +68,8 @@ TlipocasScytheLegend: {
 			'''
 		TScytheDia3:
 			'''
-			Slime God? It looks sticky, dirty, and bubbling...
-			Shall we give it a bath？
+			A giant worm clad in tectonic armor roams deep in the magma, its shell packed with wailing souls...
+			Let's go knock them loose!
 			'''
 		TScytheDia4:
 			'''
@@ -78,14 +78,13 @@ TlipocasScytheLegend: {
 			'''
 		TScytheDia5:
 			'''
-			Many souls are floating in the brimstone crag, howling in sorrow...
-			Continuously talking about a catastrophe from a hundred years ago...
-			Let's end their pain!
+			Three huge machines wander the night, each imprisoning a mechanized soul...
+			Let's take them all apart and see!
 			'''
 		TScytheDia6:
 			'''
-			There is a terrifying red monster hovering in the night sky,
-			I can only feel madness from his soul. Or...Is that really a soul?
+			Mechanical souls are so tough...
+			Let's dismantle the remaining ones too, don't spare a single machine!
 			'''
 		TScytheDia7:
 			'''
@@ -95,8 +94,8 @@ TlipocasScytheLegend: {
 			'''
 		TScytheDia8:
 			'''
-			How many strands of soul are attached to twisted flesh and blood? 
-			Some Disgusting, drive them back to their dreams!
+			A crowd of fanatic cultists gathers at the dungeon's gate, their souls glinting in the moonlight...
+			Let's go say hello!
 			'''
 		TScytheDia9:
 			'''
@@ -107,34 +106,25 @@ TlipocasScytheLegend: {
 		TScytheDia10: A huge, multi eyed octopus? Is this a monster that came out of a dream?
 		TScytheDia11:
 			'''
-			The faceless man wearing a purple cloak carried a lantern with a prophetic aura ..
-			I'm a little curious, I want to grab the lantern!
+			A strange pair of creatures crawled out of a crack in reality,
+			they carry no souls, only hollowness... how curious!
 			'''
 		TScytheDia12:
 			'''
-			In the enchanted dungeon, these souls can never rest in peace
-			It's so pitiful, let's take it away!
+			Those nihility creatures will come again...
+			This time, let's send them back through the rift for good!
 			'''
-		TScytheDia13:
-			'''
-			There is a purple serpent.
-			It want to devour the soul of we!
-			Don't even try this!
-			'''
-		TScytheDia14:
-			'''
-			The strange lantern pointed towards this spatial fissure
-			What will it bring?
-			'''
+		TScytheDia13: An unspeakable being peers from the void at night... I cannot see its soul, but I know it is there!
+		TScytheDia14: A void serpent has made this world its hunting ground... the souls it devoured should be enough to pay off the debt, right?
 		TScytheDia15:
 			'''
-			A witch and a robot came to here，
-			Snatch their souls and my goal might be achieved！
+			The serpent is still cruising out there...
+			Master, let's go meet it again!
 			'''
 		TScytheDia16:
 			'''
-			The cultist asked us to use the discord wand in the abyss...
-			What will happen?
+			The final battle! Hunt down that cruising serpent for good,
+			and the soul debt will be fully repaid!
 			'''
 		TScytheDia17: Finally paid off the debt, the task was perfectly completed!
 	}
@@ -159,21 +149,22 @@ DCarverDia2:
 	'''
 	You have proven your strength, but there is still a long road ahead
 	I can now awaken my slumbering servants. If you defeat more powerful beings, you can awaken more of my followers
-	Next, defeat the incomplete deity composed of feeble beings!
+	Next, go deep into the magma and slay the worm clad in tectonic armor!
 	'''
 DCarverDia3: The time for reckoning has come. Go to the Foundation of the World, slay the twisted creation, and release the long-sealed soul
-DCarverDia4: Slay the defiled primal spirit deep underground and reclaim the power that was stolen from me!
+DCarverDia4: Stolen power flows through those three mechanical constructs. Destroy them all!
 DCarverDia5:
 	'''
-	I have seen that witch before
-	But now, she seems... different
-	In any case, her power is far less than before, or perhaps this is just a failed imitation
+	The mechanical wrecks are still roaring
+	Dismantle the remaining ones as well, leave none intact
+	The power within them was always meant to return to me
 	'''
 DCarverDia6: There is a restless stirring beneath the jungle. If we can eradicate its source, we might find a fragment of myself
 DCarverDia7:
 	'''
-	I can sense a frenzied construct of flesh approaching
-	It is composed of thousands of entities craving vengeance. Perhaps we can gain something from it
+	Those cultists are gathering under the moon again
+	The forbidden arts in their hands give off a familiar aura
+	Go and end their ritual!
 	'''
 DCarverDia8:
 	'''
@@ -183,27 +174,26 @@ DCarverDia8:
 DCarverDia9: To protect this land and continue our journey, eradicate those outsiders completely!
 DCarverDia10:
 	'''
-	Profane flames burn. The fall of the outer god has awakened something unpleasant
-	We must stop her before the situation spirals out of control
+	A rift in reality has been torn open, and a pair of nihility creations is crawling through
+	Strike before they find their footing!
 	'''
 DCarverDia11:
 	'''
-	A great number of vengeful spirits remain deep within the dungeon, even amalgamating into a powerful entity
-	It seems we have no choice but to cleanse them
+	The nihility twins will return
+	This time, drive them back into the depths of the rift for good!
 	'''
-DCarverDia12: That hypocritical worm has come for us. It seems we must act
+DCarverDia12: An unseen presence lurks beneath the night. No mortal can look upon it... but you can slay it
 DCarverDia13:
 	'''
-	I know him
-	He was once under the Seeker of Gods, but he left in the end
-	It seems necessary to settle this with him
+	That serpent cruising through the void has set its eyes on this world
+	It is time to face it head-on!
 	'''
 DCarverDia14:
 	'''
-	Our journey nears its end, and I have regained most of my lost power
-	Now, face the witch and the Destroyer Mech in a final battle!
+	The serpent's presence still lingers
+	Fight it once more, and show it who the true hunter is!
 	'''
-DCarverDia15: Slay the ancient leviathan in the deepest part of the abyssal ocean, and bring this journey to an end!
+DCarverDia15: Put an end to that void serpent, reclaim the last of my power, and bring this journey to a close!
 DCarverDia16: Our journey together has reached its conclusion, but many powerful enemies still await. Press on, my master!
 
 General: {
@@ -291,12 +281,12 @@ SusiesBracelet: {
 		t2: Skeletron / Queen Bee
 		t3: Wall of Flesh
 		t4: All mech boss
-		t5: Plantera / Calamitas Clone
+		t5: Plantera
 		t6: Moonlord
-		t7: Providence
-		t8: Polterghast / Storm Weaver / Signus / Ceaseless Void
-		t9: Devourer of Gods
-		t10: Yharon
+		t7: Nihility Twins
+		t8: Nihility Twins
+		t9: Abyssal Wraith
+		t10: Cruiser
 		t11: Trials - Done
 	}
 }

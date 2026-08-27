@@ -1,5 +1,4 @@
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod.Projectiles.Turret;
 using InnoVault.PRT;
 using Terraria;
 using Terraria.ID;
@@ -19,7 +18,8 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = CEUtils.RogueDC;
+            // 原盗贼职业并入原版：炸弹类归远程
+            Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 400;
             Projectile.height = 400;
             Projectile.friendly = true;
@@ -43,7 +43,8 @@ namespace CalamityEntropy.Content.Projectiles
                 {
                     for (int i = 0; i < 32; i++)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(6, 18), ModContent.ProjectileType<WaterShot>(), Projectile.damage / 10, Projectile.knockBack + 0.1f, Projectile.owner);
+                        // 原灾厄 WaterShot 水弹改用原版水流弹
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(6, 18), ProjectileID.WaterStream, Projectile.damage / 10, Projectile.knockBack + 0.1f, Projectile.owner);
                     }
                 }
             }

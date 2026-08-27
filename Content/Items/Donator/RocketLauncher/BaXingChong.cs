@@ -1,14 +1,11 @@
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo;
+using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Rarities;
 using System;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -34,30 +31,30 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
             Item.damage = 380;
             Item.knockBack = 2f;
             Item.UseSound = null;
-            Item.value = CalamityGlobalItem.RarityCalamityRedBuyPrice;
-            Item.rare = ModContent.RarityType<CalamityRed>();
+            Item.value = Item.buyPrice(platinum: 3, gold: 20);
+            Item.rare = ModContent.RarityType<VoidPurple>();
         }
 
         #region Animations
-        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
+        public override void HoldItem(Player player) => player.Entropy().MouseWorldListener = true;
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
-            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+            player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
             Vector2 itemPosition = player.MountedCenter + itemRotation.ToRotationVector2() * 76f;
             Vector2 itemSize = new Vector2(Item.width, Item.height);
             Vector2 itemOrigin = -HoldoutOffset().Value;
-            CalamityUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
+            CEUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
             base.UseStyle(player, heldItemFrame);
         }
 
         public override void UseItemFrame(Player player)
         {
-            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+            player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
 
             float animProgress = 1 - player.itemTime / (float)player.itemTimeMax;
-            float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
+            float rotation = (player.Center - player.Entropy().MouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
             if (animProgress < 0.5 && player.reuseDelay != 0)
                 rotation += (-0.3f) * (float)Math.Pow((0.5f - animProgress) / 0.5f, 2) * player.direction;
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
@@ -74,10 +71,11 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 
         public override void AddRecipes()
         {
+            // 灾厄原料按 material-map.md 替换：Spyker→电球发射器、UniversalGenesis→欢庆Mk2、MiracleMatter→虚空锭
             CreateRecipe()
-                .AddIngredient<Spyker>()
-                .AddIngredient<UniversalGenesis>()
-                .AddIngredient<MiracleMatter>()
+                .AddIngredient(ItemID.ElectrosphereLauncher)
+                .AddIngredient(ItemID.Celeb2)
+                .AddIngredient<VoidBar>()
                 .AddIngredient<FadingRunestone>()
                 .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();

@@ -3,9 +3,11 @@ using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.Cruiser;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -24,7 +26,9 @@ namespace CalamityEntropy.Content.Items.Books
         }
         public override int HeldProjectileType => ModContent.ProjectileType<AzafureCylinderHeld>();
         public override int SlotCount => 3;
-        public override Texture2D BookMarkTexture => ModContent.Request<Texture2D>("CalamityEntropy/Content/UI/EntropyBookUI/Azafure").Value;
+        [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/Azafure")]
+        internal static Asset<Texture2D> BookMarkSlotTex;
+        public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
 
         public override void AddRecipes()
         {
@@ -52,9 +56,12 @@ namespace CalamityEntropy.Content.Items.Books
         public override void playTurnPageAnimation()
         {
         }
+        //UI 开书动画只有一帧,贴图加载期就位
+        [VaultLoaden("CalamityEntropy/Content/Items/Books/Textures/AzafureCylinder/AzafureCylinderUI")]
+        internal static Asset<Texture2D> UIOpenTex;
         public override Texture2D[] UIOpenAnimations()
         {
-            return new Texture2D[] { CEUtils.RequestTex("CalamityEntropy/Content/Items/Books/Textures/AzafureCylinder/AzafureCylinderUI") };
+            return new Texture2D[] { UIOpenTex.Value };
         }
         public override int baseProjectileType => ModContent.ProjectileType<MetalBall>();
         public int frC = 0;

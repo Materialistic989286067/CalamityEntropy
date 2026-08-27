@@ -1,5 +1,5 @@
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -24,7 +24,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = CEUtils.RogueDC;
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 52;
             Projectile.height = 52;
             Projectile.friendly = true;
@@ -149,7 +149,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                 SoundStyle SwingSound = SoundID.Item1;
                 SwingSound.Pitch = 0f;
-                if (Projectile.Calamity().stealthStrike)
+                if (Projectile.IsEmpowered())
                 {
                     SwingSound.Pitch = 1f;
                 }
@@ -169,7 +169,7 @@ namespace CalamityEntropy.Content.Projectiles
                 //CritSparkCal Calamity crit spark,Configure Ports签名
                 PRTLoader.NewParticle<PRT_CritSparkCal>(target.Center, velocity, Color.White, 1.4f).Configure(Color.SkyBlue, 36, 0.1f, 3f, Main.rand.NextFloat(0f, 0.01f));
             }
-            SoundEngine.PlaySound(new("CalamityMod/Sounds/NPCKilled/DevourerSegmentBreak1") { Volume = 0.5f }, Projectile.Center);
+            SoundEngine.PlaySound(new("CalamityEntropy/Assets/Sounds/Smash", 2) { Volume = 0.5f }, Projectile.Center);
             if (sp)
             {
                 sp = false;

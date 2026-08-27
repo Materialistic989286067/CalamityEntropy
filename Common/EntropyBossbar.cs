@@ -1,11 +1,8 @@
-﻿using CalamityEntropy.Content.ILEditing;
-using CalamityEntropy.Content.NPCs.AbyssalWraith;
+﻿using CalamityEntropy.Content.NPCs.AbyssalWraith;
 using CalamityEntropy.Content.NPCs.SpiritFountain;
-using CalamityMod;
-using CalamityMod.NPCs.ProfanedGuardians;
-using CalamityMod.NPCs.Providence;
-using CalamityMod.NPCs.SlimeGod;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using ReLogic.Graphics;
 using System;
 using System.Collections.Generic;
@@ -19,6 +16,33 @@ namespace CalamityEntropy.Common
 {
     public class EntropyBossbar : ModBossBarStyle
     {
+        //血条贴图在加载期就位,不再每帧 Request;只在客户端 Draw 里读取
+        [VaultLoaden("CalamityEntropy/Assets/Bossbar/Ebar1")]
+        internal static Asset<Texture2D> Ebar1Tex;
+        [VaultLoaden("CalamityEntropy/Assets/Bossbar/Ebar1Alt")]
+        internal static Asset<Texture2D> Ebar1AltTex;
+        [VaultLoaden("CalamityEntropy/Assets/Bossbar/Ebar2")]
+        internal static Asset<Texture2D> Ebar2Tex;
+        [VaultLoaden("CalamityEntropy/Assets/Bossbar/Ebar3")]
+        internal static Asset<Texture2D> Ebar3Tex;
+        [VaultLoaden("CalamityEntropy/Assets/Bossbar/EbarLock")]
+        internal static Asset<Texture2D> EbarLockTex;
+        [VaultLoaden("CalamityEntropy/Assets/Bossbar/EBarWhite")]
+        internal static Asset<Texture2D> EBarWhiteTex;
+        [VaultLoaden("CalamityEntropy/Assets/Bossbar/EBarWhite2")]
+        internal static Asset<Texture2D> EBarWhite2Tex;
+        [VaultLoaden("CalamityEntropy/Assets/Bossbar/Ebarc")]
+        internal static Asset<Texture2D> EbarcTex;
+        [VaultLoaden("CalamityEntropy/Assets/Bossbar/CrackedNoiseB")]
+        internal static Asset<Texture2D> CrackedNoiseBTex;
+        [VaultLoaden("CalamityEntropy/Assets/Bossbar/awraithbar")]
+        internal static Asset<Texture2D> AwraithbarTex;
+        [VaultLoaden("CalamityEntropy/Assets/Bossbar/hl")]
+        internal static Asset<Texture2D> HlTex;
+        [VaultLoaden("CalamityEntropy/Assets/Bossbar/df")]
+        internal static Asset<Texture2D> DfTex;
+        [VaultLoaden("CalamityEntropy/Assets/Bossbar/atk")]
+        internal static Asset<Texture2D> AtkTex;
         public override string DisplayName => "Calamity Entropy";
         public Color barColor = Color.White;
         public Color buttomColor = Color.Yellow;
@@ -48,13 +72,6 @@ namespace CalamityEntropy.Common
                     return new Color(150, 60, 255);
                 }
             }*/
-            if (npc.ModNPC is Providence || npc.ModNPC is ProfanedGuardianCommander || npc.ModNPC is ProfanedGuardianHealer || npc.ModNPC is ProfanedGuardianDefender)
-            {
-                if (npc.Calamity().CurrentlyEnraged)
-                {
-                    return new Color(102, 255, 255);
-                }
-            }
             if (bossbarColor.ContainsKey(npc.type))
             {
                 return bossbarColor[npc.type];
@@ -91,17 +108,10 @@ namespace CalamityEntropy.Common
             {
                 return;
             }
+            // 脱离灾厄:原按灾厄激怒/增防标志切换底色,现固定黄色
             Color turnColorBtm = Color.Yellow;
-            if (npc.Calamity().CurrentlyIncreasingDefenseOrDR)
-            {
-                turnColorBtm = Color.Gray;
-            }
-            if (npc.Calamity().CurrentlyEnraged)
-            {
-                turnColorBtm = Color.Red;
-            }
             buttomColor = Color.Lerp(buttomColor, turnColorBtm, 0.1f);
-            bool immune = npc.dontTakeDamage && !(npc.ModNPC is SlimeGodCore) && !(npc.ModNPC is SpiritFountain);
+            bool immune = npc.dontTakeDamage && !(npc.ModNPC is SpiritFountain);
 
             Vector2 center = new Vector2(Main.screenWidth / 2, Main.screenHeight - 70);
 
@@ -157,21 +167,6 @@ namespace CalamityEntropy.Common
                 }
                 prog = (float)eowLifes / (float)ModContent.GetInstance<EModSys>().eowMaxLife;
             }
-            if (npc.type == ModContent.NPCType<SlimeGodCore>())
-            {
-                int sgLifes = 0;
-                foreach (NPC n in Main.ActiveNPCs)
-                {
-                    if (ModContent.NPCType<CrimulanPaladin>() == n.type || ModContent.NPCType<SplitCrimulanPaladin>() == n.type || ModContent.NPCType<EbonianPaladin>() == n.type || ModContent.NPCType<SplitEbonianPaladin>() == n.type)
-                    {
-                        sgLifes += n.life;
-                    }
-
-                }
-                prog = (float)sgLifes / (float)ModContent.GetInstance<EModSys>().slimeGodMaxLife;
-                if (prog == 0)
-                    prog = npc.life / (float)npc.lifeMax;
-            }
             if (prog < 0)
                 prog = 0;
             if (prog == 0)
@@ -202,39 +197,21 @@ namespace CalamityEntropy.Common
             }
             lastProg = prog;
             comboProg = comboProg + (comboTarget - comboProg) * 0.1f;
-            Texture2D bar1Norm = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Bossbar/Ebar1").Value;
-            Texture2D bar1_ = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Bossbar/Ebar1Alt").Value;
-            Texture2D bar2 = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Bossbar/Ebar2").Value;
-            Texture2D bar3 = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Bossbar/Ebar3").Value;
-            Texture2D barLocked = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Bossbar/EbarLock").Value;
-            Texture2D barWhite = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Bossbar/EBarWhite").Value;
-            Texture2D barWhite2 = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Bossbar/EBarWhite2").Value;
-            Texture2D barc = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Bossbar/Ebarc").Value;
-            Texture2D crack = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Bossbar/CrackedNoiseB").Value;
+            Texture2D bar1Norm = Ebar1Tex.Value;
+            Texture2D bar1_ = Ebar1AltTex.Value;
+            Texture2D bar2 = Ebar2Tex.Value;
+            Texture2D bar3 = Ebar3Tex.Value;
+            Texture2D barLocked = EbarLockTex.Value;
+            Texture2D barWhite = EBarWhiteTex.Value;
+            Texture2D barWhite2 = EBarWhite2Tex.Value;
+            Texture2D barc = EbarcTex.Value;
+            Texture2D crack = CrackedNoiseBTex.Value;
             Texture2D bar1 = bar1Norm;
-            Texture2D gzmBar = CEUtils.getExtraTex("ColorMapGoozma");
-            Texture2D noise = CEUtils.getExtraTex("noise");
-            Texture2D awBar = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Bossbar/awraithbar").Value;
-            bool goozma = false;
-            bool namelessDeity = false;
+            Texture2D awBar = AwraithbarTex.Value;
             bool abyssalWraith = false;
             if (npc.ModNPC is AbyssalWraith)
             {
                 abyssalWraith = true;
-            }
-            if (ModLoader.TryGetMod("CalamityHunt", out Mod calHunt))
-            {
-                if (npc.type == calHunt.Find<ModNPC>("Goozma").Type)
-                {
-                    goozma = true;
-                }
-            }
-            if (ModLoader.TryGetMod("NoxusBoss", out Mod nxb))
-            {
-                if (npc.type == nxb.Find<ModNPC>("NamelessDeityBoss").Type)
-                {
-                    namelessDeity = true;
-                }
             }
             if (npc.GetBossHeadTextureIndex() < 0)
             {
@@ -242,7 +219,7 @@ namespace CalamityEntropy.Common
             }
 
             spriteBatch.Draw(barWhite, center, new Rectangle(0, 0, 18 + (int)(500 * comboProg), bar1.Height), Color.White, 0, bar1.Size() * 0.5f, 1, SpriteEffects.None, 0);
-            if (npc.dontTakeDamage && !(npc.ModNPC is SlimeGodCore))
+            if (npc.dontTakeDamage)
             {
                 spriteBatch.Draw(barWhite2, center, new Rectangle(0, 0, 18 + (int)(500 * prog) + 2, bar1.Height), Color.Lerp(barColor, Color.White, 0.5f), 0, bar1.Size() * 0.5f, 1, SpriteEffects.None, 0);
             }
@@ -258,37 +235,25 @@ namespace CalamityEntropy.Common
                 {
                     spriteBatch.Draw(bar2, center + new Vector2(0, 8), new Rectangle(drawOfs, 0, (int)(500 * prog), bar2.Height), barColor, 0, bar2.Size() * 0.5f, 1, SpriteEffects.None, 0);
                 }
-                if (goozma)
-                {
-                    CEUtils.UseState_UI(spriteBatch, BlendState.Additive, SamplerState.LinearWrap);
-                    spriteBatch.Draw(gzmBar, center + new Vector2(0, 8), new Rectangle((int)(drawOfs * 5.6f), 0, (int)(500 * prog), bar2.Height), Color.White, 0, bar2.Size() * 0.5f, 1, SpriteEffects.None, 0);
-                }
-                if (namelessDeity)
-                {
-                    spriteBatch.Draw(noise, center + new Vector2(0, 8), new Rectangle((int)(drawOfs * 1.6f), (int)(drawOfs * 0.4f), (int)(500 * prog), bar2.Height), Color.White, 0, bar2.Size() * 0.5f, 1, SpriteEffects.None, 0);
-                }
             }
             catch { }
             spriteBatch.UseSampleState_UI(SamplerState.AnisotropicClamp);
-            if (!namelessDeity)
+            if (drawShield)
             {
-                if (drawShield)
+                Main.spriteBatch.UseBlendState_UI(BlendState.Additive, SamplerState.LinearWrap);
+                spriteBatch.Draw(barLocked, center, new Rectangle(0, 0, 18 + (int)(500 * shieldPerc), bar1.Height), Color.Lerp(barColor, Color.White, 0.6f), 0, bar1.Size() * 0.5f, 1, SpriteEffects.None, 0);
+                for (float h = 1; h > 0; h -= 0.2f)
                 {
-                    Main.spriteBatch.UseBlendState_UI(BlendState.Additive, SamplerState.LinearWrap);
-                    spriteBatch.Draw(barLocked, center, new Rectangle(0, 0, 18 + (int)(500 * shieldPerc), bar1.Height), Color.Lerp(barColor, Color.White, 0.6f), 0, bar1.Size() * 0.5f, 1, SpriteEffects.None, 0);
-                    for (float h = 1; h > 0; h -= 0.2f)
+                    if (shieldPerc <= h)
                     {
-                        if (shieldPerc <= h)
-                        {
-                            spriteBatch.Draw(crack, center + new Vector2(0, 8), new Rectangle((int)(500 * h), 0, (int)(500 * shieldPerc), crack.Height), Color.White * (h - (shieldPerc - (1 - h))) * 5f, 0, crack.Size() * 0.5f, 1, SpriteEffects.None, 0);
-                        }
+                        spriteBatch.Draw(crack, center + new Vector2(0, 8), new Rectangle((int)(500 * h), 0, (int)(500 * shieldPerc), crack.Height), Color.White * (h - (shieldPerc - (1 - h))) * 5f, 0, crack.Size() * 0.5f, 1, SpriteEffects.None, 0);
                     }
-                    Main.spriteBatch.UseBlendState_UI(BlendState.AlphaBlend);
                 }
-                else if (immune)
-                {
-                    spriteBatch.Draw(barLocked, center, new Rectangle(0, 0, 18 + (int)(500 * prog), bar1.Height), Color.Lerp(barColor, Color.White, 0.36f), 0, bar1.Size() * 0.5f, 1, SpriteEffects.None, 0);
-                }
+                Main.spriteBatch.UseBlendState_UI(BlendState.AlphaBlend);
+            }
+            else if (immune)
+            {
+                spriteBatch.Draw(barLocked, center, new Rectangle(0, 0, 18 + (int)(500 * prog), bar1.Height), Color.Lerp(barColor, Color.White, 0.36f), 0, bar1.Size() * 0.5f, 1, SpriteEffects.None, 0);
             }
 
 
@@ -301,9 +266,9 @@ namespace CalamityEntropy.Common
                 spriteBatch.Draw(headBoss, center + new Vector2(0, -14), null, Color.White, 0, headBoss.Size() / 2, 1, SpriteEffects.None, 0);
             }
             spriteBatch.UseSampleState_UI(SamplerState.PointClamp);
-            Texture2D hl = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Bossbar/hl").Value;
-            Texture2D df = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Bossbar/df").Value;
-            Texture2D atk = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Bossbar/atk").Value;
+            Texture2D hl = HlTex.Value;
+            Texture2D df = DfTex.Value;
+            Texture2D atk = AtkTex.Value;
             Vector2 statDrawPos = center + new Vector2(-170, -30);
             Main.spriteBatch.Draw(hl, statDrawPos, null, Color.White, 0, hl.Size() / 2, 1, SpriteEffects.None, 0);
             string dstring = life.ToString() + "/" + lifeMax.ToString() + "(" + ((int)(((float)life / (float)lifeMax) * 100)).ToString() + "%)";
@@ -313,7 +278,8 @@ namespace CalamityEntropy.Common
             statDrawPos.X += 105 + 45 + 4 + 146;
 
             Main.spriteBatch.Draw(df, statDrawPos, null, Color.White, 0, df.Size() / 2, 1, SpriteEffects.None, 0);
-            dstring = npc.defense.ToString() + "(-" + (int)(npc.Calamity().DR * EModILEdit.GetNPCDRMultiply(npc) * 100f) + "%)";
+            // 脱离灾厄:原展示灾厄 DR 百分比,本模组无独立 DR 属性,改为只显示防御
+            dstring = npc.defense.ToString();
 
             if (drawShield)
             {

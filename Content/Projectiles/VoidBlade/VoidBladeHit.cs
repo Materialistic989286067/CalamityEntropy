@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityEntropy.Assets.Register;
+using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -9,8 +12,9 @@ namespace CalamityEntropy.Content.Projectiles.VoidBlade
 {
     public class VoidBladeHit : ModProjectile
     {
-        Texture2D vbh = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/VoidBlade/VoidBladeHit").Value;
-        Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/BasicCircle").Value;
+        //原先是实例字段初始化器逐实例请求,改为加载期就位的静态字段
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/VoidBlade/VoidBladeHit")]
+        internal static Asset<Texture2D> HitTex;
         public List<Vector2> points1 = new List<Vector2>();
         public List<Vector2> points2 = new List<Vector2>();
         private float r1;
@@ -68,6 +72,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidBlade
 
         public override bool PreDraw(ref Color dc)
         {
+            Texture2D vbh = HitTex.Value;
+            Texture2D tx = CEExtraAssets.BasicCircle;
             float s = 1f;
             for (int i = 0; i < points1.Count; i++)
             {

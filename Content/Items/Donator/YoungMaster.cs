@@ -1,9 +1,10 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Cooldowns;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Melee;
+using CalamityEntropy.Core.Cooldowns;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -20,8 +21,9 @@ namespace CalamityEntropy.Content.Items.Donator
 
         public override void AddRecipes()
         {
+            // 灾厄原料按 material-map.md 替换：SaharaSlicers→光辉飞盘
             CreateRecipe()
-                .AddIngredient<SaharaSlicers>()
+                .AddIngredient(ItemID.LightDisc)
                 .AddIngredient(ItemID.TitaniumBar, 10)
                 .AddIngredient(ItemID.SoulofMight, 15)
                 .AddTile(TileID.MythrilAnvil)
@@ -42,7 +44,7 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.RarityCalamityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 3, gold: 20);
             Item.rare = ItemRarityID.Blue;
             Item.shoot = ModContent.ProjectileType<YoungMasterProj>();
             Item.shootSpeed = 11;
@@ -177,10 +179,10 @@ namespace CalamityEntropy.Content.Items.Donator
                 var ve = CEUtils.GetVertexesList(sets1);
                 var ve2 = CEUtils.GetVertexesList(sets2);
 
-                gd.Textures[0] = CEUtils.getExtraTex("Streak2");
+                gd.Textures[0] = CEExtraAssets.Streak2;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve2.ToArray(), 0, ve2.Count - 2);
-                gd.Textures[0] = CEUtils.getExtraTex("SylvestaffStreak");
+                gd.Textures[0] = CEExtraAssets.SylvestaffStreak;
                 for (int i = 0; i < sets1.Count; i++)
                 {
                     sets1[i].Color = Color.White;

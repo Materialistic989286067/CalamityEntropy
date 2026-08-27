@@ -1,7 +1,6 @@
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
 using InnoVault.PRT;
 using System;
 using System.Collections.Generic;
@@ -106,9 +105,10 @@ namespace CalamityEntropy.Content.Projectiles
                     {
                         //LargeBloom/FlameExplosion那些Calamity路径字符串原样保留
                         //CustomPulse贴图路径现传,走PRTPathTextures缓存,Configure第一个string是TexPath
-                        PRTLoader.NewParticle<PRT_CustomPulse>(hookNPC.ToNPC().Center, Vector2.Zero, Color.Lerp(Color.LightBlue, Color.Purple, i) * 0.8f, 0.01f).Configure("CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.01f, i * 0.14f, (int)((1.2f - i) * 20));
+                        PRTLoader.NewParticle<PRT_CustomPulse>(hookNPC.ToNPC().Center, Vector2.Zero, Color.Lerp(Color.LightBlue, Color.Purple, i) * 0.8f, 0.01f).Configure("CalamityEntropy/Assets/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.01f, i * 0.14f, (int)((1.2f - i) * 20));
                     }
-                    Main.LocalPlayer.GetModPlayer<CalamityPlayer>().GeneralScreenShakePower = 8;
+                    //换用自有屏震系统, 幅度对齐同类爆点(原灾厄震屏强度8)
+                    CalamityEntropy.Instance.screenShakeAmp = 3;
                 }
                 Projectile.ai[0] = getFlyTime() * Projectile.MaxUpdates * 0.5f;
                 Projectile.GetOwner().itemAnimation = Projectile.GetOwner().itemTime = Projectile.GetOwner().itemTime / 2;

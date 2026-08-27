@@ -1,9 +1,5 @@
+using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Dusts;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Ranged;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -40,7 +36,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 6f;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(1, 0);
             Item.rare = ItemRarityID.Red;
             Item.UseSound = null;
             Item.autoReuse = true;
@@ -59,7 +55,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<MeldBlob>(), 18)
+                .AddIngredient(ItemID.SoulofNight, 18)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
@@ -153,7 +149,7 @@ namespace CalamityEntropy.Content.Items.Weapons
     {
         public Color InnerColor = Color.LightGreen;
 
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        public override string Texture => CEUtils.InvisAsset;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[base.Type] = true;
@@ -178,9 +174,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public void SpawnParticle(Vector2 pos)
         {
-            //Additive亮层走AfterPlayers叠暗层上,跟旧GeneralParticleHandler Before/After分层一样
-            PRTLoader.NewParticle<PRT_CustomSpark>(pos, Vector2.Zero, Color.Black, 0.24f).Configure("CalamityMod/Particles/LargeBloom", false, 8, Vector2.One, false, false, 0f, false, false);
-            PRTLoader.NewParticle<PRT_CustomSpark>(pos, Vector2.Zero, Color.White, 0.12f).Configure("CalamityMod/Particles/LargeBloom", false, 8, Vector2.One, true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
+            //Additive亮层走AfterPlayers叠暗层上,跟旧版粒子系统 Before/After分层一样
+            PRTLoader.NewParticle<PRT_CustomSpark>(pos, Vector2.Zero, Color.Black, 0.24f).Configure("CalamityEntropy/Assets/Particles/LargeBloom", false, 8, Vector2.One, false, false, 0f, false, false);
+            PRTLoader.NewParticle<PRT_CustomSpark>(pos, Vector2.Zero, Color.White, 0.12f).Configure("CalamityEntropy/Assets/Particles/LargeBloom", false, 8, Vector2.One, true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
         }
         public override void AI()
         {
@@ -192,8 +188,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             if (base.Projectile.timeLeft % 2 == 0)
             {
                 //DetailedExplosionCal/CustomSpark CalamityPorts,Configure签名各管各的
-                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + Projectile.velocity.normalize() * 40, -base.Projectile.velocity * 0.05f, Color.Black, 0.052f).Configure("CalamityMod/Particles/GlowSpark2", false, 9, new Vector2(0.6f, 1.3f), false, false, 0f, false, false);
-                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + Projectile.velocity.normalize() * 40, -base.Projectile.velocity * 0.05f, Color.LightGreen, 0.022f).Configure("CalamityMod/Particles/GlowSpark", false, 9, new Vector2(0.6f, 1.9f), true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
+                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + Projectile.velocity.normalize() * 40, -base.Projectile.velocity * 0.05f, Color.Black, 0.052f).Configure("CalamityEntropy/Assets/Particles/GlowSpark2", false, 9, new Vector2(0.6f, 1.3f), false, false, 0f, false, false);
+                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + Projectile.velocity.normalize() * 40, -base.Projectile.velocity * 0.05f, Color.LightGreen, 0.022f).Configure("CalamityEntropy/Assets/Particles/GlowSpark", false, 9, new Vector2(0.6f, 1.9f), true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
             }
         }
         public override void OnKill(int timeLeft)
@@ -210,7 +206,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             SpawnParticle();
             if (Projectile.timeLeft > 60)
                 Projectile.timeLeft = 60;
-            SoundStyle style = DeadSunsWind.Explosion with
+            // 原灾厄 DeadSunsWind.Explosion（DeadSunExplosion），以自有 explosionbig 近似
+            SoundStyle style = new SoundStyle("CalamityEntropy/Assets/Sounds/explosionbig")
             {
                 Pitch = 0.6f + Main.rand.NextFloat(-0.2f, 0.2f),
                 Volume = 0.2f
@@ -230,8 +227,8 @@ namespace CalamityEntropy.Content.Items.Weapons
 
                 float sc = Main.rand.NextFloat(0.6f, 1);
                 //带Cal后缀是CalamityPorts,Configure签名对齐Calamity原构造不是统一五参
-                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + v, v, Color.Black, 0.06f * sc).Configure("CalamityMod/Particles/GlowSpark2", false, 16, new Vector2(0.6f, 1.3f), false, false, 0f, false, false);
-                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + v, v, Color.LightGreen, 0.022f * sc).Configure("CalamityMod/Particles/GlowSpark", false, 16, new Vector2(0.6f, 1.9f), true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
+                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + v, v, Color.Black, 0.06f * sc).Configure("CalamityEntropy/Assets/Particles/GlowSpark2", false, 16, new Vector2(0.6f, 1.3f), false, false, 0f, false, false);
+                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + v, v, Color.LightGreen, 0.022f * sc).Configure("CalamityEntropy/Assets/Particles/GlowSpark", false, 16, new Vector2(0.6f, 1.9f), true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
             }
         }
     }
@@ -239,7 +236,7 @@ namespace CalamityEntropy.Content.Items.Weapons
     {
         public Color InnerColor = Color.LightGreen;
 
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        public override string Texture => CEUtils.InvisAsset;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[base.Type] = true;
@@ -264,15 +261,15 @@ namespace CalamityEntropy.Content.Items.Weapons
         public void SpawnParticle(Vector2 pos)
         {
             //CustomPulse贴图路径Configure现传,Texture属性填白图应付框架
-            PRTLoader.NewParticle<PRT_CustomSpark>(pos, Vector2.Zero, Color.Black, 0.24f).Configure("CalamityMod/Particles/LargeBloom", false, 8, Vector2.One, false, false, 0f, false, false);
-            PRTLoader.NewParticle<PRT_CustomSpark>(pos, Vector2.Zero, Color.White, 0.12f).Configure("CalamityMod/Particles/LargeBloom", false, 8, Vector2.One, true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
+            PRTLoader.NewParticle<PRT_CustomSpark>(pos, Vector2.Zero, Color.Black, 0.24f).Configure("CalamityEntropy/Assets/Particles/LargeBloom", false, 8, Vector2.One, false, false, 0f, false, false);
+            PRTLoader.NewParticle<PRT_CustomSpark>(pos, Vector2.Zero, Color.White, 0.12f).Configure("CalamityEntropy/Assets/Particles/LargeBloom", false, 8, Vector2.One, true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
         }
         public override void AI()
         {
             if (base.Projectile.timeLeft % 2 == 0)
             {
-                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + Projectile.velocity.normalize() * 40, -base.Projectile.velocity * 0.05f, Color.Black, 0.052f).Configure("CalamityMod/Particles/GlowSpark2", false, 9, new Vector2(0.6f, 1.3f), false, false, 0f, false, false);
-                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + Projectile.velocity.normalize() * 40, -base.Projectile.velocity * 0.05f, Color.LightGreen, 0.022f).Configure("CalamityMod/Particles/GlowSpark", false, 9, new Vector2(0.6f, 1.9f), true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
+                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + Projectile.velocity.normalize() * 40, -base.Projectile.velocity * 0.05f, Color.Black, 0.052f).Configure("CalamityEntropy/Assets/Particles/GlowSpark2", false, 9, new Vector2(0.6f, 1.3f), false, false, 0f, false, false);
+                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + Projectile.velocity.normalize() * 40, -base.Projectile.velocity * 0.05f, Color.LightGreen, 0.022f).Configure("CalamityEntropy/Assets/Particles/GlowSpark", false, 9, new Vector2(0.6f, 1.9f), true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
             }
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -280,7 +277,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             SpawnParticle();
             if (Projectile.timeLeft > 50)
                 Projectile.timeLeft = 50;
-            SoundStyle style = DeadSunsWind.Explosion with
+            SoundStyle style = new SoundStyle("CalamityEntropy/Assets/Sounds/explosionbig")
             {
                 Pitch = 1.2f + Main.rand.NextFloat(-0.2f, 0.2f),
                 Volume = 0.16f
@@ -299,14 +296,14 @@ namespace CalamityEntropy.Content.Items.Weapons
                 Vector2 v = (base.Projectile.velocity * 2f).RotatedBy(num2 * 0.6f) * Main.rand.NextFloat(0.4f, 1f) * (1f - Math.Abs(num2)) * 3.6f;
 
                 float sc = Main.rand.NextFloat(0.6f, 1);
-                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + v, v, Color.Black, 0.06f * sc).Configure("CalamityMod/Particles/GlowSpark2", false, 16, new Vector2(0.6f, 1.3f), false, false, 0f, false, false);
-                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + v, v, Color.LightGreen, 0.022f * sc).Configure("CalamityMod/Particles/GlowSpark", false, 16, new Vector2(0.6f, 1.9f), true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
+                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + v, v, Color.Black, 0.06f * sc).Configure("CalamityEntropy/Assets/Particles/GlowSpark2", false, 16, new Vector2(0.6f, 1.3f), false, false, 0f, false, false);
+                PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + v, v, Color.LightGreen, 0.022f * sc).Configure("CalamityEntropy/Assets/Particles/GlowSpark", false, 16, new Vector2(0.6f, 1.9f), true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
             }
         }
     }
     public class BuriedDot : ModProjectile
     {
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        public override string Texture => CEUtils.InvisAsset;
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 16;
@@ -422,8 +419,8 @@ namespace CalamityEntropy.Content.Items.Weapons
                                 scale *= 0.6f;
                                 Vector2 v = (mid - start).normalize();
 
-                                PRTLoader.NewParticle<PRT_CustomSpark>(p, v, Color.Black, 0.06f * scale).Configure("CalamityMod/Particles/GlowSpark2", false, 8, new Vector2(0.6f, 1.3f), false, false, 0f, false, false);
-                                PRTLoader.NewParticle<PRT_CustomSpark>(p, v, Color.LightGreen, 0.022f * scale).Configure("CalamityMod/Particles/GlowSpark", false, 8, new Vector2(0.6f, 1.9f), true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
+                                PRTLoader.NewParticle<PRT_CustomSpark>(p, v, Color.Black, 0.06f * scale).Configure("CalamityEntropy/Assets/Particles/GlowSpark2", false, 8, new Vector2(0.6f, 1.3f), false, false, 0f, false, false);
+                                PRTLoader.NewParticle<PRT_CustomSpark>(p, v, Color.LightGreen, 0.022f * scale).Configure("CalamityEntropy/Assets/Particles/GlowSpark", false, 8, new Vector2(0.6f, 1.9f), true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
                             }
                         }
                         NPC target = CEUtils.FindTarget_HomingProj(Projectile, mid, 1200);
@@ -456,7 +453,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             PRTLoader.NewParticle<PRT_DetailedExplosionCal>(pos, Vector2.Zero, Color.Black, 0f).Configure(Vector2.One, Main.rand.NextFloat(-5f, 5f), ExplosionRadius * 0.003f + 0.1f, Main.rand.Next(15, 22), false);
             for (int i = 0; i < 4; i++)
             {
-                PRTLoader.NewParticle<PRT_CustomPulse>(pos, Vector2.Zero, color1, 0f).Configure("CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, ExplosionRadius * 0.005f + 0.05f, 25, renderLayer: PRTRenderLayer.AfterPlayers);
+                PRTLoader.NewParticle<PRT_CustomPulse>(pos, Vector2.Zero, color1, 0f).Configure("CalamityEntropy/Assets/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, ExplosionRadius * 0.005f + 0.05f, 25, renderLayer: PRTRenderLayer.AfterPlayers);
             }
 
             float num = ExplosionRadius * 0.1f + 10f;
@@ -475,8 +472,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public void SpawnParticle(Vector2 pos, float scale)
         {
-            PRTLoader.NewParticle<PRT_CustomSpark>(pos, Vector2.Zero, Color.Black, 0.24f * scale).Configure("CalamityMod/Particles/LargeBloom", false, 8, Vector2.One, false, false, 0f, false, false);
-            PRTLoader.NewParticle<PRT_CustomSpark>(pos, Vector2.Zero, Color.White, 0.12f * scale).Configure("CalamityMod/Particles/LargeBloom", false, 8, Vector2.One, true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
+            PRTLoader.NewParticle<PRT_CustomSpark>(pos, Vector2.Zero, Color.Black, 0.24f * scale).Configure("CalamityEntropy/Assets/Particles/LargeBloom", false, 8, Vector2.One, false, false, 0f, false, false);
+            PRTLoader.NewParticle<PRT_CustomSpark>(pos, Vector2.Zero, Color.White, 0.12f * scale).Configure("CalamityEntropy/Assets/Particles/LargeBloom", false, 8, Vector2.One, true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
         }
     }
 }

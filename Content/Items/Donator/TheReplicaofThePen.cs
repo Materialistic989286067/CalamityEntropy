@@ -1,6 +1,6 @@
 ﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod.Items.Materials;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -31,10 +31,10 @@ namespace CalamityEntropy.Content.Items.Donator
 
         public override void AddRecipes()
         {
+            // 灾厄原料按 material-map.md 替换：DarkPlasma×4+RuinousSoul×2→虚无碎片（合并为×6）
             CreateRecipe()
                 .AddIngredient<VoidBar>(6)
-                .AddIngredient<DarkPlasma>(4)
-                .AddIngredient<RuinousSoul>(2)
+                .AddIngredient<NihilityFragments>(6)
                 .AddIngredient(ItemID.Goggles)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
@@ -148,9 +148,12 @@ namespace CalamityEntropy.Content.Items.Donator
             }
         }
 
+        //坐骑贴图,加载期就位,不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Assets/Extra/PenMount")]
+        internal static Texture2D PenMountTex;
         public override bool Draw(List<DrawData> playerDrawData, int drawType, Player drawPlayer, ref Texture2D texture, ref Texture2D glowTexture, ref Vector2 drawPosition, ref Rectangle frame, ref Color drawColor, ref Color glowColor, ref float rotation, ref SpriteEffects spriteEffects, ref Vector2 drawOrigin, ref float drawScale, float shadow)
         {
-            var tex = CEUtils.getExtraTex("PenMount");
+            var tex = PenMountTex;
             playerDrawData.Add(new DrawData(tex, drawPosition, null, drawColor, drawPlayer.bodyRotation, tex.Size() / 2f, 1, drawPlayer.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally));
             return false;
         }

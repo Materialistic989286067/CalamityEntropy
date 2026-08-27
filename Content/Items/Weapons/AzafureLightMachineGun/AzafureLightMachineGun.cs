@@ -4,12 +4,11 @@ using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Rarities;
+using CalamityEntropy.Core.Weapons;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -19,19 +18,22 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Weapons.AzafureLightMachineGun
 {
-    public class AzafureLightMachineGun : RogueWeapon, IAzafureEnhancable
+    public class AzafureLightMachineGun : ModItem, ICEChargeWeapon, IAzafureEnhancable
     {
+        // 命中计数 30；原潜伏乘数 伤害2/击退2 并入释放乘数
+        public CEChargeProfile ChargeProfile => CEChargeProfile.HitCount(30, 2f, knockbackMult: 2f);
+
         public override void SetDefaults()
         {
             Item.damage = 30;
-            Item.DamageType = CEUtils.RogueDC;
+            Item.DamageType = DamageClass.Ranged;
             Item.width = 82;
             Item.height = 32;
             Item.useTime = 8;
             Item.useAnimation = 8;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 4;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.UseSound = null;
             Item.noMelee = true;
@@ -49,19 +51,22 @@ namespace CalamityEntropy.Content.Items.Weapons.AzafureLightMachineGun
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
+        public override void HoldItem(Player player)
+        {
+            //阿扎弗强化效果本体(文案键AzafureEnhances.AzafureLightMachineGun):大招充能速度+50%
+            if (player.AzafureEnhance())
+                player.GetModPlayer<CEChargePlayer>().ChargeRateMult += 0.5f;
+        }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            bool ult = CEChargeWeapon.TryConsume(player, Item);
             int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
-            if (player.Calamity().StealthStrikeAvailable() && p.WithinBounds(Main.maxProjectiles))
+            if (ult && p >= 0 && p < Main.maxProjectiles)
             {
-                Main.projectile[p].Calamity().stealthStrike = true;
-                p.ToProj().netUpdate = true;
-                CEUtils.CostStealthForPlr(player);
+                CEChargeWeapon.Empower(p);
             }
             return false;
         }
-        public override float StealthDamageMultiplier => 2;
-        public override float StealthKnockbackMultiplier => 2;
     }
     public class AzafureLightMachineGunHeld : ModProjectile
     {
@@ -73,7 +78,7 @@ namespace CalamityEntropy.Content.Items.Weapons.AzafureLightMachineGun
         }
         public override void SetDefaults()
         {
-            Projectile.HeldProjSetDefaults(CEUtils.RogueDC);
+            Projectile.HeldProjSetDefaults(DamageClass.Ranged);
         }
         public override bool? CanHitNPC(NPC target)
         {
@@ -81,14 +86,14 @@ namespace CalamityEntropy.Content.Items.Weapons.AzafureLightMachineGun
         }
         public override void AI()
         {
-            Projectile.GetOwner().Calamity().mouseWorldListener = true;
+            Projectile.GetOwner().Entropy().MouseWorldListener = true;
             Player player = Projectile.GetOwner();
             if (player.dead)
             {
                 Projectile.Kill();
                 return;
             }
-            if (Projectile.Calamity().stealthStrike)
+            if (Projectile.IsEmpowered())
             {
                 rotup += rotv;
                 rotv *= 0.8f;
@@ -99,14 +104,14 @@ namespace CalamityEntropy.Content.Items.Weapons.AzafureLightMachineGun
                     Projectile.timeLeft = 32;
                     if (Main.myPlayer == Projectile.owner)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + Projectile.velocity.normalize() * 32, Projectile.velocity, ModContent.ProjectileType<AzafureLightMachineGunStealth>(), Projectile.damage * 6, Projectile.knockBack * 6, Projectile.owner).ToProj().Calamity().stealthStrike = true; ;
+                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + Projectile.velocity.normalize() * 32, Projectile.velocity, ModContent.ProjectileType<AzafureLightMachineGunStealth>(), Projectile.damage * 6, Projectile.knockBack * 6, Projectile.owner).ToProj().SetEmpowered();
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center - Projectile.velocity.normalize() * 2, Projectile.velocity.RotatedBy(-2.3f * player.direction).normalize() * 12, ModContent.ProjectileType<ALMGShell>(), 0, 0, Projectile.owner);
                     }
                 }
-                player.Calamity().mouseWorldListener = true;
-                Projectile.rotation = (player.Calamity().mouseWorld - player.Center).ToRotation();
+                player.Entropy().MouseWorldListener = true;
+                Projectile.rotation = (player.Entropy().MouseWorld - player.Center).ToRotation();
                 Projectile.velocity = Projectile.rotation.ToRotationVector2() * 16;
-                player.SetHandRot(((player.Calamity().mouseWorld - player.Center).ToRotation().ToRotationVector2() + new Vector2(0, 1f)).ToRotation());
+                player.SetHandRot(((player.Entropy().MouseWorld - player.Center).ToRotation().ToRotationVector2() + new Vector2(0, 1f)).ToRotation());
                 player.itemAnimation = player.itemTime = 4;
                 player.heldProj = Projectile.whoAmI;
                 Projectile.Center = player.GetDrawCenter() + Projectile.rotation.ToRotationVector2() * 24;
@@ -116,10 +121,10 @@ namespace CalamityEntropy.Content.Items.Weapons.AzafureLightMachineGun
             if (player.channel)
             {
                 Projectile.timeLeft = 4;
-                player.Calamity().mouseWorldListener = true;
-                Projectile.rotation = (player.Calamity().mouseWorld - player.Center).ToRotation();
+                player.Entropy().MouseWorldListener = true;
+                Projectile.rotation = (player.Entropy().MouseWorld - player.Center).ToRotation();
                 Projectile.velocity = Projectile.rotation.ToRotationVector2() * 16;
-                player.SetHandRot(((player.Calamity().mouseWorld - player.Center).ToRotation().ToRotationVector2() + new Vector2(0, 1f)).ToRotation());
+                player.SetHandRot(((player.Entropy().MouseWorld - player.Center).ToRotation().ToRotationVector2() + new Vector2(0, 1f)).ToRotation());
                 player.itemAnimation = player.itemTime = 4;
                 player.heldProj = Projectile.whoAmI;
                 if (Projectile.ai[2]-- <= 0)
@@ -156,6 +161,9 @@ namespace CalamityEntropy.Content.Items.Weapons.AzafureLightMachineGun
     }
     public class ALMGLaser : ModProjectile
     {
+        //激光线遮罩贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
+        [VaultLoaden("CalamityEntropy/Assets/Extra/MaskLaserLine")]
+        internal static Asset<Texture2D> MaskLaserLineTex;
         public override string Texture => CEUtils.WhiteTexPath;
         public override void SetDefaults()
         {
@@ -177,7 +185,7 @@ namespace CalamityEntropy.Content.Items.Weapons.AzafureLightMachineGun
 
             if (Projectile.ai[0]++ == 0)
             {
-                Vector2 mousew = Projectile.GetOwner().Calamity().mouseWorld;
+                Vector2 mousew = Projectile.GetOwner().Entropy().MouseWorld;
                 Projectile.Center = Projectile.GetOwner().GetDrawCenter();
                 Projectile.velocity = new Vector2(8, 0).RotatedBy((mousew - Projectile.Center).ToRotation());
                 Projectile.rotation = Projectile.velocity.ToRotation();
@@ -269,7 +277,7 @@ namespace CalamityEntropy.Content.Items.Weapons.AzafureLightMachineGun
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D tex = CEUtils.getExtraTex("MaskLaserLine");
+            Texture2D tex = MaskLaserLineTex.Value;
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, new Color(255, 255, 255), Projectile.rotation, new Vector2(0, tex.Height / 2), new Vector2(dist / tex.Width, Projectile.scale * 0.3f * (Projectile.timeLeft / 12f)), SpriteEffects.None, 0);
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, new Color(255, 10, 10), Projectile.rotation, new Vector2(0, tex.Height / 2), new Vector2(dist / tex.Width, Projectile.scale * 0.5f * (Projectile.timeLeft / 12f)), SpriteEffects.None, 0);
 
@@ -283,7 +291,6 @@ namespace CalamityEntropy.Content.Items.Weapons.AzafureLightMachineGun
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Projectile.GetOwner().Entropy().worshipStealthRegenTime = 18;
             target.AddBuff<MechanicalTrauma>(60);
         }
     }
@@ -296,7 +303,7 @@ namespace CalamityEntropy.Content.Items.Weapons.AzafureLightMachineGun
         }
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, true, 1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, true, 1);
             Projectile.width = Projectile.height = 16;
             Projectile.extraUpdates = 5;
         }
@@ -306,7 +313,7 @@ namespace CalamityEntropy.Content.Items.Weapons.AzafureLightMachineGun
             Projectile.rotation = Projectile.velocity.ToRotation();
             if (Projectile.ai[0]++ == 0)
             {
-                Vector2 mousew = Projectile.GetOwner().Calamity().mouseWorld;
+                Vector2 mousew = Projectile.GetOwner().Entropy().MouseWorld;
                 Projectile.Center = Projectile.GetOwner().GetDrawCenter();
                 Projectile.velocity = new Vector2(8, 0).RotatedBy((mousew - Projectile.Center).ToRotation());
                 Projectile.rotation = Projectile.velocity.ToRotation();

@@ -1,8 +1,6 @@
 using CalamityEntropy.Content.Biomes;
 using CalamityEntropy.Content.Buffs;
-using CalamityMod;
-using CalamityMod.Events;
-using CalamityMod.World;
+using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -51,7 +49,6 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             NPC.width = 110;
             NPC.height = 110;
             NPC.damage = 100;
-            NPC.Calamity().DR = 0.20f;
             if (Main.expertMode)
             {
                 NPC.damage += 2;
@@ -62,15 +59,12 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             }
             NPC.defense = 50;
             NPC.lifeMax = 360000;
-            if (BossRushEvent.BossRushActive)
-            {
-                NPC.lifeMax += 360000;
-            }
-            if (CalamityWorld.death)
+            // 难度映射:死亡→大师、复仇→专家(difficulty-map)
+            if (Main.masterMode)
             {
                 NPC.damage += 8;
             }
-            else if (CalamityWorld.revenge)
+            else if (Main.expertMode)
             {
                 NPC.damage += 4;
             }
@@ -84,6 +78,12 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             NPC.dontCountMe = true;
             NPC.netAlways = true;
             SpawnModBiomes = new int[] { ModContent.GetInstance<VoidDummyBoime>().Type };
+        }
+        // 原灾厄全局 DR=0.20 的本地等效;公有字段供血条等外部读取
+        public float DamageReduction = 0.20f;
+        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
+        {
+            modifiers.FinalDamage *= 1f - DamageReduction;
         }
         public bool init = true;
         public override void SendExtraAI(BinaryWriter writer)

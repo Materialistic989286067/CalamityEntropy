@@ -1,17 +1,19 @@
-﻿using CalamityEntropy.Common;
+using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles.SpiritFountainShoots;
-using CalamityMod;
-using CalamityMod.Items.Potions;
-using CalamityMod.World;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.IO;
 using Terraria;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -38,6 +40,15 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
     [AutoloadBossHead]
     public class SpiritFountain : ModNPC
     {
+        //绘制用 Extra 池贴图,基座 CEExtraAssets 未收编的先放本文件私有字段,加载期由 VaultLoaden 赋值
+        [VaultLoaden("CalamityEntropy/Assets/Extra/TrailInk")]
+        private static Asset<Texture2D> trailInkTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/SpiritEye")]
+        private static Asset<Texture2D> spiritEyeTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/SpiritEye2")]
+        private static Asset<Texture2D> spiritEye2Tex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/SpiritEye3")]
+        private static Asset<Texture2D> spiritEye3Tex;
         public FountainColumn column1 = new FountainColumn(0) { id = 0 };
         public FountainColumn column2 = new FountainColumn(0) { id = 1 };
         public int CenterRing = 0;
@@ -57,7 +68,8 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;*/
-            this.HideFromBestiary();
+            // 图鉴隐藏:原灾厄隐藏扩展的原版等价写法
+            NPCID.Sets.NPCBestiaryDrawOffset[Type] = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
         }
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
@@ -84,11 +96,12 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
                 NPC.damage += 4;
                 SpiritCount += 2;
             }
-            if (CalamityWorld.revenge)
+            // 难度映射:复仇→专家、死亡→大师(difficulty-map)
+            if (Main.expertMode)
             {
                 SpiritCount += 2;
             }
-            if (CalamityWorld.death)
+            if (Main.masterMode)
             {
                 SpiritCount += 2;
             }
@@ -127,20 +140,16 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            //npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<CruiserBag>()));
+            // 原灾厄欧米茄回复药水→超级治疗药水,数量 5-15 按 misc-map ×1.5 取整为 8-23;隐藏图鉴条目
+            npcLoot.Add(new DropPerPlayerOnThePlayer(ItemID.SuperHealingPotion, 1, 8, 23, new HiddenDropCondition()));
+        }
 
-            npcLoot.DefineConditionalDropSet(() => true).Add(DropHelper.PerPlayer(ModContent.ItemType<OmegaHealingPotion>(), 1, 5, 15), hideLootReport: true);
-
-
-            var normalOnly = npcLoot.DefineNormalOnlyDropSet();
-            {
-                //normalOnly.Add(ModContent.ItemType<VoidRelics>(), new Fraction(3, 5));
-            }
-            //npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<CruiserRelic>());
-
-            //npcLoot.Add(ModContent.ItemType<CruiserTrophy>(), 10);
-
-            //npcLoot.AddConditionalPerPlayer(() => !EDownedBosses.downedCruiser, ModContent.ItemType<CruiserLore>());
+        // 恒真但隐藏图鉴条目的条件:对应原 hideLootReport 语义
+        private class HiddenDropCondition : IItemDropRuleCondition, IProvideItemConditionDescription
+        {
+            public bool CanDrop(DropAttemptInfo info) => true;
+            public bool CanShowItemDropInUI() => false;
+            public string GetConditionDescription() => null;
         }
         public override void SendExtraAI(BinaryWriter writer)
         {
@@ -264,11 +273,12 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             {
                 enrage += 0.1f;
             }
-            if (CalamityWorld.death)
+            // 难度映射:死亡→大师、复仇→专家(difficulty-map)
+            if (Main.masterMode)
             {
                 enrage += 0.2f;
             }
-            else if (CalamityWorld.revenge)
+            else if (Main.expertMode)
             {
                 enrage += 0.1f;
             }
@@ -346,6 +356,8 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
                     column1.rotation = -MathHelper.PiOver2;
                     NPC.Opacity = 0;
                     SetPos = true;
+                    // 禁忌档案坐标写入源已随灾厄 IL 删除，新世界恒为 (-1,-1)：下行 pos.X < 10 即安全短路，
+                    // 落点回退到目标玩家处；仅旧档遗留有效坐标时才用档案馆位置（2026-08-27 核查定稿）
                     Vector2 pos = EDownedBosses.GetDungeonArchiveCenterPos();
                     NPC.Center = pos.X < 10 ? (NPC.HasValidTarget ? NPC.target.ToPlayer().Center : Main.player[0].Center) : pos;
                     starePoint = NPC.Center;
@@ -620,14 +632,14 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
 
         public void DrawColumn(FountainColumn column, Texture2D TrailTex)
         {
-            Main.spriteBatch.Draw(CEUtils.getExtraTex("MegaStreakBacking2"), NPC.Center + column.offset - Main.screenPosition, new Rectangle(-(int)column.trailDrawOffset, 0, 3600, 256), Color.White * column.alpha * 1.4f, column.rotation, new Vector2(1800, 128), NPC.scale * 1.4f * column.scale, SpriteEffects.None, 0);
-            EffectLoader.DrawCylinder(CEUtils.getExtraTex("B1"), NPC.Center + column.offset - Main.screenPosition, Color.White * column.alpha, BlendState.AlphaBlend, 30, 0.26f * column.scale, 0.5f, Main.GlobalTimeWrappedHourly * 3f, 5, column.rotation - MathHelper.PiOver2, false, false);
-            EffectLoader.DrawCylinder(CEUtils.getExtraTex("B1"), NPC.Center + column.offset - Main.screenPosition, Color.White * column.alpha * 0.9f, BlendState.Additive, 30, 0.26f * column.scale, 0.5f, Main.GlobalTimeWrappedHourly * -3f, 5, column.rotation - MathHelper.PiOver2, false, false);
+            Main.spriteBatch.Draw(CEExtraAssets.MegaStreakBacking2, NPC.Center + column.offset - Main.screenPosition, new Rectangle(-(int)column.trailDrawOffset, 0, 3600, 256), Color.White * column.alpha * 1.4f, column.rotation, new Vector2(1800, 128), NPC.scale * 1.4f * column.scale, SpriteEffects.None, 0);
+            EffectLoader.DrawCylinder(CEExtraAssets.B1, NPC.Center + column.offset - Main.screenPosition, Color.White * column.alpha, BlendState.AlphaBlend, 30, 0.26f * column.scale, 0.5f, Main.GlobalTimeWrappedHourly * 3f, 5, column.rotation - MathHelper.PiOver2, false, false);
+            EffectLoader.DrawCylinder(CEExtraAssets.B1, NPC.Center + column.offset - Main.screenPosition, Color.White * column.alpha * 0.9f, BlendState.Additive, 30, 0.26f * column.scale, 0.5f, Main.GlobalTimeWrappedHourly * -3f, 5, column.rotation - MathHelper.PiOver2, false, false);
             Main.spriteBatch.UseBlendState(BlendState.Additive, SamplerState.PointWrap);
             Main.spriteBatch.Draw(TrailTex, NPC.Center + column.offset - Main.screenPosition, new Rectangle(-(int)column.trailDrawOffset, 0, 3600, TrailTex.Height), Color.AliceBlue * column.alpha * 0.9f, column.rotation, new Vector2(1800, TrailTex.Height / 2), NPC.scale * 1.5f * column.scale, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(TrailTex, NPC.Center + column.offset - Main.screenPosition, new Rectangle(-(int)(column.trailDrawOffset * 0.9f), 0, 3600, TrailTex.Height), Color.AliceBlue * column.alpha, column.rotation, new Vector2(1800, TrailTex.Height / 2), NPC.scale * 1.4f * column.scale, SpriteEffects.FlipVertically, 0);
-            Main.spriteBatch.Draw(CEUtils.getExtraTex("TrailInk"), NPC.Center + column.offset - Main.screenPosition, new Rectangle((int)(column.trailDrawOffset * 0.85f), 0, 3600, TrailTex.Height), Color.AliceBlue * column.alpha * 0.5f, column.rotation, new Vector2(1800, 128), NPC.scale * 1.6f * column.scale, SpriteEffects.FlipHorizontally, 0);
-            Main.spriteBatch.Draw(CEUtils.getExtraTex("BasicTrail"), NPC.Center + column.offset - Main.screenPosition, new Rectangle(-(int)column.trailDrawOffset, 0, 3600, 200), new Color(140, 140, 255) * column.alpha, column.rotation, new Vector2(1800, 100), NPC.scale * 3f * column.scale, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(trailInkTex.Value, NPC.Center + column.offset - Main.screenPosition, new Rectangle((int)(column.trailDrawOffset * 0.85f), 0, 3600, TrailTex.Height), Color.AliceBlue * column.alpha * 0.5f, column.rotation, new Vector2(1800, 128), NPC.scale * 1.6f * column.scale, SpriteEffects.FlipHorizontally, 0);
+            Main.spriteBatch.Draw(CEExtraAssets.BasicTrail, NPC.Center + column.offset - Main.screenPosition, new Rectangle(-(int)column.trailDrawOffset, 0, 3600, 200), new Color(140, 140, 255) * column.alpha, column.rotation, new Vector2(1800, 100), NPC.scale * 3f * column.scale, SpriteEffects.None, 0);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPosition, Color drawColor)
@@ -635,12 +647,12 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             if (NPC.IsABestiaryIconDummy)
                 return false;
 
-            Texture2D mainTrail = CEUtils.getExtraTex("StreakFaded");
+            Texture2D mainTrail = CEExtraAssets.StreakFaded;
             Main.spriteBatch.UseBlendState(BlendState.Additive, SamplerState.PointWrap);
 
-            Texture2D eyeTex = CEUtils.getExtraTex("SpiritEye");
-            Texture2D eyeTex2 = CEUtils.getExtraTex("SpiritEye2");
-            Texture2D eyeTex3 = CEUtils.getExtraTex("SpiritEye3");
+            Texture2D eyeTex = spiritEyeTex.Value;
+            Texture2D eyeTex2 = spiritEye2Tex.Value;
+            Texture2D eyeTex3 = spiritEye3Tex.Value;
 
             Main.spriteBatch.Draw(eyeTex, NPC.Center - Main.screenPosition, null, Color.White * EyeAlpha, 0, eyeTex.Size() / 2f, 0.46f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(eyeTex2, NPC.Center - Main.screenPosition + (starePoint - NPC.Center).normalize() * ((float)Math.Sqrt(CEUtils.getDistance(starePoint, NPC.Center))), null, Color.White * EyeAlpha, 0, eyeTex.Size() / 2f, 0.46f, SpriteEffects.None, 0);
@@ -654,7 +666,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             if (ai == AIStyle.SpawnAnimation && aiTimer < 90)
             {
                 Main.spriteBatch.UseBlendState(BlendState.Additive);
-                Main.spriteBatch.Draw(CEUtils.getExtraTex("MegaStreakBacking2"), NPC.Center - Main.screenPosition, null, Color.AliceBlue, MathHelper.PiOver2, CEUtils.getExtraTex("MegaStreakBacking2").Size() / 2f, new Vector2(24, CEUtils.Parabola(aiTimer / 90f, 4)), SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(CEExtraAssets.MegaStreakBacking2, NPC.Center - Main.screenPosition, null, Color.AliceBlue, MathHelper.PiOver2, CEExtraAssets.MegaStreakBacking2.Size() / 2f, new Vector2(24, CEUtils.Parabola(aiTimer / 90f, 4)), SpriteEffects.None, 0);
                 Main.spriteBatch.ExitShaderRegion();
             }
             return false;

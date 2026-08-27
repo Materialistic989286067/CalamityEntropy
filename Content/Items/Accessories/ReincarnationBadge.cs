@@ -1,35 +1,28 @@
-﻿using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
-using CalamityMod.Systems.Collections;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityEntropy.Common;
+using CalamityEntropy.Content.Items.Armor;
+using CalamityEntropy.Content.Rarities;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
     public class ReincarnationBadge : ModItem
     {
-        public override void SetStaticDefaults()
-        {
-            CalamityItemSets.HasAccessoryKeybind[Type] = true;
-        }
         public override void SetDefaults()
         {
             Item.width = 98;
             Item.height = 60;
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.rare = ModContent.RarityType<Turquoise>();
+            Item.value = Item.buyPrice(platinum: 1, gold: 50);
+            Item.rare = ModContent.RarityType<NihilityBlue>();
             Item.accessory = true;
 
         }
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            var k = Main.LocalPlayer.Calamity().FindAccessory<ReincarnationBadge>().GetDynamicModHotkey();
-            list.IntegrateHotkey(k);
+            // 脱离灾厄:灾厄动态饰品键位并入自有 AccessoryAbilityHotKey(player-api.md §2)
+            list.Replace("[KEY]", EModPlayer.AccessoryAbilityHotKey.TooltipKeyHint());
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -39,9 +32,10 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ModContent.ItemType<AscendantInsignia>())
-                .AddIngredient(ModContent.ItemType<AscendantSpiritEssence>(), 4)
-                .AddTile(ModContent.TileType<CosmicAnvil>()).Register();
+            // 脱离灾厄:灾厄升华勋章改为原版飞升徽记(其灾厄配方本源),站台改远古操纵机
+            CreateRecipe().AddIngredient(ItemID.EmpressFlightBooster)
+                .AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 4)
+                .AddTile(TileID.LunarCraftingStation).Register();
         }
     }
 }

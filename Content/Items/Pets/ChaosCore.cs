@@ -1,7 +1,6 @@
 ﻿using CalamityEntropy.Content.Buffs.Pets;
 using CalamityEntropy.Content.Items.Donator;
 using CalamityEntropy.Content.Projectiles.Pets;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -33,7 +32,7 @@ namespace CalamityEntropy.Content.Items.Pets
             CreateRecipe().
                 AddIngredient(1508, 5).
                 AddIngredient(1729, 4).
-                AddIngredient<EssenceofHavoc>(7).
+                AddIngredient(ItemID.SoulofNight, 7).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

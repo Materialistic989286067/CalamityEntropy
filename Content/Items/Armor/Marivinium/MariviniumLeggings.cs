@@ -1,8 +1,7 @@
-﻿using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod.Items;
-using CalamityMod.Items.Armor.OmegaBlue;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Armor.Marivinium
@@ -14,7 +13,7 @@ namespace CalamityEntropy.Content.Items.Armor.Marivinium
         {
             Item.width = 34;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2, gold: 80);
             Item.defense = 56;
             Item.rare = ModContent.RarityType<AbyssalBlue>();
         }
@@ -29,8 +28,9 @@ namespace CalamityEntropy.Content.Items.Armor.Marivinium
         }
         public override void AddRecipes()
         {
+            // 脱离灾厄:灾厄欧米茄蓝腿甲改为蘑菇矿潜袭护腿(表外裁定,档位由龙牙把关)
             CreateRecipe()
-                .AddIngredient<OmegaBlueTentacles>()
+                .AddIngredient(ItemID.ShroomiteLeggings)
                 .AddIngredient<WyrmTooth>(5)
                 .AddIngredient<FadingRunestone>()
                 .AddTile<AbyssalAltarTile>()

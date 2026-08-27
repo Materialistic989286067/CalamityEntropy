@@ -1,10 +1,10 @@
-﻿using CalamityMod.Cooldowns;
+﻿using CalamityEntropy.Core.Cooldowns;
 using Terraria.Audio;
 using Terraria.Localization;
 
 namespace CalamityEntropy.Content.Cooldowns
 {
-    public class BlockingCooldown : CooldownHandler
+    public class BlockingCooldown : CECooldownHandler
     {
         public static new string ID => "BlockingCooldown";
         public override bool ShouldDisplay => true;

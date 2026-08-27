@@ -1,20 +1,6 @@
-using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items;
-using CalamityEntropy.Content.Projectiles;
-using CalamityMod;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Pets;
-using CalamityMod.Items.Placeables;
-using CalamityMod.Items.Tools;
-using CalamityMod.Items.TreasureBags.MiscGrabBags;
-using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.NPCs.PrimordialWyrm;
-using CalamityMod.Projectiles.Magic;
-using CalamityMod.Sounds;
+using CalamityEntropy.Content.Projectiles.Cruiser;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -22,7 +8,6 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.Utilities;
-using CalamityMod.NPCs;
 
 namespace CalamityEntropy.Content.NPCs
 {
@@ -51,7 +36,8 @@ namespace CalamityEntropy.Content.NPCs
             NPC.defense = 105;
             NPC.lifeMax = 7200000;
             NPC.HitSound = SoundID.NPCHit1;
-            NPC.DeathSound = PrimordialWyrmHead.DeathSound;
+            // 死亡音效就近取巡游者死亡爆发音
+            NPC.DeathSound = CEUtils.GetSound("VoidAttack");
             NPC.knockBackResist = 0f;
             AnimationType = NPCID.Clothier;
         }
@@ -62,7 +48,8 @@ namespace CalamityEntropy.Content.NPCs
         }
         public override bool CanTownNPCSpawn(int numTownNPCs)
         {
-            if (DownedBossSystem.downedPrimordialWyrm)
+            // 入住条件改为击败巡游者（进度表：原渊海灾虫槽位并入巡游者）
+            if (EDownedBosses.downedCruiser)
             {
                 return true;
             }
@@ -92,11 +79,6 @@ namespace CalamityEntropy.Content.NPCs
                         lc.RemoveAt(d);
                     }
                     chat.Add(Mod.GetLocalization("WyrmChatDonors").Value.Replace("[0]", dns));
-                    return chat;
-                }
-                if(NPC.GetGlobalNPC<CalamityGlobalTownNPC>().AffectedByTheMonument)
-                {
-                    chat.Add(Mod.GetLocalization("PrimordialWyrmNPC.TownNPCMood.MonumentNearby").Value);
                     return chat;
                 }
                 if (!Main.bloodMoon && !Main.eclipse)
@@ -166,25 +148,23 @@ namespace CalamityEntropy.Content.NPCs
         public static string ShopName = "Shop";
         public override void AddShops()
         {
+            // 货架全部换为自有与原版商品（杂项处置表 §三 定稿清单）
             var npcShop = new NPCShop(Type, ShopName)
-                .Add<CalamarisLament>()
-                .Add<Valediction>()
-                .Add<DeepSeaDumbbell>()
-                .Add<GrandDad>()
-                .Add<EidolicWail>()
-                .Add<EidolonStaff>()
-                .Add<HalibutCannon>()
-                .Add<Lumenyl>()
-                .Add<DepthCells>()
-                .Add<PlantyMush>()
-                .Add<AbyssalTreasure>()
-                .Add<VoidTorch>()
-                .Add<AbyssShellFossil>()
-                .Add<BobbitHook>()
-                .Add<ReaperTooth>()
                 .Add<WyrmTooth>()
-                .Add<Rock>(new Condition(Mod.GetLocalization("PassedBossRush"), () => DownedBossSystem.downedBossRush))
-                .Add(ModLoader.GetMod("CalamityModMusic").Find<ModItem>("PrimordialWyrmMusicBox").Type);
+                .Add<VoidBar>()
+                .Add<NihilityFragments>()
+                .Add<WraithSoulEssence>()
+                .Add(ItemID.LunarOre)
+                .Add(ItemID.SuperHealingPotion)
+                .Add(ItemID.Celeb2)
+                .Add(ItemID.LastPrism)
+                .Add(ItemID.LunarFlareBook)
+                .Add(ItemID.PaladinsHammer)
+                .Add(ItemID.BoneTorch)
+                .Add(new Item(ItemID.FossilOre, 50))
+                .Add(ItemID.SharkToothNecklace)
+                .Add(ItemID.StaticHook)
+                .Add(ItemID.MusicBoxBoss5);
             npcShop.Register();
         }
 
@@ -199,10 +179,6 @@ namespace CalamityEntropy.Content.NPCs
 
                 int value = item.shopCustomPrice ?? item.value;
                 item.shopCustomPrice = value / 8;
-                if (item.type == ModContent.ItemType<Rock>())
-                {
-                    item.shopCustomPrice = 100000000;
-                }
             }
         }
         public override void TownNPCAttackStrength(ref int damage, ref float knockback)
@@ -218,30 +194,34 @@ namespace CalamityEntropy.Content.NPCs
             randExtraCooldown = 15;
         }
 
-        public int st = 0;
         public int dcd = 0;
         public override void TownNPCAttackProj(ref int projType, ref int attackDelay)
         {
-            projType = ModContent.ProjectileType<EidolicWailSoundwave>();
-            if (Main.zenithWorld)
-            {
-                projType = st % 2 == 1 ? ModContent.ProjectileType<HadopelagicLaser>() : ModContent.ProjectileType<HadopelagicWail>();
-                if (dcd <= 0)
-                {
-                    st++;
-                }
-            }
+            // 攻击弹幕统一改自有巡游者激光（zenith 分支同用），尖啸音沿用自有 he 系列
+            projType = ModContent.ProjectileType<CruiserLaser2>();
             attackDelay = 4;
             if (dcd <= 0)
             {
-                var sd = CommonCalamitySounds.WyrmScreamSound;
-                if (Main.zenithWorld)
-                {
-                    sd = CEUtils.GetSound("he" + (Main.rand.NextBool() ? 1 : 3).ToString());
-                }
+                var sd = CEUtils.GetSound("he" + (Main.rand.NextBool() ? 1 : 3).ToString());
                 sd.MaxInstances = 6;
                 SoundEngine.PlaySound(in sd, NPC.Center);
                 dcd = 59;
+            }
+        }
+        public override void PostAI()
+        {
+            // 巡游者激光默认敌对且以 ai[0] 绑定所有者 NPC；城镇攻击 AI 生成后在此改挂
+            // 本模组统一友好化通道 ToFriendly（每帧强制转友方并随 ExtraAI 同步），并解除所有者绑定
+            foreach (Projectile proj in Main.ActiveProjectiles)
+            {
+                if (proj.type == ModContent.ProjectileType<CruiserLaser2>() && proj.npcProj && !proj.Entropy().ToFriendly)
+                {
+                    proj.Entropy().ToFriendly = true;
+                    // 驯服弹幕默认吃 16 倍增伤（FriendFinder 宠物专用），城镇攻击保持面板伤害，须关掉
+                    proj.Entropy().dmgUpFrd = false;
+                    proj.ai[0] = -1;
+                    proj.netUpdate = true;
+                }
             }
         }
         public override void TownNPCAttackProjSpeed(ref float multiplier, ref float gravityCorrection, ref float randomOffset)

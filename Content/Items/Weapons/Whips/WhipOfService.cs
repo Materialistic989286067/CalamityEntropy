@@ -1,6 +1,4 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -15,7 +13,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
         {
             Item.DefaultToWhip(ModContent.ProjectileType<WhipOfServiceProjectile>(), 24, 2, 4, 36);
             Item.rare = ItemRarityID.Blue;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
 
         }
 
@@ -32,7 +30,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
         public override void AddRecipes()
         {
             CreateRecipe().AddIngredient(ItemID.BlandWhip)
-                .AddIngredient(ModContent.ItemType<AncientBoneDust>(), 2)
+                .AddIngredient(ItemID.Bone, 2)
                 .Register();
         }
 

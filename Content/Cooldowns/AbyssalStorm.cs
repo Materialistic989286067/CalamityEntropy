@@ -1,10 +1,10 @@
-﻿using CalamityMod.Cooldowns;
+﻿using CalamityEntropy.Core.Cooldowns;
 using Terraria.Audio;
 using Terraria.Localization;
 
 namespace CalamityEntropy.Content.Cooldowns
 {
-    public class AbyssalStorm : CooldownHandler
+    public class AbyssalStorm : CECooldownHandler
     {
         public static new string ID => "AbyssalBeam";
         public override bool ShouldDisplay => true;

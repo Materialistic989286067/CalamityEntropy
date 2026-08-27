@@ -1,6 +1,8 @@
 ﻿using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Donator;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
@@ -9,6 +11,12 @@ namespace CalamityEntropy.Common.DrawLayers
 {
     public class FooveriaLayer : PlayerDrawLayer
     {
+        //武器与辉光贴图在加载期就位,不再每帧走 RequestTex 查表
+        [VaultLoaden("CalamityEntropy/Content/Items/Donator/Fooveria")]
+        internal static Asset<Texture2D> FooveriaTex;
+        [VaultLoaden("CalamityEntropy/Content/Items/Donator/FooveriaGlow")]
+        internal static Asset<Texture2D> FooveriaGlowTex;
+
         public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
         {
             if (drawInfo.shadow != 0f || drawInfo.drawPlayer.dead)
@@ -24,8 +32,8 @@ namespace CalamityEntropy.Common.DrawLayers
         protected override void Draw(ref PlayerDrawSet drawInfo)
         {
             Player player = drawInfo.drawPlayer;
-            Texture2D tex = CEUtils.RequestTex("CalamityEntropy/Content/Items/Donator/Fooveria");
-            Texture2D tex2 = CEUtils.RequestTex("CalamityEntropy/Content/Items/Donator/FooveriaGlow");
+            Texture2D tex = FooveriaTex.Value;
+            Texture2D tex2 = FooveriaGlowTex.Value;
             float GlowAlpha = 0;
             if(player.Entropy().noItemTime >= 15 && player.Entropy().noItemTime <= 26)
             {

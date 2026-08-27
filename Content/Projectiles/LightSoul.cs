@@ -1,9 +1,10 @@
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -13,6 +14,9 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class LightSoul : EBookBaseProjectile
     {
+        //拖尾贴图,加载期就位,绘制时不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/LightSoul")]
+        internal static Asset<Texture2D> TrailTex;
         public List<Vector2> odp = new List<Vector2>();
         public List<float> odr = new List<float>();
         public Vector2 dscp = Vector2.Zero;
@@ -84,7 +88,8 @@ namespace CalamityEntropy.Content.Projectiles
                         CEUtils.PlaySound("soulexplode", 1.2f, Projectile.Center, maxIns: 2, volume: 0.6f);
                         Projectile.timeLeft = 2;
                         Projectile.Resize(256, 256);
-                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = 6;
+                        //换用自有屏震系统, 幅度对齐同类爆点(原灾厄震屏强度6)
+                        CalamityEntropy.Instance.screenShakeAmp = 2;
                         //DirectionalPulseRing Configure是Calamity ring原构造,scale/rotation/lifetime顺序固定
                         PRTLoader.NewParticle<PRT_DirectionalPulseRing>(target.Center, Vector2.Zero, Color.White, 0.1f).Configure(new Vector2(2f, 2f), 0, 0.85f * 0.5f, 18);
                         PRTLoader.NewParticle<PRT_DetailedExplosionCal>(target.Center, Vector2.Zero, Color.White, 0f).Configure(Vector2.One, Main.rand.NextFloat(-5, 5), 0.5f * 0.65f, 13);
@@ -180,7 +185,7 @@ namespace CalamityEntropy.Content.Projectiles
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
                 if (ve.Count >= 3)
                 {
-                    Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/LightSoul").Value;
+                    Texture2D tx = TrailTex.Value;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
 

@@ -1,6 +1,6 @@
-﻿using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles.SpiritFountainShoots;
-using CalamityMod;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -17,7 +17,8 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 1;
-            this.HideFromBestiary();
+            // 图鉴隐藏:原灾厄隐藏扩展的原版等价写法
+            NPCID.Sets.NPCBestiaryDrawOffset[Type] = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
             NPCID.Sets.MPAllowedEnemies[Type] = true;
             NPCID.Sets.ImmuneToRegularBuffs[Type] = true;
             NPCID.Sets.MustAlwaysDraw[Type] = true;
@@ -89,7 +90,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             NPC.scale = owner.scale;
             NPC.Entropy().VoidTouchDR = owner.Entropy().VoidTouchDR;
             NPC.defense = owner.defense;
-            NPC.Calamity().DR = owner.Calamity().DR;
+            // 原灾厄 DR 镜像删除:本体(灵泉)从未设置灾厄 DR,该行恒为 0 的空转
             NPC.dontTakeDamage = fountain.DontTakeDmg;
             NPC.realLife = (int)NPC.ai[0];
             NPC.lifeMax = owner.lifeMax;
@@ -413,7 +414,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
         public void DrawTrail(float r, float rot)
         {
             float rt = rot;
-            Texture2D glow = CEUtils.getExtraTex("Glow2");
+            Texture2D glow = CEExtraAssets.Glow2;
             var sb = Main.spriteBatch;
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
@@ -439,8 +440,8 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             yx += 0.036f;
             if (AlphaWaveWarning > 0.01f)
             {
-                Texture2D glow = CEUtils.getExtraTex("a_circle");
-                Texture2D tex = CEUtils.getExtraTex("MegaStreakBacking2");
+                Texture2D glow = CEExtraAssets.a_circle;
+                Texture2D tex = CEExtraAssets.MegaStreakBacking2;
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                 Main.spriteBatch.Draw(glow, NPC.Center - Main.screenPosition, null, Color.White * AlphaWaveWarning, NPC.rotation, glow.Size() / 2f, new Vector2(3, 1.2f), SpriteEffects.None, 0);

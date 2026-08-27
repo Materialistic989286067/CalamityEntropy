@@ -5,7 +5,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.Particles.CalamityPorts
 {
-    //照CalamityMod的GlowSparkParticle翻的,Update一行没动,贴图跨模组走PRTSharedAssets
+    //灾厄GlowSparkParticle的移植,Update一行没动,贴图走PRTSharedAssets
     public class PRT_GlowSparkCal : BasePRT
     {
         public Color InitialColor;
@@ -28,7 +28,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             Squash = new Vector2(0.5f, 1.6f);
         }
 
-        public override string Texture => CEUtils.WhiteTexPath;   //@CalamityMod路径HasAsset认不出,真图PreDraw里拿SharedAssets
+        public override string Texture => CEUtils.WhiteTexPath;   //Texture指白图占位,真图PreDraw里拿SharedAssets
 
         public override int InGame_World_MaxCount => 8000;   //Solar Storm爆发段一帧几十粒,拍个大上限防截断
 

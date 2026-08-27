@@ -1,6 +1,4 @@
 ﻿using CalamityEntropy.Content.NPCs.Apsychos;
-using CalamityMod.Events;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -32,7 +30,7 @@ namespace CalamityEntropy.Content.Items
 
         public override bool CanUseItem(Player player)
         {
-            return !NPC.AnyNPCs(ModContent.NPCType<Apsychos>()) && !BossRushEvent.BossRushActive && player.ZoneUnderworldHeight;
+            return !NPC.AnyNPCs(ModContent.NPCType<Apsychos>()) && player.ZoneUnderworldHeight;
         }
 
         public override bool? UseItem(Player player)
@@ -50,13 +48,13 @@ namespace CalamityEntropy.Content.Items
             CreateRecipe().AddIngredient(ItemID.HellstoneBar, 6)
                 .AddIngredient(ItemID.CrimtaneBar, 4)
                 .AddIngredient(ItemID.FallenStar)
-                .AddIngredient<AncientBoneDust>()
+                .AddIngredient(ItemID.Bone)
                 .AddTile(TileID.Anvils)
                 .Register();
             CreateRecipe().AddIngredient(ItemID.HellstoneBar, 6)
                 .AddIngredient(ItemID.DemoniteBar, 4)
                 .AddIngredient(ItemID.FallenStar)
-                .AddIngredient<AncientBoneDust>()
+                .AddIngredient(ItemID.Bone)
                 .AddTile(TileID.Anvils)
                 .Register();
         }

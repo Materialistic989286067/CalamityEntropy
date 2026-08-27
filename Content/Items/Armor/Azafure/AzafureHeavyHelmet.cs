@@ -3,12 +3,10 @@ using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Rarities;
-using CalamityMod.UI.Rippers;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -23,7 +21,7 @@ namespace CalamityEntropy.Content.Items.Armor.Azafure
         {
             Item.width = 48;
             Item.height = 48;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.defense = 6;
             Item.rare = ModContent.RarityType<AzafureOrange>();
         }
@@ -38,7 +36,7 @@ namespace CalamityEntropy.Content.Items.Armor.Azafure
         {
             player.setBonus = Mod.GetLocalization("AzafureSet").Value;
             player.GetModPlayer<AzafureHeavyArmorPlayer>().ArmorSetBonus = true;
-            player.Entropy().NoAdrenalineTime = 1;
+            // 脱离灾厄:灾厄肾上腺素抑制随 ripper 系统退役删除
         }
         public override void UpdateEquip(Player player)
         {
@@ -231,14 +229,16 @@ namespace CalamityEntropy.Content.Items.Armor.Azafure
                 }
             }
         }
+        //耐久条前后景贴图,加载期就位,UI 绘制里不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Items/Armor/Azafure/DurabilityBarA")]
+        internal static Asset<Texture2D> DuraBarFrontTex;
+        [VaultLoaden("CalamityEntropy/Content/Items/Armor/Azafure/DurabilityBarB")]
+        internal static Asset<Texture2D> DuraBarBackTex;
         public static void DrawDuraBar(float dura)
         {
             Main.spriteBatch.UseSampleState_UI(SamplerState.PointClamp);
-            Vector2 pos = new Vector2(CalamityClientConfig.Instance.AdrenalineMeterPosX, CalamityClientConfig.Instance.AdrenalineMeterPosY);
-            if (pos.X < 0f || pos.X > 100f)
-                pos.X = RipperUI.DefaultAdrenPosX;
-            if (pos.Y < 0f || pos.Y > 100f)
-                pos.Y = RipperUI.DefaultAdrenPosY;
+            // 脱离灾厄:灾厄客户端配置不可用,耐久条固定挂在原肾上腺素条默认屏幕位
+            Vector2 pos = new Vector2(35.77f, 8.85f);
             pos.X = (int)(pos.X * 0.01f * Main.screenWidth);
             pos.Y = (int)(pos.Y * 0.01f * Main.screenHeight);
 
@@ -250,8 +250,8 @@ namespace CalamityEntropy.Content.Items.Armor.Azafure
             {
                 Center += new Vector2(Main.rand.NextFloat() * ((0.32f - dura) * 20), Main.rand.NextFloat() * ((0.32f - dura) * 20));
             }
-            Texture2D tex1 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Items/Armor/Azafure/DurabilityBarA").Value;
-            Texture2D tex2 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Items/Armor/Azafure/DurabilityBarB").Value;
+            Texture2D tex1 = DuraBarFrontTex.Value;
+            Texture2D tex2 = DuraBarBackTex.Value;
             Main.spriteBatch.Draw(tex2, Center, null, color, 0, tex2.Size() / 2f, 1, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(tex1, Center, new Rectangle(0, 0, (int)(tex1.Width * dura), tex1.Height), color2, 0, tex1.Size() / 2f, 1, SpriteEffects.None, 0);
             bool hover = Center.getRectCentered(100, 40).Intersects(Main.MouseScreen.getRectCentered(2, 2));

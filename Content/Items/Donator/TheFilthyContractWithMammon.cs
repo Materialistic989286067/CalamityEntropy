@@ -1,8 +1,6 @@
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Items;
-using CalamityMod.Rarities;
+using CalamityEntropy.Content.Rarities;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -36,8 +34,8 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.noUseGraphic = true;
             Item.knockBack = 5f;
             Item.mana = 500;
-            Item.value = CalamityGlobalItem.RarityCalamityRedBuyPrice;
-            Item.rare = ModContent.RarityType<CalamityRed>();
+            Item.value = Item.buyPrice(platinum: 3, gold: 20);
+            Item.rare = ModContent.RarityType<VoidPurple>();
             Item.shootSpeed = 16f;
             Item.crit = 8;
             Item.shoot = ModContent.ProjectileType<FilthyCircle>();
@@ -112,7 +110,7 @@ namespace CalamityEntropy.Content.Items.Donator
             return false;
         }
         public bool r = true;
-        public static SoundStyle AltSound = new SoundStyle("CalamityMod/Sounds/Custom/AstrumDeus/AstrumDeusLaser");
+        public static SoundStyle AltSound = new SoundStyle("CalamityEntropy/Assets/Sounds/lasershoot");
         public override void AI()
         {
             if (Projectile.localAI[0]++ == 0)
@@ -170,10 +168,10 @@ namespace CalamityEntropy.Content.Items.Donator
                 }
             }
 
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             player.itemAnimation = player.itemTime = 4;
             Projectile.Center = player.GetDrawCenter();
-            Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, (player.Calamity().mouseWorld - Projectile.Center).ToRotation(), 0.12f, false);
+            Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, (player.Entropy().MouseWorld - Projectile.Center).ToRotation(), 0.12f, false);
             CEUtils.SetHandRot(player, Projectile.rotation);
             Projectile.velocity = Projectile.rotation.ToRotationVector2() * 16;
         }

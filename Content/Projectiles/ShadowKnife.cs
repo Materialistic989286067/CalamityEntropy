@@ -11,7 +11,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override string Texture => CEUtils.WhiteTexPath;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(CEUtils.RogueDC, penetrate: -1);
+            Projectile.FriendlySetDefaults(DamageClass.Throwing, penetrate: -1);
             Projectile.timeLeft = 64;
         }
         public override bool? CanHitNPC(NPC target)
@@ -40,7 +40,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = CEUtils.RogueDC;
+            Projectile.DamageType = DamageClass.Throwing;
             Projectile.width = 40;
             Projectile.height = 40;
             Projectile.friendly = true;
@@ -81,7 +81,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = CEUtils.RogueDC;
+            Projectile.DamageType = DamageClass.Throwing;
             Projectile.width = 32;
             Projectile.height = 32;
             Projectile.friendly = true;

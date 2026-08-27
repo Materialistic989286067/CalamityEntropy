@@ -1,7 +1,7 @@
 ﻿using CalamityEntropy.Content.Buffs.Pets;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,6 +10,20 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Aquatic
 {
     public class AquaticPet : ModProjectile
     {
+        //帧动画贴图在加载期一次就位,不再在 PreDraw 里每帧建表逐张请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Aquatic/fly", 1, 4, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] FlyFrames;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Aquatic/s/fly", 1, 4, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] FlyHatFrames;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Aquatic/walk", 1, 4, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] WalkFrames;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Aquatic/s/walk", 1, 4, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] WalkHatFrames;
+        //发呆帧原先按 afkFrame 运行时拼路径请求,数组化后直接按下标取
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Aquatic/afk", 1, 11, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] AfkFrames;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Aquatic/s/afk", 1, 11, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] AfkHatFrames;
         public float counter = 0;
         public int afkCounter = 0;
         public int afkFrame = 0;
@@ -33,67 +47,28 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Aquatic
         {
             if (Main.gameMenu)
             {
-                Texture2D txd = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/fly1").Value;
+                Texture2D txd = FlyFrames[0];
                 if (Projectile.owner.ToPlayer().Entropy().PetsHat)
                 {
-                    txd = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/s/fly1").Value;
+                    txd = FlyHatFrames[0];
                 }
                 Main.EntitySpriteDraw(txd, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, new Vector2(txd.Width, txd.Height) / 2, Projectile.scale, SpriteEffects.FlipHorizontally, 0);
 
                 return false;
             }
             Player player = Main.player[Projectile.owner];
-            List<Texture2D> list = new List<Texture2D>();
             if (counter > 36)
             {
                 counter -= 36;
             }
-            if (Projectile.ai[1] == 1)
-            {
-                if (Projectile.owner.ToPlayer().Entropy().PetsHat)
-                {
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/s/fly1").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/s/fly2").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/s/fly3").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/s/fly4").Value);
-                }
-                else
-                {
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/fly1").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/fly2").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/fly3").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/fly4").Value);
-                }
-
-            }
-            else
-            {
-                if (Projectile.owner.ToPlayer().Entropy().PetsHat)
-                {
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/s/walk1").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/s/walk2").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/s/walk3").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/s/walk4").Value);
-                }
-                else
-                {
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/walk1").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/walk2").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/walk3").Value);
-                    list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/walk4").Value);
-                }
-            }
-            Texture2D tx = list[(((int)counter / 6) % list.Count)];
+            Texture2D[] frames = Projectile.ai[1] == 1
+                ? (Projectile.owner.ToPlayer().Entropy().PetsHat ? FlyHatFrames : FlyFrames)
+                : (Projectile.owner.ToPlayer().Entropy().PetsHat ? WalkHatFrames : WalkFrames);
+            Texture2D tx = frames[(((int)counter / 6) % frames.Length)];
             if (afkFrame > 0)
             {
-                if (Projectile.owner.ToPlayer().Entropy().PetsHat)
-                {
-                    tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/s/afk" + afkFrame.ToString(), ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-                }
-                else
-                {
-                    tx = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Aquatic/afk" + afkFrame.ToString(), ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-                }
+                //afkFrame 取值 1..11,对应 afk1..afk11
+                tx = (Projectile.owner.ToPlayer().Entropy().PetsHat ? AfkHatFrames : AfkFrames)[afkFrame - 1];
             }
             if (Projectile.velocity.X > -2 && Projectile.velocity.X < 2f)
             {

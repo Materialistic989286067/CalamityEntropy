@@ -1,7 +1,8 @@
-﻿using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Items;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -26,7 +27,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 6;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 20);
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = null;
             Item.noMelee = true;
@@ -59,6 +60,9 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class TrueMoonlightSwordHeld : ModProjectile
     {
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/TrueMoonlightSword";
+        //拖尾贴图,加载期由 VaultLoaden 赋值;拖尾着色器读共享基座 CEEffectAssets
+        [VaultLoaden("CalamityEntropy/Assets/MotionTrail2")]
+        internal static Asset<Texture2D> AssetsMotionTrail2Tex;
         List<float> odr = new List<float>();
         public override void SetStaticDefaults()
         {
@@ -124,7 +128,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 owner.ApplyMeleeScale(ref scale_);
                 Projectile.scale *= scale_;
                 init = false;
-                if (!Projectile.GetOwner().Calamity().bladeArmEnchant && Main.myPlayer == Projectile.owner)
+                if (Main.myPlayer == Projectile.owner)
                 {
                     Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 2, ModContent.ProjectileType<TrueMoonlightShoot>(), Projectile.damage, Projectile.knockBack / 2, Projectile.owner);
                 }
@@ -163,10 +167,6 @@ namespace CalamityEntropy.Content.Items.Weapons
             owner.heldProj = Projectile.whoAmI;
             owner.itemTime = 2;
             owner.itemAnimation = 2;
-            if (Projectile.GetOwner().Calamity().bladeArmEnchant)
-            {
-                owner.itemAnimation = int.Max(1, owner.itemAnimationMax - Projectile.Entropy().Lifetime);
-            }
             if (counter > MaxUpdateTimes)
             {
                 owner.itemTime = 1;
@@ -195,7 +195,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             {
                 Texture2D tex = Projectile.GetTexture();
-                Texture2D trail = CEUtils.getExtraTex("MotionTrail2");
+                Texture2D trail = CEExtraAssets.MotionTrail2;
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 float MaxUpdateTimes = Projectile.GetOwner().itemTimeMax * Projectile.MaxUpdates;
                 float progress = (counter / MaxUpdateTimes);
@@ -214,7 +214,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 {
                     var gd = Main.graphics.GraphicsDevice;
                     SpriteBatch sb = Main.spriteBatch;
-                    Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/SwordTrail2", AssetRequestMode.ImmediateLoad).Value;
+                    Effect shader = CEEffectAssets.SwordTrail2;
                     sb.End();
                     sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                     shader.Parameters["color2"].SetValue((new Color(200, 255, 200)).ToVector4());
@@ -222,7 +222,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                     shader.Parameters["alpha"].SetValue(float.Max(0, (0.5f - progress) / 0.5f));
                     shader.CurrentTechnique.Passes["EffectPass"].Apply();
                     shader.Parameters["uTime"].SetValue(Main.GlobalTimeWrappedHourly * 16 * Projectile.ai[0]);
-                    gd.Textures[1] = CEUtils.getExtraTex("B1");
+                    gd.Textures[1] = CEExtraAssets.B1;
                     gd.Textures[0] = trail;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
 
@@ -232,9 +232,9 @@ namespace CalamityEntropy.Content.Items.Weapons
                     shader.Parameters["color1"].SetValue((new Color(100, 220, 255)).ToVector4());
                     shader.Parameters["alpha"].SetValue(float.Max(0, (0.5f - progress) / 0.5f));
                     shader.CurrentTechnique.Passes["EffectPass"].Apply();
-                    gd.Textures[0] = CEUtils.RequestTex("CalamityEntropy/Assets/MotionTrail2");
+                    gd.Textures[0] = AssetsMotionTrail2Tex.Value;
                     shader.Parameters["uTime"].SetValue(Main.GlobalTimeWrappedHourly * 16 * Projectile.ai[0]);
-                    gd.Textures[1] = CEUtils.getExtraTex("B1");
+                    gd.Textures[1] = CEExtraAssets.B1;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                     Main.spriteBatch.ExitShaderRegion();
                 }
@@ -250,7 +250,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 Main.EntitySpriteDraw(tex, Projectile.Center + Projectile.GetOwner().gfxOffY * Vector2.UnitY - Main.screenPosition, null, lightColor * alpha, rot, origin, Projectile.scale * scale, effect);
             }
             {
-                Texture2D trail = CEUtils.getExtraTex("MotionTrail5");
+                Texture2D trail = CEExtraAssets.MotionTrail5;
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 List<Vector2> p1 = new List<Vector2>();
                 List<Vector2> p2 = new List<Vector2>();
@@ -285,14 +285,14 @@ namespace CalamityEntropy.Content.Items.Weapons
                 {
                     var gd = Main.graphics.GraphicsDevice;
                     SpriteBatch sb = Main.spriteBatch;
-                    Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/SwordTrail2", AssetRequestMode.ImmediateLoad).Value;
+                    Effect shader = CEEffectAssets.SwordTrail2;
                     sb.End();
                     sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                     shader.Parameters["color2"].SetValue((new Color(60, 155, 255)).ToVector4());
                     shader.Parameters["color1"].SetValue((new Color(40, 220, 255)).ToVector4());
                     shader.Parameters["alpha"].SetValue(a);
                     shader.Parameters["uTime"].SetValue(Main.GlobalTimeWrappedHourly * 16 * Projectile.ai[0]);
-                    gd.Textures[1] = CEUtils.getExtraTex("B1");
+                    gd.Textures[1] = CEExtraAssets.B1;
                     shader.CurrentTechnique.Passes["EffectPass"].Apply();
 
                     gd.Textures[0] = trail;
@@ -349,7 +349,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D trail = CEUtils.getExtraTex("MotionTrail5");
+            Texture2D trail = CEExtraAssets.MotionTrail5;
             List<ColoredVertex> ve = new List<ColoredVertex>();
             List<Vector2> p1 = new List<Vector2>();
             List<Vector2> p2 = new List<Vector2>();
@@ -372,14 +372,14 @@ namespace CalamityEntropy.Content.Items.Weapons
             {
                 var gd = Main.graphics.GraphicsDevice;
                 SpriteBatch sb = Main.spriteBatch;
-                Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/SwordTrail2", AssetRequestMode.ImmediateLoad).Value;
+                Effect shader = CEEffectAssets.SwordTrail2;
                 sb.End();
                 sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                 shader.Parameters["color2"].SetValue((new Color(60, 155, 255)).ToVector4());
                 shader.Parameters["color1"].SetValue((new Color(40, 220, 255)).ToVector4());
                 shader.Parameters["alpha"].SetValue(Projectile.Opacity);
                 shader.Parameters["uTime"].SetValue(Main.GlobalTimeWrappedHourly * 16);
-                gd.Textures[1] = CEUtils.getExtraTex("B1");
+                gd.Textures[1] = CEExtraAssets.B1;
                 shader.CurrentTechnique.Passes["EffectPass"].Apply();
                 gd.Textures[0] = trail;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);

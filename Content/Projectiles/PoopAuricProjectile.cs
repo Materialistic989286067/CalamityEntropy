@@ -18,7 +18,7 @@ namespace CalamityEntropy.Content.Projectiles
                 NPC.HitInfo hit = npc.CalculateHitInfo(Projectile.damage, 0, false, 0, Projectile.DamageType);
                 npc.StrikeNPC(hit);
             }
-            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"));
+            SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/shockBlast"));
         }
 
         public override bool BreakWhenHitNPC => false;

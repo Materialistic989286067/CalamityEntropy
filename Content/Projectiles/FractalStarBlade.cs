@@ -1,6 +1,6 @@
-﻿using CalamityEntropy.Content.Items.Weapons.Fractal;
-using CalamityMod;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Items.Weapons.Fractal;
+using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -36,7 +36,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override void AI()
         {
             Player player = Projectile.GetOwner();
-            player.Calamity().mouseWorldListener = true;
+            player.Entropy().MouseWorldListener = true;
             if (init)
             {
                 rotSpeed = Projectile.ai[1] * 0.1f;
@@ -49,7 +49,7 @@ namespace CalamityEntropy.Content.Projectiles
                 pg = counter / (46 * Projectile.MaxUpdates);
                 Projectile.rotation += rotSpeed * (1 - pg);
                 rotSpeed *= 0.99f;
-                Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, (player.Calamity().mouseWorld - Projectile.Center).ToRotation(), 0.022f * pg, false);
+                Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, (player.Entropy().MouseWorld - Projectile.Center).ToRotation(), 0.022f * pg, false);
 
             }
             else
@@ -67,7 +67,7 @@ namespace CalamityEntropy.Content.Projectiles
             }
             if (counter == 46 * Projectile.MaxUpdates)
             {
-                Projectile.rotation = (player.Calamity().mouseWorld - Projectile.Center).ToRotation();
+                Projectile.rotation = (player.Entropy().MouseWorld - Projectile.Center).ToRotation();
                 Projectile.velocity = Projectile.rotation.ToRotationVector2() * 12;
             }
             counter++;

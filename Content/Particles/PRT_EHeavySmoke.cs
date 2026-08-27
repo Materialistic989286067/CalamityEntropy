@@ -32,7 +32,7 @@ namespace CalamityEntropy.Content.Particles
             Glow = true;
         }
 
-        //贴图在@CalamityMod/Particles/HeavySmoke,Texture认不了@语法(HasAsset查不到)
+        //贴图是Assets/Particles/HeavySmoke,经PRTSharedAssets静态加载
         //不报错,日志Warn+游戏里一块红占位图,指WhiteTexPath应付框架,真图PreDraw走PRTSharedAssets.HeavySmoke
         public override string Texture => CEUtils.WhiteTexPath;
 
@@ -74,7 +74,6 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool PreDraw(SpriteBatch sb)
         {
-            //6帧竖排80x80,Variant横排7列,VaultLoaden在PRTSharedAssets
             Texture2D value = PRTSharedAssets.HeavySmoke.Value;
             int num = (int)Math.Floor((float)Time / ((float)Lifetime / (float)FrameAmount));
             Rectangle rectangle = new Rectangle(80 * Variant, 80 * num, 80, 80);

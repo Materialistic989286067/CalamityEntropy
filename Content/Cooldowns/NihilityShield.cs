@@ -1,14 +1,13 @@
-﻿using CalamityMod.Cooldowns;
+﻿using CalamityEntropy.Core.Cooldowns;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.Localization;
-using static CalamityMod.CalamityUtils;
 
 namespace CalamityEntropy.Content.Cooldowns
 {
-    public class NihilityShieldCD : CooldownHandler
+    public class NihilityShieldCD : CECooldownHandler
     {
         public static new string ID => "NihilityShield";
         public override bool ShouldDisplay => true;

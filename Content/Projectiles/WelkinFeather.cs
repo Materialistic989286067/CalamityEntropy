@@ -17,7 +17,8 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = CEUtils.RogueDC;
+            // 原盗贼职业并入原版：天穹武器裁定为近战（rogue-weapons §二 AzureOfFirmament）
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 32;
             Projectile.height = 32;
             Projectile.friendly = true;

@@ -1,21 +1,14 @@
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Assets.Register
 {
+    // 注意:专用服务器上字段恒为 null,只能在绘制等客户端路径读取。
     public class AssetsRegister : ModSystem
     {
-        private const string AssetsPath = "CalamityEntropy/Assets/";
-        private const string ExtraPath = "CalamityEntropy/Assets/Extra/";
+        [VaultLoaden("CalamityEntropy/Assets/Extra/Tornade_Fire")]
         public static Asset<Texture2D> FireTornado;
-        public override void Load()
-        {
-            FireTornado = ModContent.Request<Texture2D>($"{ExtraPath}Tornade_Fire");
-        }
-        public override void Unload()
-        {
-            FireTornado = null;
-        }
     }
 }

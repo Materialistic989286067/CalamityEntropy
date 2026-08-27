@@ -1,10 +1,10 @@
-﻿using CalamityMod.Cooldowns;
+﻿using CalamityEntropy.Core.Cooldowns;
 using Terraria.Audio;
 using Terraria.Localization;
 
 namespace CalamityEntropy.Content.Cooldowns
 {
-    public class FriendfinderCd : CooldownHandler
+    public class FriendfinderCd : CECooldownHandler
     {
         public static new string ID => "FriendfinderCd";
         public override bool ShouldDisplay => true;

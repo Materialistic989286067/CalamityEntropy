@@ -1,8 +1,11 @@
-﻿using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
-using CalamityMod;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
@@ -12,6 +15,9 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
 
     public class VoidSpike : ModProjectile
     {
+        //本体贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Cruiser/VoidSpike")]
+        internal static Asset<Texture2D> VoidSpikeTex;
         List<Vector2> odp = new List<Vector2>();
         public override void SetStaticDefaults()
         {
@@ -65,9 +71,9 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D t = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Cruiser/VoidSpike").Value;
+            Texture2D t = VoidSpikeTex.Value;
             Main.spriteBatch.UseAdditive();
-            Texture2D tex = CEUtils.getExtraTex("Glow2");
+            Texture2D tex = CEExtraAssets.Glow2;
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, new Rectangle(tex.Width / 2, 0, tex.Width / 2, tex.Height), Color.LightBlue, Projectile.rotation, new Vector2(0, tex.Height / 2), Projectile.scale * new Vector2(0.65f * Projectile.localAI[1] * Projectile.velocity.Length(), 0.012f) * Projectile.localAI[1], SpriteEffects.None, 0);
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, new Rectangle(tex.Width / 2, 0, tex.Width / 2, tex.Height), Color.Blue, Projectile.rotation, new Vector2(0, tex.Height / 2), Projectile.scale * new Vector2(0.65f * Projectile.localAI[1] * Projectile.velocity.Length(), 0.025f) * Projectile.localAI[1], SpriteEffects.None, 0);
             for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver4)

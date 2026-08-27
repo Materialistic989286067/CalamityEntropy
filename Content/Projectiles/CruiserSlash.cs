@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityEntropy.Assets.Register;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ModLoader;
@@ -72,14 +73,14 @@ namespace CalamityEntropy.Content.Projectiles
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D t1 = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/lightball").Value;
+            Texture2D t1 = CEExtraAssets.lightball;
 
             if (ct < 60)
             {
                 SpriteBatch sb = Main.spriteBatch;
                 sb.End();
                 sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-                Texture2D t = CEUtils.getExtraTex("a_circle");
+                Texture2D t = CEExtraAssets.a_circle;
                 Main.EntitySpriteDraw(t, Projectile.Center - Main.screenPosition, null, new Color(180, 180, 255) * ((float)ct / 60f) * 0.8f, Projectile.rotation, t.Size() / 2f, new Vector2(6.4f, 0.2f), SpriteEffects.None); ;
                 sb.Draw(t1, Projectile.Center - Main.screenPosition, null, Color.DarkBlue * ((float)ct / 60f) * 0.6f, 0, new Vector2(t1.Width, t1.Height) / 2, 50f * (60 - ct) / 128, SpriteEffects.None, 0);
                 sb.End();

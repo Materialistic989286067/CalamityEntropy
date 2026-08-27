@@ -1,9 +1,5 @@
 ﻿using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Rarities;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -30,8 +26,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.value = Item.buyPrice(platinum: 2, gold: 40);
+            Item.rare = ModContent.RarityType<Golden>();
             Item.shoot = ProjectileID.WoodenArrowFriendly;
             Item.channel = true;
             Item.shootSpeed = 16f;
@@ -48,13 +44,13 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<ContinentalGreatbow>()
-                .AddIngredient<TelluricGlare>()
+                .AddIngredient(ItemID.Uzi)
+                .AddIngredient(ItemID.SDMG)
                 .AddIngredient<Prominence>()
-                .AddIngredient<AuricBar>(5)
+                .AddIngredient<VoidBar>(5)
                 .AddIngredient(ItemID.FragmentSolar, 20)
                 .AddIngredient(ItemID.FragmentVortex, 5)
-                .AddTile<CosmicAnvil>()
+                .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
         public override bool RangedPrefix()

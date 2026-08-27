@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using InnoVault;
+using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 using Terraria;
 using Terraria.GameContent;
@@ -8,6 +9,9 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
 {
     public class Recovery : SamsaraSword
     {
+        //吸附形态帧(Recovery1~3),加载期就位,PreDraw 不再拼接路径逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/SamsaraCasket/Recovery", 1, 3, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] StickFrames;
         public bool sticked = false;
         public int stickedNPC = -1;
         public Vector2 offset;
@@ -107,7 +111,7 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
             Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
             if ((int)frame > 0)
             {
-                tex = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/SamsaraCasket/Recovery" + ((int)(frame)).ToString()).Value;
+                tex = StickFrames[(int)frame - 1];
             }
             for (int i = 0; i < oldPos.Count; i++)
             {

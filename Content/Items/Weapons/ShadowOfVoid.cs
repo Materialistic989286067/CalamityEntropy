@@ -1,7 +1,7 @@
 ﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod.Items;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -18,7 +18,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useTime = 120;
             Item.useAnimation = 120;
             Item.knockBack = 4;
-            Item.UseSound = new("CalamityMod/Sounds/NPCKilled/DevourerDeathImpact") { Volume = 0.4f, Pitch = 0.1f };
+            Item.UseSound = new("CalamityEntropy/Assets/Sounds/DevourerDeathImpact") { Volume = 0.4f, Pitch = 0.1f };
             Item.shoot = ModContent.ProjectileType<CruiserShadow>();
             Item.shootSpeed = 6f;
             Item.mana = 60;
@@ -26,7 +26,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.noMelee = true;
             Item.autoReuse = true;
             Item.useTurn = false;
-            Item.value = CalamityGlobalItem.RarityCalamityRedBuyPrice;
+            Item.value = Item.buyPrice(platinum: 3, gold: 20);
             Item.rare = ModContent.RarityType<VoidPurple>();
         }
 

@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items.Donator;
-using CalamityMod.Items.Potions;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -43,7 +42,7 @@ namespace CalamityEntropy.Content.Items.Vanity
             Item.width = 30;
             Item.height = 30;
             Item.accessory = true;
-            Item.value = CalamityMod.Items.CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 2);
             Item.rare = ItemRarityID.Green;
             Item.vanity = true;
         }
@@ -64,7 +63,7 @@ namespace CalamityEntropy.Content.Items.Vanity
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<AureusCell>(3)
+                .AddIngredient(ItemID.ChlorophyteBar, 3)
                 .AddIngredient(ItemID.GoldDust, 10)
                 .AddTile(TileID.TinkerersWorkbench)
                 .Register();

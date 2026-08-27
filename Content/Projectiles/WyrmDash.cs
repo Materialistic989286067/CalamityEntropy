@@ -89,7 +89,7 @@ namespace CalamityEntropy.Content.Projectiles
             CalamityEntropy.Instance.screenShakeAmp = (Projectile.ai[0] * 0.7f);
             for (int i = 0; i < 1 + (int)(Projectile.ai[0] * 0.34f); i++)
             {
-                //AbyssalLine旧GeneralParticleHandler spawn,现走BasePRT,参数照抄
+                //AbyssalLine旧版粒子系统 spawn,现走BasePRT,参数照抄
                 PRTLoader.NewParticle<PRT_AbyssalLine>(target.Center, Vector2.Zero, Color.White, 1).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, CEUtils.randomRot());  //AbyssalLine带lifetime的Configure是CalamityPorts签名
             }
         }

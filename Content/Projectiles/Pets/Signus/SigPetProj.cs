@@ -1,6 +1,6 @@
 ﻿using CalamityEntropy.Content.Buffs.Pets;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,6 +9,11 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Signus
 {
     public class SigPetProj : ModProjectile
     {
+        //帧动画贴图在加载期一次就位,不再在 PreDraw 里每帧建表逐张请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Signus/xgns", 1, 4, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] Frames;
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Signus/s/xgns", 1, 4, AssetMode = AssetMode.TextureValueArray)]
+        internal static Texture2D[] HatFrames;
         public int counter = 0;
         public bool say = true;
         public float sayCount = 0;
@@ -31,27 +36,13 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Signus
             bool hat = Projectile.owner.ToPlayer().Entropy().PetsHat;
             if (Main.gameMenu)
             {
-                Texture2D txd = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Signus/xgns1").Value;
+                Texture2D txd = Frames[0];
                 Main.EntitySpriteDraw(txd, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, new Vector2(txd.Width, txd.Height) / 2, Projectile.scale, SpriteEffects.FlipHorizontally, 0);
 
                 return false;
             }
-            List<Texture2D> list = new List<Texture2D>();
-            if (hat)
-            {
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Signus/s/xgns1").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Signus/s/xgns2").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Signus/s/xgns3").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Signus/s/xgns4").Value);
-            }
-            else
-            {
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Signus/xgns1").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Signus/xgns2").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Signus/xgns3").Value);
-                list.Add(ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Pets/Signus/xgns4").Value);
-            }
-            Texture2D tx = list[(counter / 6) % list.Count];
+            Texture2D[] frames = hat ? HatFrames : Frames;
+            Texture2D tx = frames[(counter / 6) % frames.Length];
             if (Projectile.velocity.X > -2 && Projectile.velocity.X < 2f)
             {
                 if (Main.player[Projectile.owner].Center.X > Projectile.Center.X)

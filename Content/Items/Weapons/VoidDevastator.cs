@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -39,8 +38,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             CreateRecipe()
                     .AddIngredient(ItemID.Celeb2, 1)
                     .AddIngredient(ModContent.ItemType<VoidBar>(), 5)
-                    .AddIngredient(ModContent.ItemType<ArmoredShell>(), 8)
-                    .AddIngredient(ModContent.ItemType<CoreofCalamity>(), 1)
+                    .AddIngredient(ModContent.ItemType<NihilityFragments>(), 8)
+                    .AddIngredient(ItemID.ChlorophyteBar, 1)
                     .AddTile(ModContent.TileType<VoidWellTile>())
                     .Register();
         }

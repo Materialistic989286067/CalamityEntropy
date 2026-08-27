@@ -27,7 +27,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             opacity = 0f;   //AI每帧重算,CanPool复用得清
         }
 
-        //ThinSparkle+BloomCircle,映射见PRTSharedAssets的@CalamityMod/Particles/*
+        //ThinSparkle+BloomCircle,映射见PRTSharedAssets的Assets/Particles条目
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_CritSparkCal Configure(Color bloom, int lifetime, float rotationSpeed = 1f, float bloomScale = 1f, float hueShift = 0f)
@@ -65,7 +65,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         public override bool PreDraw(SpriteBatch spriteBatch)
         {
             Texture2D sparkTexture = PRTSharedAssets.ThinSparkle.Value;
-            Texture2D bloomTexture = PRTSharedAssets.BloomCircle.Value;   //@CalamityMod/BloomCircle,只能VaultLoaden
+            Texture2D bloomTexture = PRTSharedAssets.BloomCircle.Value;   //自制BloomCircle,VaultLoaden共享入口
             float properBloomSize = (float)sparkTexture.Height / bloomTexture.Height;
 
             spriteBatch.Draw(bloomTexture, Position - Main.screenPosition, null, Bloom * opacity * 0.5f, 0f, bloomTexture.Size() / 2f,

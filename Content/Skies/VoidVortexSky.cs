@@ -1,5 +1,8 @@
-﻿using CalamityEntropy.Content.Menu;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Menu;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Graphics.Effects;
@@ -43,10 +46,15 @@ namespace CalamityEntropy.Content.Skies
         }
         public int counter;
         public static List<MenuParticle> particles = new List<MenuParticle>();
+        //漩涡与遮罩贴图,加载期由 VaultLoaden 赋值,绘制里不再逐帧 Request
+        [VaultLoaden("CalamityEntropy/Assets/Extra/menu/VoidVortex")]
+        private static Asset<Texture2D> vortexTex;
+        [VaultLoaden("CalamityEntropy/Assets/Extra/menumask")]
+        private static Asset<Texture2D> menuMaskTex;
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
-            Texture2D l1 = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/menu/VoidVortex").Value;
-            Texture2D pixel = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value;
+            Texture2D l1 = vortexTex.Value;
+            Texture2D pixel = CEExtraAssets.white;
             var drawColor = Color.White;
 
             spriteBatch.Draw(pixel, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), new Color(1, 2, 32) * opacity);
@@ -62,7 +70,7 @@ namespace CalamityEntropy.Content.Skies
             spriteBatch.Draw(l1, new Vector2(Main.screenWidth / 2, Main.screenHeight / 2), null, Color.White * opacity * 1f, MathHelper.ToRadians(counter * 2f), l1.Size() / 2, 0.1f, SpriteEffects.None, 0);
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.UIScaleMatrix);
-            Texture2D mask = CEUtils.getExtraTex("menumask");
+            Texture2D mask = menuMaskTex.Value;
             //spriteBatch.Draw(mask, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.Black * 0.6f);
 
             spriteBatch.End();

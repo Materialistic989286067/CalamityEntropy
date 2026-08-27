@@ -1,6 +1,8 @@
 ﻿using CalamityEntropy.Content.Buffs;
-using CalamityMod;
+using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -10,6 +12,9 @@ namespace CalamityEntropy.Content.Projectiles.Prophet
 {
     public class RuneCrystalTop : ModProjectile
     {
+        //水晶本体贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Content/Projectiles/Prophet/RuneCrystal")]
+        internal static Asset<Texture2D> CrystalTex;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 4000;
@@ -76,7 +81,7 @@ namespace CalamityEntropy.Content.Projectiles.Prophet
         public override bool PreDraw(ref Color lightColor)
         {
             lightColor = Color.White;
-            Texture2D t1 = ModContent.Request<Texture2D>("CalamityEntropy/Content/Projectiles/Prophet/RuneCrystal").Value;
+            Texture2D t1 = CrystalTex.Value;
             Texture2D t2 = Projectile.GetTexture();
             float shake = (Projectile.timeLeft < 60) ? ((60 - Projectile.timeLeft) / 60f) : 0;
             List<Vector2> offset = new();

@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Projectiles;
-using CalamityMod.Items;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -30,7 +29,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = ItemUseStyleID.RaiseLamp;
             Item.shoot = ModContent.ProjectileType<SpiritBannerMinion>();
             Item.shootSpeed = 2f;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.value = Item.buyPrice(gold: 60);
             Item.UseSound = SoundID.Item44;
             Item.noMelee = true;
             Item.mana = 16;

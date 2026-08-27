@@ -1,7 +1,5 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Weapons;
-using CalamityMod;
-using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent;
@@ -105,7 +103,8 @@ namespace CalamityEntropy.Content.Projectiles
         public Item Pk = null;
         private void DefineFalseGun(int baseDamage)
         {
-            int p90ID = ModContent.ItemType<P90>();
+            // 模板枪只取"消耗子弹"的弹药口径，其余属性全部被下方覆写，用原版乌兹等效
+            int p90ID = ItemID.Uzi;
             int CVEID = ModContent.ItemType<PhantomPlanetKillerEngine>();
             FalseGun = new Item();
             Pk = new Item();

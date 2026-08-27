@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.LoreItems;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -16,13 +15,9 @@ namespace CalamityEntropy.Common
         {
             get
             {
+                // 脱离灾厄后仅剩本模组自有 Lore 物品，直接取物品所属模组的本地化键
                 var mi = ContentSamples.ItemsByType[ItemType].ModItem;
-                Mod mod = mi.Mod;
-                if (mod is CalamityMod.CalamityMod)
-                {
-                    mod = CalamityEntropy.Instance;
-                }
-                return Language.GetOrRegister(mod.GetLocalizationKey(mi.Name + "Desc"));
+                return Language.GetOrRegister(mi.Mod.GetLocalizationKey(mi.Name + "Desc"));
             }
         }
         public abstract int ItemType { get; }
@@ -65,7 +60,7 @@ namespace CalamityEntropy.Common
 
             }
         }
-        public static bool Enabled<T>() where T : LoreItem
+        public static bool Enabled<T>() where T : ModItem
         {
             return Main.LocalPlayer.Entropy().enabledLoreItems.Contains(ModContent.ItemType<T>());
         }

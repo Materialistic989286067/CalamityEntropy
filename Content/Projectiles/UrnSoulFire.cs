@@ -1,10 +1,10 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityMod;
-using CalamityMod.Dusts;
+using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.ModLoader;
@@ -13,7 +13,10 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class UrnSoulFire : ModProjectile
     {
-        public override string Texture => "CalamityMod/Projectiles/FireProj";
+        //薄雾贴图,加载期就位,PreDraw 不再逐帧请求
+        [VaultLoaden("CalamityEntropy/Assets/Particles/MediumMist")]
+        internal static Asset<Texture2D> MistTex;
+        public override string Texture => "CalamityEntropy/Assets/Extra/Ports/FireProj";
 
         public static int Lifetime => 120;
         public static int Fadetime => 90;
@@ -42,7 +45,8 @@ namespace CalamityEntropy.Content.Projectiles
             {
                 Vector2 cinderPos = Projectile.Center + Main.rand.NextVector2Circular(60f, 60f) * Utils.Remap(Time, 0f, Lifetime, 0.5f, 1f);
                 float cinderSize = Utils.GetLerpValue(6f, 12f, Time, true);
-                Dust cinder = Dust.NewDustDirect(cinderPos, 4, 4, ModContent.DustType<BrimstoneFlame>(), Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f);
+                // 原灾厄 BrimstoneFlame 尘埃改用原版红炬焰
+                Dust cinder = Dust.NewDustDirect(cinderPos, 4, 4, Terraria.ID.DustID.RedTorch, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f);
                 if (Main.rand.NextBool(3))
                 {
                     cinder.scale *= 2f;
@@ -98,7 +102,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D fire = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            Texture2D mist = ModContent.Request<Texture2D>("CalamityMod/Particles/MediumMist").Value;
+            Texture2D mist = MistTex.Value;
 
             // The conga line of colors to sift through
             Color color1 = new Color(178, 170, 255, 200);
@@ -135,11 +139,11 @@ namespace CalamityEntropy.Content.Projectiles
 
                 if (MistType > 2 || MistType < 0)
                     return false;
-                Main.spriteBatch.SetBlendState(BlendState.Additive);
+                Main.spriteBatch.UseBlendState(BlendState.Additive);
                 Rectangle frame = mist.Frame(1, 3, 0, MistType);
                 Main.EntitySpriteDraw(mist, firePos, frame, Color.Lerp(fireColor, Color.White, 0.3f), mainRot, frame.Size() * 0.5f, fireSize, SpriteEffects.None);
                 Main.EntitySpriteDraw(mist, firePos, frame, fireColor, mainRot, frame.Size() * 0.5f, fireSize * 3f, SpriteEffects.None);
-                Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+                Main.spriteBatch.UseBlendState(BlendState.AlphaBlend);
             }
             return false;
         }

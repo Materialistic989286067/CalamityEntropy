@@ -364,9 +364,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidInvasion
             float jaw = 0.45f * (1f - (float)Math.Pow(jawP, 6));
             float clawRot = Projectile.rotation - jaw + breakP * 1.1f;
             Vector2 clawPos = tipVis + new Vector2(0f, breakP * breakP * 60f);
-            Vector2 clawOrigin = Vector2.Zero;
             Texture2D claw = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            clawOrigin = new Vector2(claw.Width * 0.35f, claw.Height * 0.5f);
+            Vector2 clawOrigin = new Vector2(claw.Width * 0.35f, claw.Height * 0.5f);
             CEUtils.ReSetToEndShader();
             sb.Draw(claw, clawPos - Main.screenPosition, null, Color.White * bodyAlpha, clawRot,
                 clawOrigin, 0.8f, SpriteEffects.FlipHorizontally, 0);

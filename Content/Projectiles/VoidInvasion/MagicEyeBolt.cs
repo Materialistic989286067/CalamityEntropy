@@ -107,8 +107,11 @@ namespace CalamityEntropy.Content.Projectiles.VoidInvasion
             Main.spriteBatch.UseAdditive();
             Texture2D glow = glowTex.Value;
             float pulse = 1f + 0.15f * (float)Math.Sin(Age * 0.4f);
+            //终曲缓速弹(模式 2)换深红紫辉光并放大——弹幕海里一眼分清"会拐弯的那批"
+            Color glowColor = SlowHoming ? new Color(255, 95, 175) : new Color(190, 90, 255);
+            float glowScale = SlowHoming ? 0.62f : 0.5f;
             Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition, null,
-                new Color(190, 90, 255) * 0.6f, 0, glow.Size() / 2, 0.5f * pulse, SpriteEffects.None, 0);
+                glowColor * 0.6f, 0, glow.Size() / 2, glowScale * pulse, SpriteEffects.None, 0);
             CEUtils.ReSetToEndShader();
             return false;
         }

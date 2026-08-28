@@ -1,3 +1,4 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles;
 using InnoVault;
 using InnoVault.PRT;
@@ -70,7 +71,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidInvasion
             }
             if (age == ignite)
             {
-                //点火:一帧设速 + 破空音
+                //点火:一帧设速 + 破空音 + 方向性冲环(悬滞到扑出的爆点)
                 int idx = Player.FindClosest(Projectile.Center, 1, 1);
                 Vector2 dir = idx >= 0
                     ? (Main.player[idx].Center - Projectile.Center).SafeNormalize(Vector2.UnitY)
@@ -79,6 +80,9 @@ namespace CalamityEntropy.Content.Projectiles.VoidInvasion
                 if (!Main.dedServ)
                 {
                     SoundEngine.PlaySound(SoundID.Item71 with { Volume = 0.7f, Pitch = 0.1f }, Projectile.Center);
+                    var ring = PRTLoader.NewParticle<Particles.CalamityPorts.PRT_DirectionalPulseRing>(
+                        Projectile.Center, Vector2.Zero, new Color(210, 130, 255), 0.06f);
+                    ring.Configure(new Vector2(2.1f, 0.6f), dir.ToRotation(), 1.2f, 13);
                 }
             }
             else if (age < ignite + HomingTime)
@@ -135,11 +139,34 @@ namespace CalamityEntropy.Content.Projectiles.VoidInvasion
             {
                 CEUtils.DrawAfterimage(tex, Projectile.Entropy().odp, Projectile.Entropy().odr);
             }
-            Main.spriteBatch.Draw(tex, pos, null, Color.White * alpha, Projectile.rotation, origin, 0.75f, SpriteEffects.FlipHorizontally, 0);
-            //悬滞警示微光
+            //悬滞威胁脉动(演出二迭):张爪缩放呼吸 + 腕部小幅开合;点火头 2 帧沿飞向拉伸
+            float clawScale = 0.75f;
+            float clawRot = Projectile.rotation;
+            Vector2 stretch = Vector2.One;
+            if (age < IgniteAt)
+            {
+                clawScale *= 1f + 0.09f * (float)Math.Sin(age * 0.55f);
+                clawRot += 0.1f * (float)Math.Sin(age * 0.45f);
+            }
+            else if (age - IgniteAt < 2)
+            {
+                stretch = new Vector2(1.3f, 0.82f);
+            }
+            Main.spriteBatch.Draw(tex, pos, null, Color.White * alpha, clawRot, origin,
+                new Vector2(clawScale * stretch.X, clawScale * stretch.Y), SpriteEffects.FlipHorizontally, 0);
             if (age < IgniteAt)
             {
                 Main.spriteBatch.UseAdditive();
+                //瞄准线(演出二迭:点火前 8t,细线指向即将扑向的方向,渐亮)
+                int toIgnite = IgniteAt - (int)age;
+                if (toIgnite <= 8)
+                {
+                    float aimP = 1f - toIgnite / 8f;
+                    Texture2D aim = CEExtraAssets.vlbw;
+                    Main.spriteBatch.Draw(aim, pos, null, new Color(230, 150, 255) * (0.55f * aimP), Projectile.rotation,
+                        aim.Size() / 2 * new Vector2(0, 1), new Vector2(360f / aim.Width, 0.1f + 0.08f * aimP), SpriteEffects.None, 0);
+                }
+                //悬滞警示微光
                 Texture2D glow = glowTex.Value;
                 float pulse = 1f + 0.25f * (float)Math.Sin(age * 0.6f);
                 Main.spriteBatch.Draw(glow, pos, null, new Color(200, 110, 255) * 0.5f, 0, glow.Size() / 2, 0.7f * pulse, SpriteEffects.None, 0);

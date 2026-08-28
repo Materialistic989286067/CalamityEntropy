@@ -41,6 +41,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidInvasion
         private float age;
         private bool shattering;
         private float shatterCounter;
+        /// <summary>吐弹枪口闪余量(双端由确定性吐弹拍各自置位,纯视觉)</summary>
+        private float muzzleFlash;
 
         public override void SetStaticDefaults()
         {
@@ -109,6 +111,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidInvasion
                 SpitModeAI(pope);
             }
 
+            muzzleFlash = Math.Max(muzzleFlash - 1f, 0f);
             Lighting.AddLight(Projectile.Center, 0.5f * AppearP, 0.2f * AppearP, 0.8f * AppearP);
 
             //浮现期粒子内聚
@@ -130,11 +133,16 @@ namespace CalamityEntropy.Content.Projectiles.VoidInvasion
                 //吐弹段:锚定教皇周围固定方位
                 Projectile.Center = owner.Center + baseAng.ToRotationVector2() * AnchorRadius;
                 Projectile.rotation = SelfRot;
-                if (age > AppearTime && Main.netMode != NetmodeID.MultiplayerClient && (int)(age - AppearTime) % 8 == 0)
+                if (age > AppearTime && (int)(age - AppearTime) % 8 == 0)
                 {
-                    int damage = (int)(owner.defDamage * 0.5f + 0.5f); //魔焰弹 170 经典档(敌对弹幕命中 ×2)
-                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center,
-                        SelfRot.ToRotationVector2() * 9.5f, ModContent.ProjectileType<MagicEyeBolt>(), damage, 3f, -1, 0f);
+                    //吐弹拍双端确定性一致:弹幕只在服务端生成,枪口闪双端各自演出
+                    muzzleFlash = 4f;
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        int damage = (int)(owner.defDamage * 0.5f + 0.5f); //魔焰弹 170 经典档(敌对弹幕命中 ×2)
+                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center,
+                            SelfRot.ToRotationVector2() * 9.5f, ModContent.ProjectileType<MagicEyeBolt>(), damage, 3f, -1, 0f);
+                    }
                 }
             }
             else if (age <= AppearTime + SpitTime + OrbitTime)
@@ -216,13 +224,30 @@ namespace CalamityEntropy.Content.Projectiles.VoidInvasion
                 return false;
             }
             Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
-            Vector2 pos = Projectile.Center - Main.screenPosition;
+            Vector2 dir = Projectile.rotation.ToRotationVector2();
+            //吐弹后座:眼体沿吐向反挫几像素,弹簧回稳(发射有质量)
+            Vector2 pos = Projectile.Center - dir * (muzzleFlash * 1.6f) - Main.screenPosition;
             float scale = (0.6f + 0.4f * AppearP) * Projectile.scale;
-            Main.spriteBatch.Draw(tex, pos, null, Color.White * alpha, Projectile.rotation, tex.Size() / 2, scale, SpriteEffects.None, 0);
+            //睁眼拍(演出二迭):浮现期纵向从眯到睁,弹性过冲
+            float openP = AppearP >= 1f ? 1f
+                : 1f - (float)(Math.Pow(2, -10 * AppearP) * Math.Cos(AppearP * 9.4f));
+            Vector2 eyeScale = new Vector2(scale, scale * MathHelper.Clamp(0.12f + 0.88f * openP, 0.12f, 1.06f));
+            Main.spriteBatch.Draw(tex, pos, null, Color.White * alpha, Projectile.rotation, tex.Size() / 2, eyeScale, SpriteEffects.None, 0);
             Main.spriteBatch.UseAdditive();
             Texture2D glow = glowTex.Value;
             float pulse = 1f + 0.12f * (float)Math.Sin(age * 0.3f);
             Main.spriteBatch.Draw(glow, pos, null, new Color(190, 100, 255) * (0.55f * alpha), 0, glow.Size() / 2, 0.85f * pulse, SpriteEffects.None, 0);
+            //虹膜发光(演出二迭:瞳位沿注视向前移,亮白芯 + 紫晕,眼是"活"的)
+            Vector2 irisPos = pos + dir * 16f * scale;
+            Main.spriteBatch.Draw(glow, irisPos, null, new Color(230, 170, 255) * (0.8f * alpha), 0, glow.Size() / 2, 0.34f * pulse, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(glow, irisPos, null, Color.White * (0.65f * alpha), 0, glow.Size() / 2, 0.18f * pulse, SpriteEffects.None, 0);
+            //吐弹枪口闪(4t 衰减的口部炸花)
+            if (muzzleFlash > 0f)
+            {
+                float mf = muzzleFlash / 4f;
+                Vector2 muzzlePos = pos + dir * 44f * scale;
+                Main.spriteBatch.Draw(glow, muzzlePos, null, Color.White * (0.85f * mf * alpha), 0, glow.Size() / 2, 0.55f * mf + 0.15f, SpriteEffects.None, 0);
+            }
             CEUtils.ReSetToEndShader();
             return false;
         }

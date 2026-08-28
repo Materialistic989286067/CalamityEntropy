@@ -45,6 +45,8 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
         private int zapTimer = -1;
         //短电弧折线(纯客户端视觉)
         private readonly List<List<Vector2>> miniArcs = new();
+        //球间电桥(演出二迭:偶发跨球长弧,五球读作一张电网;纯客户端)
+        private readonly List<List<Vector2>> linkArcs = new();
 
         public override void SetStaticDefaults()
         {
@@ -178,6 +180,20 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                 Vector2 b = NPC.Center + CEUtils.randomRot().ToRotationVector2() * 30f;
                 miniArcs.Add(LightningGenerator.GenerateLightning(a, b, 12f, 4));
             }
+            //球间电桥:向序号更大的邻球偶发甩一道长弧(单向遍历防两端重复画)
+            linkArcs.Clear();
+            foreach (NPC n in Main.ActiveNPCs)
+            {
+                if (n.whoAmI <= NPC.whoAmI || n.type != NPC.type || (int)n.ai[0] != (int)NPC.ai[0])
+                {
+                    continue;
+                }
+                float dist = Vector2.Distance(n.Center, NPC.Center);
+                if (dist < 760f && Main.rand.NextBool(3))
+                {
+                    linkArcs.Add(LightningGenerator.GenerateLightning(NPC.Center, n.Center, 26f, 9));
+                }
+            }
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -196,20 +212,31 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                 }
                 return;
             }
-            //击破/自爆:电光炸裂(§4.3:打球即减压的爽拍)
+            //击破/自爆:过载爆链(演出二迭:白闪 + 双环 + 电屑线四射 + 拉长电花,读作"电路炸了")
             SoundEngine.PlaySound(SoundID.Item94 with { Volume = 1f, Pitch = -0.2f }, NPC.Center);
+            SoundEngine.PlaySound(SoundID.Item93 with { Volume = 0.8f, Pitch = 0.25f }, NPC.Center);
+            var overloadFlash = PRTLoader.NewParticle<PRT_Light>(NPC.Center, Vector2.Zero, Color.White, 2.2f);
+            overloadFlash.Configure(0.85f, lifetime: 10);
             PRTLoader.NewParticle<PRT_PulseRing>(NPC.Center, Vector2.Zero, new Color(180, 140, 255), 0.1f).Configure(4f, 30);
+            PRTLoader.NewParticle<PRT_PulseRing>(NPC.Center, Vector2.Zero, Color.White, 0.1f).Configure(2.6f, 22);
+            for (int i = 0; i < 8; i++)
+            {
+                float ang = CEUtils.randomRot();
+                var bolt = PRTLoader.NewParticle<PRT_ELineParticle>(NPC.Center + ang.ToRotationVector2() * 18f,
+                    ang.ToRotationVector2() * Main.rand.NextFloat(6f, 13f), new Color(205, 165, 255), Main.rand.NextFloat(0.7f, 1.1f));
+                bolt.Configure(0.9f, true, PRTDrawModeEnum.AdditiveBlend, ang, 16);
+            }
             for (int i = 0; i < 26; i++)
             {
                 var v = PRTLoader.NewParticle<PRT_Void>(NPC.Center,
                     CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(2f, 9f), Color.White, 0.9f);
                 v.Opacity = Main.rand.Next(30, 90) * 0.01f;
             }
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 12; i++)
             {
                 var p = PRTLoader.NewParticle<PRT_Light>(NPC.Center,
-                    CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(2f, 7f), new Color(200, 160, 255), 0.55f);
-                p.Configure(0.9f, lifetime: 18);
+                    CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(3f, 9f), new Color(200, 160, 255), 0.55f);
+                p.Configure(0.9f, squishStrenght: 2.6f, lifetime: 18);
             }
         }
 
@@ -249,7 +276,7 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             CEUtils.ReSetToEndShader();
 
             //短电弧条带(镜像 VoidLightningBolt 姿势,RenderTrail 自管 GPU 状态)
-            if (miniArcs.Count > 0 && alpha > 0.5f)
+            if ((miniArcs.Count > 0 || linkArcs.Count > 0) && alpha > 0.5f)
             {
                 GameShaders.Misc["CalamityEntropy:HeavenlyGaleLightningArc"].UseImage1("Images/Misc/Perlin");
                 GameShaders.Misc["CalamityEntropy:HeavenlyGaleLightningArc"].Apply();
@@ -258,6 +285,13 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                     CEPrimitiveRenderer.RenderTrail(points, new CEPrimitiveSettings(ArcWidth, ArcColor,
                         (_, _) => Vector2.Zero, false,
                         shader: GameShaders.Misc["CalamityEntropy:HeavenlyGaleLightningArc"]), 6);
+                }
+                //球间电桥(细弧,五球连成一张会呼吸的电网)
+                foreach (var points in linkArcs)
+                {
+                    CEPrimitiveRenderer.RenderTrail(points, new CEPrimitiveSettings(
+                        (r, v) => 3.2f, ArcColor, (_, _) => Vector2.Zero, false,
+                        shader: GameShaders.Misc["CalamityEntropy:HeavenlyGaleLightningArc"]), 12);
                 }
             }
             return false;

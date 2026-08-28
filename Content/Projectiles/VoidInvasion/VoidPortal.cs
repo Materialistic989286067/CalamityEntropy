@@ -129,7 +129,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidInvasion
             }
 
             //撕裂冲击拍(张满瞬间):径向速度线 + 白闪 + 沿开口轴的冲击环 + 轻震屏
-            if ((int)age == OpenTime && !closing)
+            //(60t 短门在 age==40 时恰好踩进关门窗,这里只排除临死门,不吃 closing)
+            if ((int)age == OpenTime && Projectile.timeLeft > 4)
             {
                 SoundEngine.PlaySound(SoundID.Item72 with { Pitch = -0.35f, Volume = 0.9f }, Projectile.Center);
                 CEUtils.SetShake(Projectile.Center, 5f * MaxScale, 1400);

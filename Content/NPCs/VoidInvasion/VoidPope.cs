@@ -736,15 +736,19 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             WrapEchoFx(exitPos, enterPos);
         }
 
-        /// <summary>环绕相位残影(纯本机客户端演出:两端闪光 + 沿弦相位粒子 + 音效)。</summary>
+        /// <summary>环绕相位残影(纯本机客户端演出:两端方向性冲环 + 闪光 + 沿弦相位粒子 + 音效)。</summary>
         private static void WrapEchoFx(Vector2 exitPos, Vector2 enterPos)
         {
             SoundEngine.PlaySound(SoundID.Item8 with { Volume = 0.85f, Pitch = 0.35f }, enterPos);
+            float chordRot = (enterPos - exitPos).ToRotation();
             for (int e = 0; e < 2; e++)
             {
                 Vector2 pos = e == 0 ? exitPos : enterPos;
                 var flash = PRTLoader.NewParticle<PRT_Light>(pos, Vector2.Zero, new Color(190, 120, 255), 1.5f);
                 flash.Configure(0.8f, lifetime: 18);
+                //出口环被"吸扁"向弦方向,入口环垂直展开——读作"从这边被抽到那边"
+                var ring = PRTLoader.NewParticle<PRT_DirectionalPulseRing>(pos, Vector2.Zero, new Color(190, 120, 255), 0.08f);
+                ring.Configure(e == 0 ? new Vector2(1.9f, 0.5f) : new Vector2(0.5f, 1.9f), chordRot, 1.4f, 14);
                 for (int i = 0; i < 10; i++)
                 {
                     var v = PRTLoader.NewParticle<PRT_Void>(pos,
@@ -1220,6 +1224,14 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                     Main.rand.NextBool() ? new Color(170, 90, 255) : new Color(120, 60, 220), Main.rand.NextFloat(0.3f, 0.55f));
                 p.Configure(0.9f, lifetime: 22);
             }
+            //领域滤镜激活(演出二迭:域内轻微色偏/域外压暗;EnablePixelEffect 关闭即不激活,
+            //滤镜数据侧 Update 自灭兜底——两态都优雅)
+            if (!Main.dedServ && domainRadiusFactor > 0.02f
+                && ModContent.GetInstance<Config>().EnablePixelEffect
+                && !Terraria.Graphics.Effects.Filters.Scene["CalamityEntropy:PopeDomain"].IsActive())
+            {
+                Terraria.Graphics.Effects.Filters.Scene.Activate("CalamityEntropy:PopeDomain", NPC.Center);
+            }
         }
 
         //———瞬移语言(§4.0):预告 25t → 渐隐 12t → 浮现 12t;计时由调用者给(招式用 attackTimer,换阶用 transitionTimer)———
@@ -1241,16 +1253,20 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                 NPC.velocity *= 0.9f;
                 return;
             }
-            //渐隐段:原地 PRT_Void 外散
+            //渐隐段:粒子从均匀散射改为流向落点(身体化作流光被"抽"过去)
             if (t <= TeleWarn + TeleFadeOut)
             {
                 NPC.velocity *= 0.85f;
                 if (!Main.dedServ)
                 {
+                    Vector2 toward = teleTarget != Vector2.Zero
+                        ? (teleTarget - NPC.Center).SafeNormalize(Vector2.Zero)
+                        : Vector2.Zero;
                     for (int i = 0; i < 3; i++)
                     {
-                        var v = PRTLoader.NewParticle<PRT_Void>(NPC.Center + CEUtils.randomPointInCircle(60f),
-                            CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(2f, 6f), Color.White, 1f);
+                        Vector2 vel = toward * Main.rand.NextFloat(4f, 10f)
+                            + CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.5f, 2f);
+                        var v = PRTLoader.NewParticle<PRT_Void>(NPC.Center + CEUtils.randomPointInCircle(60f), vel, Color.White, 1f);
                         v.Opacity = Main.rand.Next(30, 90) * 0.01f;
                     }
                 }
@@ -1263,13 +1279,19 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                 }
                 return;
             }
-            //浮现段:目的地粒子内聚
+            //浮现首帧:空间合拢的一记纵向冲环(到场的"啪")
+            if (t == TeleWarn + TeleFadeOut + 1 && !Main.dedServ)
+            {
+                var snap = PRTLoader.NewParticle<PRT_DirectionalPulseRing>(NPC.Center, Vector2.Zero, new Color(200, 130, 255), 0.1f);
+                snap.Configure(new Vector2(0.35f, 1.8f), 0f, 1.8f, 13);
+            }
+            //浮现段:各向异性内聚流光(拉长的光被拽进身体,不再是均匀光点)
             NPC.velocity *= 0.9f;
             if (!Main.dedServ && Main.rand.NextBool())
             {
                 Vector2 offset = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(90f, 220f);
-                var p = PRTLoader.NewParticle<PRT_Light>(NPC.Center + offset, -offset * 0.09f, new Color(170, 90, 255), 0.55f);
-                p.Configure(0.85f, lifetime: 14);
+                var p = PRTLoader.NewParticle<PRT_Light>(NPC.Center + offset, -offset * 0.13f, new Color(170, 90, 255), 0.5f);
+                p.Configure(0.9f, squishStrenght: 3.2f, maxSquish: 4.6f, lifetime: 13);
             }
         }
 
@@ -1331,10 +1353,10 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
         }
 
         /// <summary>
-        /// 换阶演出主体(双端各自逐帧推进 transitionTimer,确定性同式):
-        /// 瞬移屏心 49t → 羽影爆散(50)→ 躯体交叉渐变(50~80)→ 二阶段翼弹性展开(80~130)
-        /// → 新增 4 手(90,服务端一次)→ 咆哮 + 无伤冲击环(150)→ 180 落 phase=2 进 P2 选招。
-        /// 全程 dontTakeDamage、接触归零。
+        /// 换阶演出主体(双端各自逐帧推进 transitionTimer,确定性同式;演出二迭校拍):
+        /// 瞬移屏心 49t → 悬停吸气拍(49~62,静止 + 微粒内聚)→ 羽影爆散(62,白闪 + 冲环,羽片先悬再坠)
+        /// → 躯体交叉渐变(62~92)→ 二阶段翼弹性展开(92~142)→ 新增 4 手(96,服务端一次)
+        /// → 咆哮 + 无伤冲击环(150)→ 180 落 phase=2 进 P2 选招。全程 dontTakeDamage、接触归零。
         /// </summary>
         private void TransitionAI(Player target)
         {
@@ -1352,11 +1374,25 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                 NPC.velocity *= 0.9f;
             }
 
-            //羽影爆散拍(§4.2:一阶段翼爆散 20 片羽影,纯客户端视觉)
+            //悬停吸气拍(演出二迭:爆散前 13t 静止,微粒向双翼内聚——碎裂前的静默)
+            if (!Main.dedServ && t > TeleTotal && t < TransFeatherBurst && Main.rand.NextBool(2))
+            {
+                int side = Main.rand.NextBool() ? 1 : -1;
+                Vector2 wing = NPC.Center + new Vector2(side * 70f, -50f);
+                Vector2 offset = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(60f, 150f);
+                var inhale = PRTLoader.NewParticle<PRT_Light>(wing + offset, -offset * 0.11f, new Color(190, 110, 255), 0.45f);
+                inhale.Configure(0.9f, squishStrenght: 2.6f, lifetime: 12);
+            }
+            //羽影爆散拍(§4.2:一阶段翼爆散 20 片羽影,纯客户端视觉;冲击帧配一档白闪)
             if (t == TransFeatherBurst && !Main.dedServ)
             {
                 SpawnFeathers();
                 SoundEngine.PlaySound(SoundID.NPCDeath6 with { Volume = 1f, Pitch = -0.3f }, NPC.Center);
+                if (Main.LocalPlayer.Distance(NPC.Center) < 2200f)
+                {
+                    CalamityEntropy.FlashEffectStrength = 0.25f;
+                }
+                PRTLoader.NewParticle<PRT_PulseRing>(NPC.Center, Vector2.Zero, new Color(200, 130, 255), 0.1f).Configure(4.5f, 30);
             }
             //躯体渐变起拍音
             if (t == TransFeatherBurst + 2 && !Main.dedServ)
@@ -1433,7 +1469,7 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                 NPC.velocity *= 0.88f;
             }
 
-            //过曝碎裂拍(§4.3:二阶段躯体白闪 + 粒子)
+            //过曝碎裂拍(§4.3:二阶段躯体白闪 + 结晶碎片真实飞出——之后悬停一拍再逆聚拼合)
             if (t == TransP3Shatter && !Main.dedServ)
             {
                 if (Main.LocalPlayer.Distance(NPC.Center) < 2200f)
@@ -1443,6 +1479,7 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                 SoundEngine.PlaySound(SoundID.Item27 with { Volume = 1.1f, Pitch = -0.5f }, NPC.Center);
                 SoundEngine.PlaySound(SoundID.NPCDeath6 with { Volume = 1f, Pitch = -0.4f }, NPC.Center);
                 ScreenShaker.AddShakeWithRangeFade(new ScreenShaker.ScreenShake(Vector2.Zero, 8), Main.LocalPlayer.Distance(NPC.Center), 2200);
+                SpawnShards();
                 for (int i = 0; i < 40; i++)
                 {
                     var v = PRTLoader.NewParticle<PRT_Void>(NPC.Center + CEUtils.randomPointInCircle(120f),
@@ -1455,13 +1492,14 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                 }
                 PRTLoader.NewParticle<PRT_PulseRing>(NPC.Center, Vector2.Zero, Color.White, 0.1f).Configure(6f, 36);
             }
-            //拼合段:内聚粒子(§4.3:bodyP3 自碎片拼合,部件从透明渐显)
-            if (!Main.dedServ && t > TransP3Shatter && t < TransP3BodyEnd && Main.rand.NextBool(2))
+            //拼合段:碎片逆聚由 UpdateShards 承载,这里只补少量内聚流光
+            if (!Main.dedServ && t > TransP3Shatter && t < TransP3BodyEnd && Main.rand.NextBool(3))
             {
                 Vector2 offset = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(120f, 320f);
-                var p = PRTLoader.NewParticle<PRT_Light>(NPC.Center + offset, -offset * 0.075f, new Color(190, 100, 255), 0.55f);
-                p.Configure(0.86f, lifetime: 15);
+                var p = PRTLoader.NewParticle<PRT_Light>(NPC.Center + offset, -offset * 0.09f, new Color(190, 100, 255), 0.5f);
+                p.Configure(0.88f, squishStrenght: 2.8f, lifetime: 14);
             }
+            UpdateShards(t);
             //多余四手 despawn(§4.3:服务端把 P2 新增的 4 只收回消失;保留层 0 双手换装)
             if (t == TransP3HandGone && Main.netMode != NetmodeID.MultiplayerClient)
             {
@@ -1528,7 +1566,7 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             }
         }
 
-        /// <summary>生成 20 片羽影(§4.2:自双翼位四散,纯客户端)。</summary>
+        /// <summary>生成 20 片羽影(§4.2:自双翼位四散,纯客户端;爆散初速上调配合悬停拍)。</summary>
         private void SpawnFeathers()
         {
             feathers.Clear();
@@ -1539,7 +1577,7 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                 feathers.Add(new FeatherFx
                 {
                     pos = wingPos,
-                    vel = new Vector2(dir * Main.rand.NextFloat(2f, 7f), Main.rand.NextFloat(-4.5f, 0.5f)),
+                    vel = new Vector2(dir * Main.rand.NextFloat(3f, 10f), Main.rand.NextFloat(-6f, 0.5f)),
                     rot = CEUtils.randomRot(),
                     rotVel = Main.rand.NextFloat(-0.14f, 0.14f),
                     life = 1f,
@@ -1547,7 +1585,7 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             }
         }
 
-        /// <summary>羽影推进(客户端视觉:减速 + 轻坠 + 自旋,~90t 消散)。</summary>
+        /// <summary>羽影推进(客户端视觉:爆散急衰 → 12t 悬停一拍 → 重量弧线坠落,~90t 消散)。</summary>
         private void UpdateFeathers()
         {
             if (Main.dedServ || feathers.Count == 0)
@@ -1557,8 +1595,16 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             for (int i = feathers.Count - 1; i >= 0; i--)
             {
                 FeatherFx f = feathers[i];
-                f.vel *= 0.965f;
-                f.vel.Y += 0.045f;
+                if (f.life > 0.87f)
+                {
+                    //爆散后的悬停一拍:速度急衰,不吃重力(部件先停在空中)
+                    f.vel *= 0.88f;
+                }
+                else
+                {
+                    f.vel *= 0.965f;
+                    f.vel.Y += 0.055f;
+                }
                 f.pos += f.vel;
                 f.rot += f.rotVel;
                 f.life -= 1f / 90f;
@@ -1571,6 +1617,89 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                     feathers[i] = f;
                 }
             }
+        }
+
+        /// <summary>P2→P3 结晶碎片爆散(演出二迭:16 片自躯体位飞出,纯客户端)。</summary>
+        private void SpawnShards()
+        {
+            shards.Clear();
+            for (int i = 0; i < 16; i++)
+            {
+                Vector2 offset = CEUtils.randomPointInCircle(95f);
+                shards.Add(new CrystalShard
+                {
+                    pos = NPC.Center + offset,
+                    vel = offset.SafeNormalize(CEUtils.randomRot().ToRotationVector2()) * Main.rand.NextFloat(7f, 14f)
+                        + CEUtils.randomRot().ToRotationVector2() * 1.5f,
+                    rot = CEUtils.randomRot(),
+                    rotVel = Main.rand.NextFloat(-0.2f, 0.2f),
+                    scale = Main.rand.NextFloat(0.45f, 0.95f),
+                    delay = i / 16f,
+                });
+            }
+        }
+
+        /// <summary>
+        /// 结晶碎片推进(演出二迭三拍:飞出急衰 14t → 悬停微颤 12t → 错拍逆聚拼合;
+        /// 到位或拼合窗结束即消,附一记白色小闪——"结晶拼合"由真实碎片讲出来)。
+        /// </summary>
+        private void UpdateShards(int t)
+        {
+            if (Main.dedServ || shards.Count == 0)
+            {
+                return;
+            }
+            int rel = t - TransP3Shatter;
+            for (int i = shards.Count - 1; i >= 0; i--)
+            {
+                CrystalShard s = shards[i];
+                if (rel < 14)
+                {
+                    s.vel *= 0.88f; //飞出急衰
+                }
+                else if (rel < 26)
+                {
+                    s.vel *= 0.8f;  //悬停一拍
+                    s.pos += CEUtils.randomRot().ToRotationVector2() * 0.5f;
+                }
+                else
+                {
+                    //逆聚:各片按 delay 错拍启动,吸附速率随进度平方加急
+                    float cp = MathHelper.Clamp((rel - 26 - s.delay * 14f) / 26f, 0f, 1f);
+                    s.vel *= 0.7f;
+                    s.pos += (NPC.Center - s.pos) * (0.03f + 0.34f * cp * cp);
+                }
+                s.pos += s.vel;
+                s.rot += s.rotVel;
+                bool arrived = rel >= 26 && Vector2.Distance(s.pos, NPC.Center) < 26f;
+                if (arrived || t >= TransP3BodyEnd || transitionTimer <= 0)
+                {
+                    var blip = PRTLoader.NewParticle<PRT_Light>(s.pos, Vector2.Zero, Color.White, 0.7f);
+                    blip.Configure(0.85f, lifetime: 8);
+                    shards.RemoveAt(i);
+                }
+                else
+                {
+                    shards[i] = s;
+                }
+            }
+        }
+
+        /// <summary>结晶碎片绘制(加法,Diamond 紫晶片 + 白芯)。</summary>
+        private void DrawShards(SpriteBatch sb, Vector2 screenPos)
+        {
+            if (shards.Count == 0)
+            {
+                return;
+            }
+            sb.UseAdditive();
+            Texture2D tex = CEExtraAssets.Diamond;
+            foreach (CrystalShard s in shards)
+            {
+                sb.Draw(tex, s.pos - screenPos, null, new Color(200, 140, 255) * 0.95f, s.rot, tex.Size() / 2, s.scale, SpriteEffects.None, 0);
+                sb.Draw(tex, s.pos - screenPos, null, Color.White * 0.55f, s.rot, tex.Size() / 2, s.scale * 0.55f, SpriteEffects.None, 0);
+            }
+            CEUtils.ReSetToEndShader();
         }
 
         //———呼吸拍:48~72t 巡航漂移后选招———
@@ -1721,10 +1850,16 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                 {
                     if (Main.rand.NextBool())
                     {
+                        //碎光聚形(演出二迭:各向异性流光 + 偶发晶闪,凝聚有仪式感)
                         Vector2 scythePos = NPC.Center + new Vector2(0, -90f);
                         Vector2 offset = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(60f, 170f);
-                        var p = PRTLoader.NewParticle<PRT_Light>(scythePos + offset, -offset * 0.09f, new Color(190, 100, 255), 0.5f);
-                        p.Configure(0.85f, lifetime: 13);
+                        var p = PRTLoader.NewParticle<PRT_Light>(scythePos + offset, -offset * 0.1f, new Color(190, 100, 255), 0.5f);
+                        p.Configure(0.9f, squishStrenght: 2.8f, lifetime: 13);
+                        if (Main.rand.NextBool(4))
+                        {
+                            PRTLoader.NewParticle<PRT_SparkleCal>(scythePos + CEUtils.randomPointInCircle(60f),
+                                Vector2.Zero, new Color(225, 180, 255), 0.6f).Configure(new Color(150, 80, 230), 18);
+                        }
                     }
                     if (t % 14 == 5)
                     {
@@ -1751,7 +1886,8 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             }
             if (t < ScytheBrake)
             {
-                //直线冲刺:不追踪
+                //直线冲刺:不追踪;速度门控速度线(演出二迭:冲刺帧的隐身速度感)
+                SpawnDashSpeedLines();
                 if (Main.netMode != NetmodeID.MultiplayerClient && (t == ScytheSlash1 || t == ScytheSlash2))
                 {
                     SpawnScytheSlash(t == ScytheSlash1 ? 1 : -1, NPC.velocity.ToRotation());
@@ -1793,6 +1929,20 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             int damage = (int)(NPC.defDamage * 0.559f + 0.5f); //旋斩 190 经典档
             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, baseAngle.ToRotationVector2() * 0.02f,
                 ModContent.ProjectileType<PopeScytheSlash>(), damage, 5f, -1, NPC.whoAmI, sweepDir);
+        }
+
+        /// <summary>冲刺速度线(演出二迭:速度门控 >18px/t 才出——门控本身就是速度感的开关;纯客户端)。</summary>
+        private void SpawnDashSpeedLines()
+        {
+            if (Main.dedServ || NPC.velocity.Length() < 18f || !Main.rand.NextBool(2))
+            {
+                return;
+            }
+            Vector2 dir = NPC.velocity.SafeNormalize(Vector2.UnitX);
+            Vector2 side = dir.RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-80f, 80f);
+            var s = PRTLoader.NewParticle<PRT_Light>(NPC.Center + side - dir * 40f, -NPC.velocity * 0.4f,
+                new Color(170, 90, 255), Main.rand.NextFloat(0.4f, 0.6f));
+            s.Configure(0.9f, squishStrenght: 4f, maxSquish: 5f, lifetime: 10);
         }
 
         //———P1-5 三位一体 / P2-6s 分身之眼:瞬移上方 → ±120° 纯绘制分身 → 三位公转轮刺铁索 → 每 120t 真身换位———
@@ -2186,7 +2336,7 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             }
             if (t < TSCondenseEnd)
             {
-                //凝镰:定身蓄势(双镰位 ±55,-80 内聚粒子)
+                //凝镰:定身蓄势(双镰位 ±55,-80 碎光聚形,与 P1 同款仪式)
                 NPC.velocity *= 0.9f;
                 if (!Main.dedServ)
                 {
@@ -2195,8 +2345,13 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                         int side = Main.rand.NextBool() ? 1 : -1;
                         Vector2 scythePos = NPC.Center + new Vector2(side * 55f, -80f);
                         Vector2 offset = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(60f, 170f);
-                        var p = PRTLoader.NewParticle<PRT_Light>(scythePos + offset, -offset * 0.09f, new Color(190, 100, 255), 0.5f);
-                        p.Configure(0.85f, lifetime: 13);
+                        var p = PRTLoader.NewParticle<PRT_Light>(scythePos + offset, -offset * 0.1f, new Color(190, 100, 255), 0.5f);
+                        p.Configure(0.9f, squishStrenght: 2.8f, lifetime: 13);
+                        if (Main.rand.NextBool(4))
+                        {
+                            PRTLoader.NewParticle<PRT_SparkleCal>(scythePos + CEUtils.randomPointInCircle(60f),
+                                Vector2.Zero, new Color(225, 180, 255), 0.6f).Configure(new Color(150, 80, 230), 18);
+                        }
                     }
                     if (t % 14 == 5)
                     {
@@ -2268,6 +2423,9 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             {
                 SoundEngine.PlaySound(SoundID.Item27 with { Volume = 1.1f, Pitch = -0.4f }, NPC.Center);
             }
+            //冲刺速度线(速度门控,只在真的冲起来时出现)
+            SpawnDashSpeedLines();
+
             //刹车与重瞄段:硬刹 → 缓慢转向目标(下一拍点火重瞄)
             bool braking = false;
             foreach (int brake in TSBrakes)
@@ -2854,6 +3012,18 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                     SoundEngine.PlaySound(SoundID.Item27 with { Volume = 0.9f, Pitch = -0.55f + t * 0.001f }, Main.LocalPlayer.Center);
                 }
             }
+            //加速节拍(演出二迭:间隔递缩、音高爬升的报警音,坍缩在倒数)
+            if (!Main.dedServ && t <= DeathScanStart)
+            {
+                for (int i = 0; i < DeathBeepBeats.Length; i++)
+                {
+                    if (t == DeathBeepBeats[i])
+                    {
+                        SoundEngine.PlaySound(SoundID.MaxMana with { Volume = 0.75f, Pitch = -0.35f + i * 0.09f }, NPC.Center);
+                        break;
+                    }
+                }
+            }
             //部件坠落拍(§4.4:间隔 40t;肩 L/R 转本地坠落件,手 L/R 由手侧凭同拍自演)
             for (int k = 0; k < 2; k++)
             {
@@ -2921,6 +3091,15 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                             v.Opacity = Main.rand.Next(30, 90) * 0.01f;
                         }
                     }
+                }
+                //全屏径向速度线(演出二迭:领域爆碎的空间被向外撕开)
+                for (int i = 0; i < 30; i++)
+                {
+                    float ang = CEUtils.randomRot();
+                    Vector2 pos = NPC.Center + ang.ToRotationVector2() * Main.rand.NextFloat(60f, 260f);
+                    var s = PRTLoader.NewParticle<PRT_GlowSparkCal>(pos, ang.ToRotationVector2() * Main.rand.NextFloat(16f, 34f),
+                        Main.rand.NextBool() ? Color.White : new Color(200, 130, 255), Main.rand.NextFloat(0.8f, 1.4f));
+                    s.Configure(false, 22, new Vector2(3.4f, 0.4f), quickShrink: true);
                 }
             }
             //爆碎后领域快速收场(视觉)
@@ -3227,7 +3406,9 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                     return; //扫描完成,主体已尽数化尘
                 }
                 Rectangle src = new Rectangle(0, (int)(body.Height * per), body.Width, (int)(body.Height * (1 - per)));
-                Vector2 drawPos = center - screenPos + new Vector2(0, body.Height / 2f * per * NPC.scale);
+                //扫描期残躯微颤(被逐行拆解的挣扎感,纯视觉)
+                Vector2 scanJitter = CEUtils.randomPointInCircle(2.2f);
+                Vector2 drawPos = center + scanJitter - screenPos + new Vector2(0, body.Height / 2f * per * NPC.scale);
                 Vector2 origin = new Vector2(body.Width / 2f, body.Height * (1 - per) / 2f);
                 sb.Draw(body, drawPos, src, Color.White, 0f, origin, NPC.scale, SpriteEffects.None, 0);
                 //扫描行亮光
@@ -3249,7 +3430,11 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                 sb.Draw(body, bodyPos + new Vector2(gap, gap * 0.4f) - screenPos, null, drawColor * (alpha * reveal * 0.4f),
                     NPC.rotation + (1f - reveal) * 0.12f, body.Size() / 2, NPC.scale, SpriteEffects.None, 0);
             }
-            //主体(死亡演出前段过曝发白在 DrawStateOverlays 叠加)
+            //主体(死亡演出前段过曝发白在 DrawStateOverlays 叠加;倒数期微颤随节拍加剧)
+            if (State == PopeState.P3Death && attackTimer < DeathScanStart)
+            {
+                bodyPos += CEUtils.randomPointInCircle(attackTimer / (float)DeathScanStart * 2.4f);
+            }
             sb.Draw(body, bodyPos - screenPos, null, drawColor * (alpha * reveal), NPC.rotation, body.Size() / 2, NPC.scale, SpriteEffects.None, 0);
         }
 
@@ -3308,8 +3493,9 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             //真身(遁入隐身段 alpha 归零 = body 不绘制,§4.2 P2-8)
             DrawPopeAssembly(spriteBatch, screenPos, NPC.Center, drawColor, bodyAlpha);
 
-            //换阶羽影(爆散后自旋飘落)与死亡演出坠落部件
+            //换阶羽影(爆散后自旋飘落)、P2→P3 结晶碎片与死亡演出坠落部件
             DrawFeathers(spriteBatch, screenPos, drawColor);
+            DrawShards(spriteBatch, screenPos);
             DrawFallingPieces(spriteBatch, screenPos, drawColor);
 
             DrawStateOverlays(spriteBatch, screenPos);
@@ -3317,10 +3503,11 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
         }
 
         /// <summary>
-        /// 领域边界视觉(§4.3,自由裁量走"环形顶点带"路线:不依赖 EffectLoader RT 管线,
-        /// EnablePixelEffect 关闭时同样可见;粒子环由 P3Upkeep 常燃补充):
-        /// 双层软边环带(顶点条带,径向渐隐)+ 内侧微光带 + 圆周旋转小法阵 ×10。
-        /// 安全区轮转预警窗领域边缘同步脉动(§4.3 P3-1);死亡演出龟裂期闪烁变白。
+        /// 领域边界视觉(§4.3;演出二迭升格):EnablePixelEffect 开 = PopeDomainRing 着色器环带
+        /// (裂隙纹理双向流动 + 亮丝裂纹 + 白芯读线 + 内壁泛光/外侧沉暗的双色域分界);
+        /// 关 = 原顶点软边环带退化路线,可读性不缺。圆周旋转小法阵 ×10 两路共用;
+        /// 粒子环由 P3Upkeep 常燃补充。安全区轮转预警窗领域边缘同步脉动(§4.3 P3-1);
+        /// 死亡演出龟裂期裂纹闪白。
         /// </summary>
         private void DrawDomain(SpriteBatch sb, Vector2 screenPos)
         {
@@ -3352,58 +3539,83 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                 baseAlpha *= 0.85f + 0.3f * flicker;
             }
 
+            bool fancyRing = Terraria.ModLoader.ModContent.GetInstance<Config>().EnablePixelEffect;
             sb.End();
-            sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-            GraphicsDevice gd = Main.graphics.GraphicsDevice;
+            if (fancyRing)
+            {
+                //———着色器环带(演出二迭:PopeDomainRing 裂隙纹理流动 + 亮丝裂纹 + 内外双色域)———
+                Effect ringFx = Core.Graphics.CEFxcEffects.Get("PopeDomainRing");
+                sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, ringFx, Main.GameViewMatrix.TransformationMatrix);
+                float halfSize = radius + 130f;
+                ringFx.Parameters["uTime"]?.SetValue(Main.GlobalTimeWrappedHourly);
+                ringFx.Parameters["uOpacity"]?.SetValue(baseAlpha * 1.15f);
+                ringFx.Parameters["uRadius"]?.SetValue(radius / halfSize);
+                ringFx.Parameters["uThick"]?.SetValue(42f / halfSize);
+                ringFx.Parameters["uPulse"]?.SetValue(pulse * 2.2f);
+                ringFx.Parameters["uCrackFlash"]?.SetValue(deathCracking ? 0.5f + 0.5f * (float)Math.Sin(attackTimer * 0.7f) : 0f);
+                ringFx.Parameters["uColorEdge"]?.SetValue(edgeColor.ToVector3());
+                ringFx.Parameters["uColorCore"]?.SetValue(coreColor.ToVector3());
+                ringFx.Parameters["uColorIn"]?.SetValue(new Color(215, 150, 255).ToVector3());
+                Texture2D ringNoise = CEExtraAssets.TurbulentNoise;
+                sb.Draw(ringNoise, center - screenPos, null, Color.White, 0f, ringNoise.Size() / 2, halfSize * 2f / ringNoise.Width, SpriteEffects.None, 0);
+                sb.End();
+                sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+            }
+            else
+            {
+                //———退化路线(EnablePixelEffect 关闭):原顶点软边环带,可读性完整保留———
+                sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+                GraphicsDevice gd = Main.graphics.GraphicsDevice;
 
-            const int segs = 96;
-            float scroll = flapCounter * 0.12f;
-            //双层软边环带:内缘带(R-40→R)+ 外缘带(R→R+40),径向两端渐隐,合成 80px 软墙
-            for (int band = 0; band < 2; band++)
-            {
-                float r0 = band == 0 ? radius - 40f : radius;
-                float r1 = band == 0 ? radius : radius + 40f;
-                Color c0 = band == 0 ? Color.Transparent : edgeColor * baseAlpha;
-                Color c1 = band == 0 ? edgeColor * baseAlpha : Color.Transparent;
-                List<ColoredVertex> ve = new List<ColoredVertex>();
-                for (int i = 0; i <= segs; i++)
+                const int segs = 96;
+                float scroll = flapCounter * 0.12f;
+                //双层软边环带:内缘带(R-40→R)+ 外缘带(R→R+40),径向两端渐隐,合成 80px 软墙
+                for (int band = 0; band < 2; band++)
                 {
-                    float ang = i * MathHelper.TwoPi / segs;
-                    Vector2 dir = ang.ToRotationVector2();
-                    float u = i * 6f / segs + scroll;
-                    ve.Add(new ColoredVertex(center + dir * r0 - screenPos, new Vector3(u, 0, 1), c0));
-                    ve.Add(new ColoredVertex(center + dir * r1 - screenPos, new Vector3(u, 1, 1), c1));
+                    float r0 = band == 0 ? radius - 40f : radius;
+                    float r1 = band == 0 ? radius : radius + 40f;
+                    Color c0 = band == 0 ? Color.Transparent : edgeColor * baseAlpha;
+                    Color c1 = band == 0 ? edgeColor * baseAlpha : Color.Transparent;
+                    List<ColoredVertex> ve = new List<ColoredVertex>();
+                    for (int i = 0; i <= segs; i++)
+                    {
+                        float ang = i * MathHelper.TwoPi / segs;
+                        Vector2 dir = ang.ToRotationVector2();
+                        float u = i * 6f / segs + scroll;
+                        ve.Add(new ColoredVertex(center + dir * r0 - screenPos, new Vector3(u, 0, 1), c0));
+                        ve.Add(new ColoredVertex(center + dir * r1 - screenPos, new Vector3(u, 1, 1), c1));
+                    }
+                    gd.Textures[0] = CEExtraAssets.white;
+                    gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }
-                gd.Textures[0] = CEExtraAssets.white;
-                gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-            }
-            //亮芯细环(边界读线:玩家一眼知道墙在哪)
-            {
-                List<ColoredVertex> ve = new List<ColoredVertex>();
-                for (int i = 0; i <= segs; i++)
+                //亮芯细环(边界读线:玩家一眼知道墙在哪)
                 {
-                    float ang = i * MathHelper.TwoPi / segs;
-                    Vector2 dir = ang.ToRotationVector2();
-                    float u = i * 6f / segs - scroll * 0.7f;
-                    ve.Add(new ColoredVertex(center + dir * (radius - 5f) - screenPos, new Vector3(u, 0, 1), coreColor * (baseAlpha * 0.9f)));
-                    ve.Add(new ColoredVertex(center + dir * (radius + 5f) - screenPos, new Vector3(u, 1, 1), coreColor * (baseAlpha * 0.9f)));
+                    List<ColoredVertex> ve = new List<ColoredVertex>();
+                    for (int i = 0; i <= segs; i++)
+                    {
+                        float ang = i * MathHelper.TwoPi / segs;
+                        Vector2 dir = ang.ToRotationVector2();
+                        float u = i * 6f / segs - scroll * 0.7f;
+                        ve.Add(new ColoredVertex(center + dir * (radius - 5f) - screenPos, new Vector3(u, 0, 1), coreColor * (baseAlpha * 0.9f)));
+                        ve.Add(new ColoredVertex(center + dir * (radius + 5f) - screenPos, new Vector3(u, 1, 1), coreColor * (baseAlpha * 0.9f)));
+                    }
+                    gd.Textures[0] = CEExtraAssets.white;
+                    gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }
-                gd.Textures[0] = CEExtraAssets.white;
-                gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-            }
-            //内侧微光带(§4.3:内壁泛光,R-170→R-40 渐入)
-            {
-                List<ColoredVertex> ve = new List<ColoredVertex>();
-                for (int i = 0; i <= segs; i++)
+                //内侧微光带(§4.3:内壁泛光,R-170→R-40 渐入)
                 {
-                    float ang = i * MathHelper.TwoPi / segs;
-                    Vector2 dir = ang.ToRotationVector2();
-                    float u = i * 3f / segs + scroll * 0.4f;
-                    ve.Add(new ColoredVertex(center + dir * (radius - 170f) - screenPos, new Vector3(u, 0, 1), Color.Transparent));
-                    ve.Add(new ColoredVertex(center + dir * (radius - 40f) - screenPos, new Vector3(u, 1, 1), edgeColor * (0.12f + pulse * 0.3f)));
+                    List<ColoredVertex> ve = new List<ColoredVertex>();
+                    for (int i = 0; i <= segs; i++)
+                    {
+                        float ang = i * MathHelper.TwoPi / segs;
+                        Vector2 dir = ang.ToRotationVector2();
+                        float u = i * 3f / segs + scroll * 0.4f;
+                        ve.Add(new ColoredVertex(center + dir * (radius - 170f) - screenPos, new Vector3(u, 0, 1), Color.Transparent));
+                        ve.Add(new ColoredVertex(center + dir * (radius - 40f) - screenPos, new Vector3(u, 1, 1), edgeColor * (0.12f + pulse * 0.3f)));
+                    }
+                    gd.Textures[0] = CEExtraAssets.white;
+                    gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }
-                gd.Textures[0] = CEExtraAssets.white;
-                gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
             }
 
             //圆周旋转小法阵(退化方案的主可读件之一,常开)
@@ -3446,10 +3658,18 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
 
             if (transP3Overexpose)
             {
-                //二阶段躯体过曝(§4.3:碎裂前渐白到炸)
+                //二阶段躯体过曝(§4.3:碎裂前渐白到炸);末 8t 预坍缩——东西先变小再变响(MOTION §6)
                 Texture2D bodyP2 = bodyP2Tex.Value;
                 float p = MathHelper.Clamp((transitionTimer - TeleTotal) / (float)(TransP3Shatter - TeleTotal), 0f, 1f);
-                sb.Draw(bodyP2, NPC.Center - screenPos, null, Color.White * (p * 0.95f), NPC.rotation, bodyP2.Size() / 2, NPC.scale * (1f + p * 0.05f), SpriteEffects.None, 0);
+                float scaleMod = 1f + p * 0.05f;
+                int toShatter = TransP3Shatter - transitionTimer;
+                if (toShatter > 0 && toShatter <= 8)
+                {
+                    float c = (8 - toShatter) / 8f;
+                    scaleMod -= 0.10f * c;
+                    scaleMod += 0.02f * (float)Math.Cos(transitionTimer * 1.9f) * c;
+                }
+                sb.Draw(bodyP2, NPC.Center - screenPos, null, Color.White * (p * 0.95f), NPC.rotation, bodyP2.Size() / 2, NPC.scale * scaleMod, SpriteEffects.None, 0);
             }
 
             if (safeZone)
@@ -3490,6 +3710,17 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                 Vector2 pos = teleTarget - screenPos;
                 sb.Draw(glyph, pos, null, new Color(190, 100, 255) * (0.35f + 0.55f * p), spin, glyph.Size() / 2, 0.45f + 0.45f * p, SpriteEffects.None, 0);
                 sb.Draw(glyph, pos, null, Color.White * (0.3f * p), -spin * 0.7f, glyph.Size() / 2, 0.3f + 0.32f * p, SpriteEffects.None, 0);
+                //收束线(演出二迭):空间被"拧"向落点——五条切向内旋细线随预告收拢
+                Texture2D lineTex = CEExtraAssets.vlbw;
+                for (int i = 0; i < 5; i++)
+                {
+                    float ang = i * MathHelper.TwoPi / 5f + teleTimer * 0.1f + i * 1.7f;
+                    float rOut = MathHelper.Lerp(300f, 48f, p) * (0.82f + 0.18f * (i % 2));
+                    Vector2 outer = teleTarget + ang.ToRotationVector2() * rOut;
+                    float lineRot = (teleTarget - outer).ToRotation() + 0.55f;
+                    sb.Draw(lineTex, outer - screenPos, null, new Color(190, 110, 255) * (0.18f + 0.5f * p), lineRot,
+                        lineTex.Size() / 2 * new Vector2(0, 1), new Vector2(rOut * 0.62f / lineTex.Width, 0.13f), SpriteEffects.None, 0);
+                }
             }
 
             if (scythe)
@@ -3544,6 +3775,16 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                 float shrink = MathHelper.Lerp(1.35f, 1f, p);
                 sb.Draw(ring, pos, null, new Color(255, 240, 200) * (0.35f + 0.5f * p), 0, ring.Size() / 2,
                     circleR * 2f / ring.Width * shrink, SpriteEffects.None, 0);
+                //圣光竖幕(演出二迭:金白细光柱自圈内升起,与全场虚空紫形成圣域对比)
+                Texture2D shaft = CEExtraAssets.vlbw;
+                for (int i = 0; i < 3; i++)
+                {
+                    float xoff = (float)Math.Sin(attackTimer * 0.02f + i * 2.4f) * circleR * 0.5f;
+                    float shaftA = (0.16f + 0.16f * (float)Math.Sin(attackTimer * 0.06f + i * 1.9f)) * p;
+                    sb.Draw(shaft, pos + new Vector2(xoff, circleR * 0.85f), null, new Color(255, 242, 195) * shaftA,
+                        -MathHelper.PiOver2, shaft.Size() / 2 * new Vector2(0, 1),
+                        new Vector2(circleR * 2.1f / shaft.Width, 0.35f), SpriteEffects.None, 0);
+                }
                 return;
             }
             if (tin < SafeWarnLen + SafeBurstLen + 8)
@@ -3571,6 +3812,7 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             Texture2D scythe = scytheTex.Value;
             float scale;
             float alpha;
+            float gripFlash = 0f;
             int condenseEnd = TeleTotal + 40;
             if (t <= condenseEnd)
             {
@@ -3583,6 +3825,13 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             {
                 scale = 1.6f;
                 alpha = 0.9f;
+                //凝聚完成的"握定"拍(演出二迭):5t 过冲回稳 + 白闪一帧,仪式收在一个响指上
+                if (t - condenseEnd < 5)
+                {
+                    float snapP = (t - condenseEnd) / 5f;
+                    scale = 1.6f + 0.14f * (1f - snapP);
+                    gripFlash = 1f - snapP;
+                }
             }
             else
             {
@@ -3594,6 +3843,16 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             {
                 return;
             }
+            Vector2 pos = NPC.Center + offset - screenPos;
+            //凝聚仪式法阵(演出二迭:碎光聚形的地台,凝聚段渐显,握定后淡去)
+            if (t > TeleTotal && t < condenseEnd + 20)
+            {
+                Texture2D glyph = glyphTex.Value;
+                float gp = MathHelper.Clamp((t - TeleTotal) / 40f, 0f, 1f);
+                float gFade = t > condenseEnd ? MathHelper.Clamp(1f - (t - condenseEnd) / 20f, 0f, 1f) : 1f;
+                sb.Draw(glyph, pos, null, new Color(190, 110, 255) * (0.55f * gp * gFade), t * 0.045f,
+                    glyph.Size() / 2, 0.5f + 0.25f * gp, SpriteEffects.None, 0);
+            }
             //旋斩窗口:12t 快转一圈,旋向与判定弧同表;其余时间缓慢自旋
             float rot = t * 0.05f;
             for (int i = 0; i < slashBeats.Length; i++)
@@ -3604,9 +3863,12 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                     rot += slashDirs[i] * MathHelper.TwoPi * (1f - (float)Math.Pow(1f - p, 5));
                 }
             }
-            Vector2 pos = NPC.Center + offset - screenPos;
             sb.Draw(scythe, pos, null, new Color(190, 100, 255) * alpha, rot, scythe.Size() / 2, scale, SpriteEffects.None, 0);
             sb.Draw(scythe, pos, null, Color.White * (alpha * 0.55f), rot, scythe.Size() / 2, scale * 0.98f, SpriteEffects.None, 0);
+            if (gripFlash > 0f)
+            {
+                sb.Draw(scythe, pos, null, Color.White * (0.9f * gripFlash), rot, scythe.Size() / 2, scale * 1.02f, SpriteEffects.None, 0);
+            }
         }
 
         /// <summary>P2-4s 法球虚影(§4.2:上方两手举法球,魔眼弹贴图 ×2 放大,脉动;吐弹与环爆的可见源头)。</summary>

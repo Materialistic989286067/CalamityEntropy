@@ -215,6 +215,30 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                     dir * Main.rand.NextFloat(1f, 3f), Color.White, 1f);
                 v.Opacity = Main.rand.Next(20, 70) * 0.01f;
             }
+            //喷火前摇聚能(演出二迭:口部吸气流光 18t 预热 + 点火帧口焰闪,火有了"要来了"的读法;双端确定性拍)
+            if (!Main.dedServ && emerge > 0.5f)
+            {
+                float w1 = FireBase + FireStagger;
+                float w2 = w1 + SecondWaveDelay;
+                for (int w = 0; w < 2; w++)
+                {
+                    float wave = w == 0 ? w1 : w2;
+                    float toFire = wave - age;
+                    Vector2 mouth = NPC.Center + dir * 34f;
+                    if (toFire > 0 && toFire < 18 && Main.rand.NextBool(2))
+                    {
+                        Vector2 off = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(30f, 95f);
+                        var g = PRTLoader.NewParticle<Particles.PRT_Light>(mouth + off, -off * 0.12f,
+                            new Color(200, 100, 255), 0.45f);
+                        g.Configure(0.9f, squishStrenght: 2.6f, lifetime: 10);
+                    }
+                    if (age == wave)
+                    {
+                        var flash = PRTLoader.NewParticle<Particles.PRT_Light>(mouth, dir * 2f, new Color(230, 170, 255), 1.1f);
+                        flash.Configure(0.85f, lifetime: 9);
+                    }
+                }
+            }
         }
 
         /// <summary>

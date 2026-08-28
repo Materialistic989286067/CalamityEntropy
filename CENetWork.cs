@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Common;
+using CalamityEntropy.Content.Events;
 using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Armor.AzafureT3;
@@ -38,6 +39,7 @@ namespace CalamityEntropy
         SyncDRShadowCrystal,
         SyncMouseWorld,
         SyncCooldowns,
+        SyncVoidInvasion,
         SyncPlayer = 255
     }
 
@@ -438,6 +440,19 @@ namespace CalamityEntropy
                     packet.Write((byte)CEMessageType.SyncCooldowns);
                     Main.player[whoAmI].GetModPlayer<Core.Cooldowns.CECooldownPlayer>().WriteAllCooldowns(packet);
                     packet.Send(-1, whoAmI);
+                }
+            }
+            else if (messageType == CEMessageType.SyncVoidInvasion)
+            {
+                //虚空入侵世界状态:服务端权威广播(VoidInvasion.SyncEvent),载荷 bool+float+bool 与发送端一致
+                bool viActive = reader.ReadBoolean();
+                float viProgress = reader.ReadSingle();
+                bool viSpawned50 = reader.ReadBoolean();
+                if (!Main.dedServ)
+                {
+                    VoidInvasion.Active = viActive;
+                    VoidInvasion.Progress = viProgress;
+                    VoidInvasion.spawned50Wraith = viSpawned50;
                 }
             }
             else if (messageType == CEMessageType.SyncPlayer)

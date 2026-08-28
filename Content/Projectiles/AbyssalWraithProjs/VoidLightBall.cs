@@ -52,6 +52,14 @@ namespace CalamityEntropy.Content.Projectiles.AbyssalWraithProjs
                     Projectile.Kill();
                 }
             }
+            //裂隙恶灵复用本弹幕(void-invasion.md §3.1),死亡演出同样清弹(公平阀)
+            if (((int)Projectile.ai[2]).ToNPC().active && ((int)Projectile.ai[2]).ToNPC().ModNPC is Content.NPCs.VoidInvasion.RiftWraith rwOwner)
+            {
+                if (rwOwner.deathAnm)
+                {
+                    Projectile.Kill();
+                }
+            }
             if (Projectile.ai[0] == 0)
             {
                 SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/light_bolt_delayed"));

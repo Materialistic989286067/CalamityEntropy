@@ -25,7 +25,8 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             NPC.aiStyle = -1;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
-            NPC.value = Item.buyPrice(0, 1, 15, 0);
+            //骚扰层金币档(§5.1 M9 通调:1~2 银,与术士/烛灵对齐;旧值 1金15银 挂机刷钱风险过高)
+            NPC.value = Item.buyPrice(0, 0, 2, 0);
             NPC.noGravity = false;
             NPC.noTileCollide = false;
             NPC.Entropy().VoidTouchDR = 0.6f;
@@ -284,11 +285,14 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                         }
                     }
                 }
-                if (count >= 4 && noSummon <= 0)
+                //开阵人数 ≥3(§1.6,旧值 4);术士继承本基类,自动计入
+                //裂隙恶灵同屏 ≥3 时不开新阵(§1.6/§3.1 护栏,防仪式挂机爆炸)
+                if (count >= 3 && noSummon <= 0 && NPC.CountNPCS(ModContent.NPCType<RiftWraith>()) < 3)
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(0, -220), Vector2.Zero, ModContent.ProjectileType<VoidRitualCircle>(), 0, 0);
+                        //ai0 = 1:教徒仪式来源(§1.6;深渊祭印路径的 ai0 = 0 由 AbyssalSigilRitual 独立链路承载)
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(0, -220), Vector2.Zero, ModContent.ProjectileType<VoidRitualCircle>(), 0, 0, -1, 1f);
                     }
                 }
                 else
@@ -337,7 +341,8 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                             }
                         }
                     }
-                    if (count >= 4)
+                    //开阵人数 ≥3(§1.6,旧值 4);恶灵同屏 ≥3 时不进开阵姿态(与 SummoningAI 的护栏同源,防状态抖动)
+                    if (count >= 3 && NPC.CountNPCS(ModContent.NPCType<RiftWraith>()) < 3)
                     {
                         aiStyle = AIStyle.Summoning;
                         NPC.netUpdate = true;

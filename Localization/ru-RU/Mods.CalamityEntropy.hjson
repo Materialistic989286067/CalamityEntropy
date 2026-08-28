@@ -4454,6 +4454,133 @@ Items: {
 			''' */
 	}
 
+	VoidDimensionLocator: {
+		DisplayName: Локатор измерения Пустоты
+		Tooltip:
+			'''
+			Используйте на поверхности, чтобы зафиксировать координаты и разорвать проход в Пустоту
+			Разлом раскроется через несколько секунд, выпуская культ Пустоты
+			Расходуется при использовании
+			'''
+	}
+
+	PopeSummonItem: {
+		DisplayName: Приглашение к Престолу Измерений
+		Tooltip:
+			'''
+			Используйте на поверхности, чтобы призвать Понтифика Пустоты
+			Сначала нужно отразить Вторжение Пустоты
+			Не расходуется при использовании
+			«Печать из расплавленного золота приглашает вас на мессу на краю измерений»
+			'''
+	}
+
+	VoidPopeBag: {
+		DisplayName: Сумка с сокровищами (Понтифик Пустоты)
+		Tooltip: ""
+	}
+
+	VoidPopeRelic: {
+		DisplayName: Реликвия Понтифика Пустоты
+		Tooltip: ""
+	}
+
+	PopeMedal: {
+		DisplayName: Медаль Понтифика
+		Tooltip:
+			'''
+			Во время Вторжения Пустоты ваши убийства дают на 10% больше прогресса события
+			Дебафф «Касание бездны» действует на вас вдвое короче
+			«Знак высшей власти культа, теперь приколот на грудь его покорителя»
+			'''
+	}
+
+	VoidPopeLore: {
+		DisplayName: Понтифик Пустоты
+		Tooltip: ""
+		Lore:
+			'''
+			У верующих Пустоты никогда не было недостатка в пастырях.
+			Когда-то он был самым набожным из смертных: когда разлом впервые открылся, он пал на колени и отдал своё имя шёпоту по ту сторону.
+			Теперь он восседает на Престоле Измерений: цепи вместо писания, коса для жатвы, шесть рук несут исступление целого культа.
+			Культ величает его Понтификом. Пустота же считает его лишь дверью, которая слишком долго оставалась открытой.
+			'''
+	}
+
+	FallenVoidCodex: {
+		DisplayName: Падший кодекс Пустоты
+		Tooltip:
+			'''
+			Быстро выпускает самонаводящиеся снаряды магического пламени
+			Во время чтения каждые 3 секунды хлещет ближайшего врага малой цепью смерти
+			Поражённые враги получают Касание бездны
+			«Кодекс, упавший с кафедры Понтифика; его страницы всё ещё переворачиваются сами»
+			'''
+	}
+
+	VoidGodScythe: {
+		DisplayName: Коса Пустотного Бога
+		Tooltip:
+			'''
+			Наносит серию из трёх взмахов
+			Попадания по врагам накапливают напор; когда он полон, следующая атака становится ультимативной
+			Ультимативная атака: рывок к курсору и два круговых вращающихся удара
+			«Где прошло лезвие, божественность обращается в прах»
+			'''
+	}
+
+	PrisonKnife: {
+		DisplayName: Тюремный нож
+		Tooltip:
+			'''
+			Метает нож чистилища, пронзающий 2 врагов и возвращающийся в руку
+			Заряжается, пока в руках; когда заряд полон, следующая атака становится ультимативной
+			Ультимативная атака: веер из 6 ножей, при попадании вызывающих малые взрывы Пустоты
+			'''
+	}
+
+	OmniscientTetrahedron: {
+		DisplayName: Всевидящий золотой тетраэдр
+		Tooltip:
+			'''
+			Призывает всевидящее око, вращающееся вокруг вас
+			Око по спирали выплёвывает снаряды магического пламени в ближайших врагов
+			«Оно видит больше, чем говорит»
+			'''
+	}
+
+	CurseRoar: {
+		DisplayName: Проклятый рёв
+		Tooltip:
+			'''
+			Стреляет пустотными зарядами очередями по три выстрела
+			Заряжается, пока в руках; когда заряд полон, следующая атака становится ультимативной
+			Ультимативная атака: конический рёв с высоким уроном и мощным отбрасыванием на ближней дистанции
+			Враги, попавшие под рёв, получают тяжёлое Касание бездны
+			'''
+	}
+
+	VoidPredatorStaff: {
+		DisplayName: Посох Хищника Пустоты
+		Tooltip:
+			'''
+			Призывает миниатюрного Хищника Пустоты, плавающего вокруг вас
+			Он разрывает малые порталы и ныряет сквозь врагов
+			«Приручить его несложно. Просто держите его сытым»
+			'''
+	}
+
+	SupremeVoidFist: {
+		DisplayName: Верховный кулак Пустоты
+		Tooltip:
+			'''
+			Наносит быстрые прямые удары в сторону курсора
+			Каждый 4-й удар становится тяжёлым: летящий кулак взрывается малой ударной волной
+			Попадания по врагам накапливают напор; когда он полон, следующая атака становится ультимативной
+			Ультимативная атака: короткий таран к курсору, во время которого вы не получаете контактный урон
+			'''
+	}
+
 	EntropyStarterBag: {
 		// DisplayName: Gift of Entropy
 		/* Tooltip:
@@ -4924,8 +5051,6 @@ Projectiles: {
 	UhrwerkHammerCallout.DisplayName: Uhrwerk Hammer Callout
 	AquaticPet.DisplayName: Aquatic Pet
 	VoidRitualCircle.DisplayName: Void Ritual Circle
-	VPVoidLightBall.DisplayName: Void Light Ball
-	VPRot.DisplayName: Void Pope Hand
 	VoidshadeHeld.DisplayName: Voidshade
 	VoidImpact.DisplayName: Void Impact
 	BlackFire.DisplayName: Black Fire
@@ -5528,6 +5653,43 @@ Projectiles: {
 	// AbyssalSigilRitual.DisplayName: Abyssal Sigil
 	// PartySparkle.DisplayName: Party Sparkle
 	// TyrantPhantomBlade.DisplayName: Tyrant Phantom Blade
+	HealWisp.DisplayName: Исцеляющий огонёк
+	VoidFireball.DisplayName: Огненный шар Пустоты
+	VoidGroundFlame.DisplayName: Тлеющее пламя Пустоты
+	VoidFlameBreath.DisplayName: Огненное дыхание Пустоты
+	VoidPortal.DisplayName: Портал Пустоты
+	GolemShockwave.DisplayName: Ударная волна голема
+	GolemLightPillar.DisplayName: Световой столп голема
+	ChimeraClawSlash.DisplayName: Удар когтей химеры
+	ChimeraGroundSpike.DisplayName: Хаотический земляной шип
+	VoidLightningBolt.DisplayName: Пустотная молния
+	VoidCrystal.DisplayName: Пустотный кристалл
+	VoidCrystalCage.DisplayName: Кристальная клетка
+	PopeChain.DisplayName: Цепь смертельной злобы
+	DeathBomb.DisplayName: Бомба смерти
+	DeathBombLaser.DisplayName: Луч бомбы смерти
+	PopeScytheSlash.DisplayName: Призрачная коса
+	MagicEyeBolt.DisplayName: Магический огненный снаряд
+	DimensionDisc.DisplayName: Пространственный диск
+	DiscBeam.DisplayName: Луч пространственного диска
+	OmniscientEye.DisplayName: Всевидящее око
+	MaliceClawProj.DisplayName: Коготь злобы
+	ReflectLaser.DisplayName: Отражённый лазер Пустоты
+	CodexEyeBolt.DisplayName: Снаряд магического пламени
+	CodexVoidChain.DisplayName: Малая цепь смерти
+	VoidGodScytheHeld.DisplayName: Коса Пустотного Бога
+	VoidScytheSpinSlash.DisplayName: Вращающийся удар косы
+	PurgatoryKnifeProj.DisplayName: Нож чистилища
+	OmniscientEyeMinion.DisplayName: Всевидящее око
+	MinionEyeBolt.DisplayName: Снаряд магического пламени
+	CurseRoarHeld.DisplayName: Проклятый рёв
+	CurseVoidBullet.DisplayName: Пустотный заряд
+	CurseRoarWave.DisplayName: Проклинающий рёв
+	VoidPredatorMinion.DisplayName: Мини-хищник Пустоты
+	SupremeVoidFistHeldProj.DisplayName: Верховный кулак Пустоты
+	VoidFistJab.DisplayName: Пустотный джеб
+	VoidFistPunchProj.DisplayName: Тяжёлый кулак
+	VoidFistDash.DisplayName: Таран кулака
 	// GaleWindBlade.DisplayName: Gale Wind Blade
 	// AquariusWaterBolt.DisplayName: Aquarius Water Bolt
 	// SunkenAquashard.DisplayName: Sunken Aquashard
@@ -5536,6 +5698,7 @@ Projectiles: {
 	// AquashardSplit.DisplayName: Aquashard Split
 	// PlaguenadeBee.DisplayName: Plaguenade Bee
 	// GhastlySoulLarge.DisplayName: Ghastly Soul Large
+	// FallenVoidCodexHeld.DisplayName: Fallen Void Codex Held
 }
 
 LegendTooltip: - Легенда -
@@ -5545,6 +5708,16 @@ Buffs: {
 	VoidStorm: {
 		DisplayName: Пустотный шторм
 		Description: Взгляд из самой глубокой части пустоты
+	}
+
+	OmniscientEyeBuff: {
+		DisplayName: Всевидящее око
+		Description: Всевидящее око несёт для вас дозор
+	}
+
+	VoidPredatorBuff: {
+		DisplayName: Мини-хищник
+		Description: Миниатюрный хищник плавает вокруг вас
 	}
 
 	VoidTouch: {
@@ -6204,8 +6377,35 @@ NPCs: {
 	}
 
 	VoidCultistAssassin.DisplayName: Ассассин культистов Пустоты
-	VoidPope.DisplayName: Патриарх Пустоты
-	VoidPopeHand.DisplayName: Длань Патриарха Пустоты
+	VoidCultistWarlock.DisplayName: Чернокнижник культистов Пустоты
+	VoidCandleWisp.DisplayName: Свечной огонёк Пустоты
+	VoidTemplar.DisplayName: Храмовник Пустоты
+	VoidGolem.DisplayName: Голем Пустоты
+	VoidCrawlerHead.DisplayName: Ползун Пустоты
+	VoidCrawlerBody.DisplayName: Ползун Пустоты
+	VoidCrawlerTail.DisplayName: Ползун Пустоты
+	VoidPredatorHead.DisplayName: Хищник Пустоты
+	VoidPredatorBody.DisplayName: Хищник Пустоты
+	VoidPredatorTail.DisplayName: Хищник Пустоты
+	VoidmawShark.DisplayName: Акула Пустотной пасти
+	ChaosChimera.DisplayName: Химера Хаоса
+	VoidCardinal.DisplayName: Кардинал Пустоты
+	RiftWraith.DisplayName: Призрак Разлома
+	EntropyFiend.DisplayName: Исчадие Энтропии
+
+	VoidPope: {
+		DisplayName: Понтифик Пустоты
+
+		BossChecklistIntegration: {
+			EntryName: Понтифик Пустоты
+			SpawnInfo: Отразив Вторжение Пустоты, используйте [i:CalamityEntropy/PopeSummonItem] на поверхности
+			DespawnMessage: ""
+		}
+	}
+
+	VoidPopeHand.DisplayName: Длань Понтифика Пустоты
+	VoidWormlet.DisplayName: Пустотный червь
+	LightningOrb.DisplayName: Сфера молний
 
 	PrimordialWyrmNPC: {
 		TownNPCMood: {
@@ -6419,6 +6619,18 @@ ApsychosBestiary:
 	Живые существа, блуждающие глубоко в магме, имеют раковины, состоящие из пород земной коры.
 	Возможно, его использовали в качестве альтернативы стене из плоти и крови, но он, очевидно, потерпел неудачу.
 	'''
+VoidPopeBestiary: Верховный предводитель культа Пустоты и владыка Престола Измерений. Под тремя обличьями никто уже не помнит его подлинного лица.
+VoidCultistWarlockBestiary: Служка культа: лечит раненых и разжигает исступление. Сначала убей чернокнижника — это знание выжившие оплатили кровью.
+VoidCandleWispBestiary: Живой огонёк с канделябра культа. Пока фитиль не догорит, он будет сыпать огненным дождём.
+VoidTemplarBestiary: Клинконосный страж культа: сперва убивает, потом проповедует. Его телепорт беззвучен, а вот рывок — нет.
+VoidGolemBestiary: Исполинский слуга, слепленный из каменной корки у края разлома; каждый его шаг сотрясает землю. Прочитай его замах — и прочитаешь путь к спасению.
+VoidCrawlerBestiary: Многосегментный охотник, стелющийся по земле; костяные лапы — украшение, чтобы ползать было больше похоже на жизнь. Разозлите его, и он вспыхнет жарче всех.
+VoidPredatorBestiary: Хищный червь, снующий между порталами. Никогда не входит в одну дверь дважды.
+VoidmawSharkBestiary: Акулоподобное чудовище, плывущее сквозь разломы. Три рывка, один вдох — ритм не сбивается никогда.
+ChaosChimeraBestiary: Обжора, сшитый из неудавшихся творений; проглоченные культисты становятся его плотью. Позволить ему кормиться — самая дорогая ошибка на поле боя.
+VoidCardinalBestiary: Полевой командир в алом облачении, укрывающий всех верующих. Сорвите это знамя, и строй рухнет сам.
+RiftWraithBestiary: Злобный дух, сочащийся из разлома, — бледное эхо Бездонного Призрака в этом мире. Каждый завершённый ритуал приносит ещё одно его пришествие.
+EntropyFiendBestiary: Кристаллическое исчадие, стерегущее самую глубь разлома, авангард Понтифика. Пока оно здесь, даже культ затаивает дыхание.
 WorldGen.VoidOreSpawn: Из неба исходит энергия пустоты
 
 Tiles: {
@@ -6768,6 +6980,20 @@ EBookTooltip:
 	'''
 SetHomeCommandError: Ошибка: неверные параметры
 HomeCommandError: Не могу найти свой дом
+
+VoidInvasion: {
+	Title: Вторжение Пустоты
+	Begin: Разлом в измерение Пустоты раскрывается, и шёпот культа заполняет землю...
+	Victory: Разлом закрылся, и культ Пустоты отброшен!
+	ProgressPercent: "{0}%"
+
+	BossChecklistIntegration: {
+		EntryName: Вторжение Пустоты
+		SpawnInfo: Используйте [i:CalamityEntropy/VoidDimensionLocator] на поверхности, чтобы начать вторжение; убивайте врагов культа для прогресса и одолейте Исчадие Энтропии на 99%
+		DespawnMessage: ""
+	}
+}
+
 EntropyModeName: Энтропия
 EntropyModeDescShort: "[c/aa12e1:Более сложный, чем режим смерти]"
 EntropyModeDesc: "[c/aa12e1:Более сложный, чем режим смерти, с меньшим количеством здоровья и урона]"
@@ -6812,6 +7038,7 @@ AmmoPenetrateInfinite: Бесконечность
 WikiURL: https://terrariamods.wiki.gg/wiki/Calamity_Entropy/
 GameTips.VoidOreTip: Руда пустоты появится высоко в небе после поражения крейсера
 LuminarisLoreDesc: + {1}% Максимальное время полёта
+VoidPopeLoreDesc: Урон от врагов Вторжения Пустоты снижен на {1}%
 LoreApsychosDesc: Это избавляет тебя от огня и огня.
 SlotInfo2: InsertItem
 LightModeTip: Внимание: При других режимах освещения некоторые снаряды и NPC Calamity Entropy становятся невидимыми. Лучше всего использовать цветовой режим.

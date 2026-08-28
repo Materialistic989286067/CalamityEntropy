@@ -599,3 +599,115 @@
 [Mods.CalamityEntropy.LorePreludeDesc] - removed
 [Mods.CalamityEntropy.LoreAstralInfectionDesc] - removed
 [Mods.CalamityEntropy.LoreAstrumDeusDesc] - removed
+[Mods.CalamityEntropy.Items.VoidDimensionLocator.DisplayName] - added // 虚空入侵开启物品(M1 事件框架)
+[Mods.CalamityEntropy.Items.VoidDimensionLocator.Tooltip] - added
+[Mods.CalamityEntropy.VoidInvasion.Title] - added // 事件标题(进度条与广播用)
+[Mods.CalamityEntropy.VoidInvasion.Begin] - added // 事件开场广播
+[Mods.CalamityEntropy.VoidInvasion.Victory] - added // 事件胜利广播
+[Mods.CalamityEntropy.VoidInvasion.ProgressPercent] - added // 进度条百分比文本格式
+[Mods.CalamityEntropy.NPCs.VoidCultistWarlock.DisplayName] - added // 虚空术士(M2 骚扰层)
+[Mods.CalamityEntropy.NPCs.VoidCandleWisp.DisplayName] - added // 虚空烛灵(M2 骚扰层)
+[Mods.CalamityEntropy.NPCs.VoidTemplar.DisplayName] - added // 虚空护教骑士(M2 主力层)
+[Mods.CalamityEntropy.Projectiles.HealWisp.DisplayName] - added // 术士治疗光灵
+[Mods.CalamityEntropy.Projectiles.VoidFireball.DisplayName] - added // 烛灵火球
+[Mods.CalamityEntropy.Projectiles.VoidGroundFlame.DisplayName] - added // 火球落地残焰
+[Mods.CalamityEntropy.Projectiles.VoidFlameBreath.DisplayName] - added // 喷焰通用件(烛灵/M3 爬行者)
+[Mods.CalamityEntropy.NPCs.VoidGolem.DisplayName] - added // 虚空魔像(M3 精英层)
+[Mods.CalamityEntropy.NPCs.VoidCrawlerHead.DisplayName] - added // 虚空爬行者(M3 主力层,体节尾同名)
+[Mods.CalamityEntropy.NPCs.VoidCrawlerBody.DisplayName] - added
+[Mods.CalamityEntropy.NPCs.VoidCrawlerTail.DisplayName] - added
+[Mods.CalamityEntropy.NPCs.VoidPredatorHead.DisplayName] - added // 虚空掠食者(M3 精英层,体节尾同名)
+[Mods.CalamityEntropy.NPCs.VoidPredatorBody.DisplayName] - added
+[Mods.CalamityEntropy.NPCs.VoidPredatorTail.DisplayName] - added
+[Mods.CalamityEntropy.NPCs.VoidmawShark.DisplayName] - added // 噬虚鲨(M3 精英层)
+[Mods.CalamityEntropy.NPCs.ChaosChimera.DisplayName] - added // 混沌嵌合体(M3 精英层,显示名统一"嵌合体",美术文件夹实名"融合体")
+[Mods.CalamityEntropy.Projectiles.VoidPortal.DisplayName] - added // 全事件通用传送门演出件(§0.3 支柱 1)
+[Mods.CalamityEntropy.Projectiles.GolemShockwave.DisplayName] - added // 魔像跳锤贴地冲击波
+[Mods.CalamityEntropy.Projectiles.GolemLightPillar.DisplayName] - added // 魔像光柱锤击(每第 3 锤)
+[Mods.CalamityEntropy.Projectiles.ChimeraClawSlash.DisplayName] - added // 嵌合体双爪连击判定
+[Mods.CalamityEntropy.Projectiles.ChimeraGroundSpike.DisplayName] - added // 嵌合体插地爆发地刺
+[Mods.CalamityEntropy.NPCs.VoidCardinal.DisplayName] - added // 红衣主教(M4 指挥层,场上限 1)
+[Mods.CalamityEntropy.Projectiles.VoidLightningBolt.DisplayName] - added // 主教虚空闪电(警示线 30t 后沿线放电 2 次)
+[Mods.CalamityEntropy.NPCs.RiftWraith.DisplayName] - added // 裂隙恶灵(M5 事件小 Boss,深渊亡魂事件回声)
+[Mods.CalamityEntropy.NPCs.EntropyFiend.DisplayName] - added // 虚熵魔物(M5 99% 守门小 Boss)
+[Mods.CalamityEntropy.Projectiles.VoidCrystal.DisplayName] - added // 魔物统一水晶弹幕(扇射/环形/蜕晶)
+[Mods.CalamityEntropy.Projectiles.VoidCrystalCage.DisplayName] - added // 魔物水晶牢笼(单弹幕承载围环)
+[Mods.CalamityEntropy.NPCs.VoidWormlet.DisplayName] - added // 虚空蠕虫(M6 教皇门中演出怪)
+[Mods.CalamityEntropy.Projectiles.PopeChain.DisplayName] - added // 死怨铁索(M6 教皇三阶段通用模板)
+[Mods.CalamityEntropy.Projectiles.DeathBomb.DisplayName] - added // 死亡爆弹(M6 教皇 P1-2)
+[Mods.CalamityEntropy.Projectiles.DeathBombLaser.DisplayName] - added // 爆弹充能期的 6 向放射激光
+[Mods.CalamityEntropy.Projectiles.PopeScytheSlash.DisplayName] - added // 魔镰旋斩判定弧(M6 教皇 P1-4)
+[Mods.CalamityEntropy.Projectiles.VPVoidLightBall.DisplayName] - removed // 教皇原型旧三态弹幕随 M6 重写删除
+[Mods.CalamityEntropy.Projectiles.VPRot.DisplayName] - removed // 同上,旧环绕判定线弹幕删除
+[Mods.CalamityEntropy.Projectiles.MagicEyeBolt.DisplayName] - added // 魔焰弹(M7 教皇 P2 通用小弹幕,追踪/直飞两模式)
+[Mods.CalamityEntropy.Projectiles.DimensionDisc.DisplayName] - added // 维度魔盘(M7 教皇 P2-5/7/8)
+[Mods.CalamityEntropy.Projectiles.DiscBeam.DisplayName] - added // 魔盘贯穿巨激光(M7 教皇 P2-5,宽 90px 厚束)
+[Mods.CalamityEntropy.Projectiles.OmniscientEye.DisplayName] - added // 全知之眼(M7 教皇 P2-6/6s)
+[Mods.CalamityEntropy.Projectiles.MaliceClawProj.DisplayName] - added // 恶念之爪(M7 教皇 P2-7)
+[Mods.CalamityEntropy.NPCs.LightningOrb.DisplayName] - added // 闪电球(M8 教皇 P3-2 可击破放电单位)
+[Mods.CalamityEntropy.Projectiles.ReflectLaser.DisplayName] - added // 反射激光(M8 教皇 P3-4,触领域边界反射四段)
+[Mods.CalamityEntropy.NPCs.VoidPope.DisplayName] - changed // M9 正名:虚空教主 → 虚空教皇(void-invasion.md §0.4 正典)
+[Mods.CalamityEntropy.NPCs.VoidPopeHand.DisplayName] - changed // 随本体正名(ru 同步改 Понтифик 谱系)
+[Mods.CalamityEntropy.NPCs.VoidPope.BossChecklistIntegration.EntryName] - added // M9 BossChecklist 教皇条目(weight 21.5)
+[Mods.CalamityEntropy.NPCs.VoidPope.BossChecklistIntegration.SpawnInfo] - added
+[Mods.CalamityEntropy.NPCs.VoidPope.BossChecklistIntegration.DespawnMessage] - added
+[Mods.CalamityEntropy.VoidInvasion.BossChecklistIntegration.EntryName] - added // M9 BossChecklist 事件条目(LogEvent,weight 21.2)
+[Mods.CalamityEntropy.VoidInvasion.BossChecklistIntegration.SpawnInfo] - added
+[Mods.CalamityEntropy.VoidInvasion.BossChecklistIntegration.DespawnMessage] - added
+[Mods.CalamityEntropy.Items.PopeSummonItem.DisplayName] - added // 维度圣座请柬(M9 教皇召唤物,§5.2)
+[Mods.CalamityEntropy.Items.PopeSummonItem.Tooltip] - added
+[Mods.CalamityEntropy.Items.VoidPopeBag.DisplayName] - added // 教皇专家宝袋(§5.3)
+[Mods.CalamityEntropy.Items.VoidPopeBag.Tooltip] - added
+[Mods.CalamityEntropy.Items.VoidPopeRelic.DisplayName] - added // 教皇大师圣物(§5.3)
+[Mods.CalamityEntropy.Items.VoidPopeRelic.Tooltip] - added
+[Mods.CalamityEntropy.Items.PopeMedal.DisplayName] - added // 教皇纪念章饰品(§5.3:进度 ×1.1 + 虚空之触减半)
+[Mods.CalamityEntropy.Items.PopeMedal.Tooltip] - added
+[Mods.CalamityEntropy.Items.VoidPopeLore.DisplayName] - added // 教皇传颂之物(§5.3,CELoreItem)
+[Mods.CalamityEntropy.Items.VoidPopeLore.Tooltip] - added
+[Mods.CalamityEntropy.Items.VoidPopeLore.Lore] - added // 传记全文(Shift 查看)
+[Mods.CalamityEntropy.VoidPopeLoreDesc] - added // Lore 启用效果说明({1} = 5)
+[Mods.CalamityEntropy.Items.FallenVoidCodex.DisplayName] - added // 堕虚邪典(M9 七武器,熵之书)
+[Mods.CalamityEntropy.Items.FallenVoidCodex.Tooltip] - added
+[Mods.CalamityEntropy.Items.VoidGodScythe.DisplayName] - added // 虚神魔镰(M9 七武器,近战蓄势)
+[Mods.CalamityEntropy.Items.VoidGodScythe.Tooltip] - added
+[Mods.CalamityEntropy.Items.PrisonKnife.DisplayName] - added // 镇狱飞刀(M9 七武器,投掷近战蓄势)
+[Mods.CalamityEntropy.Items.PrisonKnife.Tooltip] - added
+[Mods.CalamityEntropy.Items.OmniscientTetrahedron.DisplayName] - added // 全知金四面体(M9 七武器,召唤)
+[Mods.CalamityEntropy.Items.OmniscientTetrahedron.Tooltip] - added
+[Mods.CalamityEntropy.Items.CurseRoar.DisplayName] - added // 咒怨咆哮(M9 七武器,枪蓄势)
+[Mods.CalamityEntropy.Items.CurseRoar.Tooltip] - added
+[Mods.CalamityEntropy.Items.VoidPredatorStaff.DisplayName] - added // 虚空掠食者召唤杖(M9 七武器,掠食者 5%/魔物 20% 掉落)
+[Mods.CalamityEntropy.Items.VoidPredatorStaff.Tooltip] - added
+[Mods.CalamityEntropy.Items.SupremeVoidFist.DisplayName] - added // 超绝虚空铁拳(M9 七武器,魔像 4% 掉落)
+[Mods.CalamityEntropy.Items.SupremeVoidFist.Tooltip] - added
+[Mods.CalamityEntropy.Buffs.OmniscientEyeBuff.DisplayName] - added // 四面体随从 buff
+[Mods.CalamityEntropy.Buffs.OmniscientEyeBuff.Description] - added
+[Mods.CalamityEntropy.Buffs.VoidPredatorBuff.DisplayName] - added // 掠食者杖随从 buff
+[Mods.CalamityEntropy.Buffs.VoidPredatorBuff.Description] - added
+[Mods.CalamityEntropy.Projectiles.CodexEyeBolt.DisplayName] - added // 邪典魔焰弹(友方版)
+[Mods.CalamityEntropy.Projectiles.CodexVoidChain.DisplayName] - added // 邪典小型铁索(PopeChain 友方短版)
+[Mods.CalamityEntropy.Projectiles.VoidGodScytheHeld.DisplayName] - added // 魔镰手持挥砍体
+[Mods.CalamityEntropy.Projectiles.VoidScytheSpinSlash.DisplayName] - added // 魔镰旋斩(PopeScytheSlash 友方版)
+[Mods.CalamityEntropy.Projectiles.PurgatoryKnifeProj.DisplayName] - added // 炼狱飞刀(回旋镖式)
+[Mods.CalamityEntropy.Projectiles.OmniscientEyeMinion.DisplayName] - added // 全知之眼随从
+[Mods.CalamityEntropy.Projectiles.MinionEyeBolt.DisplayName] - added // 随从魔焰弹
+[Mods.CalamityEntropy.Projectiles.CurseRoarHeld.DisplayName] - added // 咒怨咆哮手持枪体
+[Mods.CalamityEntropy.Projectiles.CurseVoidBullet.DisplayName] - added // 虚空弹
+[Mods.CalamityEntropy.Projectiles.CurseRoarWave.DisplayName] - added // 咆哮锥形音波
+[Mods.CalamityEntropy.Projectiles.VoidPredatorMinion.DisplayName] - added // 迷你掠食者随从
+[Mods.CalamityEntropy.Projectiles.SupremeVoidFistHeldProj.DisplayName] - added // 铁拳手持体
+[Mods.CalamityEntropy.Projectiles.VoidFistJab.DisplayName] - added // 直拳判定
+[Mods.CalamityEntropy.Projectiles.VoidFistPunchProj.DisplayName] - added // 重拳铁拳弹幕
+[Mods.CalamityEntropy.Projectiles.VoidFistDash.DisplayName] - added // 蓄势冲撞判定
+[Mods.CalamityEntropy.VoidPopeBestiary] - added // M9 图鉴词条(教皇解除 HideFromBestiary,正式入图鉴)
+[Mods.CalamityEntropy.VoidCultistWarlockBestiary] - added // 以下 11 键为事件 NPC 图鉴词条(§1.7)
+[Mods.CalamityEntropy.VoidCandleWispBestiary] - added
+[Mods.CalamityEntropy.VoidTemplarBestiary] - added
+[Mods.CalamityEntropy.VoidGolemBestiary] - added
+[Mods.CalamityEntropy.VoidCrawlerBestiary] - added
+[Mods.CalamityEntropy.VoidPredatorBestiary] - added
+[Mods.CalamityEntropy.VoidmawSharkBestiary] - added
+[Mods.CalamityEntropy.ChaosChimeraBestiary] - added
+[Mods.CalamityEntropy.VoidCardinalBestiary] - added
+[Mods.CalamityEntropy.RiftWraithBestiary] - added
+[Mods.CalamityEntropy.EntropyFiendBestiary] - added

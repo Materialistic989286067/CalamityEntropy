@@ -384,6 +384,12 @@ namespace CalamityEntropy.Common
         public int summonCrit = 0;
         public float meleeDamageReduce = 0;
         public int hitTimeCount = 10000000;
+        /// <summary>教皇纪念章(void-invasion.md §5.3):入侵击杀进度 ×1.1 + 虚空触减益时长减半</summary>
+        public bool popeMedal = false;
+        /// <summary>教皇传颂之物效果(§5.3):受到虚空入侵敌人的伤害 -5%</summary>
+        public bool voidPopeLoreGuard = false;
+        /// <summary>纪念章虚空触追踪:上一帧的 VoidTouch 剩余时长(减半判定用)</summary>
+        private int voidTouchPrevTime = 0;
 
         public bool isUsingItem()
         {
@@ -392,7 +398,35 @@ namespace CalamityEntropy.Common
         public override void ModifyHitByNPC(NPC npc, ref Player.HurtModifiers modifiers)
         {
             modifiers.SourceDamage *= (1 - meleeDamageReduce);
-
+            //教皇传颂之物(§5.3):虚空入侵家族 NPC 接触伤害 -5%
+            if (voidPopeLoreGuard && VoidInvasionGNPC.IsVoidFamily(npc))
+            {
+                modifiers.FinalDamage *= 1f - Content.Items.VoidInvasion.VoidPopeLore.voidDamageReduction;
+            }
+        }
+        public override void ModifyHitByProjectile(Projectile proj, ref Player.HurtModifiers modifiers)
+        {
+            //教皇传颂之物(§5.3):虚空入侵家族弹幕伤害 -5%(按弹幕命名空间归族)
+            if (voidPopeLoreGuard && VoidInvasionGNPC.IsVoidFamilyProjectile(proj))
+            {
+                modifiers.FinalDamage *= 1f - Content.Items.VoidInvasion.VoidPopeLore.voidDamageReduction;
+            }
+        }
+        public override void PostUpdateBuffs()
+        {
+            //教皇纪念章(§5.3):虚空触减益时长减半。
+            //无"施加时刻"原生钩子,以帧间时长跳变侦测新施加:自然衰减为每帧 -1,
+            //时长上跳即视为新施加,压回"已有剩余"与"新时长一半"的较大者。
+            int vtType = ModContent.BuffType<Content.Buffs.VoidTouch>();
+            int idx = Player.FindBuffIndex(vtType);
+            int cur = idx >= 0 ? Player.buffTime[idx] : 0;
+            if (popeMedal && idx >= 0 && cur > voidTouchPrevTime + 1)
+            {
+                int halved = System.Math.Max(voidTouchPrevTime - 1, cur / 2);
+                Player.buffTime[idx] = halved;
+                cur = halved;
+            }
+            voidTouchPrevTime = cur;
         }
         public bool MariviniumSet = false;
         public void addEquip(string id, bool hasVisual = true)
@@ -1078,6 +1112,8 @@ namespace CalamityEntropy.Common
             equipAccs = new List<EquipInfo>();
             vetrasylsEye = false;
             maliciousCode = false;
+            popeMedal = false;
+            voidPopeLoreGuard = false;
             AzafureChargeShieldItem = null;
             AzafureDriverShieldItem = null;
             visualMagiShield = false;
@@ -2429,6 +2465,10 @@ namespace CalamityEntropy.Common
         public int lbaitType = -1;
         public override void PostUpdate()
         {
+            //虚空教皇 P3 领域环绕(void-invasion.md §4.3,M8):移动结算后判触边,
+            //只在本机客户端处理自己的玩家(方法内部有 whoAmI == Main.myPlayer 门,旁观端靠原生位置同步)
+            Content.NPCs.VoidInvasion.VoidPope.HandleDomainWrap(Player);
+
             if (BaitCharge < 0)
                 BaitCharge = 0;
             if (Player.HeldItem.IsAir)

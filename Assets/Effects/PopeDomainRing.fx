@@ -1,5 +1,5 @@
 // PopeDomainRing — 教皇 P3 领域边界环带着色器
-// 用法: CEFxcEffects.Get("PopeDomainRing"), SpriteBatch Immediate + Additive + LinearWrap,
+// 用法: CEEffectAssets.PopeDomainRing, SpriteBatch Immediate + Additive + LinearWrap,
 // 画一张噪声图(s0)撑满以领域圆心为心的正方形(边长略大于直径), 片元内换极坐标画环。
 // 结构: 裂隙纹理双向流动 + 亮丝裂纹 + 白芯读线 + 内外双色域(内壁泛光/外侧沉暗紫) + 预警脉动/死亡白闪调制。
 sampler uImage0 : register(s0);

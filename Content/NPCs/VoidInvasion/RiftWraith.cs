@@ -884,7 +884,7 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
 
             sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Effect fx = CEFxcEffects.Get("RiftCrack");
+            Effect fx = CEEffectAssets.RiftCrack;
             fx.CurrentTechnique = fx.Techniques["Technique1"];
             fx.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
             fx.Parameters["noiseTex"].SetValue(CEExtraAssets.TurbulentNoise);

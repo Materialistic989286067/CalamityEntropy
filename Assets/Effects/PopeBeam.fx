@@ -1,5 +1,5 @@
 // PopeBeam — 教皇系贯穿激光束体着色器(魔盘巨激光/爆弹放射激光/反射激光共用)
-// 用法: CEFxcEffects.Get("PopeBeam"), SpriteBatch Immediate + Additive + LinearWrap,
+// 用法: CEEffectAssets.PopeBeam, SpriteBatch Immediate + Additive + LinearWrap,
 // 画一张噪声图(s0)拉成横条: uv.x=0 出膛端 → 1 远端, uv.y 横截。
 // 结构: 白核 + 色晕 + 噪声热浪扰动边缘 + 出膛端过曝 + 远端轻收。
 sampler uImage0 : register(s0);

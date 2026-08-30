@@ -30,7 +30,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.rare = ModContent.RarityType<NihilityBlue>();
             Item.shoot = ModContent.ProjectileType<VoidseekerProj>();
             Item.shootSpeed = 10f;
-            Item.DamageType = DamageClass.Ranged;
+            // 实测反馈改判:镰刀挥砍归近战(原并入原版时曾判远程),弹幕侧同步
+            Item.DamageType = DamageClass.Melee;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

@@ -1,3 +1,4 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Core.Graphics;
@@ -211,7 +212,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidInvasion
             //开门期涡流从暗处显形
             float discAlpha = MathHelper.Clamp(age / (OpenTime * 0.55f), 0f, 1f);
 
-            Effect portalFx = CEFxcEffects.Get("VInvPortal");
+            Effect portalFx = CEEffectAssets.VInvPortal;
             portalFx.Parameters["uTime"].SetValue(Main.GlobalTimeWrappedHourly + Projectile.whoAmI * 2.7f);
             portalFx.Parameters["uOpacity"].SetValue(discAlpha);
             portalFx.Parameters["uBoost"].SetValue(boost);

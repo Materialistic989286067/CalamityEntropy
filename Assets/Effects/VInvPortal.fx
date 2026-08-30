@@ -1,5 +1,5 @@
 // VInvPortal — 虚空入侵传送门(裂隙)着色器
-// 用法: CEFxcEffects.Get("VInvPortal"), SpriteBatch Immediate + NonPremultiplied + LinearWrap,
+// 用法: CEEffectAssets.VInvPortal, SpriteBatch Immediate + NonPremultiplied + LinearWrap,
 // 画一张任意噪声图(s0)撑满门面矩形; uv 在片元里换极坐标自算, 贴图内容只当噪声源用。
 // 结构: 双层反向视差涡流(门内深渊) + 中心黑洞压暗 + 噪声锯齿的边缘撕裂光。
 sampler uImage0 : register(s0);

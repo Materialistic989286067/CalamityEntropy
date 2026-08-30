@@ -1,5 +1,5 @@
 // PopeSlashArc — 教皇魔镰旋斩刀光着色器
-// 用法: CEFxcEffects.Get("PopeSlashArc"), SpriteBatch Immediate + NonPremultiplied + LinearWrap,
+// 用法: CEEffectAssets.PopeSlashArc, SpriteBatch Immediate + NonPremultiplied + LinearWrap,
 // 画一张噪声图(s0)撑满以斩击中心为心的正方形, 片元内换极坐标画月牙。
 // 结构: 前缘锐(白热刃线) + 腹部鼓(高斯厚度) + 后缘散(内侧噪声撕散) + 尾迹急衰(方向读法) + 定格后噪声侵蚀消散。
 sampler uImage0 : register(s0);

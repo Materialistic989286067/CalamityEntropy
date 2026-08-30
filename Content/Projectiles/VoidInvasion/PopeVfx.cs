@@ -28,7 +28,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidInvasion
                 return;
             }
             SpriteBatch sb = Main.spriteBatch;
-            Effect fx = CEFxcEffects.Get("PopeBeam");
+            Effect fx = CEEffectAssets.PopeBeam;
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap,
                 DepthStencilState.None, RasterizerState.CullNone, fx, Main.GameViewMatrix.TransformationMatrix);

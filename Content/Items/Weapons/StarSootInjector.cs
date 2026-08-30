@@ -43,9 +43,10 @@ namespace CalamityEntropy.Content.Items.Weapons
             if (player.itemTime > 0)
             {
                 //PRT_GlowLightParticle 光效走AdditiveBlend,Configure尾参lifetime对齐旧timeLeft
-                var p = PRTLoader.NewParticle<PRT_GlowLightParticle>(player.MountedCenter, (player.itemRotation + (player.direction > 0 ? 0 : MathHelper.Pi)).ToRotationVector2().RotatedByRandom(0.24f) * Main.rand.NextFloat(10, 20) * 2.5f, Color.LightBlue);
+                //旧NewParticle第5参0.6~1.4是Scale,迁移时误放进Configure的Opacity槽,这里还原
+                var p = PRTLoader.NewParticle<PRT_GlowLightParticle>(player.MountedCenter, (player.itemRotation + (player.direction > 0 ? 0 : MathHelper.Pi)).ToRotationVector2().RotatedByRandom(0.24f) * Main.rand.NextFloat(10, 20) * 2.5f, Color.LightBlue, Main.rand.NextFloat(0.6f, 1.4f));
                 p.lightColor = Color.LightBlue * 0.55f;
-                p.Configure(Main.rand.NextFloat(0.6f, 1.4f), true, PRTDrawModeEnum.AdditiveBlend, 0, 30);
+                p.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 30);
                 for (int i = 0; i < 3; i++)
                 {
                     //Smoke timeleft直赋+Configure Additive,跟GlowLight成对

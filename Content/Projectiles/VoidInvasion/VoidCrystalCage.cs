@@ -232,7 +232,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidInvasion
             }
 
             //———主体:棱光着色器逐槽绘制,收缩期内辉光渐盛———
-            Effect fx = CEFxcEffects.Get("FiendCrystal");
+            Effect fx = CEEffectAssets.FiendCrystal;
             fx.CurrentTechnique = fx.Techniques["Technique1"];
             fx.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
             fx.Parameters["glowColor"].SetValue(new Vector4(0.55f, 0.3f, 1.1f, 0f));

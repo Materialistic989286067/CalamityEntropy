@@ -1,6 +1,6 @@
 ﻿[h1] 模组内容 [/h1]
 
-本模组为灾厄模组的拓展模组，旨在在灾厄流程中添加更多武器和物品，并加入新的流程
+本模组为流程拓展模组，开启灾厄游玩时有交叉联动内容
 
 完全支持多人模式游玩
 
@@ -8,7 +8,7 @@
 
 五个新BOSS
 
-独特的武器（包括新的战士、法师、盗贼的系列武器，以及更加独特的鞭子）
+独特的武器（包括新的战士、法师的系列武器，以及更加独特的鞭子）
 
 大量新的饰品
 
@@ -20,33 +20,31 @@
 
 开发者们与开发者朋友们的时装
 
-可以坐也可以升天的金源马桶
-
 虚空马桶
-
-圣金源巨石
 
 未来会不断加入更多新的内容
 
-模组使用了部分属于原版灾厄模组的贴图（灰度图、噪声等）
-
 [h1] 制作人员名单 [/h1]
 
-Polaris：主创，代码，概念设计
+锯角Serrat Antler：主创，贴图，概念设计
 
-查诗络ChaLost：半个主创，贴图，概念设计
+红茶Hocha113：主程序，概念设计
+
+雾梯: 贴图，概念设计
+
+Polaris：代码，概念设计
+
+查诗络ChaLost：贴图，概念设计
 
 冻结Ahirith：贴图，概念设计（宠物）
 
-锯角Serrat Antler：贴图，概念设计
-
 嘉登糖Jester Romut：代码，贴图，音乐（标题界面）
-
-雾梯: 贴图
 
 Badbf-海啸: 音乐（虚无双子）
 
-氧Oxygen：贴图
+迷途：贴图
+
+氧气：贴图
 
 [h2] 鸣谢名单 [/h2]
 
@@ -54,15 +52,13 @@ Badbf-海啸: 音乐（虚无双子）
 
 感谢Soba Noodles制作的阿萨福勒卫城机甲主题曲
 
-感谢鸡腿、凝胶、OXYGEN、黑森林大蛇、小史龙、迷途、OwenDraw,、伍翎、myku提供的部分贴图（尽管他们有些还未实装）
+感谢鸡腿、凝胶、OXYGEN、黑森林大蛇、小史龙、OwenDraw,、伍翎、myku提供的部分贴图（尽管他们有些还未实装）
 
 感谢各位捐赠者提供的支持
 
-感谢hocha113提供的部分代码援助
-
 [h1] 问题反馈与讨论 [/h1]
 
-错误报告：https://github.com/WarmurCle/CalamityEntropy/issues
+错误报告：https://github.com/hocha113/CalamityEntropy/issues
 
 请提供日志或者截图
 
@@ -70,15 +66,13 @@ Badbf-海啸: 音乐（虚无双子）
 
 也试试[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3161388997] Calamity Overhaul Mod [/url]！我们未来会有许多有趣的联动！
 
-此外，本mod添加了一种新的血条样式，原版、灾厄以及大部分灾厄附属的boss都有其专属的血条颜色
+可以与其他大部分模组一起开启，不会出现较大问题
 
-可以与其他大部分灾厄附属一起开启，不会出现较大问题
+虚空召唤官方Discord服务器: https://discord.com/invite/Mnmzd34Fda
 
-灾熵官方Discord服务器: https://discord.com/invite/Mnmzd34Fda
+虚空召唤官方QQ讨论群：1016738628, 在这里你可以联系到开发者们并参与讨论
 
-灾熵官方QQ讨论群：1016738628, 在这里你可以联系到开发者们并参与讨论
-
-主创的B站账号，在这里你可以看到本模组的介绍视频：https://space.bilibili.com/2143774956
+主创的B站账号，在这里你可以看到本模组的介绍视频：https://space.bilibili.com/26871345
 
 中文Wiki：https://calentropy.miraheze.org
 

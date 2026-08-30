@@ -330,7 +330,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidInvasion
             //———链体:PopeChainLink 着色器(链环序列 + 受力高光 + 绷弦余波 + 崩断侵蚀)———
             float quadLen = ChainLength * 1.1f;
             SpriteBatch sb = Main.spriteBatch;
-            Effect chainFx = CEFxcEffects.Get("PopeChainLink");
+            Effect chainFx = CEEffectAssets.PopeChainLink;
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearWrap,
                 DepthStencilState.None, RasterizerState.CullNone, chainFx, Main.GameViewMatrix.TransformationMatrix);

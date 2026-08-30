@@ -435,7 +435,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidInvasion
             }
             if (gravity > 0.03f)
             {
-                Effect well = Core.Graphics.CEFxcEffects.Get("PopeGravityWell");
+                Effect well = CEEffectAssets.PopeGravityWell;
                 sb.End();
                 sb.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearWrap,
                     DepthStencilState.None, RasterizerState.CullNone, well, Main.GameViewMatrix.TransformationMatrix);

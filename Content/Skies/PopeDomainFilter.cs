@@ -1,6 +1,7 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.NPCs.VoidInvasion;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.Graphics.Effects;
@@ -20,7 +21,7 @@ namespace CalamityEntropy.Content.Skies
     {
         private int popeIndex = -1;
 
-        public PopeDomainShaderData(Ref<Effect> shader, string passName)
+        public PopeDomainShaderData(Asset<Effect> shader, string passName)
             : base(shader, passName)
         {
         }

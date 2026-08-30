@@ -3544,7 +3544,7 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             if (fancyRing)
             {
                 //———着色器环带(演出二迭:PopeDomainRing 裂隙纹理流动 + 亮丝裂纹 + 内外双色域)———
-                Effect ringFx = Core.Graphics.CEFxcEffects.Get("PopeDomainRing");
+                Effect ringFx = CEEffectAssets.PopeDomainRing;
                 sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, ringFx, Main.GameViewMatrix.TransformationMatrix);
                 float halfSize = radius + 130f;
                 ringFx.Parameters["uTime"]?.SetValue(Main.GlobalTimeWrappedHourly);

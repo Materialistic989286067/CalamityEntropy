@@ -1,5 +1,5 @@
 // PopeChainLink — 教皇死怨铁索链体着色器
-// 用法: CEFxcEffects.Get("PopeChainLink"), SpriteBatch Immediate + NonPremultiplied + LinearWrap,
+// 用法: CEEffectAssets.PopeChainLink, SpriteBatch Immediate + NonPremultiplied + LinearWrap,
 // 画一张噪声图(s0)拉成链条长条: uv.x=0 基点(手) → 1 链头, uv.y 横截。
 // 结构: 程序化链环序列(侧视环/立视环交替) + 受力绷直的高光流动 + 底层虚空辉光带 + 崩断噪声侵蚀。
 sampler uImage0 : register(s0);

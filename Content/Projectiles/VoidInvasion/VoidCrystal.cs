@@ -123,7 +123,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidInvasion
             sb.Draw(glow, Projectile.Center - Main.screenPosition, null, new Color(120, 70, 255, 0) * 0.5f, 0, glow.Size() / 2, 0.5f, SpriteEffects.None, 0);
 
             //主体:棱光着色器,种子按弹幕编号错相,防整屏同步闪烁
-            Effect fx = CEFxcEffects.Get("FiendCrystal");
+            Effect fx = CEEffectAssets.FiendCrystal;
             fx.CurrentTechnique = fx.Techniques["Technique1"];
             fx.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
             fx.Parameters["seed"].SetValue(Projectile.identity * 0.37f % 10f);

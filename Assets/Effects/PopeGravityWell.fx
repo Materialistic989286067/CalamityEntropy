@@ -1,5 +1,5 @@
 // PopeGravityWell — 死亡爆弹引力扭曲着色器(伪透镜)
-// 用法: CEFxcEffects.Get("PopeGravityWell"), SpriteBatch Immediate + NonPremultiplied + LinearWrap,
+// 用法: CEEffectAssets.PopeGravityWell, SpriteBatch Immediate + NonPremultiplied + LinearWrap,
 // 画一张噪声图(s0)撑满以爆弹为心的正方形(边长约爆弹直径 4~5 倍), 片元内极坐标自算。
 // 结构: 半径反比的内旋涡丝(空间被拽弯) + 向心行进的压缩环纹 + 吸积亮缘 + 中心域压暗(光被吞)。
 sampler uImage0 : register(s0);

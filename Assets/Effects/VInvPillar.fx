@@ -1,5 +1,5 @@
 // VInvPillar — 魔像光柱着色器(自地面上冲的能量柱)
-// 用法: CEFxcEffects.Get("VInvPillar"), SpriteBatch Immediate + Additive + LinearWrap,
+// 用法: CEEffectAssets.VInvPillar, SpriteBatch Immediate + Additive + LinearWrap,
 // 画一张噪声图(s0)拉成竖条: uv.y=1 柱底(贴地) → 0 柱顶。
 // 结构: 亮芯 + 噪声上涌的柱身 + 生长揭示(底向上)与前沿光冠 + 顶端消散。
 sampler uImage0 : register(s0);

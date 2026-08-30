@@ -1042,6 +1042,8 @@ namespace CalamityEntropy.Common
         public float AbyssalLight = 0;
         public Item goldenRock = null;
         public int RatzielShieldTime = 0;
+        /// <summary>圣佑窗口(上神之佑盾撞命中后的短暂减伤),仅本地玩家写入,伤害结算也在本端,无需同步。</summary>
+        public int OdinWardTime = 0;
         public int BigShotWingVisual = 0;
         public float MeleeScale = 1;
         public int SunriseScene = 0;
@@ -1055,6 +1057,8 @@ namespace CalamityEntropy.Common
             MeleeScale = 1;
             if (RatzielShieldTime > 0)
                 RatzielShieldTime--;
+            if (OdinWardTime > 0)
+                OdinWardTime--;
             AbyssalLight = 0;
             smdVisual = false;
             smolderingSet = false;
@@ -1976,6 +1980,16 @@ namespace CalamityEntropy.Common
             {
                 Player.statDefense += Player.maxMinions * 1;
                 Player.endurance += Player.maxMinions * 0.004f;
+            }
+            if (OdinWardTime > 0)
+            {
+                // 圣佑窗口生效期:额外减伤+周身少量金光提示
+                Player.endurance += OdinsRefuge.WardDR;
+                if (!Main.dedServ && Main.GameUpdateCount % 6 == 0)
+                {
+                    PRTLoader.NewParticle<PRT_GlowSpark>(Player.Center + CEUtils.randomPointInCircle(20), new Vector2(0, -Main.rand.NextFloat(0.5f, 1.2f)),
+                        Color.Gold, Main.rand.NextFloat(0.06f, 0.09f)).Configure(0.7f, true, PRTDrawModeEnum.AdditiveBlend, 0, 16);
+                }
             }
             //基于尺寸更改机动性
             Player.jumpSpeed *= float.Lerp(Scale, 1, 0.55f);

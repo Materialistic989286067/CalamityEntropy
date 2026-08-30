@@ -711,3 +711,4 @@
 [Mods.CalamityEntropy.VoidCardinalBestiary] - added
 [Mods.CalamityEntropy.RiftWraithBestiary] - added
 [Mods.CalamityEntropy.EntropyFiendBestiary] - added
+[Mods.CalamityEntropy.Items.OdinsRefuge.Tooltip] - changed // 上神之佑加回盾冲(自研圣佑冲锋:双击/冲刺键触发,盾撞1000近战+首撞圣光冲击波300点燃神圣之火+命中后1.5秒15%减伤),并把切换恐慌项链一行补上"按住Shift"(与代码判定一致)

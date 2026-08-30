@@ -1,3 +1,4 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Core.Graphics;
@@ -262,7 +263,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidInvasion
             float rise = RiseEase();
             Texture2D noise = CEUtils.getExtraTex("TurbulentNoise");
 
-            Effect pillarFx = CEFxcEffects.Get("VInvPillar");
+            Effect pillarFx = CEEffectAssets.VInvPillar;
             pillarFx.Parameters["uTime"].SetValue(Main.GlobalTimeWrappedHourly * 1.2f + Projectile.whoAmI * 0.83f);
             pillarFx.Parameters["uGrow"].SetValue(rise);
             pillarFx.Parameters["uOpacity"].SetValue(fade);

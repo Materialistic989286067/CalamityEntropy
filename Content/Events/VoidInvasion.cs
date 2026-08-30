@@ -161,7 +161,8 @@ namespace CalamityEntropy.Content.Events
             EntropyFiendAlive = NPC.AnyNPCs(ModContent.NPCType<EntropyFiend>());
             if (Active)
             {
-                Main.LocalPlayer.Entropy().VortexSky = 5;
+                //演出三迭:事件天空由 VoidInvasionScene/VoidInvasionSky 自驱(读已同步的 Active/Progress),
+                //不再每 tick 写 EModPlayer.VortexSky——那会顶起菜单素材拼的巨涡流占位天空(实机过曝且有矩形硬边)
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     UpdateCardinalSpawn();

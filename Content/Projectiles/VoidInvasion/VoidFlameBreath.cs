@@ -1,3 +1,4 @@
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Core.Graphics;
 using InnoVault;
@@ -139,7 +140,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidInvasion
             SpriteBatch sb = Main.spriteBatch;
             Texture2D noise = CEUtils.getExtraTex("TurbulentNoise");
 
-            Effect flameFx = CEFxcEffects.Get("VInvFlame");
+            Effect flameFx = CEEffectAssets.VInvFlame;
             flameFx.Parameters["uTime"].SetValue(Main.GlobalTimeWrappedHourly * 1.15f + Projectile.whoAmI * 1.3f);
             flameFx.Parameters["uReach"].SetValue(reach);
             flameFx.Parameters["uOpacity"].SetValue(fade);

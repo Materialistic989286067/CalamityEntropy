@@ -835,6 +835,9 @@ Items: {
 			Grants immunity to knockback and fire-type burning debuffs, and lets you walk on fire blocks
 			5% increased damage reduction and +4 HP/s life regeneration
 			Blocks one attack dealing over 100 damage, with a 150 second cooldown
+			Double tap a horizontal direction or press the dash key to charge with your shield, ramming enemies for 1000 melee damage
+			The first impact of each dash blooms a holy shockwave, dealing 300 damage and igniting Holy Flames
+			For 1.5 seconds after ramming an enemy, gain an extra 15% damage reduction
 			Hold shift and Right Click to toggle [i:PanicNecklace] [c/aaaaaa:Panic Necklace's effect]
 			[TOGGLE]
 			'''

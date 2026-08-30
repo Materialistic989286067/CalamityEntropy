@@ -163,7 +163,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidInvasion
             float hot = t < SweepTime ? 1f : MathHelper.Clamp(1f - (t - SweepTime) * 0.06f, 0.25f, 1f);
 
             SpriteBatch sb = Main.spriteBatch;
-            Effect fx = CEFxcEffects.Get("PopeSlashArc");
+            Effect fx = CEEffectAssets.PopeSlashArc;
             float halfSize = BladeReach + 34f;
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearWrap,

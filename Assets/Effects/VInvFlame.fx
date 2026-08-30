@@ -1,5 +1,5 @@
 // VInvFlame — 虚空喷焰火舌着色器(烛灵/爬行者/教皇蠕虫同源)
-// 用法: CEFxcEffects.Get("VInvFlame"), SpriteBatch Immediate + Additive + LinearWrap,
+// 用法: CEEffectAssets.VInvFlame, SpriteBatch Immediate + Additive + LinearWrap,
 // 画一张噪声图(s0)拉成锥形长条: uv.x=0 喷口 → 1 远端, uv.y 横截。
 // 结构: 双层噪声沿轴外流 + 锥形口径蒙版 + 噪声侵蚀出火舌 + 三段色温渐变。
 sampler uImage0 : register(s0);

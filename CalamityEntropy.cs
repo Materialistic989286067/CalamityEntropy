@@ -1364,6 +1364,10 @@ namespace CalamityEntropy
             CommonEffects.Load();
             CELists.Load();
             Apsychos.WhiteTransShader();
+            if (!Main.dedServ)
+            {
+                EntropySkies.setUpShaderFilters();
+            }
             ScreenShaker.Init();
             Typer.activeTypers = new();
             StartBagGItem.items = new List<int>();

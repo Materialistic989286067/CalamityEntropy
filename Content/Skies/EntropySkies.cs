@@ -1,4 +1,4 @@
-﻿using Terraria;
+﻿using CalamityEntropy.Assets.Register;
 using Terraria.Graphics.Effects;
 
 namespace CalamityEntropy.Content.Skies
@@ -7,14 +7,6 @@ namespace CalamityEntropy.Content.Skies
     {
         public static void setUpSkies()
         {
-            //教皇 P3 领域滤镜(C 队,演出二迭):纯 Filters.Scene 键,无天空件;
-            //新链路 .fxc 着色器,服务器上 CEFxcEffects.Get 返回 null,故只在客户端注册。
-            if (!Main.dedServ)
-            {
-                Terraria.Graphics.Effects.Filters.Scene["CalamityEntropy:PopeDomain"] = new Filter(new PopeDomainShaderData(
-                    new Ref<Microsoft.Xna.Framework.Graphics.Effect>(Core.Graphics.CEFxcEffects.Get("PopeDomainFilter")),
-                    "PopeDomainPass"), EffectPriority.VeryHigh);
-            }
             Terraria.Graphics.Effects.Filters.Scene["CalamityEntropy:Cruiser"] = new Filter(new CrScreenShaderData("FilterMiniTower").UseColor(Color.Transparent).UseOpacity(0f), EffectPriority.VeryHigh);
             SkyManager.Instance["CalamityEntropy:Cruiser"] = new CrSky();
             Terraria.Graphics.Effects.Filters.Scene["CalamityEntropy:DimensionLens"] = new Filter(new TransScreenShaderData("FilterMiniTower").UseColor(Color.Transparent).UseOpacity(0f), EffectPriority.VeryHigh);
@@ -27,6 +19,21 @@ namespace CalamityEntropy.Content.Skies
             SkyManager.Instance["CalamityEntropy:Snowgrave"] = new SnowgraveSky();
             Terraria.Graphics.Effects.Filters.Scene["CalamityEntropy:SunriseSky"] = new Filter(new TransScreenShaderData("FilterMiniTower").UseColor(Color.White).UseOpacity(0f), EffectPriority.VeryHigh);
             SkyManager.Instance["CalamityEntropy:SunriseSky"] = new SunriseSky();
+            //虚空入侵事件氛围天空(演出三迭):滤镜是惰性占位(ManageSpecialBiomeVisuals 要求 Filters.Scene 键存在,tML Player.cs 对缺键无空值保护),
+            //实际染色走 VoidInvasionSunTint.ModifySunLightColor,天幕渐变/微粒/裂隙在 VoidInvasionSky 自绘
+            Terraria.Graphics.Effects.Filters.Scene["CalamityEntropy:VoidInvasion"] = new Filter(new TransScreenShaderData("FilterMiniTower").UseColor(Color.Transparent).UseOpacity(0f), EffectPriority.VeryHigh);
+            SkyManager.Instance["CalamityEntropy:VoidInvasion"] = new VoidInvasionSky();
+        }
+
+        /// <summary>
+        /// 着色器取自 VaultLoaden 静态字段的滤镜。字段要到 PostSetupContent 才赋值,
+        /// 所以这批不能跟着 setUpSkies 在 Load 里注册;服务器上字段恒为 null,只在客户端调用。
+        /// </summary>
+        public static void setUpShaderFilters()
+        {
+            //教皇 P3 领域滤镜(C 队,演出二迭):纯 Filters.Scene 键,无天空件
+            Terraria.Graphics.Effects.Filters.Scene["CalamityEntropy:PopeDomain"] = new Filter(
+                new PopeDomainShaderData(CEEffectAssets.PopeDomainFilter, "PopeDomainPass"), EffectPriority.VeryHigh);
         }
     }
 }

@@ -569,10 +569,11 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
             {
                 PRTLoader.NewParticle<PRT_LineCal>(pos, sparkVelocity2, Main.rand.NextBool() ? Color.LightGreen : Color.LimeGreen, sparkScale2 * (Projectile.frame == 7 ? 1.4f : 1f)).Configure(false, (int)(sparkLifetime2));
             }
-            var p = PRTLoader.NewParticle<PRT_GlowLightParticle>(Projectile.Center + Projectile.rotation.ToRotationVector2() * 100 * scale * Projectile.scale * rScale * Main.rand.NextFloat(0.25f, 1), sparkVelocity2 * 0.2f, Color.LawnGreen);
+            //旧spawnNew第5参是Scale不是Opacity,0.1~0.2这个小值得走NewParticle第4参,Configure首参对齐旧a=1
+            var p = PRTLoader.NewParticle<PRT_GlowLightParticle>(Projectile.Center + Projectile.rotation.ToRotationVector2() * 100 * scale * Projectile.scale * rScale * Main.rand.NextFloat(0.25f, 1), sparkVelocity2 * 0.2f, Color.LawnGreen, Main.rand.NextFloat(0.1f, 0.2f) * scale * Projectile.scale);
             p.lightColor = Color.LightGreen * 0.5f;
             p.HideTime = 16;
-            p.Configure(Main.rand.NextFloat(0.1f, 0.2f) * scale * Projectile.scale, true, PRTDrawModeEnum.AdditiveBlend, 0, 20);
+            p.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 20);
             lPos = vpos;
         }
         public override bool PreDraw(ref Color lightColor)

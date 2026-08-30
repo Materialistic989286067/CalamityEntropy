@@ -14,8 +14,8 @@ namespace CalamityEntropy.Content.Projectiles
     {
         public override void SetDefaults()
         {
-            // 原盗贼职业并入原版：飞刀归远程
-            Projectile.DamageType = DamageClass.Ranged;
+            // 实测反馈改判:镰刀挥砍归近战(原盗贼并入原版时曾判远程),与物品侧一致
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 26;
             Projectile.height = 26;
             Projectile.timeLeft = 120;

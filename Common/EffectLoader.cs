@@ -1439,7 +1439,7 @@ namespace CalamityEntropy.Common
                 FiendBurstContrast = 0f;
                 return;
             }
-            Effect fx = Core.Graphics.CEFxcEffects.Get("FiendBurst");
+            Effect fx = CEEffectAssets.FiendBurst;
 
             graphicsDevice.SetRenderTarget(Screen0);
             graphicsDevice.Clear(Color.Transparent);

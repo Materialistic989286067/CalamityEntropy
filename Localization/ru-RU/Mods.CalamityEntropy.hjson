@@ -6354,7 +6354,11 @@ Uh: ""
 NPCs: {
 	LotteryMachine.DisplayName: Лотерейный автомат
 	CruiserTail.DisplayName: Крейсер
-	CruiserHead.DisplayName: Крейсер
+
+	CruiserHead: {
+		DisplayName: Крейсер
+		// BossChecklistIntegration.EntryName: Cruiser
+	}
 
 	Cruiser: {
 		BossChecklistIntegration: {

@@ -108,7 +108,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
             Color drawColor = Color * opacity;
             spriteBatch.Draw(tex, Position - Main.screenPosition, null, drawColor, Rotation, tex.Size() / 2f,
-                Scale * Squish * scaleMult, Effects, 0);
+                Scale * Squish * scaleMult * 0.2f, Effects, 0);
             return false;
         }
     }

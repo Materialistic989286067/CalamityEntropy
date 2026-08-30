@@ -187,22 +187,21 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             CEUtils.PlaySound("ApsychosHit", Main.rand.NextFloat(1f, 1.6f), target.Center, 3);
             target.AddBuff<HolyFlames>(300);
             CEUtils.PlaySound("VividClarityBeamAppear", Main.rand.NextFloat(1f, 1.4f), target.Center, volume: 0.6f);
-            for (int i = 0; i < 12; i++)
-            {
+            for (int i = 0; i < 12; i++) {
                 Vector2 velocity = ((MathHelper.TwoPi * i / 12) - (MathHelper.Pi / 16f) + Main.GameUpdateCount * 0.2f).ToRotationVector2() * 22f;
                 PRTLoader.NewParticle<PRT_CritSparkCal>(target.Center, velocity, new Color(255, 255, 230), 0.8f).Configure(Main.rand.NextBool() ? Color.Yellow : Color.LightBlue, 20, 0.1f, 1.8f, Main.rand.NextFloat(0f, 0.01f));
             }
-            if (!target.boss)
-            {
+            if (!target.boss) {
                 target.velocity *= 0.4f;
             }
 
             for (int i = 0; i < 8; i++)
-                PRTLoader.NewParticle<PRT_GlowSparkCal>(target.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, Main.rand.NextBool() ? Color.Yellow : Color.SkyBlue, 0.04f * Main.rand.NextFloat(0.65f, 1f)).Configure(false, 12, new Vector2(2.4f, 0.6f), true);
+                PRTLoader.NewParticle<PRT_GlowSparkCal>(target.Center, CEUtils.randomRot().ToRotationVector2() *
+                    Main.rand.NextFloat(0.6f, 1) * 8, Main.rand.NextBool() ? Color.Yellow : Color.SkyBlue,
+                    0.04f * Main.rand.NextFloat(0.65f, 1f)).Configure(false, 12, new Vector2(2.4f, 0.6f), true);
 
             float scale = 1.8f;
-            for (int i = 0; i < 4; i++)
-            {
+            for (int i = 0; i < 4; i++) {
                 Dust dust = Dust.NewDustPerfect(target.Center, ModContent.DustType<SquashDust>(), Vector2.Zero);
                 dust.scale = Main.rand.NextFloat(0.3f, 1f) * scale * 1.6f;
                 dust.velocity = CEUtils.randomPointInCircle(30);
@@ -210,12 +209,10 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 dust.color = Main.rand.NextBool() ? Color.Orange : Color.Yellow;
                 dust.fadeIn = 2f;
             }
-            if (fhCd <= 0)
-            {
+            if (fhCd <= 0) {
                 fhCd = 2;
                 scale = 4f;
-                for (float i = 1; i >= 0.2f; i -= 0.4f)
-                {
+                for (float i = 1; i >= 0.2f; i -= 0.4f) {
                     PRTLoader.NewParticle<PRT_CustomPulse>(target.Center, Vector2.Zero, Color.Lerp(new Color(200, 200, 120), new Color(160, 160, 0), i) * i, 0.005f * i * (Radius / 180f)).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f * i * (Radius / 180f), scale * 0.07f * i * (Radius / 180f), 12 + (int)(i * 8));
                 }
                 CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromThis(), Projectile.GetOwner(), target.Center, Projectile.damage / 5, scale * 54 * (Radius / 180f), Projectile.DamageType);

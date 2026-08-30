@@ -6688,7 +6688,11 @@ Uh: 呃啊~
 NPCs: {
 	LotteryMachine.DisplayName: 抽奖机
 	CruiserTail.DisplayName: 巡游者
-	CruiserHead.DisplayName: 巡游者
+
+	CruiserHead: {
+		DisplayName: 巡游者
+		// BossChecklistIntegration.EntryName: Cruiser
+	}
 
 	Cruiser: {
 		BossChecklistIntegration: {

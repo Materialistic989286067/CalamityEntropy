@@ -6653,7 +6653,11 @@ Uh: ""
 NPCs: {
 	LotteryMachine.DisplayName: Lottery Machine
 	CruiserTail.DisplayName: Cruiser
-	CruiserHead.DisplayName: Cruiser
+
+	CruiserHead: {
+		DisplayName: Cruiser
+		BossChecklistIntegration.EntryName: Cruiser
+	}
 
 	Cruiser: {
 		BossChecklistIntegration: {

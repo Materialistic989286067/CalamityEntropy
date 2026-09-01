@@ -20,7 +20,6 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
 
         public override void UpdateEquip(Player player)
         {
-            player.maxMinions += 1;
             player.lifeRegen += 8;
             player.endurance += 0.1f;
         }
@@ -29,7 +28,6 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
         {
             CreateRecipe()
                 .AddIngredient<ChaoticPiece>(8)
-                .AddIngredient(ItemID.LunarOre, 12)
                 .AddIngredient(ItemID.LunarBar, 12)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();

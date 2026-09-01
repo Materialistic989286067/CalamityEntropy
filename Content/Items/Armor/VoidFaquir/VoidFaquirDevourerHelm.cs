@@ -33,10 +33,11 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
             player.armorEffectDrawOutlines = true;
         }
 
+        // 2026-08-31 平衡案:职业专属奖励=+20%近战攻速、接触伤害降低15%
         public override void UpdateArmorSet(Player player)
         {
-            player.GetArmorPenetration(DamageClass.Generic) += 20;
-            player.GetAttackSpeed(DamageClass.Melee) += 0.24f;
+            player.GetAttackSpeed(DamageClass.Melee) += 0.20f;
+            player.Entropy().meleeDamageReduce += 0.15f;
             player.Entropy().VFSet = true;
             player.Entropy().VFHelmMelee = true;
         }
@@ -45,7 +46,8 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
         {
             player.Entropy().meleeVF = true;
             player.GetDamage(DamageClass.Melee) += 0.20f;
-            player.GetCritChance(DamageClass.Melee) += 15;
+            player.GetCritChance(DamageClass.Melee) += 12;
+            player.statLifeMax2 += 80;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
@@ -56,8 +58,7 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<VoidBar>(), 14)
-                .AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 4)
+                .AddIngredient(ModContent.ItemType<VoidBar>(), 12)
                 .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();
         }

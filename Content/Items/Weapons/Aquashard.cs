@@ -30,7 +30,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<AquashardThrow>();
             Item.shootSpeed = 50f;
-            Item.DamageType = DamageClass.Ranged;
+            Item.DamageType = DamageClass.Melee;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -50,9 +50,11 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ItemID.WhitePearl, 4)
-                .AddIngredient(ItemID.Coral, 8)
-                .AddTile(TileID.Anvils)
+            CreateRecipe()
+                .AddIngredient(ItemID.Sapphire, 10)
+                .AddIngredient(ItemID.Coral, 10)
+                .AddIngredient(ItemID.WhitePearl, 2)
+                .AddTile(TileID.WorkBenches)
                 .Register();
         }
     }

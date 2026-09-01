@@ -42,30 +42,10 @@ namespace CalamityEntropy.Content.Items.Donator.Ratziel
             Item.Entropy().Legend = true;
         }
         public static int MaxShield(int lv) => 10 + lv * 4;
+        /// <summary>2026-08-31 平衡案:去除成长性,固定取最高等级强度(时期移至月后)。</summary>
         public static int Level()
         {
-            // 成长阶梯按 progression-map.md 重排：原版节点 + 自有 Boss 线
-            if (EDownedBosses.downedCruiser)
-                return 10;
-            if (EDownedBosses.downedAbyssalWraith)
-                return 9;
-            if (EDownedBosses.downedNihilityTwin)
-                return 8;
-            if (NPC.downedMoonlord)
-                return 7;
-            if (NPC.downedPlantBoss && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
-                return 6;
-            if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
-                return 5;
-            if (Main.hardMode)
-                return 4;
-            if (NPC.downedQueenBee || NPC.downedBoss3)
-                return 3;
-            if (NPC.downedBoss2)
-                return 2;
-            if (NPC.downedBoss1 || NPC.downedSlimeKing)
-                return 1;
-            return 0;
+            return 10;
         }
         public static int GetMaxTarget(int lv) => lv / 2 + 1;
         public static float TargetDist(int lv) => 600 + lv * 200;
@@ -113,11 +93,12 @@ namespace CalamityEntropy.Content.Items.Donator.Ratziel
         }
         public override void AddRecipes()
         {
+            // 2026-08-31 平衡案:时期移至月后,配方=魔法书+5星尘碎片+5夜明锭
             CreateRecipe()
-                .AddIngredient(ItemID.Book)
-                .AddIngredient(ItemID.ManaCrystal)
-                .AddIngredient(ItemID.Sapphire, 5)
-                .AddCondition(Mod.GetLocalization("NearShimmer", () => "Near shimmer"), () => (Main.LocalPlayer.ZoneShimmer))
+                .AddIngredient(ItemID.SpellTome)
+                .AddIngredient(ItemID.FragmentStardust, 5)
+                .AddIngredient(ItemID.LunarBar, 5)
+                .AddTile(TileID.LunarCraftingStation)
                 .Register();
 
         }

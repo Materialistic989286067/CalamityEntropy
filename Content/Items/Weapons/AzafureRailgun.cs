@@ -41,8 +41,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<HellIndustrialComponents>(4)
-                .AddIngredient(ItemID.Coral, 8)
+                .AddIngredient(ItemID.Minishark)
+                .AddIngredient<HellIndustrialComponents>(5)
                 .AddTile(TileID.Anvils)
                 .Register();
         }

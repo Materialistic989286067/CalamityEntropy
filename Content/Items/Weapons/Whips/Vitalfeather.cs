@@ -3,6 +3,8 @@ using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent.ItemDropRules;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -27,13 +29,21 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
             return false;
         }
 
-        public override void AddRecipes()
-        {
-        }
-
         public override bool MeleePrefix()
         {
             return true;
+        }
+    }
+
+    /// <summary>2026-08-31 平衡案:沐生之羽改为月亮领主掉落(25%)。</summary>
+    public class VitalfeatherDropGNPC : GlobalNPC
+    {
+        public override void ModifyNPCLoot(NPC npc, NPCLoot npcLoot)
+        {
+            if (npc.type == NPCID.MoonLordCore)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Vitalfeather>(), 4));
+            }
         }
     }
 }

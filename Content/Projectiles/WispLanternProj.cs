@@ -85,15 +85,8 @@ namespace CalamityEntropy.Content.Projectiles
                 accChangeCd--;
                 if (accChangeCd <= 0 || maxAccs == 0)
                 {
-                    maxAccs = 1;
-                    if (Main.rand.NextBool(3))
-                    {
-                        maxAccs++;
-                    }
-                    if (Main.rand.NextBool(4))
-                    {
-                        maxAccs++;
-                    }
+                    // 2026-08-31 平衡案:随机生效1~2个饰品,75%取1个、25%取2个
+                    maxAccs = Main.rand.NextBool(4) ? 2 : 1;
                     accChangeCd = Main.rand.Next(3, 16) * 60;
                     Projectile.netUpdate = true;
                 }
@@ -107,17 +100,18 @@ namespace CalamityEntropy.Content.Projectiles
                     if (item.active && item.accessory)
                     {
                         bool skip = false;
-                        /*foreach (ActiveAcc acc in accs)
+                        foreach (var pp in CanApply)
                         {
-                            if (player.inventory[acc.index].type == item.type)
+                            if (pp.type == item.type)
                             {
                                 skip = true;
                                 break;
                             }
-                        }*/
-                        foreach (var pp in CanApply)
+                        }
+                        // 2026-08-31 平衡案:无法同时生效同一类饰品(互斥判定与装备栏一致)
+                        foreach (ActiveAcc acc in accs)
                         {
-                            if (pp.type == item.type)
+                            if (!ItemLoader.CanAccessoryBeEquippedWith(player.inventory[acc.index], item))
                             {
                                 skip = true;
                                 break;

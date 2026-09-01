@@ -31,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAnimation = 16;
             Item.useStyle = -1;
             Item.damage = 1300;
-            Item.DamageType = DamageClass.Magic;
+            Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.value = Item.buyPrice(platinum: 1);
@@ -60,9 +60,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             CreateRecipe()
                 .AddIngredient<DedicatedOracle>()
-                .AddIngredient<AnimaSola>()
                 .AddIngredient<VoidBar>(5)
-                .AddIngredient<WraithSoulEssence>(2)
                 .AddTile<VoidWellTile>()
                 .Register();
         }
@@ -77,7 +75,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         internal static Asset<Texture2D> ChainTex;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Magic, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
         }
         public override bool? CanHitNPC(NPC target)
         {

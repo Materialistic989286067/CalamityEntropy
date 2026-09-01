@@ -62,11 +62,6 @@ namespace CalamityEntropy.Content.Projectiles
                 MovementVector = Vector2.Zero
             });
         }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            // 原灾厄 DR 抵消除法与 DoG 体节特判已随灾厄 DR 体系移除，保留防御穿透
-            modifiers.ArmorPenetration += target.defense + 64;
-        }
         public override void OnKill(int timeLeft)
         {
             ParticleOrchestrator.RequestParticleSpawn(clientOnly: true, ParticleOrchestraType.Keybrand, new ParticleOrchestraSettings

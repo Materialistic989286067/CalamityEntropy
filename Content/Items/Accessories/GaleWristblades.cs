@@ -39,14 +39,14 @@ namespace CalamityEntropy.Content.Items.Accessories
         {
             CreateRecipe()
                 .AddIngredient(ItemID.GoldBar, 8)
-                .AddIngredient(ItemID.CloudinaBottle)
-                .AddIngredient(ItemID.Chain, 4)
+                .AddIngredient(ItemID.Cloud, 30)
+                .AddIngredient(ItemID.Chain, 8)
                 .AddTile(TileID.Anvils)
                 .Register();
             CreateRecipe()
                 .AddIngredient(ItemID.PlatinumBar, 8)
-                .AddIngredient(ItemID.CloudinaBottle)
-                .AddIngredient(ItemID.Chain, 4)
+                .AddIngredient(ItemID.Cloud, 30)
+                .AddIngredient(ItemID.Chain, 8)
                 .AddTile(TileID.Anvils)
                 .Register();
         }

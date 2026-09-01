@@ -31,7 +31,14 @@ namespace CalamityEntropy.Content.Items
         }
         public override bool CanUseItem(Player player)
         {
-            return !player.HasBuff(ModContent.BuffType<DivineShieldCooldown>());
+            if (player.HasBuff(ModContent.BuffType<DivineShieldCooldown>()))
+                return false;
+            foreach (NPC n in Main.ActiveNPCs)
+            {
+                if (n.IsABoss())
+                    return false;
+            }
+            return true;
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -42,12 +49,11 @@ namespace CalamityEntropy.Content.Items
 
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ItemID.HallowedBar, 40).
-                AddIngredient(ItemID.Ruby, 5).
-                AddIngredient(ItemID.HolyWater, 4).
-                AddTile(TileID.MythrilAnvil).
-                Register();
+            CreateRecipe()
+                .AddIngredient(ItemID.HallowedBar, 5)
+                .AddIngredient(ItemID.Ruby, 5)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
         }
 
     }

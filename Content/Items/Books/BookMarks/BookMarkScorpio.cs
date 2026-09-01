@@ -51,7 +51,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             {
                 if (Main.GameUpdateCount % 30 == 0 && !npc.dontTakeDamage)
                 {
-                    NPC.HitInfo hitInfo = npc.CalculateHitInfo(((int)effectLevel * 5).Softlimitation(250), 0, false, 0, DamageClass.Magic);
+                    NPC.HitInfo hitInfo = npc.CalculateHitInfo(50, 0, false, 0, DamageClass.Magic);
                     hitInfo.HideCombatText = true;
                     CombatText.NewText(npc.getRect(), Color.DeepSkyBlue, npc.StrikeNPC(hitInfo));
 

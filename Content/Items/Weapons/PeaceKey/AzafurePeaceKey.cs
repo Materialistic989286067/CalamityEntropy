@@ -60,8 +60,8 @@ namespace CalamityEntropy.Content.Items.Weapons.PeaceKey
             CreateRecipe()
                 .AddIngredient<AzafureProtectiveCannon>()
                 .AddIngredient<AzafureTacticalRadio>()
-                .AddIngredient(ItemID.HallowedBar, 6)
-                .AddTile(TileID.MythrilAnvil)
+                .AddIngredient(ItemID.LunarBar, 6)
+                .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
     }

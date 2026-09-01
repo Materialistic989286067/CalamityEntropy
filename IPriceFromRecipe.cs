@@ -15,7 +15,11 @@ namespace CalamityEntropy
         {
             if (PriceSetSys.Inited && entity.ModItem != null && entity.ModItem is IPriceFromRecipe pfr)
             {
-                entity.value = entity.ModItem.GetPriceFromRecipe(CEUtils.FindRecipe(entity.type)) + pfr.AdditionalPrice;
+                Recipe recipe = CEUtils.FindRecipe(entity.type);
+                if (recipe != null)
+                {
+                    entity.value = entity.ModItem.GetPriceFromRecipe(recipe) + pfr.AdditionalPrice;
+                }
             }
         }
     }
@@ -43,7 +47,12 @@ namespace CalamityEntropy
                 Item item = ContentSamples.ItemsByType[i];
                 if (item.ModItem != null && item.ModItem is IPriceFromRecipe pfr)
                 {
-                    item.value = item.ModItem.GetPriceFromRecipe(CEUtils.FindRecipe(item.type)) + pfr.AdditionalPrice;
+                    Recipe recipe = CEUtils.FindRecipe(item.type);
+                    if (recipe == null)
+                    {
+                        continue;
+                    }
+                    item.value = item.ModItem.GetPriceFromRecipe(recipe) + pfr.AdditionalPrice;
                 }
             }
         }

@@ -29,8 +29,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
         }
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ItemID.BlandWhip)
-                .AddIngredient(ItemID.Bone, 2)
+            CreateRecipe()
+                .AddIngredient(ItemID.BlandWhip)
+                .AddIngredient(ItemID.DarkShard, 2)
+                .AddIngredient(ItemID.LovePotion)
+                .AddTile(TileID.WorkBenches)
                 .Register();
         }
 

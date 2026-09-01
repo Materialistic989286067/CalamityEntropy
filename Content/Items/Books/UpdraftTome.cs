@@ -22,14 +22,23 @@ namespace CalamityEntropy.Content.Items.Books
         internal static Asset<Texture2D> BookMarkSlotTex;
         public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<UpdraftTomeHeld>();
-        public override int SlotCount => 2;
 
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.MeteoriteBar, 6)
                 .AddIngredient<AncientScriptures>()
-                .AddTile(TileID.SkyMill)
+                .AddIngredient<SpectralWhispers>()
+                .AddIngredient<AzafureCylinder>()
+                .AddIngredient(ItemID.Bone, 50)
+                .AddTile(TileID.DemonAltar)
+                .Register();
+
+            CreateRecipe()
+                .AddIngredient<AncientScriptures>()
+                .AddIngredient<BloodCodex>()
+                .AddIngredient<AzafureCylinder>()
+                .AddIngredient(ItemID.Bone, 50)
+                .AddTile(TileID.DemonAltar)
                 .Register();
         }
     }

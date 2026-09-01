@@ -1,4 +1,3 @@
-using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault;
@@ -21,9 +20,9 @@ namespace CalamityEntropy.Content.Projectiles
 
         public override string Texture => "CalamityEntropy/Assets/Extra/Ports/FireProj";
 
-        public static int Lifetime => 96;
+        public static int Lifetime => 192;
 
-        public static int Fadetime => 80;
+        public static int Fadetime => 160;
 
         public ref float Time => ref base.Projectile.ai[0];
 
@@ -59,7 +58,7 @@ namespace CalamityEntropy.Content.Projectiles
             {
                 if (Main.rand.NextBool(16))
                 {
-                    Dust dust = Dust.NewDustDirect(base.Projectile.Center + Main.rand.NextVector2Circular(60f, 60f) * Utils.Remap(Time, 0f, Fadetime, 0.5f, 1f), 4, 4, DustID.CorruptTorch, base.Projectile.velocity.X * 0.2f, base.Projectile.velocity.Y * 0.2f, 100);
+                    Dust dust = Dust.NewDustDirect(base.Projectile.Center + Main.rand.NextVector2Circular(120f, 120f) * Utils.Remap(Time, 0f, Fadetime, 0.5f, 1f), 4, 4, DustID.CorruptTorch, base.Projectile.velocity.X * 0.2f, base.Projectile.velocity.Y * 0.2f, 100);
                     if (Main.rand.NextBool(5))
                     {
                         dust.noGravity = true;
@@ -89,10 +88,10 @@ namespace CalamityEntropy.Content.Projectiles
 
         public override void ModifyDamageHitbox(ref Rectangle hitbox)
         {
-            int num = (int)Utils.Remap(Time, 0f, Fadetime, 10f, 40f);
+            int num = (int)Utils.Remap(Time, 0f, Fadetime, 20f, 80f);
             if (Time > (float)Fadetime)
             {
-                num = (int)Utils.Remap(Time, Fadetime, Lifetime, 40f, 0f);
+                num = (int)Utils.Remap(Time, Fadetime, Lifetime, 80f, 0f);
             }
 
             hitbox.Inflate(num, num);
@@ -101,7 +100,6 @@ namespace CalamityEntropy.Content.Projectiles
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 360);
-            EGlobalNPC.AddVoidTouch(target, 6, 0.8f, 200, 20);
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
@@ -129,7 +127,7 @@ namespace CalamityEntropy.Content.Projectiles
             Color color3 = new Color(120, 100, 255, 100);
             Color color4 = new Color(30, 50, 200, 100);
             float length = ((Time > Fadetime - 10f) ? 0.1f : 0.15f);
-            float vOffset = Math.Min(Time, 20f);
+            float vOffset = Math.Min(Time, 40f);
             float timeRatio = Utils.GetLerpValue(0f, Lifetime, Time);
             float fireSize = Utils.Remap(timeRatio, 0.2f, 0.5f, 0.25f, 1f);
 

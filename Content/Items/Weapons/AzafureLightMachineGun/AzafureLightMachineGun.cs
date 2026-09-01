@@ -46,8 +46,8 @@ namespace CalamityEntropy.Content.Items.Weapons.AzafureLightMachineGun
         {
             CreateRecipe()
                 .AddIngredient(ItemID.Minishark)
-                .AddIngredient<HellIndustrialComponents>(4)
-                .AddIngredient(ItemID.AdamantiteBar, 6)
+                .AddIngredient<HellIndustrialComponents>(6)
+                .AddIngredient(ItemID.HallowedBar, 10)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }

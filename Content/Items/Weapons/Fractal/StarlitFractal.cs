@@ -21,7 +21,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public override void SetDefaults()
         {
             Item.damage = 85;
-            Item.crit = 7;
             Item.DamageType = DamageClass.Melee;
             Item.width = 48;
             Item.height = 60;
@@ -36,6 +35,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<StarlitFractalHeld>();
             Item.shootSpeed = 12f;
+            Item.scale *= 0.66f;
         }
         public int atkType = 1;
         public int useCount = 0;
@@ -57,12 +57,10 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public override void AddRecipes()
         {
             CreateRecipe().AddIngredient<AbyssFractal>()
-                .AddIngredient(ItemID.ChlorophyteClaymore)
-                .AddIngredient(ItemID.TrueExcalibur)
-                .AddIngredient(ItemID.PiercingStarlight)
-                .AddIngredient(ItemID.ChlorophyteBar, 4)
-                .AddIngredient<StarlitScaleDust>(16)
-                .AddTile(TileID.MythrilAnvil).Register();
+                .AddIngredient(ItemID.TheHorsemansBlade)
+                .AddIngredient(ItemID.FragmentSolar, 5)
+                .AddIngredient(ItemID.FragmentStardust, 20)
+                .AddTile(TileID.LunarCraftingStation).Register();
         }
     }
     public class StarlitFractalHeld : ModProjectile

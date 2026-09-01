@@ -47,7 +47,24 @@ namespace CalamityEntropy.Content.Items.Books
             CEUtils.PlaySound("turnPage");
         }
         public virtual int HeldProjectileType => -1;
-        public virtual int SlotCount => 6;
+        /// <summary>
+        /// 书签栏位随进度统一解锁:骷髅王前1栏,花前2栏,月前3栏,巡游者前4栏(2026-08-31 平衡案)。
+        /// 个别特殊书(无限之书等)可覆写。
+        /// </summary>
+        public virtual int SlotCount
+        {
+            get
+            {
+                int slots = 1;
+                if (NPC.downedBoss3)
+                    slots++;
+                if (NPC.downedPlantBoss)
+                    slots++;
+                if (NPC.downedMoonlord)
+                    slots++;
+                return slots;
+            }
+        }
         //默认书签底座贴图,加载期就位;各书籍子类各自持有同名字段覆写
         [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/BookMark1")]
         internal static Asset<Texture2D> BookMarkTex;
@@ -99,6 +116,8 @@ namespace CalamityEntropy.Content.Items.Books
         public float attackSpeed = 1;
         public int armorPenetration = 0;
         public float lifeSteal = 0;
+        /// <summary>魔力消耗乘区(2026-08-31 平衡案:巨蟹座书签-10%)。</summary>
+        public float ManaCost = 1;
     }
 
     public abstract class EntropyBookHeldProjectile : ModProjectile
@@ -325,6 +344,11 @@ namespace CalamityEntropy.Content.Items.Books
         /// <summary>
         /// 获取最终的属性修改
         /// </summary>
+        /// <summary>书本次施放的魔力消耗(吃书签 ManaCost 乘区,2026-08-31 平衡案:巨蟹座-10%)。</summary>
+        public int GetManaCost()
+        {
+            return int.Max(1, (int)(bookItem.mana * GetProjectileModifer().ManaCost));
+        }
         public EBookStatModifer GetProjectileModifer()
         {
             EBookStatModifer modifer = getBaseModifer();
@@ -341,7 +365,7 @@ namespace CalamityEntropy.Content.Items.Books
         /// <summary>
         /// 发射一个带有特效的单个射弹
         /// </summary>
-        public virtual void ShootSingleProjectile(int type, Vector2 pos, Vector2 velocity, float damageMul = 1, float scaleMul = 1, float shotSpeedMul = 1, Action<Projectile> initAction = null, float randomRotMult = 1, bool MainProjectile = false, Color colorMult = default)
+        public virtual void ShootSingleProjectile(int type, Vector2 pos, Vector2 velocity, float damageMul = 1, float scaleMul = 1, float shotSpeedMul = 1, Action<Projectile> initAction = null, float randomRotMult = 1, bool MainProjectile = false, Color colorMult = default, int fixedBaseDamage = -1)
         {
             if (!Projectile.active)
                 return;
@@ -349,7 +373,10 @@ namespace CalamityEntropy.Content.Items.Books
             var modifer = GetProjectileModifer();
             Vector2 shootVel = (velocity.normalize() * bookItem.shootSpeed * modifer.shotSpeed * shotSpeedMul).RotatedByRandom(this.randomShootRotMax * randomRotMult);
             float kb = Projectile.GetOwner().GetTotalKnockback(Projectile.DamageType).ApplyTo(bookItem.knockBack * modifer.Knockback);
-            int dmg = CauculateProjectileDamage(modifer, damageMul);
+            // fixedBaseDamage>=0:书签派生弹幕走固定基伤,只吃玩家加成,不吃书面板(2026-08-31 平衡案)
+            int dmg = fixedBaseDamage >= 0
+                ? EBookProjectileEffect.FixedDamage(Projectile.GetOwner(), fixedBaseDamage, Projectile.DamageType)
+                : CauculateProjectileDamage(modifer, damageMul);
             bookItem.channel = false;
             if (ItemLoader.Shoot(bookItem, Projectile.GetOwner(), new Terraria.DataStructures.EntitySource_ItemUse_WithAmmo(Projectile.GetOwner(), bookItem, 0), pos, velocity * ContentSamples.ProjectilesByType[type].MaxUpdates, type, dmg, kb))
             {
@@ -370,14 +397,20 @@ namespace CalamityEntropy.Content.Items.Books
                     bp.attackSpeed = modifer.attackSpeed;
                     bp.lifeSteal += modifer.lifeSteal;
                     bp.origProjType = origType;
-                    for (int i = 0; i < Math.Min(Main.LocalPlayer.GetMyMaxActiveBookMarks(bookItem), Projectile.GetOwner().Entropy().EBookStackItems.Count); i++)
+                    // 书签效果只挂在熵书本体弹幕上;衍生/召唤类弹幕不再携带,自然也无法触发书签(2026-08-31 平衡案)
+                    if (MainProjectile)
                     {
-                        Item it = Projectile.GetOwner().Entropy().EBookStackItems[i];
-                        if (BookMarkLoader.IsABookMark(it))
+                        for (int i = 0; i < Math.Min(Main.LocalPlayer.GetMyMaxActiveBookMarks(bookItem), Projectile.GetOwner().Entropy().EBookStackItems.Count); i++)
                         {
-                            if (BookMarkLoader.GetEffect(it) != null)
+                            Item it = Projectile.GetOwner().Entropy().EBookStackItems[i];
+                            if (BookMarkLoader.IsABookMark(it))
                             {
-                                bp.ProjectileEffects.Add(BookMarkLoader.GetEffect(it));
+                                EBookProjectileEffect eff = BookMarkLoader.GetEffect(it);
+                                if (eff != null)
+                                {
+                                    eff.FromBookmark = true;
+                                    bp.ProjectileEffects.Add(eff);
+                                }
                             }
                         }
                     }
@@ -499,7 +532,7 @@ namespace CalamityEntropy.Content.Items.Books
             SetPosision();
             if (Main.myPlayer == Projectile.owner)
             {
-                bool flag = Main.mouseLeft && !Main.LocalPlayer.mouseInterface && !UIOpen && Projectile.GetOwner().CheckMana(bookItem.mana, false);
+                bool flag = Main.mouseLeft && !Main.LocalPlayer.mouseInterface && !UIOpen && Projectile.GetOwner().CheckMana(GetManaCost(), false);
                 if (flag != active)
                 {
                     active = flag;
@@ -547,7 +580,7 @@ namespace CalamityEntropy.Content.Items.Books
                     ManaNoRegen = 60;
                     if (shotCooldown <= 0 && CanShoot())
                     {
-                        if (Projectile.GetOwner().CheckMana(bookItem.mana, true))
+                        if (Projectile.GetOwner().CheckMana(GetManaCost(), true))
                         {
                             if (Main.myPlayer != Projectile.owner || Shoot())
                             {
@@ -569,7 +602,8 @@ namespace CalamityEntropy.Content.Items.Books
                                         {
                                             BookMarkLoader.modifyShootCooldown(it, ref shotCooldown);
                                         }
-                                        if (e != null)
+                                        // 书签"攻击时"触发统一1秒内置CD(与命中触发分通道,避免空实现白占CD)
+                                        if (e != null && CECooldowns.CheckBMProc("Shoot_" + e.RegisterName()))
                                         {
                                             e.OnShoot(this);
                                         }
@@ -833,6 +867,9 @@ namespace CalamityEntropy.Content.Items.Books
             hitCount++;
             foreach (var effect in this.ProjectileEffects)
             {
+                // 书签命中触发统一1秒内置CD;书本体自带效果不受限(2026-08-31 平衡案)
+                if (effect.FromBookmark && !CECooldowns.CheckBMProc("Hit_" + effect.RegisterName()))
+                    continue;
                 effect.OnHitNPC(Projectile, target, damageDone);
             }
             if (lifeSteal > 0 && StealLife)
@@ -1003,6 +1040,20 @@ namespace CalamityEntropy.Content.Items.Books
     {
         public static List<EBookProjectileEffect> instances;
         public string BMOtherMod_Name = string.Empty;
+
+        /// <summary>
+        /// 本实例是否来自书签(而非书本体自带效果)。挂载时由 ShootSingleProjectile/OnShoot 站点标记;
+        /// 书签触发受统一1秒内置CD约束,书本体效果不受。不参与网络同步(触发只在弹幕主人端结算)。
+        /// </summary>
+        public bool FromBookmark = false;
+
+        /// <summary>
+        /// 书签派生弹幕统一伤害口径:固定基伤×玩家伤害加成,不吃书面板(2026-08-31 平衡案)。
+        /// </summary>
+        public static int FixedDamage(Player player, int baseDamage, DamageClass damageClass = null)
+        {
+            return (int)player.GetTotalDamage(damageClass ?? DamageClass.Magic).ApplyTo(baseDamage);
+        }
         protected sealed override void Register()
         {
             if (instances == null)

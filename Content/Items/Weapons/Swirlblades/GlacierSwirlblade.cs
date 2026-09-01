@@ -24,7 +24,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 
         public override void SetDefaults()
         {
-            Item.DamageType = DamageClass.Melee;
+            Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 28;
             Item.width = 92;
             Item.height = 92;
@@ -57,12 +57,12 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         {
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<AzafureSwirlblade>())
-                .AddIngredient(ItemID.Excalibur)
-                .AddIngredient(ItemID.HallowedBar, 6)
+                .AddIngredient(ItemID.FrostCore, 2)
+                .AddIngredient(ItemID.ChlorophyteBar, 15)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
-        public override bool MeleePrefix()
+        public override bool RangedPrefix()
         {
             return true;
         }
@@ -177,7 +177,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
     {
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.width = 28;
             Projectile.height = 28;
             Projectile.tileCollide = false;

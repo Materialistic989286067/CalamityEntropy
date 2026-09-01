@@ -1,5 +1,7 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Tiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
@@ -27,6 +29,13 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             return new WarPactBMEffect();
         }
+        public override void AddRecipes()
+        {
+            CreateRecipe()
+                .AddIngredient<FadingRunestone>()
+                .AddTile(ModContent.TileType<VoidWellTile>())
+                .Register();
+        }
     }
 
     public class WarPactBMEffect : EBookProjectileEffect
@@ -40,11 +49,11 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             Player player = book.Projectile.GetOwner();
             int projtype1 = ModContent.ProjectileType<WarPactApollo>();
             if (player.ownedProjectileCounts[projtype1] < 1)
-                book.ShootSingleProjectile(projtype1, book.Projectile.Center, (Main.MouseWorld - book.Projectile.Center), 0.5f, 1);
+                book.ShootSingleProjectile(projtype1, book.Projectile.Center, (Main.MouseWorld - book.Projectile.Center), 1, 1, fixedBaseDamage: 500);
 
             int projtype2 = ModContent.ProjectileType<WarPactArtemis>();
             if (player.ownedProjectileCounts[projtype2] < 1)
-                book.ShootSingleProjectile(projtype2, book.Projectile.Center, (Main.MouseWorld - book.Projectile.Center), 0.5f, 1);
+                book.ShootSingleProjectile(projtype2, book.Projectile.Center, (Main.MouseWorld - book.Projectile.Center), 1, 1, fixedBaseDamage: 500);
 
         }
 

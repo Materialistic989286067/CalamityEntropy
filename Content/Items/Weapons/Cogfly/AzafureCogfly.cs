@@ -50,9 +50,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Cogfly
         }
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient<HellIndustrialComponents>(4)
-                .AddIngredient<AzafureCircuitry>()
-                .AddRecipeGroup(CERecipeGroups.IronBar, 4)
+            CreateRecipe()
+                .AddIngredient<HellIndustrialComponents>(5)
+                .AddIngredient(ItemID.IronBar, 10)
                 .AddTile(TileID.Anvils)
                 .Register();
         }

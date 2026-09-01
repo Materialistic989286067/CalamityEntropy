@@ -31,12 +31,19 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ModContent.ItemType<AzafurePlating>(), 5).
-                AddIngredient(ModContent.ItemType<AzafureCircuitry>(), 2).
-                AddIngredient(ItemID.Ruby, 1).
-                AddTile(TileID.Anvils).
-                Register();
+            CreateRecipe()
+                .AddIngredient(ItemID.GoldBar, 15)
+                .AddIngredient(ItemID.Ruby, 5)
+                .AddIngredient(ItemID.ManaCrystal, 3)
+                .AddTile(TileID.Anvils)
+                .Register();
+
+            CreateRecipe()
+                .AddIngredient(ItemID.PlatinumBar, 15)
+                .AddIngredient(ItemID.Ruby, 5)
+                .AddIngredient(ItemID.ManaCrystal, 3)
+                .AddTile(TileID.Anvils)
+                .Register();
         }
 
         public override bool MagicPrefix()

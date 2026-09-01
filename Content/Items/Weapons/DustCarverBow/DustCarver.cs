@@ -1,6 +1,8 @@
 using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
+using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Content.Tiles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Core.Graphics;
 using InnoVault;
@@ -30,40 +32,10 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
             Item.QuickDrawItemWithBloomToWorld(spriteBatch, Color.Red, ref scale, rotation);
             return false;
         }
+        /// <summary>2026-08-31 平衡案:去除成长性,按新配方档位(血雨弓,困难模式早期)固定取6级。</summary>
         public static int GetLevel()
         {
-            //return Main.LocalPlayer.inventory[9].stack;
-            int Level = 0;
-            bool flag = true;
-            void Check(bool f)
-            {
-                if (f && flag)
-                {
-                    Level++;
-                }
-                else
-                {
-                    flag = false;
-                }
-            }
-            // 16 级成长链：灾厄 downed 旗标已按 progression-map 落到原版节点+自有 Boss 阶梯
-            Check(NPC.downedBoss1);
-            Check(NPC.downedBoss2);
-            Check(EDownedBosses.downedApsychos);
-            Check(Main.hardMode);
-            Check(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3);
-            Check(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3);
-            Check(NPC.downedPlantBoss);
-            Check(NPC.downedAncientCultist);
-            Check(NPC.downedAncientCultist);
-            Check(NPC.downedMoonlord);
-            Check(EDownedBosses.downedNihilityTwin);
-            Check(EDownedBosses.downedNihilityTwin);
-            Check(EDownedBosses.downedAbyssalWraith);
-            Check(EDownedBosses.downedCruiser);
-            Check(EDownedBosses.downedCruiser);
-            Check(EDownedBosses.downedCruiser);
-            return Level;
+            return 6;
         }
         public override bool CanConsumeAmmo(Item ammo, Player player)
         {
@@ -111,7 +83,8 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
             }
             tooltips.Add(new TooltipLine(Mod, "Lore", Language.GetOrRegister("Mods.CalamityEntropy.LegendaryAbility.DCarverDia" + LevelNow.ToString()).Value) { OverrideColor = Color.Crimson });
         }
-        public int SpiritCount => int.Min(6, GetLevel() / 2);
+        // 2026-08-31 平衡案:魔灵数目降低至4
+        public int SpiritCount => 4;
         public override void SetDefaults()
         {
             Item.width = 80;
@@ -160,20 +133,11 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
         }
         public override void AddRecipes()
         {
-            // 原灾厄血珠原料按 material-map 拆为脊椎骨/腐肉双平行配方
+            // 2026-08-31 平衡案:配方=血雨弓+消逝符石,虚空井合成
             CreateRecipe()
-                .AddIngredient(ItemID.Vertebrae, 5)
-                .AddRecipeGroup(CERecipeGroups.evilBar, 4)
-                .AddIngredient(ItemID.Silk, 4)
-                .AddIngredient(ItemID.RichMahogany, 12)
-                .AddTile(TileID.WorkBenches)
-                .Register();
-            CreateRecipe()
-                .AddIngredient(ItemID.RottenChunk, 5)
-                .AddRecipeGroup(CERecipeGroups.evilBar, 4)
-                .AddIngredient(ItemID.Silk, 4)
-                .AddIngredient(ItemID.RichMahogany, 12)
-                .AddTile(TileID.WorkBenches)
+                .AddIngredient(ItemID.BloodRainBow)
+                .AddIngredient(ModContent.ItemType<FadingRunestone>())
+                .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();
         }
         public void CheckLevel(int lv)

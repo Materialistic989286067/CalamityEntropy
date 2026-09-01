@@ -37,14 +37,12 @@ namespace CalamityEntropy.Content.Items.Books
         internal static Asset<Texture2D> BookMarkSlotTex;
         public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<CosmicBlessingHeld>();
-        public override int SlotCount => 5;
 
         public override void AddRecipes()
         {
-            // 原灾厄原料: 宇宙晶锭×10 + 升华之魂精华×2 按映射同归幽渊魂髓, 合并为×12
             CreateRecipe()
                 .AddIngredient<SelenbiteVolume>()
-                .AddIngredient<WraithSoulEssence>(12)
+                .AddIngredient<NihilityFragments>(10)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
@@ -104,9 +102,9 @@ namespace CalamityEntropy.Content.Items.Books
             return frame;
         }
         public bool purple = false;
-        public override void ShootSingleProjectile(int type, Vector2 pos, Vector2 velocity, float damageMul = 1, float scaleMul = 1, float shotSpeedMul = 1, Action<Projectile> initAction = null, float randomRotMult = 1, bool MainProjectile = false, Color colorMult = default)
+        public override void ShootSingleProjectile(int type, Vector2 pos, Vector2 velocity, float damageMul = 1, float scaleMul = 1, float shotSpeedMul = 1, Action<Projectile> initAction = null, float randomRotMult = 1, bool MainProjectile = false, Color colorMult = default, int fixedBaseDamage = -1)
         {
-            base.ShootSingleProjectile(type, pos, velocity, damageMul, scaleMul, shotSpeedMul, initAction, randomRotMult, MainProjectile, purple ? new Color(255, 200, 255) : Color.White);
+            base.ShootSingleProjectile(type, pos, velocity, damageMul, scaleMul, shotSpeedMul, initAction, randomRotMult, MainProjectile, purple ? new Color(255, 200, 255) : Color.White, fixedBaseDamage);
         }
         public override bool Shoot()
         {

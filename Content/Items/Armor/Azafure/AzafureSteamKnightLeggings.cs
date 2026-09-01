@@ -23,7 +23,7 @@ namespace CalamityEntropy.Content.Items.Armor.Azafure
         {
             CreateRecipe()
                 .AddIngredient<AzafureHeavyLeggings>()
-                .AddRecipeGroup(CERecipeGroups.AnyOrichalcumBar, 16)
+                .AddIngredient(ItemID.ChlorophyteBar, 16)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }

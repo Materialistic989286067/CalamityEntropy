@@ -33,14 +33,14 @@ namespace CalamityEntropy.Content.Items.Books
         internal static Asset<Texture2D> BookMarkSlotTex;
         public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<SpectralWhispersHeld>();
-        public override int SlotCount => 1;
 
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.DemoniteBar, 10)
-                .AddIngredient(ItemID.Silk, 8)
-                .AddTile(TileID.WorkBenches)
+                .AddIngredient(ItemID.Silk, 10)
+                .AddIngredient(ItemID.ShadowScale, 10)
+                .AddIngredient(ItemID.MeteoriteBar, 10)
+                .AddTile(TileID.Anvils)
                 .Register();
         }
     }

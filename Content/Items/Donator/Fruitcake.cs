@@ -25,11 +25,12 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         public override void AddRecipes()
         {
-            // 灾厄原料按 material-map.md 替换：OverloadedSludge→史莱姆王冠（与原有王冠合并为2）、PurifiedGel→粉凝胶
             CreateRecipe()
+                .AddIngredient(ItemID.Bone, 20)
+                .AddIngredient(ItemID.QueenSlimeCrystal)
+                .AddIngredient(ItemID.PinkGel, 10)
                 .AddIngredient(ItemID.WoodenArrow)
-                .AddIngredient(ItemID.SlimeCrown, 2)
-                .AddIngredient(ItemID.PinkGel, 8)
+                .AddTile(TileID.Anvils)
                 .Register();
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips)

@@ -19,7 +19,7 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
             Item.width = 40;
             Item.height = 40;
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
-            Item.defense = 26;
+            Item.defense = 36;
             Item.rare = ModContent.RarityType<NihilityBlue>();
         }
 
@@ -41,25 +41,23 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
             cnctStr = cnctStr.Replace("[CONNECT]", CEKeybinds.NihilityAndChaoticArmorConnectKey.TooltipKeyHint());
             player.setBonus += "\n" + cnctStr;
             // 潜行体系退役:原潜行条(上限1.2)按容量×10%换算为大招充能速度
+            // 2026-08-31 平衡案:去除12%伤害减免,魔力+120→+60,生命+40→+80
             player.GetModPlayer<CEChargePlayer>().ChargeRateMult += 0.12f;
-            player.endurance += 0.12f;
-            player.statLifeMax2 += 40;
+            player.statLifeMax2 += 80;
             player.GetDamage(DamageClass.Generic) += 0.12f;
             player.maxMinions += 3;
-            player.statManaMax2 += 120;
+            player.statManaMax2 += 60;
             player.Entropy().ChaoticSet = true;
         }
         public override void UpdateEquip(Player player)
         {
             player.GetDamage(DamageClass.Generic) += 0.08f;
-            player.maxMinions += 1;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe()
                 .AddIngredient<ChaoticPiece>(5)
-                .AddIngredient(ItemID.LunarOre, 6)
                 .AddIngredient(ItemID.LunarBar, 8)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();

@@ -3,6 +3,7 @@ using CalamityEntropy.Common;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -62,7 +63,7 @@ namespace CalamityEntropy.Content.Projectiles
                         p.velocity *= -1.4f;
                         p.rotation += 3.1415f;
                         p.owner = Projectile.owner;
-                        p.damage *= 16;
+                        p.damage = Math.Min(p.damage * 3, 3000);
                         // 原灾厄 Ares 核弹特判；核弹已改为奖券惩罚火箭（AtlasNuc），仅对天价伤害的惩罚弹降低反弹倍率
                         if (p.type == ProjectileID.RocketSkeleton && p.damage >= 99999)
                         {

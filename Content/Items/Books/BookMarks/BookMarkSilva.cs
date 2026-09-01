@@ -1,8 +1,7 @@
-﻿using CalamityEntropy.Common;
-using CalamityEntropy.Content.Projectiles;
-using CalamityEntropy.Content.Rarities;
+﻿using CalamityEntropy.Content.Rarities;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityEntropy.Content.Items.Books.BookMarks
 {
@@ -22,14 +21,18 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
     }
 
+    /// <summary>苍绿书签(2026-08-31 平衡案重做):命中造成3秒酸性毒液,
+    /// 持书期间每秒回复2点生命,命中时获得3秒树妖祝福。</summary>
     public class SilvaBMEffect : EBookProjectileEffect
     {
+        public override void BookUpdate(Projectile projectile, bool ownerClient)
+        {
+            projectile.GetOwner().Entropy().bmSilvaRegenTime = 2;
+        }
         public override void OnHitNPC(Projectile projectile, NPC target, int damageDone)
         {
-            if (Main.rand.NextBool(projectile.HasEBookEffect<APlusBMEffect>() ? 3 : 6) && CECooldowns.CheckCD(ref CECooldowns.BMSilva, 40))
-            {
-                Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center, CEUtils.randomRot().ToRotationVector2() * 12, ModContent.ProjectileType<SilvaSoul>(), 0, projectile.knockBack, projectile.owner);
-            }
+            target.AddBuff(BuffID.Venom, 180);
+            projectile.GetOwner().AddBuff(BuffID.DryadsWard, 180);
         }
     }
 }

@@ -28,14 +28,9 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.TheBreaker)
-                .AddIngredient(ItemID.FallenStar, 5)
-                .AddTile(TileID.Anvils)
-                .Register();
-            CreateRecipe()
-                .AddIngredient(ItemID.FleshGrinder)
-                .AddIngredient(ItemID.FallenStar, 5)
-                .AddTile(TileID.Anvils)
+                .AddIngredient(ItemID.Pwnhammer)
+                .AddIngredient(ItemID.SoulofNight, 5)
+                .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
         private static int projType = -1;
@@ -50,6 +45,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override void SetDefaults()
         {
             base.SetDefaults();
+            fixedBaseDamage = 75;
             Projectile.penetrate = -1;
             Projectile.light = 0.4f;
             Projectile.localNPCHitCooldown = -1;

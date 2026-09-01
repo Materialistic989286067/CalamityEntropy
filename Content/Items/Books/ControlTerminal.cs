@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Common;
+using CalamityEntropy.Content.Tiles;
 using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Rarities;
@@ -34,13 +35,12 @@ namespace CalamityEntropy.Content.Items.Books
         internal static Asset<Texture2D> BookMarkSlotTex;
         public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<ControlTerminalHeld>();
-        public override int SlotCount => 6;
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient<ProphecyMasterpiece>()
+            CreateRecipe().AddIngredient<CosmicBlessing>()
                 .AddIngredient<VoidBar>(5)
-                .AddTile(TileID.LunarCraftingStation)
+                .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();
         }
     }

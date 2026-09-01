@@ -28,13 +28,12 @@ namespace CalamityEntropy.Content.Items.Books
         internal static Asset<Texture2D> BookMarkSlotTex;
         public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<RedemptionBibleHeld>();
-        public override int SlotCount => 3;
 
         public override void AddRecipes()
         {
             CreateRecipe().AddIngredient<UpdraftTome>()
-                .AddIngredient(ItemID.UnicornHorn, 6)
-                .AddIngredient(ItemID.SoulofLight, 10)
+                .AddIngredient(ItemID.HallowedBar, 12)
+                .AddIngredient(ItemID.SoulofLight, 15)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }

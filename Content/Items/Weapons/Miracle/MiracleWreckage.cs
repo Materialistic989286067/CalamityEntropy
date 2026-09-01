@@ -67,9 +67,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Miracle
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ItemID.Meowmere).
-                AddIngredient<FadingRunestone>(2).
-                AddTile<VoidWellTile>().
+            CreateRecipe().AddIngredient<FadingRunestone>(1)
+                .AddTile<VoidWellTile>().
                 Register();
         }
     }

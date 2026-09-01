@@ -53,10 +53,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             Recipe recipe = CreateRecipe();
-            recipe.AddIngredient(ItemID.LastPrism, 1);
-            recipe.AddIngredient(ItemID.OpticStaff, 1);
-            recipe.AddIngredient(ModContent.ItemType<VoidBar>(), 5);
-            recipe.AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 2);
+            recipe.AddIngredient(ItemID.BlizzardStaff);
+            recipe.AddIngredient(ItemID.FrostStaff);
+            recipe.AddIngredient(ItemID.LunarBar, 5);
             recipe.AddTile(TileID.LunarCraftingStation);
             recipe.Register();
         }

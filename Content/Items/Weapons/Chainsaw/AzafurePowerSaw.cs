@@ -35,6 +35,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
             Item.noMelee = true;
             Item.shoot = ModContent.ProjectileType<AzafurePowerSawProj>();
             Item.shootSpeed = 1f;
+            Item.scale *= 0.66f;
         }
         public override bool CanUseItem(Player player)
         {

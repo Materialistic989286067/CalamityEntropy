@@ -116,13 +116,12 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ItemID.BeesKnees, 1).
-                AddIngredient(ItemID.DaedalusStormbow, 1).
-                AddIngredient(ItemID.CrystalShard, 20).
-                AddIngredient(ItemID.HallowedBar, 5).
-                AddTile(TileID.MythrilAnvil).
-                Register();
+            CreateRecipe()
+                .AddIngredient(ItemID.HallowedRepeater)
+                .AddIngredient(ItemID.ChlorophyteShotbow)
+                .AddIngredient(ItemID.ShroomiteBar, 15)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
         }
     }
     public class KinanitionSpawn : ModProjectile

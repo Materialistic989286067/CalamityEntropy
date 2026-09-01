@@ -34,10 +34,10 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.GoldBar, 10)
-                .AddIngredient(ItemID.CrystalBall, 1)
-                .AddIngredient(ItemID.SoulofLight, 5)
-                .AddTile(TileID.WorkBenches)
+                .AddIngredient(ItemID.CrystalBall)
+                .AddIngredient(ItemID.SoulofLight, 20)
+                .AddIngredient(ItemID.AdamantiteBar, 20)
+                .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
     }

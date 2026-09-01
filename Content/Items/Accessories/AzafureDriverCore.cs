@@ -64,12 +64,10 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
         public override void AddRecipes()
         {
-            // 脱离灾厄:RoverDrive(灾厄能量盾件,表外)→黑曜石盾同档盾饰;AshesofCalamity→地壳碎片(material-map)
             CreateRecipe()
                 .AddIngredient<AzafureChargeShield>()
-                .AddIngredient(ItemID.ObsidianShield)
-                .AddIngredient<TectonicShard>(6)
-                .AddTile(TileID.MythrilAnvil)
+                .AddIngredient(ItemID.MartianConduitPlating, 100)
+                .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
     }

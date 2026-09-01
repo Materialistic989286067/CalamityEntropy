@@ -111,49 +111,19 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
         }
         public override void AddRecipes()
         {
+            // 2026-08-31 平衡案:时期移至月后,配方=草剑+种子弯刀+10夜明锭
             CreateRecipe()
-                .AddIngredient(ItemID.GlowingMushroom, 10)
-                .AddIngredient(ItemID.JungleSpores, 6)
-                .AddTile(TileID.Anvils)
+                .AddIngredient(ItemID.BladeofGrass)
+                .AddIngredient(ItemID.Seedler)
+                .AddIngredient(ItemID.LunarBar, 10)
+                .AddTile(TileID.LunarCraftingStation)
                 .Register();
 
         }
+        /// <summary>2026-08-31 平衡案:去除成长性,固定取月后档(等级10),下游视觉/技能缩放沿用。</summary>
         public static int GetLevel()
         {
-            //return Main.LocalPlayer.inventory[9].stack;
-            int Level = 0;
-            bool flag = true;
-            void Check(bool f)
-            {
-                if (f && flag)
-                {
-                    Level++;
-                }
-                else
-                {
-                    flag = false;
-                }
-            }
-
-            //All 15 levels
-            Check(NPC.downedSlimeKing);
-            Check(NPC.downedBoss1);
-            Check(NPC.downedBoss2);
-            Check(EDownedBosses.downedApsychos);
-            Check(Main.hardMode);
-            Check(NPC.downedMechBossAny);
-            Check(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3);
-            Check(NPC.downedPlantBoss);
-            Check(NPC.downedGolemBoss);
-            Check(NPC.downedMoonlord);
-            Check(EDownedBosses.downedNihilityTwin);
-            Check(EDownedBosses.downedAbyssalWraith);
-            Check(EDownedBosses.downedCruiser);
-            Check(EDownedBosses.downedCruiser);
-            Check(EDownedBosses.downedCruiser);
-
-            return Level;
-
+            return 10;
         }
         public int LastLevel = -1;
         public override void UpdateInventory(Player player)
@@ -161,28 +131,8 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
             int level = GetLevel();
             if (LastLevel != level)
             {
-                int dmg = Item.damage;
-                switch (level)
-                {
-                    case 0: dmg = 12; break;
-                    case 1: dmg = 18; break;
-                    case 2: dmg = 24; break;
-                    case 3: dmg = 28; break;
-                    case 4: dmg = 36; break;
-                    case 5: dmg = 80; break;
-                    case 6: dmg = 100; break;
-                    case 7: dmg = 120; break;
-                    case 8: dmg = 140; break;
-                    case 9: dmg = 150; break;
-                    case 10: dmg = 480; break;
-                    case 11: dmg = 600; break;
-                    case 12: dmg = 1250; break;
-                    case 13: dmg = 1400; break;
-                    case 14: dmg = 1600; break;
-                    case 15: dmg = 3600; break;
-                }
-                Item.damage = dmg;
-                Item.useTime = Item.useAnimation = int.Max(10, 16 - GetLevel() / 4);
+                Item.damage = 480;
+                Item.useTime = Item.useAnimation = int.Max(10, 16 - level / 4);
                 LastLevel = level;
                 Item.crit = level * 3;
                 Item.knockBack = level / 2;

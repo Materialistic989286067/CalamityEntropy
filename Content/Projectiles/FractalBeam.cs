@@ -31,7 +31,7 @@ namespace CalamityEntropy.Content.Projectiles
         {
             Projectile.ai[0]++;
             if (Projectile.ai[0] > 20)
-                Projectile.HomingToNPCNearby(2f, 0.95f, 1200);
+                Projectile.HomingToNPCNearby(1.4f, 0.665f, 1200);
             else
                 Projectile.velocity *= 0.95f;
             if (Projectile.timeLeft < 30)

@@ -30,16 +30,13 @@ namespace CalamityEntropy.Content.Items.Books
         internal static Asset<Texture2D> BookMarkSlotTex;
         public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<PressureEsotericaHeld>();
-        public override int SlotCount => 4;
 
         public override void AddRecipes()
         {
-            // 原灾厄原料: PrimordialEarth(世花后魔法武器)按档位换彩虹魔杖
             CreateRecipe()
-                .AddIngredient(ItemID.RainbowRod)
-                .AddIngredient(ItemID.SoulofNight, 3)
-                .AddIngredient(ItemID.Ectoplasm, 8)
-                .AddTile(TileID.Bookcases)
+                .AddIngredient(ItemID.WaterBolt)
+                .AddIngredient(ItemID.SpectreBar, 20)
+                .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
     }

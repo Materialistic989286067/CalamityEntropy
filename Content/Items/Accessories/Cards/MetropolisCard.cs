@@ -27,11 +27,11 @@ namespace CalamityEntropy.Content.Items.Accessories.Cards
 
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ItemID.Bone, 5).
-                AddIngredient(ItemID.SoulofNight, 3).
-                AddTile(TileID.Bookcases).
-                Register();
+            CreateRecipe()
+                .AddIngredient(ItemID.FossilOre, 30)
+                .AddIngredient(ItemID.Amber, 2)
+                .AddTile(TileID.WorkBenches)
+                .Register();
         }
     }
 }

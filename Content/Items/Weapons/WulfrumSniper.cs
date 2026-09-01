@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Content.Items.Armor.NihTwins;
+﻿using CalamityEntropy;
+using CalamityEntropy.Content.Items.Armor.NihTwins;
 using CalamityEntropy.Content.Items.Weapons.Miracle;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
@@ -75,16 +76,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<AzafureCircuitry>(2)
-                .AddIngredient(ItemID.IronBar, 8)
-                .AddCondition(Mod.GetLocalization("NonZenithWorld"), () => !Main.zenithWorld)
-                .AddTile(TileID.Anvils)
-                .Register();
-            CreateRecipe()
-                .AddIngredient(ItemID.SoulofNight, 4)
-                .AddIngredient(ItemID.LunarBar, 8)
-                .AddIngredient(ItemID.FragmentNebula, 8)
-                .AddCondition(Mod.GetLocalization("ZenithWorld"), () => Main.zenithWorld)
+                .AddRecipeGroup(CERecipeGroups.IronBar, 10)
+                .AddIngredient(ItemID.TungstenBar, 10)
                 .AddTile(TileID.Anvils)
                 .Register();
         }

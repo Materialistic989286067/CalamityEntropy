@@ -1,5 +1,4 @@
 using CalamityEntropy.Assets.Register;
-using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Core.Graphics;
@@ -56,7 +55,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Depletion
         {
             CreateRecipe()
                 .AddIngredient<Malign.Malign>()
-                .AddIngredient<NihilityFragments>(16)
+                .AddIngredient(ItemID.FragmentNebula, 10)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
@@ -367,11 +366,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Depletion
             modifiers.ArmorPenetration += 60;
             target.Entropy().Decrease20DR = 80;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<VermillionFlux>(), 150);
-            target.AddBuff(ModContent.BuffType<HolyFlames>(), 150);
-        }
+
         public override void OnKill(int timeLeft)
         {
             CEUtils.PlaySound("light_bolt", Main.rand.NextFloat(2.4f, 2.8f), Projectile.Center, 50, 0.4f);

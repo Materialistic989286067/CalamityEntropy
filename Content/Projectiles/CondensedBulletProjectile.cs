@@ -78,6 +78,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             SpawnHitParticle(Projectile.velocity);
+            Projectile.damage = (int)(Projectile.damage * 0.75f);
         }
         public void SpawnHitParticle(Vector2 vel)
         {

@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Content.Items;
+using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
@@ -69,9 +70,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.Celeb2)
-                .AddIngredient<NihilityFragments>(4)
-                .AddIngredient<WraithSoulEssence>(6)
+                .AddIngredient(ItemID.SnowmanCannon)
+                .AddIngredient<ChaoticPiece>(10)
+                .AddIngredient(ItemID.LunarBar, 10)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

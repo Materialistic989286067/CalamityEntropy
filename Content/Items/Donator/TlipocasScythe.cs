@@ -3,6 +3,7 @@ using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Cooldowns;
+using CalamityEntropy.Content.Tiles;
 using InnoVault;
 using CalamityEntropy.Content.Items.Vanity;
 using CalamityEntropy.Content.Particles;
@@ -61,39 +62,11 @@ namespace CalamityEntropy.Content.Items.Donator
         public string DevName => "Kino";
 
         public int SpeedUpTime = 0;
+        // 2026-08-31 平衡案:去除成长属性,取最高级数值。原17级 downed 旗标阶梯退役,
+        // 配方改挂消逝符石(虚空井),定位为符石级战士武器。
         public static int GetLevel()
         {
-            int Level = 0;
-            bool flag = true;
-            void Check(bool f)
-            {
-                if (f && flag)
-                {
-                    Level++;
-                }
-                else
-                {
-                    flag = false;
-                }
-            }
-            //灾厄 downed 旗标按 progression-map §三逐处替换到自有 Boss 线与原版节点
-            Check(NPC.downedBoss1);
-            Check(NPC.downedBoss2);
-            Check(EDownedBosses.downedApsychos);
-            Check(Main.hardMode);
-            Check(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3);
-            Check(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3);
-            Check(EDownedBosses.downedProphet);
-            Check(NPC.downedAncientCultist);
-            Check(NPC.downedAncientCultist);
-            Check(NPC.downedMoonlord);
-            Check(EDownedBosses.downedNihilityTwin);
-            Check(EDownedBosses.downedNihilityTwin);
-            Check(EDownedBosses.downedAbyssalWraith);
-            Check(EDownedBosses.downedCruiser);
-            Check(EDownedBosses.downedCruiser);
-            Check(EDownedBosses.downedCruiser);
-            return Level;
+            return 16;
         }
         public int NowLevel = 0;
         public bool RecheckStats = true;
@@ -524,19 +497,12 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         public override void AddRecipes()
         {
-            //双平行配方承接原 BloodOrb（血月双材料），Voidstone→黑曜石、LoreAwakening→盔甲雕像（其灾厄配方即雕像 1:1）
             CreateRecipe()
                 .AddIngredient(ItemID.Obsidian, 10)
                 .AddIngredient(ItemID.Vertebrae, 10)
                 .AddIngredient(ItemID.Deathweed)
-                .AddIngredient(ItemID.ArmorStatue)
-                .AddTile(TileID.Anvils).Register();
-            CreateRecipe()
-                .AddIngredient(ItemID.Obsidian, 10)
-                .AddIngredient(ItemID.RottenChunk, 10)
-                .AddIngredient(ItemID.Deathweed)
-                .AddIngredient(ItemID.ArmorStatue)
-                .AddTile(TileID.Anvils).Register();
+                .AddIngredient<FadingRunestone>()
+                .AddTile(ModContent.TileType<VoidWellTile>()).Register();
         }
     }
 
@@ -723,35 +689,17 @@ namespace CalamityEntropy.Content.Items.Donator
             {
                 EGlobalNPC.AddVoidTouch(target, 60, 3, 1000, 12);
             }
-            if (EDownedBosses.downedCruiser)
+            // 2026-08-31 平衡案:不再造成孱弱巫咒/血管爆裂/燃烧/重度出血
+            if (EDownedBosses.downedNihilityTwin)
             {
-                target.AddBuff<VulnerabilityHex>(60 * 3);
-            }
-            if (NPC.downedAncientCultist)
-            {
-                target.AddBuff<Laceration>(60 * 3);
-            }
-            if (Main.hardMode)
-            {
-                if (EDownedBosses.downedNihilityTwin)
+                if (EDownedBosses.downedCruiser)
                 {
-                    if (EDownedBosses.downedCruiser)
-                    {
-                        target.AddBuff<LifeOppress>(60 * 3);
-                    }
-                    else
-                    {
-                        target.AddBuff<ArmorCrunch>(60 * 3);
-                    }
+                    target.AddBuff<LifeOppress>(60 * 3);
                 }
                 else
                 {
-                    target.AddBuff<HeavyBleeding>(60 * 3);
+                    target.AddBuff<ArmorCrunch>(60 * 3);
                 }
-            }
-            else
-            {
-                target.AddBuff(BuffID.OnFire, 180);
             }
             Color impactColor = Color.Red;
             float impactParticleScale = Main.rand.NextFloat(1.5f, 1.7f);
@@ -1149,35 +1097,17 @@ namespace CalamityEntropy.Content.Items.Donator
             {
                 EGlobalNPC.AddVoidTouch(target, 60, 3, 1000, 12);
             }
-            if (EDownedBosses.downedCruiser)
+            // 2026-08-31 平衡案:不再造成孱弱巫咒/血管爆裂/燃烧/重度出血
+            if (EDownedBosses.downedNihilityTwin)
             {
-                target.AddBuff<VulnerabilityHex>(60 * 3);
-            }
-            if (NPC.downedAncientCultist)
-            {
-                target.AddBuff<Laceration>(60 * 3);
-            }
-            if (Main.hardMode)
-            {
-                if (EDownedBosses.downedNihilityTwin)
+                if (EDownedBosses.downedCruiser)
                 {
-                    if (EDownedBosses.downedCruiser)
-                    {
-                        target.AddBuff<LifeOppress>(60 * 3);
-                    }
-                    else
-                    {
-                        target.AddBuff<ArmorCrunch>(60 * 3);
-                    }
+                    target.AddBuff<LifeOppress>(60 * 3);
                 }
                 else
                 {
-                    target.AddBuff<HeavyBleeding>(60 * 3);
+                    target.AddBuff<ArmorCrunch>(60 * 3);
                 }
-            }
-            else
-            {
-                target.AddBuff(BuffID.OnFire, 180);
             }
             Color impactColor = Color.Red;
             float impactParticleScale = Main.rand.NextFloat(1.5f, 1.7f);

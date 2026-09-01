@@ -535,9 +535,9 @@ Items: {
 		DisplayName: 神性
 		Tooltip:
 			'''
-			你的射弹会带有一个光环，对光环内的敌人持续造成伤害
-			关闭饰品可见性时无法看见光环，但正常造成伤害
-			光环无视无敌帧
+			在你身边形成半径60格的隐形光环
+			光环内的敌人每0.25秒受到一次40点伤害(带25点护甲穿透)
+			并被施加破晓减益
 			'''
 	}
 
@@ -647,17 +647,12 @@ Items: {
 		DisplayName: 神谕卡组
 		Tooltip:
 			'''
-			+[CR]% 暴击率
-			+15% 移速
-			+[HP] 最大生命值
-			+[ST]% 伤害
-			-30% 魔力消耗
-			受到伤害降低5%
-			+[MN] 召唤栏
-			+[ATS]% 近战攻速
-			+100% 光照
-			装备后每隔五秒附近所有玩家受到20点治疗
-			你最多只会受到最大生命值一半的伤害
+			+5 防御力
+			+[ST]% 伤害，+[CR]% 暴击率，5%伤害减免
+			+10% 移动速度，+[ATS]% 近战攻速，-10% 魔力消耗
+			+[MN] 召唤栏，+100% 光照
+			每10秒你和附近队友回复20点生命
+			单次受到的伤害不会超过最大生命值的66.7%，该保护有5秒冷却
 			'''
 	}
 
@@ -804,17 +799,14 @@ Items: {
 		DisplayName: 上神之佑
 		Tooltip:
 			'''
-			免疫击退，免疫着火类灼烧，可在火块上行走
-			+5%伤害减免，+4/s生命再生
-			受到高于100点伤害的攻击时能格挡一次，该效果有150秒冷却时间
-			双击左右方向键或按冲刺键，会举盾向前冲撞，撞击造成1000点近战伤害
-			每次冲刺的首次撞击会绽放圣光冲击波，造成300点伤害并点燃神圣之火
-			盾撞命中敌人后的1.5秒内，额外获得15%伤害减免
-			按住Shift右键切换[i:PanicNecklace]恐慌项链是否生效
-			[TOGGLE]
+			免疫大多数减益和击退
+			免疫火块，可在火块上安全行走
+			拥有神圣屏障的格挡效果
+			给予你和所有队友15%伤害减免(不可叠加)
+			使敌人更容易攻击你
 			'''
-		ToggleEffectOn: "[c/00ff00:已启用恐慌项链]"
-		ToggleEffectOff: "[c/808080:已禁用恐慌项链]"
+		// ToggleEffectOn: "[c/00ff00:Panic enabled]"
+		// ToggleEffectOff: "[c/808080:Panic disabled]"
 	}
 
 	VoidBar: {
@@ -836,13 +828,11 @@ Items: {
 		DisplayName: 圣洁月光
 		Tooltip:
 			'''
-			增加15%魔法伤害和50点最大魔力值
-			每三十秒获得一个魔力护盾，数值等同于魔力上限的25%，
-			魔力护盾存在期间增加10%移动速度并降低10%魔力消耗，
-			护盾会对触碰到的敌人造成伤害，
-			魔力护盾被击破时消除自身魔力病减益并回满魔力值，
-			没有护盾时魔法弹幕能够吸血，你的当前魔力值越高，你的吸血量便越高
-			当玩家携带血神圣杯时不会生成魔力护盾
+			+40 最大魔力值，+10% 魔法伤害
+			每30秒获得一个魔力护盾，数值为魔力上限的50%，至多250点
+			护盾存在时你的魔力病持续时间减半
+			护盾会对触碰到的敌人造成伤害，并在耗尽时爆炸
+			护盾冷却期间攻击能按当前魔力吸血(每100点魔力回复1点，单次至多5点)
 			'''
 	}
 
@@ -876,9 +866,8 @@ Items: {
 		DisplayName: 虚空行者胸甲
 		Tooltip:
 			'''
-			+10% 伤害
+			+12% 伤害
 			+5% 暴击率
-			+5 护甲穿透
 			'''
 	}
 
@@ -887,7 +876,8 @@ Items: {
 		Tooltip:
 			'''
 			+20% 近战伤害
-			+15% 近战暴击率
+			+12% 近战暴击率
+			+80 最大生命值
 			'''
 	}
 
@@ -895,15 +885,22 @@ Items: {
 		DisplayName: 虚灵宙法盔
 		Tooltip:
 			'''
-			+30% 魔法伤害
-			+25% 魔法暴击率
-			+150 最大魔力值
+			+23% 魔法伤害
+			+18% 魔法暴击率
+			+100 最大魔力值
+			+80 最大生命值
 			'''
 	}
 
 	VoidFaquirEvokerHelm: {
 		DisplayName: 虚空唤灵盔
-		Tooltip: +25% 召唤伤害
+		Tooltip:
+			'''
+			+40% 召唤伤害
+			+1 召唤栏
+			+80 最大生命值
+			+100 最大魔力值
+			'''
 	}
 
 	VoidFaquirLurkerMask: {
@@ -912,6 +909,7 @@ Items: {
 			'''
 			+25% 伤害
 			+25% 暴击率
+			[c/808080:暂时无法获取]
 			'''
 	}
 
@@ -919,8 +917,9 @@ Items: {
 		DisplayName: 虚寂猎影盔
 		Tooltip:
 			'''
-			+32% 远程伤害
-			+30% 远程暴击率
+			+18% 远程伤害
+			+25% 远程暴击率
+			+80 最大生命值
 			'''
 	}
 
@@ -1018,7 +1017,8 @@ Items: {
 		DisplayName: 始源冠冕
 		Tooltip:
 			'''
-			+ 2/s 每秒生命再生
+			+25 最大生命值
+			给予蜂蜜增益
 			-大师模式专属-
 			'''
 	}
@@ -1055,10 +1055,9 @@ Items: {
 		DisplayName: 天界指环
 		Tooltip:
 			'''
-			+15% 伤害
-			+2.5HP/s 生命再生
-			+2 召唤栏
-			极大幅度提升各项属性
+			+1/s 生命再生
+			+2 召唤栏，+15% 召唤伤害
+			+15% 鞭子攻速与攻击距离
 			'''
 	}
 
@@ -1136,10 +1135,8 @@ Items: {
 		DisplayName: 视界之键
 		Tooltip:
 			'''
-			左键打开剑匣，剑会自动攻击附近的敌人
+			召唤剑匣仆从，剑会自动攻击附近的敌人(占用8个仆从栏)
 			右键敌怪以指定剑的攻击目标
-			[c/d9bd1b:剑的数量和这把武器的强度随着游戏进度而增加]
-			[c/d9bd1b:受所有加成影响]
 			'''
 	}
 
@@ -1310,17 +1307,13 @@ Items: {
 		DisplayName: 堕化卡组
 		Tooltip:
 			'''
-			投掷弹幕获得追踪能力
-			攻击使敌人中蒙蔽debuff，减少其移动速度
-			攻击附带虚空之触减益
-			攻击时发射暗隐火焰
-			受到的伤害增加50% 
-			每有一个召唤栏，+3%伤害
-			+30% 伤害
-			+20% 攻击速度
-			+16% 魔力消耗
-			-70% 再生速度
-			附近所有玩家击中任何目标后能够窃取少量生命值
+			+30% 伤害，但你受到的伤害×1.25
+			每有一个召唤栏+1.5%伤害，至多+15%
+			投掷武器能轻微追踪目标
+			攻击时产生追踪的暗影火焰，造成蒙蔽与虚空之触减益
+			+12% 近战攻速，-10% 暴击率
+			+25% 魔力消耗
+			自然生命再生降低100%
 			'''
 	}
 
@@ -1589,7 +1582,8 @@ Items: {
 		DisplayName: 冥灵灯笼
 		Tooltip:
 			'''
-			随机生效1至3个你背包中的饰品
+			随机生效你背包中的饰品：75%概率生效1个，25%概率生效2个
+			无法同时生效同类饰品
 			“照亮你的前途”
 			'''
 	}
@@ -1612,10 +1606,12 @@ Items: {
 		DisplayName: 沐生之羽
 		Tooltip:
 			'''
-			被抽中敌人3秒内被召唤物击中将迸发出追踪龙焰辅助攻击
+			被抽中的敌人受到破晓减益
+			召唤物击中被标记的敌人时，每0.75秒引发一次破晓爆炸并为你回复1点生命
 			召唤物集中击打命中的敌人
 			{$CommonItemTooltip.SummonTagDamage}
 			{$CommonItemTooltip.Whips}
+			由月亮领主掉落
 			“重生”
 			'''
 	}
@@ -1710,8 +1706,10 @@ Items: {
 		DisplayName: 逝怨晶辉
 		Tooltip:
 			'''
-			射出追踪的水晶箭
-			攻击时概率生成能够协同攻击的水晶
+			一次射出5发追踪的水晶箭
+			水晶箭命中时以30%伤害派生3发穿墙的追踪幻影箭
+			命中还会生成协同攻击的水晶(至多6个)
+			水晶不造成任何减益，但无视目标护甲
 			[c/c8cbff:“它曾被狂热信徒们称为‘渊光之弓’”]
 			'''
 	}
@@ -1729,7 +1727,7 @@ Items: {
 
 	HeartOfStorm: {
 		DisplayName: 风暴之心
-		Tooltip: 击中敌人迸发出可连锁的闪电，造成10%伤害
+		Tooltip: 击中目标时召唤一道闪电劈向目标(基础伤害800)，该效果有1秒冷却
 	}
 
 	Nyxolithraken: {
@@ -1745,29 +1743,22 @@ Items: {
 		DisplayName: 渊洋神迹胸甲
 		Tooltip:
 			'''
-			增加15%伤害和暴击率
-
+			+15% 伤害，+5% 暴击率
 			使你能在深渊正常呼吸
 			'''
 	}
 
 	MariviniumHelmet: {
 		DisplayName: 渊洋神迹头盔
-		Tooltip:
-			'''
-			增加20%伤害和10%暴击率
-			增加20%近战攻速
-			增加200点最大生命值和最大魔力值
-			'''
+		Tooltip: +100 最大生命值与最大魔力值
 	}
 
 	MariviniumLeggings: {
 		DisplayName: 渊洋神迹护腿
 		Tooltip:
 			'''
-			大幅提升移动速度
-			减少20%魔力消耗
-			增加5%伤害和暴击率
+			+30% 移动速度
+			+30% 跳跃速度
 			'''
 	}
 
@@ -1786,11 +1777,12 @@ Items: {
 	}
 
 	BookMarkBrimstone: {
-		DisplayName: 硫磺火书签
+		DisplayName: 恶魔书签
 		Tooltip:
 			'''
 			攻击时概率在附近召唤硫磺火漩涡，向鼠标位置发射鲜血激光柱
 			攻击造成硫磺火减益
+			由红恶魔掉落
 			'''
 	}
 
@@ -1827,8 +1819,9 @@ Items: {
 		DisplayName: 光明书签
 		Tooltip:
 			'''
-			击中概率召唤光明之魂
-			光明之魂会撞向并摧毁敌方射弹并为你恢复血量
+			击中概率召唤光明能量
+			光明能量会飞向你并回复5点魔力
+			持书期间+20%跳跃速度
 			'''
 	}
 
@@ -1853,26 +1846,21 @@ Items: {
 
 	BookMarkAstral: {
 		DisplayName: 星辉书签
-		Tooltip:
-			'''
-			发射会朝敌人发射射弹并爆炸的炫星
-			-66.6% 攻速
-			'''
+		Tooltip: 命中目标时召唤星蛾的追踪幻星弹
 	}
 
 	BookMarkTerra: {
 		DisplayName: 泰拉书签
 		Tooltip:
 			'''
-			发射巨石
-			+20% 伤害
-			+1 穿透
+			命中目标后在其头顶召唤一颗智能弹跳的泰拉巨石
+			持书期间+10防御力
 			'''
 	}
 
 	BookMarkLunar: {
 		DisplayName: 夜明书签
-		Tooltip: 靠近射弹的目标会逐渐变暗，到一定程度会受到一次额外攻击
+		Tooltip: 命中时在敌人头顶落下2~3道月耀射线
 	}
 
 	BookMarkAbyss: {
@@ -1881,8 +1869,13 @@ Items: {
 	}
 
 	BookMarkProfaned: {
-		DisplayName: 亵渎书签
-		Tooltip: 射弹朝附近敌人发射亵渎火焰
+		DisplayName: 祭祀书签
+		Tooltip:
+			'''
+			攻击时召唤2发追踪火球辅助攻击
+			同时从身后发射2发暗影火球
+			由拜月邪教徒掉落
+			'''
 	}
 
 	BookMarkVoid: {
@@ -1891,16 +1884,20 @@ Items: {
 	}
 
 	BookMarkAuric: {
-		DisplayName: 金源书签
-		Tooltip: 射弹击中目标后爆发出龙焰和火球
+		DisplayName: 耀日书签
+		Tooltip:
+			'''
+			攻击时召唤3个黄金七彩矢攻击目标
+			由泰拉棱镜在微光中转化获得
+			'''
 	}
 
 	BookMarkSilva: {
-		DisplayName: 始源林海书签
+		DisplayName: 苍绿书签
 		Tooltip:
 			'''
-			射弹击中后概率产生始源之魂，
-			始源之魂会飞回你，为你回血并提供少量临时护甲
+			命中目标时造成3秒酸性毒液，并给予你3秒树妖祝福
+			持书期间每秒回复2点生命
 			'''
 	}
 
@@ -1910,7 +1907,7 @@ Items: {
 	}
 
 	BookMarkSunkenSea: {
-		DisplayName: 沉沦海书签
+		DisplayName: 碎晶书签
 		Tooltip: 击中敌人后生成追踪棱晶碎片
 	}
 
@@ -1945,29 +1942,26 @@ Items: {
 
 	BookMarkAquarius: {
 		DisplayName: 宝瓶座书签
-		Tooltip: 击中敌人散射水弹
+		Tooltip: 击中敌人爆出治愈水滴，水滴飞回你身边时回复1点生命与3点魔力
 	}
 
 	BookMarkAries: {
 		DisplayName: 白羊座书签
-		Tooltip:
-			'''
-			攻击附带小范围爆炸
-			+6% 伤害
-			'''
+		Tooltip: 攻击时召唤暗影之手伤害敌人
 	}
 
 	BookMarkTaurus: {
 		DisplayName: 金牛座书签
-		Tooltip: 增加射弹尺寸，射弹击中后分裂成3个更小的射弹
+		Tooltip: 增加射弹尺寸，书本体弹幕击中后分裂成3个更小的射弹(衍生与召唤类弹幕不分裂)
 	}
 
 	BookMarkCancer: {
 		DisplayName: 巨蟹座书签
 		Tooltip:
 			'''
-			射弹会降低碰到的敌方射弹的速度和伤害
 			+50% 射弹尺寸
+			-10% 魔力消耗
+			大幅提升击退能力
 			'''
 	}
 
@@ -1989,18 +1983,15 @@ Items: {
 		DisplayName: 人马座书签
 		Tooltip:
 			'''
-			+6%伤害
-			+26% 弹速
+			+33% 弹速
+			持书期间刷怪率翻倍
+			由骷髅王掉落
 			'''
 	}
 
 	BookMarkPisces: {
 		DisplayName: 双鱼座书签
-		Tooltip:
-			'''
-			攻击时额外发射一个较小射弹
-			+6 护甲穿透
-			'''
+		Tooltip: 命中敌怪时在其位置召唤一个小型克苏鲁旋风
 	}
 
 	BookMarkVirgo: {
@@ -2086,7 +2077,11 @@ Items: {
 
 	AshTranscript: {
 		DisplayName: 灰烬笔录
-		Tooltip: 发射亵渎光束
+		Tooltip:
+			'''
+			呈扇形射出5只远古光明妖
+			由拜月邪教徒掉落
+			'''
 	}
 
 	VoidOde: {
@@ -2105,6 +2100,7 @@ Items: {
 			'''
 			发射硫火飞弹
 			召唤三只至尊探魂眼协同攻击
+			硫磺暴弹有3秒内置冷却
 			'''
 	}
 
@@ -2532,9 +2528,8 @@ Items: {
 		DisplayName: 瘟疫内燃机
 		Tooltip:
 			'''
-			免疫击退
-			使用真近战武器命中敌人会为你回血并增加临时护甲
-			+{AttackSpeed}%近战攻速
+			受击时使附近敌人遭受困惑与酸性毒液减益
+			手持武器攻击命中时召唤能穿墙的瘟疫能量攻击敌人
 			'''
 	}
 
@@ -2911,8 +2906,8 @@ Items: {
 			'''
 			+[A]%伤害
 			+[B]%移动速度
+			+[D]%跳跃速度
 			+[C]%武器大招充能速度
-			受到的伤害减少[D]%
 			'''
 	}
 
@@ -2921,9 +2916,10 @@ Items: {
 		Tooltip:
 			'''
 			+[A]%伤害
-			+[B]%移动速度
+			+[B]%移动速度与跳跃速度
 			+[C]%武器大招充能速度
 			日食期间额外+10%伤害
+			死亡时复活并回复100点生命，该效果有120秒冷却
 			'''
 	}
 
@@ -3086,11 +3082,12 @@ Items: {
 		DisplayName: 钦天司时
 		Tooltip:
 			'''
-			每秒额外回复2点生命值，+5%伤害减免
-			命中敌人时回复相当于最大生命值1%的生命
-			在脚下长出草药
-			站在草药上提升20%伤害减免
-			每秒直接回复4点生命值
+			+75 最大生命值
+			拥有神话护身符的效果，治疗药水冷却减少25%
+			减益持续时间减少33%
+			大幅提升自然生命再生(6/s)，并每秒直接回复1点生命
+			走过草地时长出草药(按住Shift右键开关)
+			站在草药上+20防御力
 			$黍梦连稻浪，蒲酒话升平
 			'''
 	}
@@ -3138,11 +3135,9 @@ Items: {
 		DisplayName: 苍郁之锋
 		Tooltip:
 			'''
-			她的力量随着进度的提升而增加
 			被原初生命女神所赐福的剑
-			当前等级: [LV] / 15
 			左键攻击命中时积攒充能
-			当她的力量足够时，你可以使用以下技能：
+			你可以使用以下技能：
 			@[C1][U1]
 			#[C2][U2]
 			$[C3][U3]
@@ -3157,40 +3152,51 @@ Items: {
 
 	Vast: {
 		DisplayName: 无垠
-		TooltipBase:
+		// TooltipBase: The strength and effects of this accessory increase with progression
+		/* Level0:
 			'''
-			该饰品的强度和效果随进度增加
-			当前效果：
+			8% reduced mana cost
+			Automatically use mana potions when needed
+			''' */
+		/* Level1:
 			'''
-		Level0:
+			Mana potions restore 10% more mana
+			While under the effects of [cebuff:CalamityEntropy/ManaVein], gain 4% increased magic critical strike chance
+			''' */
+		/* Level2:
 			'''
-			-8%魔力消耗
+			Automatically uses mana potions, with 75% of the restoration applied instantly
+			The remaining 25% is recovered over 5 seconds
+			If you take damage exceeding 80 life during this period, the restoration is interrupted, extending invincibility frames and briefly accelerating life regeneration
+			''' */
+		// Level3: After consuming mana equivalent to 50% of your maximum mana, gain a stack of mana mania, which increases enhanced mana by 4% (stacks up to 5 times)
+		/* Level4:
+			'''
+			Effects of [cebuff:ManaSickness] are halved
+			Every 2 stacks of mana mania grant 0.03% damage reduction
+			Increases life regeneration when hit while restoring mana
+			''' */
+		/* Level5:
+			'''
+			Critical hits inflict the [cebuff:CalamityEntropy/SoulDisorder] debuff on the target
+			Upon mana depletion, attacks switch from consuming mana to restoring mana for 6 seconds
+			Taking damage during this period extends invincibility frames
+			''' */
+		/* Level6:
+			'''
+			At full stacks of mana mania, each mana depletion grants
+			1% increased magic critical strike chance and 3% increased magic critical strike damage (stacks up to 5 times)
+			''' */
+		Tooltip:
+			'''
+			-10% 魔力消耗
+			+5% 魔法暴击率与魔法伤害
 			必要时自动使用魔力药水
+			饮用魔力药水后的2秒内，缓慢额外回复其20%的魔力
+			魔法暴击会对目标造成3秒灵魂紊乱减益
+			每消耗250点魔力叠加一层魔流增益(至多5层)
+			每层魔流+3%魔法暴击伤害
 			'''
-		Level1:
-			'''
-			魔力药水额外回复10%的魔力
-			拥有魔能增益时，增加4%魔法暴击率
-			'''
-		Level2:
-			'''
-			使用魔力药水后，其恢复量有75%比例立即生效，剩余25%在5秒内逐步恢复，
-			期间受到超过80点的伤害会使此恢复中断，使此次受击无敌帧延长并短暂加速回血
-			“潮水般的魔力在你的血液中脉动...”
-			'''
-		Level3:
-			'''
-			每消耗 150+基础魔力上限的20% 魔力后，获得一层魔流增益，每层增加4%强化魔力，最多可叠加5层
-			每1点强化魔力会为你提供0.03%的伤害减免
-			'''
-		Level4:
-			'''
-			魔力病的影响减半
-			增加回复魔力时受击后的回血效果
-			'''
-		Level5: 暴击会对目标造成灵魂紊乱减益
-		Level6: 每层魔流额外提供1%魔法暴击率和3%魔法暴击伤害加成
-		Tooltip: ""
 	}
 
 	AzafureDetectionEquipment: {
@@ -3263,8 +3269,8 @@ Items: {
 		DisplayName: 暗影披风
 		Tooltip:
 			'''
-			使你冲刺时不会受到敌人的接触或弹幕伤害并增加冲刺距离
-			这个效果需要3秒冷却
+			使你能够使用暗影冲刺，冲刺期间免疫伤害
+			暗影冲刺有5秒冷却，且无法与其他冲刺共存
 			装备在时装栏时仅提供视觉效果
 			一件虚空缔造的斗篷，能让使用者暂时的浸润到虚空中并穿过一切
 			'''
@@ -3458,12 +3464,13 @@ Items: {
 	}
 
 	BookmarkSulphurous: {
-		DisplayName: 硫磺书签
+		DisplayName: 咒噬书签
 		Tooltip:
 			'''
 			创造一个保护你的泡泡
 			泡泡会在受击后破裂并对附近目标造成伤害
-			泡泡需要60秒恢复，在此期间你的攻击将造成辐射减益
+			泡泡需要60秒恢复，在此期间你的攻击将造成诅咒狱火减益
+			由爬藤怪掉落
 			'''
 	}
 
@@ -3722,7 +3729,7 @@ Items: {
 
 	BookmarkStarwreckage: {
 		DisplayName: 星骸书签
-		Tooltip: 抛射出无视无敌帧的虚空锭
+		Tooltip: 随机投射无视无敌帧的四柱碎片
 	}
 
 	BookmarkLacewings: {
@@ -3775,7 +3782,11 @@ Items: {
 
 	VoidEaterLeggings: {
 		DisplayName: 噬虚者腿甲
-		Tooltip: 增加18%移动速度
+		Tooltip:
+			'''
+			增加18%移动速度
+			增加8%伤害和暴击率
+			'''
 	}
 
 	RedDragonHorn: {
@@ -3918,7 +3929,6 @@ Items: {
 			'''
 			提供[S]点护盾，护盾会缓慢恢复
 			允许你冲刺穿过敌怪并对其施加虚空斩
-			增加[C]%暴击伤害
 			'''
 	}
 
@@ -3937,10 +3947,9 @@ Items: {
 		Tooltip:
 			'''
 			随着游戏进度提供越来越多的属性加成
-			+[DEF] 防御
-			+[DMG]% 伤害
-			+[LIFE] 最大生命值
-			+[MANA] 最大魔力值
+			免疫击退
+			+[DMG]% 近战伤害
+			+[CRIT]% 近战暴击率
 			'''
 	}
 
@@ -4138,13 +4147,11 @@ Items: {
 		DisplayName: 苍溟护符
 		Tooltip:
 			'''
+			增加你受击后的无敌时间
+			武器命中目标时不断召唤追踪的深渊漩涡攻击敌人
+			受击时召唤3个深渊漩涡，该效果有5秒冷却
 			使你可以在深渊中呼吸，并免疫深渊水压和深渊重压减益
-			增加15%伤害和15%移动速度
-			增加2.5HP/s自然生命再生
-			受到大于最大生命值35%的伤害时生成环绕你的苍溟护盾，将所有伤害减少25%，持续8秒
-			同时召唤一些苍溟漩涡追击敌人，护盾存在时受击也会生成苍茫漩涡
-			在水中时能够恢复飞行时间
-			显著提升在水中的机动性和在深渊中的视野，护盾存在时此效果将增强
+			在水中时能够恢复飞行时间，并显著提升水中机动性
 			'''
 	}
 
@@ -4265,14 +4272,11 @@ Items: {
 		DisplayName: 莱拉
 		Tooltip:
 			'''
-			跟随游戏进度提供越来越强的增益：
-			+[1]防御
-			+[2]/s生命再生
-			+[3]%伤害减免
-			+[5]最大生命值
-			你造成的减益伤害增加[4]%
-			有概率造成一个根据时期增强的减益
-			等级 - [L]/[ML]
+			+40 最大生命值
+			+2/s 生命再生
+			给予你和附近队友蜂蜜增益
+			你造成的减益伤害增加50%
+			攻击造成霜冻、酸性毒液和咒火减益
 			'''
 	}
 
@@ -5188,8 +5192,7 @@ SmolderingSetBonus:
 	'''
 ChaoticSetBonus:
 	'''
-	增加40点最大生命值，12%伤害和12%伤害减免
-	增加3最大仆从栏位并增加120点最大魔力值
+	增加80点最大生命值和60点最大魔力值
 	玩家受伤时会释放小型混沌细胞
 	细胞会追逐并攻击敌人，并在一段时间后返回并被转化为生命值
 	按[[KEY]]([KN])手动消耗生命值召唤3只细胞
@@ -5199,7 +5202,8 @@ ChaoticSetBonus:
 VoidEaterBonus:
 	'''
 	增加14%伤害和暴击率
-	增加2最大仆从栏位并增加100点最大魔力值 
+	增加2最大仆从栏位
+	增加40点最大生命值和60点最大魔力值
 	攻击命中时向目标发射几道激光，有3秒冷却
 	投射出一片具有[SHIELD]点耐久的护盾
 	护盾破碎后需要10秒恢复，在此期间增加1/s生命再生
@@ -5244,14 +5248,12 @@ PrefixitemDesc:
 MariviniumSet:
 	'''
 	提供大范围的照明，并使你能在深渊看清
-	在水中时，无视阻力并无限飞行，按住下以加速下落，同时按住跳跃和下可以悬停
-	降低20%接触伤害，大幅增加生命再生，并使玩家免疫绝大多数的减益
-	增加10个最大仆从栏位和75%召唤伤害
-	武器大招充能速度提高13.5%
-	使用真近战武器时增加10%伤害减免和15防御
-	获得2层可以抵挡伤害的护盾，第一层护盾恢复需要36秒的时间，第二层需要18秒
-	护盾破损会让玩家回复100点生命值，同时获得10秒“深渊狂怒”增益，增加50%伤害
-	护盾不会抵御造成伤害低于5%最大生命值的攻击
+	在水中行动如履平地，且拥有无限飞行时间
+	+4/s 生命再生，受到的接触伤害降低20%，并免疫绝大多数减益
+	+3 最大仆从栏位，+20% 近战攻速
+	获得2层可以各抵挡一次伤害的渊海护盾，第一层恢复需要36秒，第二层需要18秒
+	护盾只会抵挡高于50点伤害的攻击
+	护盾破损时获得10秒“深渊狂怒”增益
 	'''
 DeathMode: 大师模式
 ChargeReady: 蓄势就绪
@@ -6039,6 +6041,16 @@ Projectiles: {
 	// PlaguenadeBee.DisplayName: Plaguenade Bee
 	// GhastlySoulLarge.DisplayName: Ghastly Soul Large
 	// FallenVoidCodexHeld.DisplayName: Fallen Void Codex Held
+	GodheadAura.DisplayName: 神性光环
+	PlagueEnergy.DisplayName: 瘟疫能量
+	AshAncientLight.DisplayName: 远古光明妖
+	AriesShadowHand.DisplayName: 暗影之手
+	PillarShardProj.DisplayName: 四柱碎片
+	PiscesWhirlwind.DisplayName: 克苏鲁旋风
+	ProfanedFireball.DisplayName: 祭祀火球
+	ZyphrosPhantomArrow.DisplayName: 幻影箭
+	MiniVoidDevourer.DisplayName: 迷你虚空吞噬者
+	VitalfeatherBurst.DisplayName: 破晓爆炸
 }
 
 LegendTooltip: - 传奇物品 -
@@ -7100,19 +7112,18 @@ vfb:
 	'''
 helmvfc:
 	'''
-	-25% 魔力消耗
-	魔法弹幕击中敌人减少自身魔力病减益0.5s
+	魔力病持续时间减半
+	攻击敌人后的5秒内大幅提升自然生命再生(5/s)
 	'''
 helmvfd:
 	'''
-	+24% 攻击速度
-	+10% 伤害减免
-	击中敌人获取更多的虚空能量
+	+20% 近战攻速
+	受到的接触伤害降低15%
 	'''
 helmvfs:
 	'''
-	远程射弹伤害随时间增加
-	增加远程弹幕弹速
+	+15% 远程伤害
+	+50% 远程弹速
 	'''
 helmvfl:
 	'''
@@ -7121,9 +7132,8 @@ helmvfl:
 	'''
 helmvfe:
 	'''
-	+7 召唤栏
-	+80% 召唤伤害
-	召唤一只虚空共生体协助战斗
+	+4 召唤栏
+	召唤一只迷你虚空吞噬者协助战斗
 	'''
 Reforge: 重铸
 ArmorPrefixHardName: 坚硬
@@ -7309,7 +7319,7 @@ KilledByAstral8: "{0}的残骸向上飘去，迎来了终结"
 KilledByAstral9: "{0}化作缕缕星光"
 Death: "{0}死掉了"
 CdFF: 寻友护符冷却
-TooltipBookMark: 需放入熵语之书系列武器以生效
+TooltipBookMark: 需放入熵语之书系列武器以生效；书签效果由书本体弹幕触发，有1秒内置冷却
 TooltipBookMark2: 按下右键可放入/取出
 SlotInfo: 放入书签
 EBookTooltip:

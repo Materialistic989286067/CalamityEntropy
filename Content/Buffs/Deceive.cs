@@ -24,7 +24,8 @@ namespace CalamityEntropy.Content.Buffs
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            npc.velocity *= npc.boss ? 0.99f : 0.97f;
+            if (!npc.boss)
+                npc.velocity *= 0.97f;
         }
     }
 }

@@ -40,13 +40,12 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
-            Recipe recipe = CreateRecipe();
-            recipe.AddIngredient(ItemID.Katana, 1);
-            recipe.AddIngredient(ItemID.Obsidian, 5);
-            recipe.AddIngredient(ItemID.Silk, 20);
-            recipe.AddIngredient(ItemID.PinkGel, 6);
-            recipe.AddTile(TileID.DemonAltar);
-            recipe.Register();
+            CreateRecipe()
+                .AddIngredient(ItemID.Katana, 1)
+                .AddIngredient(ItemID.Ectoplasm, 20)
+                .AddIngredient(ItemID.Silk, 20)
+                .AddTile(TileID.DemonAltar)
+                .Register();
         }
 
         public override bool MeleePrefix()

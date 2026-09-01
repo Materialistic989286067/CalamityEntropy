@@ -29,27 +29,19 @@ namespace CalamityEntropy.Content.Items.Armor.Marivinium
         }
 
 
+        // 2026-08-31 平衡案:套装奖励重做。水中畅行+无限飞行走 MariviniumSet 的 WaterCollision 钩子,
+        // 渊海护盾(两层/36s/第二层减半/破盾给深渊狂怒)走 EModPlayer 的既有护盾计时。
         public override void UpdateArmorSet(Player player)
         {
             player.setBonus = Mod.GetLocalization("MariviniumSet").Value;
-            player.Entropy().meleeDamageReduce += 0.20f;
-            player.maxMinions += 10;
-            player.GetDamage(DamageClass.Summon) += 0.75f;
             player.Entropy().MariviniumSet = true;
-            // 潜行体系退役:原潜行条(上限1.35)按容量×10%换算为大招充能速度
-            player.GetModPlayer<CEChargePlayer>().ChargeRateMult += 0.135f;
-            if (player.velocity.Length() < 1)
-            {
-                player.lifeRegen += 20;
-                player.Entropy().lifeRegenPerSec += 1;
-            }
-            ApplyBuffImmune(player);
-            // 脱离灾厄:灾厄 TrueMeleeDamageClass 判定改为「近战且武器本体可挥砍」
-            if (player.HeldItem.DamageType.CountsAsClass(DamageClass.Melee) && !player.HeldItem.noMelee)
-            {
-                player.Entropy().damageReduce += 0.10f;
-                player.statDefense += 15;
-            }
+            // 降低20%敌怪接触伤害
+            player.Entropy().meleeDamageReduce += 0.20f;
+            // 大幅提升自然生命再生(4hp/s)
+            player.lifeRegen += 8;
+            // +3仆从栏与+20%近战攻速
+            player.maxMinions += 3;
+            player.GetAttackSpeed(DamageClass.Melee) += 0.20f;
         }
         public static void ApplyBuffImmune(Player player)
         {
@@ -86,16 +78,14 @@ namespace CalamityEntropy.Content.Items.Armor.Marivinium
         {
             player.GetDamage(DamageClass.Generic) += 0.2f;
             player.GetCritChance(DamageClass.Generic) += 10;
-            player.GetAttackSpeed(DamageClass.Melee) += 0.20f;
-            player.statLifeMax2 += 200;
-            player.statManaMax2 += 200;
+            player.statLifeMax2 += 100;
+            player.statManaMax2 += 100;
         }
 
         public override void AddRecipes()
         {
-            // 脱离灾厄:灾厄欧米茄蓝盔改为蘑菇矿潜袭面甲(表外裁定,档位由龙牙把关)
             CreateRecipe()
-                .AddIngredient(ItemID.ShroomiteMask)
+                .AddIngredient(ItemID.HallowedMask)
                 .AddIngredient<WyrmTooth>(4)
                 .AddIngredient<FadingRunestone>()
                 .AddTile<AbyssalAltarTile>()

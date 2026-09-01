@@ -23,62 +23,63 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override void AddRecipes()
         {
-            // 原联动模组金属块原料, 脱钩后改用自有虚空锭
-            CreateRecipe().AddIngredient<VoidBar>()
-                .AddTile(TileID.WorkBenches).Register();
+            CreateRecipe()
+                .AddIngredient(ItemID.FragmentNebula, 3)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
         }
 
         public override Color tooltipColor => Color.DarkRed;
     }
 
+    /// <summary>星骸书签(2026-08-31 平衡案重做):随机投射无视无敌帧的四柱碎片(固定基伤100)。</summary>
     public class StarwreckageBMEffect : EBookProjectileEffect
     {
         public override void BookUpdate(Projectile projectile, bool ownerClient)
         {
-            if (ownerClient && CECooldowns.CheckCD("Starwreckage", 120))
+            if (ownerClient && CECooldowns.CheckCD("Starwreckage", 60))
             {
-                if (projectile.ModProjectile is EntropyBookHeldProjectile eb)
-                    eb.ShootSingleProjectile(ModContent.ProjectileType<MetallicChunkProj>(), projectile.Center, projectile.rotation.ToRotationVector2(), 0.3f, 1, 0.5f);
+                Player owner = projectile.GetOwner();
+                Vector2 dir = (projectile.rotation + Main.rand.NextFloat(-0.5f, 0.5f)).ToRotationVector2();
+                Projectile.NewProjectile(projectile.GetSource_FromAI(), projectile.Center, dir * Main.rand.NextFloat(11f, 15f),
+                    ModContent.ProjectileType<PillarShardProj>(), FixedDamage(owner, 100, projectile.DamageType), 2f, projectile.owner,
+                    Main.rand.Next(4));
             }
         }
     }
-    public class MetallicChunkProj : EBookBaseProjectile
+    /// <summary>四柱碎片:ai[0]=0..3 选日耀/星旋/星云/星尘外观,采用本地无敌帧(无视全局无敌帧)。</summary>
+    public class PillarShardProj : ModProjectile
     {
+        private static readonly int[] FragmentItems = new int[] { ItemID.FragmentSolar, ItemID.FragmentVortex, ItemID.FragmentNebula, ItemID.FragmentStardust };
         public override string Texture => CEUtils.WhiteTexPath;
         public override void SetDefaults()
         {
-            base.SetDefaults();
-            Projectile.penetrate = -1;
-            Projectile.localNPCHitCooldown = -1;
-            Projectile.timeLeft = 480;
-            Projectile.tileCollide = true;
             Projectile.width = Projectile.height = 26;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+            Projectile.DamageType = Terraria.ModLoader.DamageClass.Magic;
+            Projectile.penetrate = 3;
+            Projectile.tileCollide = true;
+            Projectile.timeLeft = 360;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 12;
         }
-        public override void ApplyHoming()
-        {
-
-        }
-
         public override void AI()
         {
-            base.AI();
-            if (Projectile.localAI[2]++ > 6)
+            if (Projectile.localAI[0]++ > 10)
             {
-                Projectile.velocity.Y += 0.16f;
-                Projectile.velocity *= 0.998f;
+                Projectile.velocity.Y += 0.14f;
             }
-            Projectile.rotation += Projectile.velocity.X * 0.01f;
-            foreach (NPC npc in Main.ActiveNPCs)
+            Projectile.rotation += Projectile.velocity.X * 0.02f;
+            int fragIndex = (int)Projectile.ai[0] % 4;
+            Color glow = fragIndex switch
             {
-                if (!npc.friendly && !npc.dontTakeDamage && Projectile.Colliding(Projectile.Hitbox, npc.Hitbox))
-                {
-                    if (npc.life > Projectile.damage)
-                    {
-                        npc.life -= Projectile.damage;
-                        CombatText.NewText(npc.getRect(), Color.DarkRed, Projectile.damage);
-                    }
-                }
-            }
+                0 => new Color(255, 160, 40),
+                1 => new Color(60, 220, 180),
+                2 => new Color(220, 80, 220),
+                _ => new Color(80, 160, 255)
+            };
+            Lighting.AddLight(Projectile.Center, glow.ToVector3() * 0.4f);
         }
         public override void OnKill(int timeLeft)
         {
@@ -88,10 +89,11 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            int type = ModContent.ItemType<VoidBar>();
+            int type = FragmentItems[(int)Projectile.ai[0] % 4];
             Main.instance.LoadItem(type);
             Texture2D tex = TextureAssets.Item[type].Value;
-            Main.EntitySpriteDraw(Projectile.getDrawData(lightColor, tex));
+            Rectangle frame = Main.itemAnimations[type] == null ? tex.Frame() : Main.itemAnimations[type].GetFrame(tex);
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, lightColor, Projectile.rotation, frame.Size() / 2f, Projectile.scale, SpriteEffects.None);
             return false;
         }
     }

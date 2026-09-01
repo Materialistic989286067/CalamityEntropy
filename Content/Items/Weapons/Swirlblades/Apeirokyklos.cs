@@ -27,7 +27,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 
         public override void SetDefaults()
         {
-            Item.DamageType = DamageClass.Melee;
+            Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 30;
             Item.width = 42;
             Item.height = 46;
@@ -65,7 +65,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 .AddTile(ModContent.TileType<AbyssalAltarTile>())
                 .Register();
         }
-        public override bool MeleePrefix()
+        public override bool RangedPrefix()
         {
             return true;
         }
@@ -279,7 +279,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         public override string Texture => CEUtils.WhiteTexPath;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.timeLeft = 26;
             Projectile.MaxUpdates = 1;
             Projectile.localNPCHitCooldown = -1;

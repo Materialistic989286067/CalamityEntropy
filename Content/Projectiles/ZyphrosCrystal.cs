@@ -114,29 +114,15 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Projectile.ai[0] == 3)
-            {
-                modifiers.ArmorPenetration += 100000;
-            }
+            // 2026-08-31 平衡案:水晶无视目标护甲(所有变体)
+            modifiers.ScalingArmorPenetration += 1f;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<LifeOppress>(), 300);
+            // 2026-08-31 平衡案:水晶不再造成任何灾厄移植减益;保留回血与分裂等非减益特性
             if (Projectile.ai[0] == 2)
             {
                 Projectile.GetOwner().Heal(5);
-                target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 300);
-                target.AddBuff(ModContent.BuffType<Voidfrost>(), 300);
-            }
-            if (Projectile.ai[0] == 4)
-            {
-                target.AddBuff(ModContent.BuffType<Dragonfire>(), 300);
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 300);
-            }
-            if (Projectile.ai[0] == 5)
-            {
-                target.AddBuff(ModContent.BuffType<AuricRebuke>(), 300);
-                target.AddBuff(ModContent.BuffType<BanishingFire>(), 90);
             }
             if (Projectile.ai[0] == 1)
             {

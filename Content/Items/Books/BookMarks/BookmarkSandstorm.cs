@@ -44,7 +44,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                     Main.dust[sand].scale *= 1.4f;
                     Main.dust[sand].velocity = vel;
                 }
-                book.ShootSingleProjectile(ModContent.ProjectileType<SandBullet>(), player.MountedCenter, (Main.MouseWorld - player.MountedCenter).normalize() * 12 + CEUtils.randomPointInCircle(2) + new Vector2(0, -0.5f), 0.36f, 1, 1, (proj) => proj.damage = proj.damage.Softlimitation(24));
+                book.ShootSingleProjectile(ModContent.ProjectileType<SandBullet>(), player.MountedCenter, (Main.MouseWorld - player.MountedCenter).normalize() * 12 + CEUtils.randomPointInCircle(2) + new Vector2(0, -0.5f), 1, 1, 1, fixedBaseDamage: 20);
             }
         }
     }

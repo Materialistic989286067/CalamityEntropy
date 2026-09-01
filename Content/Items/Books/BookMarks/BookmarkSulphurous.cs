@@ -1,4 +1,3 @@
-using CalamityEntropy.Content.Buffs.PortsDoT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -22,20 +21,17 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override Color tooltipColor => Color.LimeGreen;
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ItemID.SharkFin, 4)
-                .AddIngredient(ItemID.SandBlock, 40)
-                .AddTile(TileID.Bookcases)
-                .Register();
         }
     }
 
     public partial class BookmarkSulphurousBMEffect : EBookProjectileEffect
     {
+        // 2026-08-31 平衡案:无泡泡期间改为造成诅咒狱火(原辐射减益退役)
         public override void OnHitNPC(Projectile projectile, NPC target, int damageDone)
         {
             if (projectile.GetOwner().Entropy().SulphurousBubbleRecharge < 3600)
             {
-                target.AddBuff<Irradiated>(Time);
+                target.AddBuff(BuffID.CursedInferno, Time);
             }
         }
     }

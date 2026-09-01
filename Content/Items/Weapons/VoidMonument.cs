@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Projectiles.monument;
-using CalamityEntropy.Content.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,7 +9,7 @@ namespace CalamityEntropy.Content.Items.Weapons
     {
         public override void SetDefaults()
         {
-            Item.damage = 580;
+            Item.damage = 48;
             Item.DamageType = DamageClass.Melee;
             Item.width = 100;
             Item.noUseGraphic = true;
@@ -40,10 +39,10 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.SoulofNight, 10).
-                AddIngredient(ItemID.CrystalShard, 15).
-                AddIngredient(ItemID.Obsidian, 45).
-                AddTile(ModContent.TileType<VoidWellTile>()).
+                AddIngredient(ItemID.Tombstone, 1).
+                AddIngredient(ItemID.WaterCandle, 1).
+                AddIngredient(ItemID.Bone, 30).
+                AddTile(TileID.Anvils).
                 Register();
         }
 

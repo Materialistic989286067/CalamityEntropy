@@ -25,6 +25,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
             Item.noMelee = true;
             Item.shoot = ModContent.ProjectileType<EnslavedStar0>();
             Item.shootSpeed = 1f;
+            Item.scale *= 0.66f;
         }
         public override bool CanUseItem(Player player)
         {
@@ -34,9 +35,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
         {
             CreateRecipe().
                 AddIngredient<MechanicalChainsaw>().
-                AddIngredient(ItemID.Nanites, 10).
-                AddIngredient(ItemID.Wire, 5).
-                AddIngredient(ItemID.HallowedBar, 5).
+                AddIngredient(ItemID.Nanites, 25).
+                AddIngredient(ItemID.ChlorophyteBar, 12).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

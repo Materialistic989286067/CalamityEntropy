@@ -28,8 +28,8 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
         public override void AddRecipes()
         {
             CreateRecipe(100)
-                .AddIngredient(ModContent.ItemType<AzafureMissile>(), 100)
-                .AddRecipeGroup(CERecipeGroups.AnyOrichalcumBar)
+                .AddIngredient<AzafureMissile>(100)
+                .AddIngredient(ItemID.Nanites, 10)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }

@@ -1,6 +1,8 @@
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo;
+using CalamityEntropy.Content.Tiles;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault.PRT;
@@ -144,13 +146,13 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 
         public override void AddRecipes()
         {
-            // 灾厄原料按 material-map.md 替换：TheHive（瘟疫档）按表外兜底→乌兹冲锋枪、AuricBar→虚空锭；宇宙砧→远古操纵机
             CreateRecipe()
                 .AddIngredient<Filthless>()
-                .AddIngredient(ItemID.Uzi)
+                .AddIngredient<Zeal>()
                 .AddIngredient<OsseousRemains>(20)
                 .AddIngredient<VoidBar>(5)
-                .AddTile(TileID.LunarCraftingStation)
+                .AddIngredient(ItemID.HallowedBar, 25)
+                .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();
         }
         public static void OnKillAction(Projectile Projectile)

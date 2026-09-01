@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
 using Terraria;
@@ -44,9 +45,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.StarWrath)
-                .AddIngredient(ModContent.ItemType<VoidBar>(), 5)
-                .AddTile(ModContent.TileType<VoidWellTile>())
+                .AddIngredient(ItemID.BlueMoon)
+                .AddIngredient<VoidBar>(5)
+                .AddTile<VoidWellTile>()
                 .Register();
         }
     }

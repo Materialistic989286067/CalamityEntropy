@@ -56,8 +56,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Malign
         {
             CreateRecipe()
                 .AddIngredient(ItemID.CrystalSerpent)
-                .AddIngredient(ItemID.Ectoplasm, 6)
-                .AddIngredient<TectonicShard>(4)
+                .AddIngredient(ItemID.SpectreStaff)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }

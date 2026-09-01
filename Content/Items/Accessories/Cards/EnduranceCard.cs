@@ -26,9 +26,6 @@ namespace CalamityEntropy.Content.Items.Accessories.Cards
 
         public override void AddRecipes()
         {
-            // 脱离灾厄:灾厄硫海宝匣改为原版海洋宝匣(表外裁定,海洋主题同源)
-            CreateRecipe().AddIngredient(ItemID.OceanCrate, 5)
-                .AddTile(TileID.WorkBenches).DisableDecraft().Register();
         }
     }
 }

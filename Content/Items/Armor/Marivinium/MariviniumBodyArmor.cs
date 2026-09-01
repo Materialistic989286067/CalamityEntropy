@@ -15,7 +15,7 @@ namespace CalamityEntropy.Content.Items.Armor.Marivinium
             Item.width = 34;
             Item.height = 18;
             Item.value = Item.buyPrice(platinum: 2, gold: 80);
-            Item.defense = 60;
+            Item.defense = 50;
             Item.rare = ModContent.RarityType<AbyssalBlue>();
         }
 
@@ -23,14 +23,13 @@ namespace CalamityEntropy.Content.Items.Armor.Marivinium
         {
             player.Entropy().mariviniumBody = true;
             player.GetDamage(DamageClass.Generic) += 0.15f;
-            player.GetCritChance(DamageClass.Generic) += 15;
+            player.GetCritChance(DamageClass.Generic) += 5;
         }
 
         public override void AddRecipes()
         {
-            // 脱离灾厄:灾厄欧米茄蓝甲改为蘑菇矿潜袭胸甲(表外裁定,档位由龙牙把关)
             CreateRecipe()
-                .AddIngredient(ItemID.ShroomiteBreastplate)
+                .AddIngredient(ItemID.HallowedPlateMail)
                 .AddIngredient<WyrmTooth>(6)
                 .AddIngredient<FadingRunestone>()
                 .AddTile<AbyssalAltarTile>()

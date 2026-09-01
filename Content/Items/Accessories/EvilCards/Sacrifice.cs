@@ -27,8 +27,9 @@ namespace CalamityEntropy.Content.Items.Accessories.EvilCards
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.SoulofNight, 6)
-                .AddIngredient(ItemID.ChlorophyteBar, 2)
+                .AddIngredient(ItemID.SoulofNight, 5)
+                .AddIngredient(ItemID.Ectoplasm, 5)
+                .AddTile(TileID.WorkBenches)
                 .Register();
         }
     }

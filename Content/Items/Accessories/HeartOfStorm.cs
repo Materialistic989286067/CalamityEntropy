@@ -21,5 +21,15 @@ namespace CalamityEntropy.Content.Items.Accessories
         {
             player.Entropy().heartOfStorm = true;
         }
+
+        public override void AddRecipes()
+        {
+            // 2026-08-31 平衡案:暂由3星旋碎片+3夜明锭合成
+            CreateRecipe()
+                .AddIngredient(Terraria.ID.ItemID.FragmentVortex, 3)
+                .AddIngredient(Terraria.ID.ItemID.LunarBar, 3)
+                .AddTile(Terraria.ID.TileID.LunarCraftingStation)
+                .Register();
+        }
     }
 }

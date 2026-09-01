@@ -37,8 +37,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
         {
             CreateRecipe().
                 AddIngredient<Euangelion>().
-                AddIngredient(ItemID.LunarOre, 20).
-                AddIngredient(ItemID.FragmentSolar, 5).
+                AddIngredient(ItemID.LunarBar, 10).
+                AddIngredient<NihilityFragments>(10).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

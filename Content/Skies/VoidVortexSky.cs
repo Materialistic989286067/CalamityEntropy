@@ -1,11 +1,9 @@
-﻿using CalamityEntropy.Assets.Register;
-using CalamityEntropy.Content.Menu;
+﻿using CalamityEntropy.Content.Menu;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.Graphics.Effects;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Skies
@@ -21,100 +19,85 @@ namespace CalamityEntropy.Content.Skies
             player.ManageSpecialBiomeVisuals("CalamityEntropy:VoidVortex", isActive);
         }
     }
-    public class VoidVortexSky : CustomSky
+
+    /// <summary>
+    /// 虚空漩涡天空(基座迁移版;休眠中——VortexSky 字段当前无写入者,事件氛围由 VoidInvasionSky 承担)。
+    /// 迁移只修正确性:旧实现用 UIScaleMatrix 画天空(错误空间,随 UI 缩放漂移)且七层加法无切片门控;
+    /// 现为原始像素空间 + 最远切片一次,漩涡尺寸随屏高归一。
+    /// </summary>
+    public class VoidVortexSky : CESkyBase
     {
-        private bool skyActive;
-        private float opacity;
-        public override void Deactivate(params object[] args)
-        {
-            skyActive = Main.LocalPlayer.Entropy().VortexSky > 0;
-        }
-
-        public override void Reset()
-        {
-            skyActive = false;
-        }
-
-        public override bool IsActive()
-        {
-            return skyActive || opacity > 0f;
-        }
-
-        public override void Activate(Vector2 position, params object[] args)
-        {
-            skyActive = true;
-        }
-        public int counter;
-        public static List<MenuParticle> particles = new List<MenuParticle>();
-        //漩涡与遮罩贴图,加载期由 VaultLoaden 赋值,绘制里不再逐帧 Request
+        //旋转漩涡贴图,加载期由 VaultLoaden 赋值,绘制里不再逐帧 Request
         [VaultLoaden("CalamityEntropy/Assets/Extra/menu/VoidVortex")]
         private static Asset<Texture2D> vortexTex;
-        [VaultLoaden("CalamityEntropy/Assets/Extra/menumask")]
-        private static Asset<Texture2D> menuMaskTex;
-        public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
+
+        //七层漩涡的缩放与角速度(沿用旧实现)
+        private static readonly float[] LayerScales = { 1f, 0.8f, 0.5f, 0.3f, 0.2f, 0.15f, 0.1f };
+        private static readonly float[] LayerSpeeds = { 0.1f, 0.2f, 0.3f, 0.5f, 0.7f, 1f, 2f };
+
+        public int counter;
+        public static List<MenuParticle> particles = new List<MenuParticle>();
+
+        protected override float FadeInStep => 0.005f;
+        protected override float FadeOutStep => 0.01f;
+
+        protected override bool KeepActive() => Main.LocalPlayer.Entropy().VortexSky > 0;
+
+        public override float GetCloudAlpha() => 1f - opacity;
+
+        protected override void OnReset() => particles.Clear();
+
+        protected override void UpdatePayload(GameTime gameTime)
         {
-            Texture2D l1 = vortexTex.Value;
-            Texture2D pixel = CEExtraAssets.white;
-            var drawColor = Color.White;
-
-            spriteBatch.Draw(pixel, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), new Color(1, 2, 32) * opacity);
-
-            spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
-            spriteBatch.Draw(l1, new Vector2(Main.screenWidth / 2, Main.screenHeight / 2), null, Color.White * opacity * 0.88f, MathHelper.ToRadians(counter * 0.1f), l1.Size() / 2, 1f, SpriteEffects.None, 0);
-            spriteBatch.Draw(l1, new Vector2(Main.screenWidth / 2, Main.screenHeight / 2), null, Color.White * opacity * 0.9f, MathHelper.ToRadians(counter * 0.2f), l1.Size() / 2, 0.8f, SpriteEffects.None, 0);
-            spriteBatch.Draw(l1, new Vector2(Main.screenWidth / 2, Main.screenHeight / 2), null, Color.White * opacity * 0.92f, MathHelper.ToRadians(counter * 0.3f), l1.Size() / 2, 0.5f, SpriteEffects.None, 0);
-            spriteBatch.Draw(l1, new Vector2(Main.screenWidth / 2, Main.screenHeight / 2), null, Color.White * opacity * 0.94f, MathHelper.ToRadians(counter * 0.5f), l1.Size() / 2, 0.3f, SpriteEffects.None, 0);
-            spriteBatch.Draw(l1, new Vector2(Main.screenWidth / 2, Main.screenHeight / 2), null, Color.White * opacity * 0.96f, MathHelper.ToRadians(counter * 0.7f), l1.Size() / 2, 0.2f, SpriteEffects.None, 0);
-            spriteBatch.Draw(l1, new Vector2(Main.screenWidth / 2, Main.screenHeight / 2), null, Color.White * opacity * 0.98f, MathHelper.ToRadians(counter * 1f), l1.Size() / 2, 0.15f, SpriteEffects.None, 0);
-            spriteBatch.Draw(l1, new Vector2(Main.screenWidth / 2, Main.screenHeight / 2), null, Color.White * opacity * 1f, MathHelper.ToRadians(counter * 2f), l1.Size() / 2, 0.1f, SpriteEffects.None, 0);
-            spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.UIScaleMatrix);
-            Texture2D mask = menuMaskTex.Value;
-            //spriteBatch.Draw(mask, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.Black * 0.6f);
-
-            spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.UIScaleMatrix);
-
-            foreach (MenuParticle p in particles)
+            if (opacity <= 0f)
             {
-                p.draw(opacity);
+                if (particles.Count > 0)
+                    particles.Clear();
+                return;
             }
-
-            spriteBatch.End(); spriteBatch.begin_();
-        }
-        public override void Update(GameTime gameTime)
-        {
-            if (Main.LocalPlayer.Entropy().VortexSky <= 0 || Main.gameMenu)
-                skyActive = false;
-
-            if (skyActive && opacity < 1f)
-                opacity += 0.005f;
-            else if (!skyActive && opacity > 0f)
-                opacity -= 0.01f;
             counter++;
             foreach (MenuParticle p in particles)
-            {
                 p.update();
-            }
             for (int i = particles.Count - 1; i >= 0; i--)
             {
                 if (particles[i].timeleft <= 0)
-                {
                     particles.RemoveAt(i);
-                }
             }
             if (counter % 15 == 0)
             {
-                MenuParticle particle = new MenuParticle(new Vector2(Main.screenWidth / 2, Main.screenHeight / 2), new Vector2(Main.screenWidth / 2, Main.screenHeight / 2), CEUtils.randomRot().ToRotationVector2() * 1, new Vector2(1.5f, 1), 660);
+                //更新阶段的 ScreenSize 是真实值,轨道中心与原始像素空间绘制一致
+                Vector2 center = Main.ScreenSize.ToVector2() / 2f;
+                MenuParticle particle = new MenuParticle(center, center, CEUtils.randomRot().ToRotationVector2() * 1, new Vector2(1.5f, 1), 660);
                 particles.Add(particle);
                 particle.pos += particle.velocity * 2;
             }
-            Opacity = opacity;
         }
-        public override float GetCloudAlpha()
+
+        protected override void DrawFar(SpriteBatch spriteBatch)
         {
-            return (1f - opacity);
+            Texture2D l1 = vortexTex.Value;
+
+            //底色罩:留在调用方批次,矩形恰好铺满
+            spriteBatch.Draw(CEUtils.pixelTex, CESkyDrawing.CallerFullscreen, new Color(1, 2, 32) * opacity);
+
+            //旋转漩涡与粒子走原始像素空间(粒子坐标按真实屏幕生成)
+            Rectangle vp = CESkyDrawing.ViewportFullscreen;
+            Vector2 center = new Vector2(vp.Width, vp.Height) / 2f;
+            //漩涡尺寸随屏高归一(旧实现固定像素尺寸,高分屏留边)
+            float norm = vp.Height / 1080f;
+
+            CESkyDrawing.BeginRawScreen(spriteBatch, BlendState.Additive, SamplerState.LinearWrap, SpriteSortMode.Deferred);
+            for (int i = 0; i < LayerScales.Length; i++)
+            {
+                float op = 0.88f + 0.02f * i;
+                spriteBatch.Draw(l1, center, null, Color.White * opacity * op, MathHelper.ToRadians(counter * LayerSpeeds[i]), l1.Size() / 2, LayerScales[i] * norm, SpriteEffects.None, 0);
+            }
+
+            CESkyDrawing.BeginRawScreen(spriteBatch, BlendState.Additive, SamplerState.LinearClamp, SpriteSortMode.Deferred);
+            foreach (MenuParticle p in particles)
+                p.draw(opacity);
+
+            CESkyDrawing.RestoreCallerBatch(spriteBatch);
         }
     }
 }

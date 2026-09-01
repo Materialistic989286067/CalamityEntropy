@@ -48,6 +48,11 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             if (projectile.ModProjectile is AstralBullet)
                 return;
+            // 只分裂熵书本体弹幕;衍生弹幕与召唤类弹幕(魔剑/魔锤等)不分裂(2026-08-31 平衡案)
+            if (projectile.ModProjectile is EBookBaseProjectile src && !src.mainProj)
+                return;
+            if (projectile.ModProjectile is BaseBookMinion)
+                return;
             if (CECooldowns.BMTaurus <= 0)
             {
                 CECooldowns.BMTaurus = 10;
@@ -70,6 +75,8 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                         m.homing = esb.homing;
                         m.quickTime = 20;
                         m.ShooterModProjectile = esb.ShooterModProjectile;
+                        // 分裂产物视作本体弹幕的延续,保持书签效果可触发(仍受1秒内置CD约束)
+                        m.mainProj = true;
                         if (m.penetrate > 0)
                         {
                             m.penetrate = esb.penetrate + 1;
@@ -112,6 +119,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                             }
                             m.ShooterModProjectile = esb.ShooterModProjectile;
                             m.homing = esb.homing;
+                            m.mainProj = true;
                             p.ToProj().scale = projectile.scale * 0.4f;
                         }
                         if (!BookMarkTaurus.DontDestroy(eb))

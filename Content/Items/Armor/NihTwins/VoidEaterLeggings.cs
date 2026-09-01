@@ -20,6 +20,8 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
         public override void UpdateEquip(Player player)
         {
             player.Entropy().moveSpeed += 0.18f;
+            player.GetDamage(DamageClass.Generic) += 0.08f;
+            player.GetCritChance(DamageClass.Generic) += 8;
         }
         public override void AddRecipes()
         {

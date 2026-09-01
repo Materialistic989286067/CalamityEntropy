@@ -86,11 +86,10 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         public override void AddRecipes()
         {
-            // 灾厄原料按 material-map.md 替换：SeraphTracers→日耀之翼、WingsofRebirth（灾厄物）→猪鲨之翼
             CreateRecipe()
-                .AddIngredient(ItemID.WingsSolar)
-                .AddIngredient(ItemID.FishronWings)
-                .AddIngredient<FadingRunestone>(2)
+                .AddIngredient(ItemID.TerrasparkBoots)
+                .AddIngredient(ItemID.LongRainbowTrailWings)
+                .AddIngredient<FadingRunestone>()
                 .AddTile<VoidWellTile>()
                 .DisableDecraft()
                 .Register();

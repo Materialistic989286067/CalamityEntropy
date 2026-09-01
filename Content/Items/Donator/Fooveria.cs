@@ -72,6 +72,7 @@ namespace CalamityEntropy.Content.Items.Donator
             CreateRecipe()
                 .AddIngredient(ItemID.Shiverthorn, 3)
                 .AddIngredient(ItemID.IceBlock, 20)
+                .AddIngredient(ItemID.Diamond, 10)
                 .AddRecipeGroup(RecipeGroupID.Fruit)
                 .AddTile(TileID.Anvils)
                 .Register();
@@ -92,22 +93,17 @@ namespace CalamityEntropy.Content.Items.Donator
                 }
             }
 
-            // 成长阶梯按 progression-map.md 重排：原版节点 + 自有 Boss 线
-            Check(NPC.downedSlimeKing);
-            Check(NPC.downedBoss1);
+            // 2026-08-31 平衡案:成长阶段重置为10档(10档亚波伦暂用幽邃魔灵代替)
+            Check(NPC.downedSlimeKing || NPC.downedBoss1);
             Check(NPC.downedBoss2);
-            Check(EDownedBosses.downedApsychos);
+            Check(NPC.downedBoss3);
             Check(Main.hardMode);
-            Check(NPC.downedMechBossAny);
-            Check(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3);
             Check(NPC.downedPlantBoss);
             Check(NPC.downedGolemBoss);
             Check(NPC.downedMoonlord);
             Check(EDownedBosses.downedNihilityTwin);
+            Check(EDownedBosses.downedCruiser);
             Check(EDownedBosses.downedAbyssalWraith);
-            Check(EDownedBosses.downedCruiser);
-            Check(EDownedBosses.downedCruiser);
-            Check(EDownedBosses.downedCruiser);
 
             return Level;
 
@@ -121,6 +117,7 @@ namespace CalamityEntropy.Content.Items.Donator
             int level = GetLevel();
             if (LastLevel != level)
             {
+                // 2026-08-31 平衡案:10档阶梯,伤害按原里程碑档位重排(终档=亚波伦占位)
                 int dmg = Item.damage;
                 switch (level)
                 {
@@ -128,18 +125,13 @@ namespace CalamityEntropy.Content.Items.Donator
                     case 1: dmg = 10; break;
                     case 2: dmg = 13; break;
                     case 3: dmg = 18; break;
-                    case 4: dmg = 25; break;
-                    case 5: dmg = 42; break;
-                    case 6: dmg = 56; break;
-                    case 7: dmg = 75; break;
-                    case 8: dmg = 95; break;
-                    case 9: dmg = 115; break;
-                    case 10: dmg = 300; break;
-                    case 11: dmg = 460; break;
-                    case 12: dmg = 950; break;
-                    case 13: dmg = 1200; break;
-                    case 14: dmg = 1350; break;
-                    case 15: dmg = 2300; break;
+                    case 4: dmg = 42; break;
+                    case 5: dmg = 95; break;
+                    case 6: dmg = 115; break;
+                    case 7: dmg = 300; break;
+                    case 8: dmg = 460; break;
+                    case 9: dmg = 1350; break;
+                    case 10: dmg = 2300; break;
                 }
                 Item.damage = dmg;
                 Item.useTime = Item.useAnimation = int.Max(10, 16 - GetLevel() / 4);

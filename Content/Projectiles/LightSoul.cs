@@ -41,6 +41,7 @@ namespace CalamityEntropy.Content.Projectiles
         public bool std = false;
         public float l = 0;
 
+        // 2026-08-31 平衡案:光明能量不再回血/消除弹幕,改为直接飞向玩家并回复5点魔力
         public override void AI()
         {
             base.AI();
@@ -50,71 +51,43 @@ namespace CalamityEntropy.Content.Projectiles
             }
             counter++;
             Projectile.rotation = Projectile.velocity.ToRotation();
-            if (counter < 32)
+            Player owner = Projectile.GetOwner();
+            if (owner == null || !owner.active || owner.dead)
+            {
+                Projectile.Kill();
+                return;
+            }
+            if (counter < 24)
             {
                 Projectile.velocity *= 0.95f;
             }
             else
             {
-                Projectile target = null;
-                float dist = 680;
-                foreach (Projectile p in Main.ActiveProjectiles)
+                if (l < 6)
                 {
-                    float d = CEUtils.getDistance(p.Center, Projectile.Center);
-                    if (p.hostile && Math.Max(p.width, p.height) < 100 && d < dist)
-                    {
-                        if (p.Colliding(p.getRect(), p.Center.getRectCentered(16, 16)) && !p.Colliding(p.getRect(), (p.Center + p.rotation.ToRotationVector2() * 320).getRectCentered(36, 36)) && !p.Colliding(p.getRect(), (p.Center + p.velocity.normalize() * 320).getRectCentered(36, 36)))
-                        {
-                            target = p;
-                            dist = d;
-                        }
-                    }
+                    l += 0.06f;
                 }
-                if (target != null)
+                Projectile.velocity += (owner.Center - Projectile.Center).SafeNormalize(Vector2.Zero) * (1.2f + l * 0.4f);
+                if (Projectile.velocity.Length() > 22)
                 {
-                    if (l < 6)
-                    {
-                        l += 0.04f;
-                    }
-                    Projectile.velocity = new Vector2(Projectile.velocity.Length() + 1.4f, 0).RotatedBy(CEUtils.RotateTowardsAngle(Projectile.velocity.ToRotation(), (target.Center - Projectile.Center).ToRotation(), l / 6f, false));
-                    Projectile.velocity = new Vector2(Projectile.velocity.Length(), 0).RotatedBy(CEUtils.RotateTowardsAngle(Projectile.velocity.ToRotation(), (target.Center - Projectile.Center).ToRotation(), 04f * l.ToRadians(), true));
-                    if (Projectile.getRect().Intersects(target.getRect()))
-                    {
-                        for (int i = 0; i < 16; i++)
-                        {
-                            //GlowSpark旧PRT/EParticle,Configure尾参统一签名那套
-                            PRTLoader.NewParticle<PRT_GlowSpark>(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(2, 7), Color.White, Main.rand.NextFloat(0.08f, 0.12f)).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0);
-                        }
-                        CEUtils.PlaySound("soulexplode", 1.2f, Projectile.Center, maxIns: 2, volume: 0.6f);
-                        Projectile.timeLeft = 2;
-                        Projectile.Resize(256, 256);
-                        //换用自有屏震系统, 幅度对齐同类爆点(原灾厄震屏强度6)
-                        CalamityEntropy.Instance.screenShakeAmp = 2;
-                        //DirectionalPulseRing Configure是Calamity ring原构造,scale/rotation/lifetime顺序固定
-                        PRTLoader.NewParticle<PRT_DirectionalPulseRing>(target.Center, Vector2.Zero, Color.White, 0.1f).Configure(new Vector2(2f, 2f), 0, 0.85f * 0.5f, 18);
-                        PRTLoader.NewParticle<PRT_DetailedExplosionCal>(target.Center, Vector2.Zero, Color.White, 0f).Configure(Vector2.One, Main.rand.NextFloat(-5, 5), 0.5f * 0.65f, 13);
-                        Projectile.Kill();
-                        //target.damage = (int)(target.damage * 0.2f);
-                        if (target.damage > 0)
-                        {
-                            if (target.timeLeft > 16 * 60 * target.MaxUpdates)
-                            {
-                                target.timeLeft -= 16 * 60 * target.MaxUpdates;
-                            }
-                            else
-                            {
-                                target.Kill();
-                            }
-                        }
-                        Projectile.GetOwner()?.Entropy().TryHealMeWithCd(Projectile.GetOwner().statLifeMax2 / 240 + 1, 4);
-                        return;
-                    }
+                    Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 22;
                 }
-                else
+                if (Projectile.getRect().Intersects(owner.getRect()))
                 {
-                    Projectile.velocity = new Vector2(Projectile.velocity.Length() + 0.7f, 0).RotatedBy(Projectile.velocity.ToRotation() + 0.05f);
+                    for (int i = 0; i < 12; i++)
+                    {
+                        //GlowSpark旧PRT/EParticle,Configure尾参统一签名那套
+                        PRTLoader.NewParticle<PRT_GlowSpark>(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(2, 7), Color.White, Main.rand.NextFloat(0.08f, 0.12f)).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0);
+                    }
+                    CEUtils.PlaySound("soulexplode", 1.2f, Projectile.Center, maxIns: 2, volume: 0.4f);
+                    if (Projectile.owner == Main.myPlayer)
+                    {
+                        owner.statMana = Math.Min(owner.statManaMax2, owner.statMana + 5);
+                        owner.ManaEffect(5);
+                    }
+                    Projectile.Kill();
+                    return;
                 }
-                Projectile.velocity *= 0.97f;
             }
         }
 

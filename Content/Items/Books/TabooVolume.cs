@@ -30,16 +30,13 @@ namespace CalamityEntropy.Content.Items.Books
         internal static Asset<Texture2D> BookMarkSlotTex;
         public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<TabooVolumeHeld>();
-        public override int SlotCount => 7;
 
         public override void AddRecipes()
         {
-
-            // 原灾厄原料: Heresy(月后魔法武器)按档位换最后之棱, 湮灭之灰换自有虚空之鳞
-            CreateRecipe().AddIngredient<BurntLostClassics>()
-                .AddIngredient(ItemID.LastPrism)
-                .AddIngredient<VoidScales>(6)
-                .AddTile(TileID.LunarCraftingStation)
+            CreateRecipe().AddIngredient<ControlTerminal>()
+                .AddIngredient<VoidOde>()
+                .AddIngredient<FadingRunestone>()
+                .AddTile(ModContent.TileType<Tiles.VoidWellTile>())
                 .Register();
         }
     }
@@ -54,7 +51,7 @@ namespace CalamityEntropy.Content.Items.Books
         public override EBookStatModifer getBaseModifer()
         {
             var m = base.getBaseModifer();
-            m.lifeSteal += 0.65f;
+            // 2026-08-31 平衡案:去除吸血特性
             m.armorPenetration += 40;
             return m;
         }
@@ -66,11 +63,15 @@ namespace CalamityEntropy.Content.Items.Books
             return new TabooVolumeBookBaseEffect();
         }
         public int seekerCd = 0;
+        /// <summary>硫磺暴弹内置CD(3秒固定,不吃攻速;2026-08-31 平衡案)。</summary>
+        public int gigaCd = 0;
         public override int frameChange => 3;
         public float seekerRotTarget = 0;
         public override void AI()
         {
             base.AI();
+            if (gigaCd > 0)
+                gigaCd--;
             seekerRot += (seekerRotTarget - seekerRot) * 0.1f;
             if (!active)
             {
@@ -94,6 +95,11 @@ namespace CalamityEntropy.Content.Items.Books
         public override void playTurnPageAnimation()
         {
 
+        }
+        public override bool CanShoot()
+        {
+            // 硫磺暴弹冷却期间不允许主动射击(顺带不耗蓝);索魂者射击不走此闸门
+            return gigaCd <= 0 && base.CanShoot();
         }
         public override bool Shoot()
         {
@@ -120,6 +126,7 @@ namespace CalamityEntropy.Content.Items.Books
                 Projectile.localAI[0]++;
                 return true;
             }
+            gigaCd = 180;
             return base.Shoot();
         }
         //环绕灵魂索魂者贴图,加载期就位,不再逐帧请求

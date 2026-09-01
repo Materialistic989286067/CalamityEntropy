@@ -5998,6 +5998,16 @@ Projectiles: {
 	PlaguenadeBee.DisplayName: Plaguenade Bee
 	GhastlySoulLarge.DisplayName: Ghastly Soul Large
 	FallenVoidCodexHeld.DisplayName: Fallen Void Codex Held
+	GodheadAura.DisplayName: Godhead Aura
+	PlagueEnergy.DisplayName: Plague Energy
+	AshAncientLight.DisplayName: Ash Ancient Light
+	AriesShadowHand.DisplayName: Aries Shadow Hand
+	PillarShardProj.DisplayName: Pillar Shard Proj
+	PiscesWhirlwind.DisplayName: Pisces Whirlwind
+	ProfanedFireball.DisplayName: Profaned Fireball
+	ZyphrosPhantomArrow.DisplayName: Zyphros Phantom Arrow
+	MiniVoidDevourer.DisplayName: Mini Void Devourer
+	VitalfeatherBurst.DisplayName: Vitalfeather Burst
 }
 
 LegendTooltip: - Legend -

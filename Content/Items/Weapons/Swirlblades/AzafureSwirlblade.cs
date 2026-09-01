@@ -26,7 +26,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 
         public override void SetDefaults()
         {
-            Item.DamageType = DamageClass.Melee;
+            Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 46;
             Item.width = 74;
             Item.height = 70;
@@ -58,14 +58,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<FlamingSwirlblade>())
                 .AddIngredient(ModContent.ItemType<ScorchingChakram>())
-                .AddIngredient(ModContent.ItemType<HellIndustrialComponents>(), 6)
-                .AddRecipeGroup(CERecipeGroups.AnyOrichalcumBar, 8)
-                .AddTile(TileID.Anvils)
+                .AddIngredient(ModContent.ItemType<FlamingSwirlblade>())
+                .AddIngredient(ItemID.SoulofSight, 15)
+                .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
-        public override bool MeleePrefix()
+        public override bool RangedPrefix()
         {
             return true;
         }
@@ -241,7 +240,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
     {
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.width = 28;
             Projectile.height = 28;
             Projectile.tileCollide = false;
@@ -351,7 +350,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
     {
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Melee, true, 1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, true, 1);
             Projectile.width = Projectile.height = 12;
             Projectile.MaxUpdates = 4;
         }

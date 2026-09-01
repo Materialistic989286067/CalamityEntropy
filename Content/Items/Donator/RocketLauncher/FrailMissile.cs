@@ -79,7 +79,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
                 .AddIngredient<OsseousRemains>(20)
                 .AddIngredient(ItemID.SoulofLight, 10)
                 .AddIngredient(ItemID.LightShard, 2)
-                .AddTile(TileID.Anvils)
+                .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
     }

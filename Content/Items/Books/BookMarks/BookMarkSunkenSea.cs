@@ -25,6 +25,14 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
 
         public override Color tooltipColor => Color.SkyBlue;
+        public override void AddRecipes()
+        {
+            CreateRecipe()
+                .AddIngredient(ItemID.Diamond, 10)
+                .AddIngredient(ItemID.Glass, 20)
+                .AddTile(TileID.WorkBenches)
+                .Register();
+        }
     }
 
     public class SunkenSeaBMEffect : EBookProjectileEffect
@@ -32,7 +40,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override void OnHitNPC(Projectile projectile, NPC target, int damageDone)
         {
             Vector2 shotDir = CEUtils.randomRot().ToRotationVector2();
-            Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center + shotDir * 32, shotDir * 6, ModContent.ProjectileType<SunkenAquashard>(), (damageDone / 5).Softlimitation(120), projectile.knockBack / 3, projectile.owner).ToProj().DamageType = projectile.DamageType;
+            Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center + shotDir * 32, shotDir * 6, ModContent.ProjectileType<SunkenAquashard>(), EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 8, projectile.DamageType), projectile.knockBack / 3, projectile.owner).ToProj().DamageType = projectile.DamageType;
             SoundEngine.PlaySound(in SoundID.Item27, projectile.Center);
         }
     }

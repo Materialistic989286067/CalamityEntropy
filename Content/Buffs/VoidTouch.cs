@@ -41,10 +41,6 @@ namespace CalamityEntropy.Content.Buffs
             }
             var r = Main.rand;
             Dust.NewDust(player.Center, player.width, player.height, DustID.CorruptSpray, (float)r.NextDouble() * 6 - 3, (float)r.NextDouble() * 6 - 3);
-            if (!player.GetModPlayer<EPlayerDash>().velt)
-            {
-                player.velocity *= 0.99f;
-            }
             for (int i = 0; i < 1; i++)
             {
                 //PRT_Void进EffectLoader虚空shader,Opacity=0.5是旧playerUpdate原值

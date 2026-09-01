@@ -33,11 +33,11 @@ namespace CalamityEntropy.Content.Items.Accessories.Cards
 
         public override void AddRecipes()
         {
-            // 脱离灾厄:StarblightSoot→星辉鳞尘,EssenceofSunlight 与原有光明之魂合并
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<StarlitScaleDust>(), 5)
-                .AddIngredient(ItemID.SoulofLight, 8)
-                .AddTile(TileID.CrystalBall)
+                .AddIngredient(ItemID.SoulofLight, 4)
+                .AddIngredient(ItemID.PixieDust, 4)
+                .AddIngredient(ItemID.FallenStar, 10)
+                .AddTile(TileID.WorkBenches)
                 .Register();
         }
     }

@@ -24,7 +24,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 
         public override void SetDefaults()
         {
-            Item.DamageType = DamageClass.Melee;
+            Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 26;
             Item.width = 48;
             Item.height = 52;
@@ -57,11 +57,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         {
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<BrillianceSwirlblade>())
-                .AddIngredient(ItemID.HellstoneBar, 8)
-                .AddTile(TileID.Anvils)
+                .AddIngredient(ItemID.HellstoneBar, 25)
+                .AddTile(TileID.Hellforge)
                 .Register();
         }
-        public override bool MeleePrefix()
+        public override bool RangedPrefix()
         {
             return true;
         }
@@ -179,7 +179,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         internal static Asset<Texture2D> Streak5Tex;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.width = 28;
             Projectile.height = 28;
             Projectile.tileCollide = false;

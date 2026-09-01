@@ -215,5 +215,9 @@ namespace CalamityEntropy.Assets.Register
         //领域全屏滤镜:交给 ScreenShaderData 的 Asset 形态构造器,由 EntropySkies 在 PostSetupContent 注册
         [VaultLoaden("CalamityEntropy/Assets/Effects/PopeDomainFilter", AssetMode.Effects, "PopeDomainPass")]
         public static Asset<Effect> PopeDomainFilter;
+
+        //巡游者天幕扭曲滤镜:同上走 PostSetupContent 注册,取代旧 CrSky 的 RenderTarget 扭曲流程
+        [VaultLoaden("CalamityEntropy/Assets/Effects/CruiserSkyFilter", AssetMode.Effects, "CruiserSkyPass")]
+        public static Asset<Effect> CruiserSkyFilter;
     }
 }

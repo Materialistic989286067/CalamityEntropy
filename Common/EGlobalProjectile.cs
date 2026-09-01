@@ -295,16 +295,6 @@ namespace CalamityEntropy.Common
             }
             if (projectile.friendly)
             {
-                if (projectile.TryGetOwner(out var owner))
-                {
-                    if (owner.Entropy().Godhead)
-                    {
-                        if (!projectile.minion && projectile.damage > 0)
-                        {
-                            projectile.Entropy().gh = true;
-                        }
-                    }
-                }
                 if (projectile.owner.ToPlayer().Entropy().BarrenCard)
                 {
                     // 灾厄盗贼伤害类型退役，荒瘠卡追踪改按原版投掷伤害判定
@@ -377,14 +367,7 @@ namespace CalamityEntropy.Common
             }
             if (projectile.friendly)
             {
-                if (projectile.friendly && projectile.owner >= 0)
-                {
-                    if (projectile.owner.ToPlayer().Entropy().VFHelmRanged)
-                    {
-                        maxDmgUps = 2;
-                        dmgupcount = 16 * projectile.extraUpdates;
-                    }
-                }
+                // 2026-08-31 平衡案:虚寂猎影盔职业奖励重做,原弹幕伤害递增机制退役(改为远伤×1.15+50%弹速,在头盔文件里)
                 if ((source is EntitySource_ItemUse && checkHoldOut && projectile.owner == Main.myPlayer && (projectile.type == ModContent.ProjectileType<VoidEchoProj>() || projectile.type == ModContent.ProjectileType<HB>() || projectile.type == ModContent.ProjectileType<GhostdomWhisperHoldout>() || projectile.type == ModContent.ProjectileType<RailPulseBowProjectile>() || projectile.type == ModContent.ProjectileType<SamsaraCasketProj>() || projectile.type == ModContent.ProjectileType<OblivionHoldout>() || projectile.type == ModContent.ProjectileType<HadopelagicEchoIIProj>())))
                 {
                     checkHoldOut = false;
@@ -652,16 +635,6 @@ namespace CalamityEntropy.Common
                 trail_pmn.Lifetime = trail_pmn.Time + 11;
             }
             promineceDamageAddition -= 0.006f / projectile.MaxUpdates;
-            if (projectile.TryGetOwner(out var owner))
-            {
-                if (owner.Entropy().Godhead)
-                {
-                    if (!projectile.minion && projectile.damage > 0)
-                    {
-                        projectile.Entropy().gh = true;
-                    }
-                }
-            }
             if (zypArrow)
             {
                 NPC target = projectile.FindTargetWithinRange(360, false);
@@ -669,6 +642,18 @@ namespace CalamityEntropy.Common
                 {
                     projectile.velocity += (target.Center - projectile.Center).SafeNormalize(Vector2.Zero) * 1.6f;
                     projectile.velocity *= 0.92f;
+                }
+            }
+            // 堕化卡组:投掷武器轻微追踪(2026-08-31 平衡案)
+            if (projectile.friendly && !projectile.minion && projectile.owner >= 0
+                && projectile.DamageType.CountsAsClass(DamageClass.Throwing)
+                && projectile.owner.ToPlayer().Entropy().EvilDeck)
+            {
+                NPC homeTarget = projectile.FindTargetWithinRange(400, false);
+                if (homeTarget != null && counter > 10)
+                {
+                    projectile.velocity += (homeTarget.Center - projectile.Center).SafeNormalize(Vector2.Zero) * 0.3f;
+                    projectile.velocity *= 0.995f;
                 }
             }
             if ((projectile.type == ProjectileID.LastPrismLaser || projectile.type == ProjectileID.LastPrism) && projectile.owner.ToPlayer().Entropy().WeaponBoost > 0)
@@ -843,52 +828,7 @@ namespace CalamityEntropy.Common
             {
                 Lighting.AddLight(projectile.Center, 0.7f, 0.7f, 0.9f);
             }
-            if (projectile.Entropy().gh && projectile.friendly)
-            {
-                if (projectile.owner == Main.myPlayer)
-                {
-                    if (!CELists.GodheadBlacklist.Contains(projectile.type))
-                    {
-                        foreach (NPC n in Main.ActiveNPCs)
-                        {
-                            if (!n.friendly && !n.dontTakeDamage)
-                            {
-                                float rsize = (projectile.width + projectile.height) / 2 * 6;
-                                if (rsize < 128)
-                                {
-                                    rsize = 128;
-                                }
-                                if (rsize > 600)
-                                {
-                                    rsize = 600;
-                                }
-                                if (CircleIntersectsRectangle(projectile.Center, rsize / 2, n.Hitbox))
-                                {
-                                    int c = projectile.Entropy().ghcounter;
-                                    if (c % 8 == 0)
-                                    {
-                                        bool canHit = true;
-                                        if (projectile.ModProjectile is ModProjectile mp)
-                                        {
-                                            bool? ch = mp.CanHitNPC(n);
-                                            if (ch.HasValue && !ch.Value)
-                                            {
-                                                canHit = false;
-                                            }
-                                        }
-                                        if (canHit)
-                                        {
-                                            int ydf = n.defense;
-                                            Main.LocalPlayer.ApplyDamageToNPC(n, projectile.damage.ApplyAccArmorDamageBonus(projectile.owner.ToPlayer()) / 26, 0, 0, false, DamageClass.Generic, false);
-                                        }
-                                    }
-                                    projectile.Entropy().ghcounter++;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            // 2026-08-31 平衡案:神性重做为玩家中心隐形光环(GodheadAura),原弹幕AoE脉冲退役
 
             return true;
         }
@@ -1445,36 +1385,24 @@ namespace CalamityEntropy.Common
             if (projectile.owner != -1 && projectile.friendly)
             {
                 EModPlayer plr = projectile.owner.ToPlayer().Entropy();
-                // 灾厄真近战伤害类型退役，改以「近战伤害且需持有者近身判定」近似真近战
-                if (projectile.owner.ToPlayer().Entropy().plagueEngine && projectile.DamageType.CountsAsClass(DamageClass.Melee) && projectile.ownerHitCheck)
-                {
-                    PlagueInternalCombustionEngine.ApplyTrueMeleeEffect(projectile.owner.ToPlayer());
-                }
+                // 2026-08-31 平衡案:瘟疫内燃机重做,原真近战回血/临时护甲退役(新效果在 EModPlayer.OnHitNPC/OnHurt)
                 if (plr.holyMoonlight && plr.HMRegenCd <= 0)
                 {
+                    // 2026-08-31 平衡案:护盾冷却期间按当前魔力吸血(100:1),45帧CD,单次上限5
                     if (plr.MagiShield <= 0)
                     {
-                        plr.HMRegenCd = 60;
-                        projectile.owner.ToPlayer().Heal(projectile.owner.ToPlayer().statManaMax2 / 350 + 5);
+                        plr.HMRegenCd = 45;
+                        int heal = int.Min(5, projectile.owner.ToPlayer().statMana / 100);
+                        if (heal > 0)
+                        {
+                            projectile.owner.ToPlayer().Heal(heal);
+                        }
                     }
                 }
                 if (plr.VFHelmMagic && projectile.owner >= 0)
                 {
-                    var player = projectile.owner.ToPlayer();
-                    if (player.HasBuff(BuffID.ManaSickness))
-                    {
-                        for (int i = 0; i < player.buffType.Length; i++)
-                        {
-                            if (player.buffType[i] == BuffID.ManaSickness)
-                            {
-                                player.buffTime[i] -= 30;
-                                if (player.buffTime[i] < 0)
-                                {
-                                    player.buffTime[i] = 0;
-                                }
-                            }
-                        }
-                    }
+                    // 2026-08-31 平衡案:虚灵宙法盔改为攻击敌人后大幅提升自然生命再生(5hp/s,持续5秒)
+                    plr.cosmosRegenTime = 300;
                 }
             }
         }

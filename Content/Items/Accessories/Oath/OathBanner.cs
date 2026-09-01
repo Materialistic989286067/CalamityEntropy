@@ -8,19 +8,17 @@ namespace CalamityEntropy.Content.Items.Accessories.Oath
     public class OathBanner : ModItem
     {
         public static float MoveSpeedDecrease = 0.1f;
-        public static float Endurance = 0.07f;
-        public static int LifeRegenSec = 1;
-        public static float BuffDamageAddition = 0.1f;
-        public static int BuffCritAddition = 6;
-        public static float BuffMoveSpeedAddition = 0.1f;
+        public static int TeamDefense = 4;
+        public static int TeamLifeRegenSec = 1;
+        public static float BuffDamageAddition = 0.09f;
+        public static int AggroBonus = 800;
+        public static int TeamBuffRange = 3200;
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             tooltips.Replace("[MSD]", MoveSpeedDecrease.ToPercent());
-            tooltips.Replace("[DR]", Endurance.ToPercent());
-            tooltips.Replace("[REG]", LifeRegenSec);
+            tooltips.Replace("[DR]", TeamDefense.ToString());
+            tooltips.Replace("[REG]", TeamLifeRegenSec);
             tooltips.Replace("[DMG]", BuffDamageAddition.ToPercent());
-            tooltips.Replace("[CRIT]", BuffCritAddition);
-            tooltips.Replace("[MSA]", BuffMoveSpeedAddition.ToPercent());
         }
         public override void SetDefaults()
         {
@@ -35,8 +33,10 @@ namespace CalamityEntropy.Content.Items.Accessories.Oath
         {
             player.Entropy().oathBanner = true;
             player.Entropy().oathBannerVisual = !hideVisual;
-            player.endurance += Endurance;
-            player.lifeRegen += LifeRegenSec * 2;
+            player.aggro += AggroBonus;
+            player.statDefense += TeamDefense;
+            player.lifeRegen += TeamLifeRegenSec * 2;
+            player.GetDamage(DamageClass.Generic) += BuffDamageAddition;
             player.Entropy().moveSpeed -= MoveSpeedDecrease;
         }
         public override void UpdateVanity(Player player)
@@ -46,7 +46,7 @@ namespace CalamityEntropy.Content.Items.Accessories.Oath
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.PalladiumPike).
+                AddIngredient(ItemID.Gungnir).
                 AddIngredient(ItemID.SoulofNight, 8).
                 AddIngredient(ItemID.Silk, 12).
                 Register();
@@ -69,8 +69,8 @@ namespace CalamityEntropy.Content.Items.Accessories.Oath
         public override void Update(Player player, ref int buffIndex)
         {
             player.GetDamage(DamageClass.Generic) += OathBanner.BuffDamageAddition;
-            player.GetCritChance(DamageClass.Generic) += OathBanner.BuffCritAddition;
-            player.Entropy().moveSpeed += OathBanner.BuffMoveSpeedAddition;
+            player.statDefense += OathBanner.TeamDefense;
+            player.lifeRegen += OathBanner.TeamLifeRegenSec * 2;
         }
     }
 }

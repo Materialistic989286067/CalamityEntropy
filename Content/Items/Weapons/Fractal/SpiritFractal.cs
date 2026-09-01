@@ -18,7 +18,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public override void SetDefaults()
         {
             Item.damage = 265;
-            Item.crit = 10;
             Item.DamageType = DamageClass.Melee;
             Item.width = 48;
             Item.height = 60;
@@ -33,6 +32,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<SpiritFractalHeld>();
             Item.shootSpeed = 12f;
+            Item.scale *= 0.66f;
         }
         public int atkType = 0;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -62,11 +62,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         }
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient<ElementalFractal>()
-                .AddIngredient<StarlessNight>()
-                .AddIngredient(ItemID.StarWrath)
-                .AddIngredient<RuneSong>()
-                .AddIngredient<NihilityFragments>(4)
+            CreateRecipe().AddIngredient<RuneSong>()
+                .AddIngredient<NihilityFragments>(10)
+                .AddIngredient(ItemID.LunarBar, 10)
                 .AddTile(TileID.LunarCraftingStation).Register();
         }
     }
@@ -135,17 +133,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 Projectile.localNPCHitCooldown = (int)(Projectile.MaxUpdates * 4 / owner.GetTotalAttackSpeed(Projectile.DamageType));
 
                 float RotF = MathHelper.ToRadians(280) + MathHelper.TwoPi * 3;
-                if (progress > 0.3f && progress < 0.7f)
-                    spawnProjCounter += owner.GetTotalAttackSpeed(Projectile.DamageType);
-                if (spawnProjCounter >= 6f)
-                {
-                    spawnProjCounter -= 6f;
-                    Vector2 spawnPos = Projectile.Center + Projectile.rotation.ToRotationVector2() * 48 * scale * Projectile.scale;
-                    if (Main.myPlayer == Projectile.owner)
-                    {
-                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), spawnPos, CEUtils.randomPointInCircle(0.1f) + Projectile.rotation.ToRotationVector2() * 8, ModContent.ProjectileType<GhastlySoulLarge>(), Projectile.damage / 7, Projectile.knockBack, Projectile.owner, 0, 1);
-                    }
-                }
                 alpha = 1;
                 scale = 1.8f;
                 Projectile.rotation = Projectile.velocity.ToRotation() + (MathHelper.ToRadians(-140) + RotF * CEUtils.GetRepeatedCosFromZeroToOne(progress, 1)) * (Projectile.velocity.X > 0 ? 1 : -1);
@@ -168,15 +155,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 scale = 1.8f;
                 Projectile.rotation = Projectile.velocity.ToRotation() + (RotF * -0.5f + RotF * CEUtils.GetRepeatedCosFromZeroToOne(progress, 3)) * Projectile.ai[0] * (Projectile.velocity.X > 0 ? -1 : 1);
                 Projectile.Center = Projectile.GetOwner().MountedCenter;
-                if (progress > 0.2f && shoot)
-                {
-                    shoot = false;
-
-                    for (int i = 0; i < 2; i++)
-                    {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Vector2)(CEUtils.normalize(Projectile.velocity) * 28 + CEUtils.randomPointInCircle(8)), ModContent.ProjectileType<FractalGhostBlade>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                    }
-                }
                 if (Projectile.velocity.X > 0)
                 {
                     owner.direction = 1;

@@ -1,18 +1,18 @@
 using CalamityEntropy.Content.Rarities;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
     public class SilvasCrown : ModItem
     {
-        public static float DDR = 0.25f;
-
+        // 2026-08-31 平衡案重做:2防,+25最大生命,给予蜂蜜增益(原每秒回血效果退役)
         public override void SetDefaults()
         {
             Item.width = 42;
             Item.height = 42;
-            Item.defense = 5;
+            Item.defense = 2;
             Item.value = Item.buyPrice(gold: 45);
             Item.rare = ModContent.RarityType<GlowGreen>();
             Item.accessory = true;
@@ -22,8 +22,8 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            // 脱离灾厄:灾厄防御损伤机制(defenseDamageRatio)随灾厄退场删除(player-api.md §5),自有 SCrown 效果保留
-            player.Entropy().SCrown = true;
+            player.statLifeMax2 += 25;
+            player.AddBuff(BuffID.Honey, 2);
         }
 
     }

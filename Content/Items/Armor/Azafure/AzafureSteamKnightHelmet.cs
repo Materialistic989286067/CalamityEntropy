@@ -45,7 +45,7 @@ namespace CalamityEntropy.Content.Items.Armor.Azafure
         {
             CreateRecipe()
                 .AddIngredient<AzafureHeavyHelmet>()
-                .AddRecipeGroup(CERecipeGroups.AnyOrichalcumBar, 8)
+                .AddIngredient(ItemID.ChlorophyteBar, 8)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
@@ -187,7 +187,7 @@ namespace CalamityEntropy.Content.Items.Armor.Azafure
                 if (DurabilityActive)
                 {
                     Player.Entropy().EDamageReduce += durability * 0.2f;
-                    Player.statDefense += (int)(durability * 24);
+                    Player.statDefense += (int)(durability * 20);
                     Player.noKnockback = true;
                 }
                 else

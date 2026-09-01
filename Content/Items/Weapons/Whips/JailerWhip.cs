@@ -32,7 +32,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ItemID.Bone, 2)
+            CreateRecipe().AddIngredient(ItemID.ShadowKey)
                 .AddIngredient(ItemID.Chain, 6)
                 .AddIngredient(ItemID.Silk, 4)
                 .AddIngredient(ItemID.HellstoneBar, 5)

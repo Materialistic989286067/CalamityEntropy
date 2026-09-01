@@ -50,7 +50,7 @@ namespace CalamityEntropy.Content.Projectiles
                 rotSpeed *= 0.99f;
                 if (fTarget != null)
                 {
-                    Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, (fTarget.Center - Projectile.Center).ToRotation(), 0.022f * pg, false);
+                    Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, (fTarget.Center - Projectile.Center).ToRotation(), 0.0154f * pg, false);
                 }
             }
             if (counter == 46 * Projectile.MaxUpdates)
@@ -59,7 +59,7 @@ namespace CalamityEntropy.Content.Projectiles
                 {
                     Projectile.rotation = (fTarget.Center - Projectile.Center).ToRotation();
                 }
-                Projectile.velocity = Projectile.rotation.ToRotationVector2() * 12;
+                Projectile.velocity = Projectile.rotation.ToRotationVector2() * 8.4f;
             }
             counter++;
         }

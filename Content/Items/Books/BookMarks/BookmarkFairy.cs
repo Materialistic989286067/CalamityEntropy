@@ -26,7 +26,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddRecipeGroup(CERecipeGroups.fairys, 1)
+                .AddIngredient(ItemID.PixieDust, 25)
                 .AddIngredient(ItemID.FallenStar, 5)
                 .AddTile(TileID.WorkBenches)
                 .Register();
@@ -44,6 +44,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override void SetDefaults()
         {
             base.SetDefaults();
+            fixedBaseDamage = 20;
             Projectile.FriendlySetDefaults(DamageClass.Magic, false, -1);
             Projectile.width = Projectile.height = 20;
             Projectile.usesLocalNPCImmunity = true;

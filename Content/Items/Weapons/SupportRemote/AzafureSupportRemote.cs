@@ -54,10 +54,9 @@ namespace CalamityEntropy.Content.Items.Weapons.SupportRemote
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<HellIndustrialComponents>(10)
-                .AddIngredient<AzafureCircuitry>(2)
-                .AddRecipeGroup(CERecipeGroups.AnyOrichalcumBar, 8)
                 .AddIngredient<AzafureDroneRemote>()
+                .AddIngredient(ItemID.HallowedBar, 10)
+                .AddIngredient<HellIndustrialComponents>(6)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }

@@ -15,8 +15,8 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            //盗贼并入远程(rogue-weapons: ProphecyFlyingKnife→远程)
-            Projectile.DamageType = DamageClass.Ranged;
+            //盗贼并入近战(rogue-weapons: ProphecyFlyingKnife→近战)
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 64;
             Projectile.height = 64;
             Projectile.friendly = true;

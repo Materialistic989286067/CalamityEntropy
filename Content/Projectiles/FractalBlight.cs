@@ -48,7 +48,8 @@ namespace CalamityEntropy.Content.Projectiles
             }
             if (homing != null)
             {
-                Projectile.velocity += (homing.Center - Projectile.Center).normalize() * 1.6f;
+                float homingStrength = Projectile.ai[1] == 1 ? 1.6f : 1.12f;
+                Projectile.velocity += (homing.Center - Projectile.Center).normalize() * homingStrength;
                 Projectile.velocity *= 0.96f;
             }
             if (Projectile.timeLeft < 60)

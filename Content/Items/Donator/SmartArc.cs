@@ -93,11 +93,10 @@ namespace CalamityEntropy.Content.Items.Donator
 
         public override void AddRecipes()
         {
-            // 灾厄原料按 material-map.md 替换：SeaPrism→珊瑚、PrismShard→水晶碎片
             CreateRecipe()
-                .AddIngredient(ItemID.IllegalGunParts, 2)
-                .AddIngredient(ItemID.Coral, 6)
-                .AddIngredient(ItemID.CrystalShard, 4)
+                .AddIngredient(ItemID.IllegalGunParts)
+                .AddIngredient(ItemID.IceBlock, 10)
+                .AddIngredient(ItemID.Diamond, 5)
                 .AddTile(TileID.Anvils)
                 .Register();
         }

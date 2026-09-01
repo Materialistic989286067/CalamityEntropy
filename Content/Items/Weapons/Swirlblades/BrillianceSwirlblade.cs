@@ -20,7 +20,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 
         public override void SetDefaults()
         {
-            Item.DamageType = DamageClass.Melee;
+            Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 24;
             Item.width = 42;
             Item.height = 46;
@@ -51,13 +51,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.WhitePearl, 6)
+                .AddIngredient(ItemID.Sapphire, 10)
                 .AddIngredient(ItemID.Coral, 10)
-                .AddIngredient(ItemID.CrystalShard, 6)
-                .AddTile(TileID.Anvils)
+                .AddIngredient(ItemID.WhitePearl, 3)
+                .AddTile(TileID.WorkBenches)
                 .Register();
         }
-        public override bool MeleePrefix()
+        public override bool RangedPrefix()
         {
             return true;
         }

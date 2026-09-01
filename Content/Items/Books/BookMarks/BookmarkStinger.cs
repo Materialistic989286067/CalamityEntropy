@@ -1,5 +1,4 @@
-﻿using CalamityEntropy.Content.Buffs;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -31,10 +30,6 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 
     public class StingerBMEffect : EBookProjectileEffect
     {
-        public override void OnHitNPC(Projectile projectile, NPC target, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<BonePiercingToxin>(), 200);
-        }
         public static int type = -1;
         public override void BookUpdate(Projectile projectile, bool ownerClient)
         {
@@ -50,7 +45,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                         NPC target = CEUtils.FindTarget_HomingProj(projectile, projectile.Center, 2000);
                         if (target != null)
                         {
-                            eb.ShootSingleProjectile(type, projectile.Center, (target.Center + target.velocity * 4 - projectile.Center).normalize() * 22, 0.1f, randomRotMult: 0);
+                            eb.ShootSingleProjectile(type, projectile.Center, (target.Center + target.velocity * 4 - projectile.Center).normalize() * 22, 1, randomRotMult: 0, fixedBaseDamage: 4);
                         }
                     }
                 }

@@ -4,11 +4,16 @@ using CalamityEntropy.Content.Projectiles.SamsaraCasket;
 using CalamityEntropy.Content.Rarities;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityEntropy.Content.Items.Books.BookMarks
 {
     public class BookMarkAuric : BookMark
     {
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[ItemID.EmpressBlade] = Type;
+        }
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -23,22 +28,23 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
     }
 
+    /// <summary>耀日书签(2026-08-31 平衡案重做):攻击时召唤3个黄金七彩矢攻击目标(固定基伤125)。</summary>
     public class BookMarkAuricBMEffect : EBookProjectileEffect
     {
-        public override void OnHitNPC(Projectile projectile, NPC target, int damageDone)
+        public override void OnShoot(EntropyBookHeldProjectile book)
         {
-            if (CECooldowns.CheckCD(ref CECooldowns.BMAuric, 10))
+            Projectile proj = book.Projectile;
+            Player owner = proj.GetOwner();
+            for (int i = 0; i < 3; i++)
             {
-                if (projectile.HasEBookEffect<APlusBMEffect>() ? true : Main.rand.NextBool(2))
+                // 原版七彩矢(FairyQueenMagicItemShot),ai[1]锁金色色相
+                int p = Projectile.NewProjectile(proj.GetSource_FromAI(), proj.Center,
+                    (proj.rotation + Main.rand.NextFloat(-0.7f, 0.7f)).ToRotationVector2() * 10f,
+                    ProjectileID.FairyQueenMagicItemShot, FixedDamage(owner, 125, proj.DamageType), proj.knockBack, proj.owner,
+                    0, 0.12f + Main.rand.NextFloat(0.05f));
+                if (p >= 0 && p < Main.maxProjectiles)
                 {
-                    Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center, CEUtils.randomRot().ToRotationVector2() * 22, ModContent.ProjectileType<DragonGoldenFire>(), projectile.damage / 4, projectile.knockBack, projectile.owner).ToProj().DamageType = projectile.DamageType;
-                }
-                for (int i = 0; i < (projectile.HasEBookEffect<APlusBMEffect>() ? 3 : 5); i++)
-                {
-                    if (Main.rand.NextBool(2))
-                    {
-                        Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center, CEUtils.randomRot().ToRotationVector2() * 16, ModContent.ProjectileType<ZeratosBullet0>(), projectile.damage / 4, projectile.knockBack, projectile.owner).ToProj().DamageType = projectile.DamageType;
-                    }
+                    Main.projectile[p].DamageType = proj.DamageType;
                 }
             }
         }

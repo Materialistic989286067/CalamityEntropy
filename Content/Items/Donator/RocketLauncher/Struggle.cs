@@ -71,12 +71,11 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 
         public override void AddRecipes()
         {
-            // 灾厄原料按 material-map.md 替换：CoreofCalamity→叶绿锭、UnholyCore→狱石锭
             CreateRecipe()
                 .AddIngredient<Crave>()
                 .AddIngredient<OsseousRemains>(20)
-                .AddIngredient(ItemID.ChlorophyteBar, 3)
-                .AddIngredient(ItemID.HellstoneBar, 10)
+                .AddIngredient(ItemID.ShroomiteBar, 20)
+                .AddIngredient(ItemID.HellstoneBar, 20)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }

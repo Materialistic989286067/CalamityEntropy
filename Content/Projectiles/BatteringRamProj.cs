@@ -101,7 +101,7 @@ namespace CalamityEntropy.Content.Projectiles
                         Projectile.ai[1]++;
                         player.mount.Dismount(player);
                         player.RemoveAllGrapplingHooks();
-                        player.velocity = Projectile.velocity * 4 * (Main.zenithWorld ? -1 : 1);
+                        player.velocity = Projectile.velocity * 2 * (Main.zenithWorld ? -1 : 1);
                     }
                     if (Projectile.timeLeft > 52)
                     {

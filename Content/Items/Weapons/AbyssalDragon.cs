@@ -1,3 +1,4 @@
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
@@ -49,8 +50,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.LastPrism)
-                .AddIngredient(ModContent.ItemType<VoidBar>(), 5)
+                .AddIngredient<Amnesty.Amnesty>()
+                .AddIngredient(ItemID.StardustDragonStaff)
+                .AddIngredient<VoidBar>(5)
                 .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();
         }

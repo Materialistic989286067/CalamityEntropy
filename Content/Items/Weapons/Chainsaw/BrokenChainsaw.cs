@@ -33,13 +33,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AzafurePlating>(5).
                 AddIngredient(ItemID.IronBar, 10).
                 AddIngredient(ItemID.Chain, 1).
                 AddTile(TileID.Anvils).
                 Register();
             CreateRecipe().
-                AddIngredient<AzafurePlating>(5).
                 AddIngredient(ItemID.LeadBar, 10).
                 AddIngredient(ItemID.Chain, 1).
                 AddTile(TileID.Anvils).

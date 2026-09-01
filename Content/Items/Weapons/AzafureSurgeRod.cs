@@ -40,7 +40,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.shoot = ModContent.ProjectileType<AzafureSurgeRodThrow>();
             Item.shootSpeed = 36f;
-            Item.DamageType = DamageClass.Ranged;
+            Item.DamageType = DamageClass.Melee;
         }
 
         public static int ht = -1;
@@ -89,7 +89,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/AzafureSurgeRod";
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Ranged, true, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, true, -1);
             Projectile.width = Projectile.height = 32;
             Projectile.timeLeft = 60 * 4;
         }
@@ -280,7 +280,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/AzafureSurgeRod";
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.width = Projectile.height = 16;
         }
         public override bool? CanHitNPC(NPC target)

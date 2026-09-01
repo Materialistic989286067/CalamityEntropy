@@ -43,12 +43,11 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ModContent.ItemType<AzafurePlating>(), 6).
-                AddIngredient(ModContent.ItemType<AzafureCircuitry>(), 8).
-                AddIngredient(ItemID.SoulofLight, 5).
-                AddTile(TileID.Anvils).
-                Register();
+            CreateRecipe()
+                .AddIngredient(ItemID.PlatinumBow)
+                .AddIngredient(ItemID.Cog, 50)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
         }
     }
 }

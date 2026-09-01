@@ -78,8 +78,6 @@ namespace CalamityEntropy.Common
         public static Effect kscreen;
         [VaultLoaden("CalamityEntropy/Assets/Effects/fscreen", AssetMode.EffectValue, "fscreen")]
         public static Effect fscreen;
-        [VaultLoaden("CalamityEntropy/Assets/Effects/fscreenCr", AssetMode.EffectValue, "fscreen")]
-        public static Effect fscreenCr;
         [VaultLoaden("CalamityEntropy/Assets/Effects/kscreen2", AssetMode.EffectValue, "kscreen2")]
         public static Effect kscreen2;
         [VaultLoaden("CalamityEntropy/Assets/Effects/cvoid", AssetMode.EffectValue, "cvoid")]

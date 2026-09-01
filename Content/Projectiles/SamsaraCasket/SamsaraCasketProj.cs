@@ -32,7 +32,10 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
         {
             Projectile.width = 10;
             Projectile.height = 10;
-            Projectile.DamageType = NoneTypeDamageClass.Instance;
+            // 2026-08-31 平衡案:视界之键重做为8栏召唤武器,棺体按仆从记账
+            Projectile.DamageType = DamageClass.Summon;
+            Projectile.minion = true;
+            Projectile.minionSlots = HorizonssKey.MinionSlotCost;
             Projectile.hostile = false;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;

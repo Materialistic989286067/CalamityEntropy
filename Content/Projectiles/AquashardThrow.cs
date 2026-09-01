@@ -33,7 +33,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 46;
             Projectile.height = 46;
             Projectile.friendly = true;
@@ -77,7 +77,7 @@ namespace CalamityEntropy.Content.Projectiles
             odp.Add(Projectile.Center);
             odr.Add(Projectile.rotation);
             if (Projectile.ai[0] > 12 && Projectile.IsEmpowered() && Main.myPlayer == Projectile.owner && ++Projectile.localAI[1] % 3 == 0 && ++Projectile.localAI[2] < 9)
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - Projectile.velocity * 3, Projectile.velocity * 0.2f, ModContent.ProjectileType<AquashardSplit>(), (int)(Projectile.damage * 0.25), 0f, Projectile.owner).ToProj().DamageType = DamageClass.Ranged;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - Projectile.velocity * 3, Projectile.velocity * 0.2f, ModContent.ProjectileType<AquashardSplit>(), (int)(Projectile.damage * 0.25), 0f, Projectile.owner).ToProj().DamageType = DamageClass.Melee;
 
             if (odp.Count > 16)
             {
@@ -178,7 +178,7 @@ namespace CalamityEntropy.Content.Projectiles
                     for (int i = 0; i < (Projectile.IsEmpowered() ? 0 : 3); i++)
                     {
                         Vector2 velocity = new Vector2(Main.rand.NextFloat(-6, 6), Main.rand.NextFloat(-34, -26));
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<AquaShardWaterBullet>(), (int)(Projectile.damage * 0.33f), 0f, Projectile.owner).ToProj().DamageType = DamageClass.Ranged;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<AquaShardWaterBullet>(), (int)(Projectile.damage * 0.33f), 0f, Projectile.owner).ToProj().DamageType = DamageClass.Melee;
                     }
                 }
                 if (Projectile.IsEmpowered())
@@ -265,7 +265,7 @@ namespace CalamityEntropy.Content.Projectiles
     {
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, 2);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, 2);
             Projectile.width = Projectile.height = 16;
             Projectile.timeLeft = 100;
             Projectile.Opacity = 0;
@@ -301,7 +301,7 @@ namespace CalamityEntropy.Content.Projectiles
     {
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, 2);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, 2);
             Projectile.width = Projectile.height = 46;
             Projectile.timeLeft = 120;
         }

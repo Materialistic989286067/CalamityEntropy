@@ -39,11 +39,10 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.Bone)
-                .AddIngredient(ItemID.Silk, 8)
-                .AddRecipeGroup(CERecipeGroups.evilBar, 5)
+                .AddIngredient(ItemID.GoldenKey)
+                .AddIngredient(ItemID.Silk, 10)
                 .AddIngredient(ItemID.GoldCoin, 99)
-                .AddTile(TileID.Anvils)
+                .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
 

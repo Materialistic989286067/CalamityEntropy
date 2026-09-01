@@ -77,8 +77,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ItemID.FragmentSolar, 16)
+            CreateRecipe()
                 .AddIngredient(ItemID.Uzi)
+                .AddIngredient(ItemID.FragmentSolar, 10)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

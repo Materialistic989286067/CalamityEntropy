@@ -1,4 +1,6 @@
 using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
@@ -117,12 +119,10 @@ namespace CalamityEntropy.Content.Items.Donator
 
         public override void AddRecipes()
         {
-            // 灾厄原料按 material-map.md 替换：AngelicShotgun→欢庆Mk2、Auralis→SDMG、AuricBar→虚空锭、DarksunFragment→日耀碎片；宇宙砧→远古操纵机
             CreateRecipe()
-                .AddIngredient(ItemID.Celeb2)
-                .AddIngredient(ItemID.SDMG)
-                .AddIngredient<VoidBar>(5)
-                .AddIngredient(ItemID.FragmentSolar, 20)
+                .AddIngredient<BuriedSun>()
+                .AddIngredient<ChaoticPiece>(5)
+                .AddIngredient(ItemID.HallowedBar, 25)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

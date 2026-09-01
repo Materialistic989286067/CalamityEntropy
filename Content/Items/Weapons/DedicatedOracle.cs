@@ -56,9 +56,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.SoulofNight, 9)
-                .AddIngredient(ItemID.Ectoplasm, 8)
-                .AddTile(TileID.LunarCraftingStation)
+                .AddIngredient(ItemID.SpookyWood, 100)
+                .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
     }

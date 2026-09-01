@@ -1,7 +1,9 @@
 using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Dusts;
+using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Books;
+using CalamityEntropy.Content.Tiles;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
@@ -29,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 
         public override void SetDefaults()
         {
-            Item.DamageType = DamageClass.Melee;
+            Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 40;
             Item.width = 86;
             Item.height = 86;
@@ -63,12 +65,12 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         {
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<BlazingSwirlblade>())
-                .AddIngredient(ItemID.StarWrath)
-                .AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 8)
-                .AddTile(TileID.LunarCraftingStation)
+                .AddIngredient(ModContent.ItemType<ExergySwirlblade>())
+                .AddIngredient<VoidBar>(5)
+                .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();
         }
-        public override bool MeleePrefix()
+        public override bool RangedPrefix()
         {
             return true;
         }
@@ -407,7 +409,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
     {
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.width = 32;
             Projectile.height = 32;
             Projectile.timeLeft = 180;
@@ -542,7 +544,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         internal static Asset<Texture2D> JawsTex;
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.width = 28;
             Projectile.height = 28;
             Projectile.tileCollide = false;

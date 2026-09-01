@@ -329,8 +329,8 @@ namespace CalamityEntropy.Common
             var mp = player.Entropy();
             if (mp.BlackFlameCd <= 0 && player.whoAmI == Main.myPlayer)
             {
-                mp.BlackFlameCd = item.useTime - 2;
-                Projectile.NewProjectile(player.GetSource_FromAI(), player.Center, (Main.MouseWorld - player.Center).SafeNormalize(Vector2.One) * 14, ModContent.ProjectileType<BlackFire>(), player.GetWeaponDamage(item) / 8 + 1, 2, player.whoAmI);
+                mp.BlackFlameCd = Math.Max(item.useTime, Tarnish.BlackFireCooldownMin);
+                Projectile.NewProjectile(player.GetSource_FromAI(), player.Center, (Main.MouseWorld - player.Center).SafeNormalize(Vector2.One) * 14, ModContent.ProjectileType<BlackFire>(), Tarnish.BlackFireDamage, 2, player.whoAmI);
             }
             return null;
         }
@@ -636,7 +636,7 @@ namespace CalamityEntropy.Common
             // 潜行系统退役：原「换装清空灾厄潜行值」拦截已移除（ServerConfig.ClearStealthWhenChangeEquipSet 已一并删除）
             if (player.GetModPlayer<AtbmPlayer>().Active && item.ModItem is not AzafureTBMTerminal)
                 return false;
-            if ((player.HasBuff<VoidVirus>() || (CalamityEntropy.EntropyMode && player.Entropy().HitTCounter > 0)) && item.healLife > 0)
+            if ((CalamityEntropy.EntropyMode && player.Entropy().HitTCounter > 0) && item.healLife > 0)
             {
                 return false;
             }
@@ -736,11 +736,7 @@ namespace CalamityEntropy.Common
 
         public override void OnHitNPC(Item item, Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            // 灾厄真近战伤害类型退役，物品直挥本身即为真近战，改按近战伤害类型判定
-            if (player.Entropy().plagueEngine && item.DamageType.CountsAsClass(DamageClass.Melee))
-            {
-                PlagueInternalCombustionEngine.ApplyTrueMeleeEffect(player);
-            }
+            // 2026-08-31 平衡案:瘟疫内燃机重做,原真近战效果退役(新效果统一挂 EModPlayer.OnHitNPC)
             // 原对灾厄「星流brand」的 WeaponBoost 强化（追加星辰弹幕）已随灾厄脱钩移除
         }
 
@@ -1582,10 +1578,12 @@ namespace CalamityEntropy.Common
             if (item.type == ItemID.EaterOfWorldsBossBag)
             {
                 itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<CursedTorch>(), 2));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<MindCorruptor>(), 5));
             }
             if (item.type == ItemID.BrainOfCthulhuBossBag)
             {
                 itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<CreeperWand>(), 2));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<SinewLash>(), 5));
             }
             if (item.type == ItemID.EyeOfCthulhuBossBag)
             {
@@ -1618,7 +1616,6 @@ namespace CalamityEntropy.Common
             }
             if (item.type == ItemID.SkeletronBossBag)
             {
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAries>()));
                 itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<OblivionSkull>()));
             }
             if (item.type == ItemID.QueenBeeBossBag)
@@ -1636,7 +1633,7 @@ namespace CalamityEntropy.Common
             if (item.type == ItemID.WallOfFleshBossBag)
             {
                 itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkFlesh>()));
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<HungryLantern>(), 3));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<HungryLantern>(), 5));
             }
             if (item.Is<NihilityTwinBag>())
             {
@@ -1653,10 +1650,6 @@ namespace CalamityEntropy.Common
                 itemLoot.Add(new CommonDrop(ModContent.ItemType<BookMarkLunar>(), 5, 1, 1, 3));
                 itemLoot.Add(new CommonDrop(ModContent.ItemType<MoonlightCore>(), 5, 1, 1, 2));
             }
-            if (item.type == ItemID.SkeletronPrimeBossBag)
-            {
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkMechanical>()));
-            }
             if (item.type == ItemID.QueenSlimeBossBag)
             {
                 itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkOfLight>()));
@@ -1667,7 +1660,6 @@ namespace CalamityEntropy.Common
             }
             if (item.type == ItemID.EyeOfCthulhuBossBag)
             {
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkSagittarius>(), 2));
                 itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkVirgo>(), 2));
             }
             if (item.type == ItemID.PlanteraBossBag)
@@ -1714,101 +1706,29 @@ namespace CalamityEntropy.Common
                 itemLoot.Add(new CommonDrop(ModContent.ItemType<InspirationCard>(), 10, 1, 1, 3));
             }
             // —— 以下为脱离灾厄重挂（bookmark-rehang.md：原灾厄宝袋掉落改挂原版宝袋 / 自有 Boss 袋）——
-            if (item.type == ItemID.EaterOfWorldsBossBag || item.type == ItemID.BrainOfCthulhuBossBag)
-            {
-                // 原灾厄腐巢/血肉宿主袋 1/2
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAerialite>(), 2));
-            }
-            if (item.type == ItemID.SkeletronPrimeBossBag)
-            {
-                // 原灾厄硫磺火元素袋 1/2
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkBrimstone>(), 2));
-            }
-            if (item.type == ItemID.PlanteraBossBag)
-            {
-                // 原灾厄之影（CalamitasClone）袋 100%
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkOfNight>()));
-            }
-            if (item.type == ItemID.FishronBossBag)
-            {
-                // 原灾厄利维坦袋 1/2（海洋主题一致）
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAquarius>(), 2));
-            }
-            if (item.type == ItemID.CultistBossBag)
-            {
-                // 原灾厄星神游龙袋 1/2；原灾厄毁灭者躯干 100% 直掉
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAstral>(), 2));
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacrificalMask>()));
-            }
-            if (item.type == ItemID.GolemBossBag)
-            {
-                // 原灾厄瘟疫使者歌莉娅袋 1/4
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<PlagueInternalCombustionEngine>(), 4));
-            }
-            if (item.type == ItemID.MoonLordBossBag)
-            {
-                // 原星辉灾变 Astrageldon 袋挂点，脱钩后重挂月总袋 1/10
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkIntergelactic>(), 10));
-            }
             if (item.Is<ApsychosBag>())
             {
                 // 原灾厄史莱姆之神袋 1/2
                 itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkTaurus>(), 2));
             }
-            if (item.Is<LuminarisBag>())
-            {
-                // 原灾厄水澜灾虫（AquaticScourge）袋 1/2
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkCapricorn>(), 2));
-            }
-            if (item.Is<ProphetBag>())
-            {
-                // 原灾厄白金星舰袋 1/2
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkScorpio>(), 2));
-            }
             if (item.Is<NihilityTwinBag>())
             {
                 // 原灾厄神明使徒段位掉落集中重挂（书签 100%，武器/饰品 1/4，bookmark-rehang §四）
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkProfaned>()));
                 itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<HellBohea>(), 4));
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacredStone>(), 4));
                 itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BottleDarkMatter>(), 4));
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<AnimaSola>(), 4));
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<HeartOfStorm>(), 4));
+                // 2026-08-31 平衡案:风暴之心改为合成(3星旋碎片+3夜明锭),袋装来源退役
             }
-            if (item.Is<CruiserBag>())
-            {
-                // 原灾厄终局段位掉落集中重挂（书签 100%，武器/饰品 1/4，bookmark-rehang §四）
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAuric>()));
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkPactOfWar>()));
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkPactOfDecay>()));
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<FlowingLight>(), 4));
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<TheFilthyContractWithMammon>(), 4));
-            }
+            // 2026-08-31 平衡案:仙萤流光改为虚空井合成,巡游者袋来源退役
             // —— 增补段（bookmark-rehang / misc-map §五 · 表外补充裁定的原无映射条目）——
-            if (item.type == ItemID.PlanteraBossBag)
-            {
-                // 原灾厄之影袋趣味武器
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<FriendBox>(), 10));
-            }
-            if (item.type == ItemID.SkeletronPrimeBossBag)
-            {
-                // 原灾厄硫火元素袋趣味武器（与 BookMarkBrimstone 同挂点）
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<EvilFriend>(), 10));
-            }
-            if (item.type == ItemID.GolemBossBag)
-            {
-                // 石后成长饰品保底（另有熵之馈赠礼包来源，misc-map §五）
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<SusiesBracelet>(), 4));
-            }
+            // 2026-08-31 平衡案:苏西腕带改为海龟25%掉落,石巨人袋来源退役
             if (item.type == ItemID.MoonLordBossBag)
             {
                 // 原灾厄亵渎卫士袋宠物（18.5→ML 档）
                 itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<LavaPancake>(), 10));
             }
-            if (item.type == ItemID.OceanCrateHard)
+            if (item.type == ItemID.ObsidianLockbox)
             {
-                // 原 ExtraLoot 灾厄热泉宝匣注入改挂困难海洋木匣（misc-map §五；巫师条件商店来源保留）
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<EnduranceCard>(), 15));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<EnduranceCard>(), 3));
             }
             // 原挂在灾厄新手包（StarterBag）上的开局注入已定稿分流：IGetFromStarterBag 物品经 StartBagGItem
             // 注入自有礼包「熵之馈赠」，MagicStorage/ImproveGame 便利注入重挂 EntropyStarterBag.ModifyItemLoot（2026-08-27）

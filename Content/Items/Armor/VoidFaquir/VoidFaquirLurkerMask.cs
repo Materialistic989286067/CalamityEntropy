@@ -58,12 +58,7 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
 
         public override void AddRecipes()
         {
-            // 脱离灾厄:TwistingNether→幽渊魂髓(material-map)
-            CreateRecipe()
-                .AddIngredient(ModContent.ItemType<VoidBar>(), 14)
-                .AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 4)
-                .AddTile(ModContent.TileType<VoidWellTile>())
-                .Register();
+            // 2026-08-31 平衡案:暂时删去盗贼头盔的获取方式(不可合成,物品保留)
         }
     }
 }

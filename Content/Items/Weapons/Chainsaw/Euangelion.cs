@@ -34,8 +34,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
         {
             CreateRecipe().
                 AddIngredient<EnslavedStar>().
-                AddIngredient(ItemID.LunarBar, 5).
-                AddIngredient<NihilityFragments>(15).
+                AddIngredient(ItemID.FragmentSolar, 4).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

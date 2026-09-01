@@ -16,6 +16,10 @@ namespace CalamityEntropy.Content.Items.Accessories
 {
     public class TalismanOfTheAzureAbyss : ModItem
     {
+        // 2026-08-31 平衡案重做:增加玩家无敌帧;武器命中目标时不断召唤追踪的深渊漩涡
+        // (0.5秒内置节流);受击时召唤3个漩涡,5秒效果冷却。水下机动风味保留。
+        public const int VortexBaseDamage = 1200;
+
         public override void SetDefaults()
         {
             Item.width = 52;
@@ -23,15 +27,13 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.accessory = true;
             Item.value = Item.buyPrice(platinum: 2, gold: 40);
             Item.rare = ModContent.RarityType<VoidPurple>();
-            Item.defense = 10;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.Entropy().accAzureAbyss = true;
-            player.lifeRegen += 5;
-            player.GetDamage(DamageClass.Generic) += 0.15f;
-            player.Entropy().moveSpeed += 0.15f;
+            // 增加无敌帧(与十字章项链同源)
+            player.longInvince = true;
         }
 
         public static void ApplyBuffImmune(Player player)
@@ -43,10 +45,10 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<VoidBar>(5).
-                AddIngredient(ItemID.CrystalShard, 6).
-                AddIngredient<WraithSoulEssence>(4).
-                AddTile(ModContent.TileType<VoidWellTile>()).
+                AddIngredient(ItemID.StarVeil).
+                AddIngredient(ItemID.NeptunesShell).
+                AddIngredient(ItemID.LunarBar, 10).
+                AddTile(TileID.LunarCraftingStation).
                 Register();
         }
     }

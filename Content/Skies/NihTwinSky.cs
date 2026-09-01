@@ -1,54 +1,20 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Graphics.Effects;
 
 namespace CalamityEntropy.Content.Skies
 {
-    public class NihTwinSky : CustomSky
+    /// <summary>虚寂双子暗幕(基座迁移版):深蓝纯色罩,最远切片一次绘制。</summary>
+    public class NihTwinSky : CESkyBase
     {
-        private bool skyActive;
-        private float opacity;
+        protected override bool KeepActive() => Main.LocalPlayer.Entropy().NihSky > 0;
 
+        public override float GetCloudAlpha() => (1f - opacity) * 0.97f + 0.03f;
 
-        public override void Deactivate(params object[] args)
+        protected override void DrawFar(SpriteBatch spriteBatch)
         {
-            skyActive = Main.LocalPlayer.Entropy().NihSky > 0;
-        }
-
-        public override void Reset()
-        {
-            skyActive = false;
-        }
-
-        public override bool IsActive()
-        {
-            return skyActive || opacity > 0f;
-        }
-
-        public override void Activate(Vector2 position, params object[] args)
-        {
-            skyActive = true;
-        }
-
-        public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
-        {
-            Main.spriteBatch.Draw(CEUtils.pixelTex, new Rectangle(-1000, -1000, Main.screenWidth + 1000, Main.screenHeight + 1000), new Color(0, 10, 60) * 0.5f * opacity);
-        }
-        public override void Update(GameTime gameTime)
-        {
-            if (Main.LocalPlayer.Entropy().NihSky <= 0 || Main.gameMenu)
-                skyActive = false;
-
-            if (skyActive && opacity < 1f)
-                opacity += 0.02f;
-            else if (!skyActive && opacity > 0f)
-                opacity -= 0.02f;
-
-            Opacity = opacity;
-        }
-        public override float GetCloudAlpha()
-        {
-            return (1f - opacity) * 0.97f + 0.03f;
+            //旧实现无门控,0.5 透明度每帧按切片数叠加饱和到 0.75~0.99(随生物群系漂移);
+            //单次绘制按其观感取 0.85 校准,留在调用方批次,矩形恰好铺满
+            spriteBatch.Draw(CEUtils.pixelTex, CESkyDrawing.CallerFullscreen, new Color(0, 10, 60) * (0.85f * opacity));
         }
     }
 }

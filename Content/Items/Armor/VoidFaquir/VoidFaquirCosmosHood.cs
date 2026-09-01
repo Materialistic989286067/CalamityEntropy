@@ -18,7 +18,7 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
             Item.width = 18;
             Item.height = 18;
             Item.value = Item.buyPrice(platinum: 2, gold: 40);
-            Item.defense = 20;
+            Item.defense = 32;
             Item.rare = ModContent.RarityType<VoidPurple>();
         }
 
@@ -32,29 +32,27 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
             player.armorEffectDrawOutlines = true;
         }
 
+        // 2026-08-31 平衡案:职业专属奖励=魔力病持续减半、攻击敌人大幅提升自然生命再生(5hp/s,5秒)
         public override void UpdateArmorSet(Player player)
         {
-            player.GetArmorPenetration(DamageClass.Generic) += 20;
             player.Entropy().VFSet = true;
-
-
             player.Entropy().VFHelmMagic = true;
-
+            player.Entropy().halfManaSick = true;
         }
 
         public override void UpdateEquip(Player player)
         {
             player.Entropy().magiVF = true;
-            player.GetDamage(DamageClass.Magic) += 0.3f;
-            player.GetCritChance(DamageClass.Magic) += 25;
-            player.statManaMax2 += 150;
+            player.GetDamage(DamageClass.Magic) += 0.23f;
+            player.GetCritChance(DamageClass.Magic) += 18;
+            player.statLifeMax2 += 80;
+            player.statManaMax2 += 100;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<VoidBar>(), 14)
-                .AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 4)
+                .AddIngredient(ModContent.ItemType<VoidBar>(), 12)
                 .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();
         }

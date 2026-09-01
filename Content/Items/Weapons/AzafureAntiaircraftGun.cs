@@ -50,10 +50,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<HellIndustrialComponents>(4)
-                .AddIngredient<AzafurePlating>(10)
-                .AddIngredient(ItemID.HallowedBar, 6)
-                .AddIngredient(ItemID.HellstoneBar, 18)
+                .AddIngredient(ItemID.RocketLauncher)
+                .AddIngredient<HellIndustrialComponents>(10)
+                .AddIngredient(ItemID.ShroomiteBar, 10)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }

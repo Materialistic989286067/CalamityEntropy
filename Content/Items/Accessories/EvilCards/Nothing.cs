@@ -21,7 +21,7 @@ namespace CalamityEntropy.Content.Items.Accessories.EvilCards
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.GetModPlayer<EModPlayer>().NothingCard = true;
-            player.Entropy().AttackVoidTouch += 0.06f;
+            player.Entropy().AttackVoidTouch += 0.03f;
         }
 
     }

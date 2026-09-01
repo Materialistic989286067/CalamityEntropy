@@ -14,14 +14,13 @@ namespace CalamityEntropy.Content.Items.Books
             Item.mana = 5;
         }
         public override int HeldProjectileType => ModContent.ProjectileType<AncientScripturesHeld>();
-        public override int SlotCount => 2;
 
         public override void AddRecipes()
         {
             // 原灾厄 LoreAwakening(新手袋赠品, 零门槛)原料删除, 不影响可达性
             CreateRecipe()
-                .AddIngredient(ItemID.Leather, 6)
-                .AddIngredient(ItemID.ManaCrystal, 1)
+                .AddIngredient(ItemID.Silk, 10)
+                .AddIngredient(ItemID.ManaCrystal, 3)
                 .AddTile(TileID.WorkBenches)
                 .Register();
         }

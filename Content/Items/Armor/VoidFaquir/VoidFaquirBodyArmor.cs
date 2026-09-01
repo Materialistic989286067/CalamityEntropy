@@ -26,23 +26,20 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
             Item.width = 38;
             Item.height = 34;
             Item.value = Item.buyPrice(platinum: 2, gold: 40);
-            Item.defense = 40;
+            Item.defense = 44;
             Item.rare = ModContent.RarityType<VoidPurple>();
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage(DamageClass.Generic) += 0.10f;
+            player.GetDamage(DamageClass.Generic) += 0.12f;
             player.GetCritChance(DamageClass.Generic) += 5;
-            player.GetArmorPenetration(DamageClass.Generic) += 5;
-
         }
 
         public override void AddRecipes()
         {
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<VoidBar>(), 18)
-                .AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 5)
                 .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();
         }

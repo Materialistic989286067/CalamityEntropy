@@ -52,7 +52,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             CreateRecipe()
                 .AddIngredient(ItemID.PhoenixBlaster)
-                .AddIngredient(ItemID.IllegalGunParts, 4)
+                .AddIngredient(ItemID.IllegalGunParts, 1)
                 .AddIngredient<TectonicShard>(8)
                 .AddTile(TileID.Hellforge)
                 .Register();

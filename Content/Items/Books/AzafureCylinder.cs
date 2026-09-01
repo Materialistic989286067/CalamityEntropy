@@ -25,7 +25,6 @@ namespace CalamityEntropy.Content.Items.Books
             Item.rare = ModContent.RarityType<AzafureOrange>();
         }
         public override int HeldProjectileType => ModContent.ProjectileType<AzafureCylinderHeld>();
-        public override int SlotCount => 3;
         [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/Azafure")]
         internal static Asset<Texture2D> BookMarkSlotTex;
         public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
@@ -33,11 +32,10 @@ namespace CalamityEntropy.Content.Items.Books
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<HellIndustrialComponents>(6)
-                .AddIngredient(ItemID.ManaCrystal)
-                .AddIngredient(ItemID.HellstoneBar, 8)
-                .AddIngredient(ItemID.Obsidian, 6)
-                .AddTile(TileID.Hellforge)
+                .AddIngredient<HellIndustrialComponents>(10)
+                .AddIngredient(ItemID.HellstoneBar, 10)
+                .AddIngredient(ItemID.ManaCrystal, 10)
+                .AddTile(TileID.Anvils)
                 .Register();
 
         }

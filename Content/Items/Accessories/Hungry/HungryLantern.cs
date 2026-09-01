@@ -18,7 +18,6 @@ namespace CalamityEntropy.Content.Items.Accessories.Hungry
             Item.rare = ItemRarityID.LightRed;
         }
         public static string ID => "HungryLantern";
-        public static float TagDamage = 0.08f;
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.Entropy().addEquip(ID);
@@ -26,7 +25,6 @@ namespace CalamityEntropy.Content.Items.Accessories.Hungry
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            tooltips.Replace("[A]", TagDamage.ToPercent());
         }
         private static int projType = -1;
         public static int ProjType { get { if (projType == -1) { projType = ModContent.ProjectileType<TheHungry>(); } return projType; } }
@@ -54,6 +52,7 @@ namespace CalamityEntropy.Content.Items.Accessories.Hungry
             modifiers.ArmorPenetration += 50;
         }
         public NPC target = null;
+        private int latchHealTimer = 0;
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D vein = this.getTextureAlt("Vein");
@@ -98,10 +97,19 @@ namespace CalamityEntropy.Content.Items.Accessories.Hungry
                     Projectile.frame = 0;
                     Projectile.frameCounter = 0;
                     Projectile.velocity *= 0;
+                    latchHealTimer++;
+                    if (latchHealTimer >= 60)
+                    {
+                        latchHealTimer = 0;
+                        Player owner = Projectile.GetOwner();
+                        if (owner.statLife < owner.statLifeMax2)
+                            owner.Heal(1);
+                    }
                 }
             }
             else
             {
+                latchHealTimer = 0;
                 Player player = Projectile.GetOwner();
                 Projectile.position += player.velocity;
                 if (CEUtils.getDistance(Projectile.Center, player.Center) > 180)

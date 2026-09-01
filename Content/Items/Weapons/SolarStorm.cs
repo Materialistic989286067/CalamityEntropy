@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.DataStructures;
@@ -44,12 +45,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.Uzi)
-                .AddIngredient(ItemID.SDMG)
                 .AddIngredient<Prominence>()
-                .AddIngredient<VoidBar>(5)
-                .AddIngredient(ItemID.FragmentSolar, 20)
-                .AddIngredient(ItemID.FragmentVortex, 5)
+                .AddIngredient(ItemID.Uzi)
+                .AddIngredient<NihilityFragments>(10)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

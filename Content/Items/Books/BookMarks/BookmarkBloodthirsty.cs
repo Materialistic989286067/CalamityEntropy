@@ -7,7 +7,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityEntropy.Content.Items.Books.BookMarks
 {
-    public class BookmarkBloodthirsty : BookMark, IPriceFromRecipe
+    public class BookmarkBloodthirsty : BookMark
     {
         public override void SetDefaults()
         {
@@ -19,7 +19,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override Color tooltipColor => new Color(255, 6, 6);
         public override void ModifyStat(EBookStatModifer modifer)
         {
-            modifer.attackSpeed += Main.LocalPlayer.Entropy().BloodthirstyEffect * 0.3f;
+            modifer.attackSpeed += 0.15f;
             modifer.lifeSteal += 0.1f;
         }
         public override EBookProjectileEffect getEffect()
@@ -28,17 +28,6 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override void AddRecipes()
         {
-            // 血珠改双平行配方: 脊椎骨版与腐肉版, 覆盖两种邪恶世界
-            CreateRecipe()
-                .AddIngredient(ItemID.Bone, 2)
-                .AddIngredient(ItemID.Vertebrae)
-                .AddTile(TileID.Bookcases)
-                .Register();
-            CreateRecipe()
-                .AddIngredient(ItemID.Bone, 2)
-                .AddIngredient(ItemID.RottenChunk)
-                .AddTile(TileID.Bookcases)
-                .Register();
         }
         public override void OnCreated(ItemCreationContext context)
         {

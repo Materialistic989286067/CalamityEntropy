@@ -1,5 +1,6 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Items.Books.BookMarks;
 using CalamityEntropy.Content.Projectiles.Cruiser;
 using System.Collections.Generic;
 using Terraria;
@@ -164,7 +165,8 @@ namespace CalamityEntropy.Content.NPCs
                 .Add(new Item(ItemID.FossilOre, 50))
                 .Add(ItemID.SharkToothNecklace)
                 .Add(ItemID.StaticHook)
-                .Add(ItemID.MusicBoxBoss5);
+                .Add(ItemID.MusicBoxBoss5)
+                .Add<BookmarkMarivium>();
             npcShop.Register();
         }
 
@@ -174,6 +176,12 @@ namespace CalamityEntropy.Content.NPCs
             {
                 if (item == null || item.type == ItemID.None)
                 {
+                    continue;
+                }
+
+                if (item.type == ModContent.ItemType<BookmarkMarivium>())
+                {
+                    item.shopCustomPrice = Item.buyPrice(platinum: 45);
                     continue;
                 }
 

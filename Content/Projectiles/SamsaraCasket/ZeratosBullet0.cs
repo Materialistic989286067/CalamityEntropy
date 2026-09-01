@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
         public override void SetDefaults()
         {
             // 灾厄均伤职业→自有NoneType(同为各职业20%继承),与轮回棺其余弹幕一致
-            Projectile.DamageType = NoneTypeDamageClass.Instance;
+            Projectile.DamageType = DamageClass.Summon;
             Projectile.width = 40;
             Projectile.height = 40;
             Projectile.friendly = true;

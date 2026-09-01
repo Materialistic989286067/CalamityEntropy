@@ -1,3 +1,5 @@
+using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Tiles;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
@@ -94,6 +96,16 @@ namespace CalamityEntropy.Content.Items.Donator
         public override bool AltFunctionUse(Player player)
         {
             return true;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe()
+                .AddIngredient(ItemID.SpellTome)
+                .AddIngredient<VoidBar>(5)
+                .AddIngredient(ItemID.SoulofNight, 20)
+                .AddTile(ModContent.TileType<VoidWellTile>())
+                .Register();
         }
     }
 

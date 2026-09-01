@@ -26,7 +26,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 
         public override void SetDefaults()
         {
-            Item.DamageType = DamageClass.Melee;
+            Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 30;
             Item.width = 50;
             Item.height = 58;
@@ -59,12 +59,12 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         {
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<GlacierSwirlblade>())
-                .AddIngredient(ItemID.ChlorophyteClaymore)
-                .AddIngredient(ItemID.Ectoplasm, 6)
+                .AddIngredient(ItemID.SpectreBar, 5)
+                .AddIngredient(ItemID.MartianConduitPlating, 100)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
-        public override bool MeleePrefix()
+        public override bool RangedPrefix()
         {
             return true;
         }
@@ -239,7 +239,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = DamageClass.Melee;
+            Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 12;
             Projectile.height = 12;
             Projectile.friendly = true;

@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
 using Terraria;
@@ -43,9 +44,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.LastPrism)
-                .AddIngredient(ModContent.ItemType<WyrmTooth>(), 12)
-                .AddIngredient(ModContent.ItemType<FadingRunestone>())
+                .AddIngredient(ItemID.ChargedBlasterCannon)
+                .AddIngredient<WyrmTooth>(12)
+                .AddIngredient<FadingRunestone>()
                 .AddTile(ModContent.TileType<AbyssalAltarTile>())
                 .Register();
         }

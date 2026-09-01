@@ -1,4 +1,5 @@
-using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
@@ -71,11 +72,8 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 
         public override void AddRecipes()
         {
-            // 灾厄原料按 material-map.md 替换：Spyker→电球发射器、UniversalGenesis→欢庆Mk2、MiracleMatter→虚空锭
             CreateRecipe()
-                .AddIngredient(ItemID.ElectrosphereLauncher)
-                .AddIngredient(ItemID.Celeb2)
-                .AddIngredient<VoidBar>()
+                .AddIngredient<Redemption>()
                 .AddIngredient<FadingRunestone>()
                 .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();
@@ -89,8 +87,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
             {
                 var v = velocity + CEUtils.randomPointInCircle(4);
                 int p = Projectile.NewProjectile(source, position + velocity * 1.5f, v, type, damage, knockback, player.whoAmI, MaxStick, ExplodeRadius);
-                p.ToProj().Entropy().applyBuffs.Add(ModContent.BuffType<MiracleBlight>());
-                p.ToProj().Entropy().applyBuffs.Add(ModContent.BuffType<TrueVulnerabilityHex>());
+                p.ToProj().Entropy().applyBuffs.Add(ModContent.BuffType<VoidTouch>());
                 p.ToProj().Entropy().flameTrail = true;
                 if (p.ToProj().ModProjectile is BaseMissileProj m)
                 {

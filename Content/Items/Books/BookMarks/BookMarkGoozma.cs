@@ -24,12 +24,11 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override Texture2D UITexture => BookMark.GetUITexture("Goozma");
         public override void AddRecipes()
         {
-            // 原联动模组 Boss 掉落, 脱钩后改为自有合成线
             CreateRecipe()
                 .AddIngredient(ItemID.Gel, 999)
                 .AddIngredient(ItemID.PinkGel, 99)
-                .AddIngredient<WraithSoulEssence>(5)
-                .AddTile(TileID.LunarCraftingStation)
+                .AddIngredient(ItemID.RainbowBrick, 99)
+                .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
         public override void modifyShootCooldown(ref int shootCooldown)

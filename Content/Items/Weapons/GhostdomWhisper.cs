@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Common;
+using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
 using Terraria;
@@ -51,9 +52,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.Phantasm, 1)
-                .AddIngredient(ModContent.ItemType<NihilityFragments>(), 8)
-                .AddIngredient(ModContent.ItemType<VoidBar>(), 5)
+                .AddIngredient<Kinanition>()
+                .AddIngredient<VoidBar>(5)
                 .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();
         }

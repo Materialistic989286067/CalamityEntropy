@@ -287,11 +287,13 @@ namespace CalamityEntropy
             if (EntropyMode && num < 22)
                 num = 22;
             int leastDmg = (int)((num * 0.01f) * self.statLifeMax2);
+            // 2026-08-31 平衡案:神谕卡组单次受伤上限改为最大生命66.7%,带5秒内置冷却
             if (self.Entropy().oracleDeck)
             {
-                if (info.Damage > self.statLifeMax2 / 2)
+                int cap = (int)(self.statLifeMax2 * 0.667f);
+                if (info.Damage > cap && CECooldowns.CheckBMProc("OracleDeckDamageCap", 300))
                 {
-                    info.Damage = self.statLifeMax2 / 2;
+                    info.Damage = cap;
                 }
             }
             if (info.Damage < leastDmg)
@@ -554,7 +556,7 @@ namespace CalamityEntropy
 
         private void player_heal(On_Player.orig_Heal orig, Player self, int amount)
         {
-            if (!self.HasBuff<VoidVirus>() && !(EntropyMode && self.Entropy().HitTCounter > 0))
+            if (!(EntropyMode && self.Entropy().HitTCounter > 0))
             {
                 orig(self, amount);
             }

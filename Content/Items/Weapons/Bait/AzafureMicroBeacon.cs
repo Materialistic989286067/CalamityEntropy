@@ -59,8 +59,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
         {
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(6)
-                .AddIngredient(ItemID.MeteoriteBar, 8)
-                .AddIngredient<AzafureCircuitry>(2)
+                .AddIngredient(ItemID.HellstoneBar, 15)
                 .AddTile(TileID.Anvils)
                 .Register();
         }

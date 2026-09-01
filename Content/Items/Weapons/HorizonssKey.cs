@@ -40,6 +40,9 @@ namespace CalamityEntropy.Content.Items.Weapons
     }
     public class HorizonssKey : ModItem
     {
+        // 2026-08-31 平衡案:去除成长性,重做为占用8仆从栏的召唤师武器,固定面板。
+        public const int BaseDamage = 50;
+        public const float MinionSlotCost = 8f;
         public override bool AltFunctionUse(Player player) => true;
         public override void SetDefaults()
         {
@@ -48,18 +51,12 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useTime = 30;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.RaiseLamp;
-            Item.damage = 15;
-            Item.crit = 5;
-            Item.DamageType = NoneTypeDamageClass.Instance;
+            Item.damage = BaseDamage;
+            Item.DamageType = DamageClass.Summon;
             Item.noMelee = true;
             Item.value = Item.buyPrice(silver: 1);
             Item.rare = ItemRarityID.Red;
             Item.Entropy().Legend = true;
-        }
-
-        public override void UpdateInventory(Player player)
-        {
-            Item.damage = (int)(15 * damageMul());
         }
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
@@ -105,251 +102,37 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void HoldItem(Player player)
         {
-            player.Entropy().sCasketLevel = 0;
-            if (NPC.downedBoss2)
-            {
-                player.Entropy().sCasketLevel = 1;
-            }
-            if (Main.hardMode)
-            {
-                player.Entropy().sCasketLevel = 2;
-            }
-            if (NPC.downedPlantBoss)
-            {
-                player.Entropy().sCasketLevel = 3;
-            }
-            if (NPC.downedMoonlord)
-            {
-                player.Entropy().sCasketLevel = 4;
-            }
-            if (EDownedBosses.downedAbyssalWraith)
-            {
-                player.Entropy().sCasketLevel = 5;
-            }
-            if (EDownedBosses.downedCruiser)
-            {
-                player.Entropy().sCasketLevel = 6;
-            }
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<SamsaraCasketProj>()] < 1)
+            // 去成长:棺体能力恒为最高档
+            player.Entropy().sCasketLevel = 6;
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<SamsaraCasketProj>()] < 1
+                && player.maxMinions - player.slotsMinions >= MinionSlotCost)
             {
                 int p = Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.Center, Vector2.Zero, ModContent.ProjectileType<SamsaraCasketProj>(), Item.damage, player.GetWeaponKnockback(Item), player.whoAmI);
-
+                if (p >= 0 && p < Main.maxProjectiles)
+                {
+                    Main.projectile[p].originalDamage = Item.damage;
+                }
             }
-
-
         }
 
         public static float getVoidTouchLevel()
         {
-            return EDownedBosses.downedCruiser ? 4 : 0;
+            // 2026-08-31 平衡案:不再造成虚空之触
+            return 0;
         }
 
         public static int getArmorPen()
         {
-            int ap = 0;
-            if (NPC.downedAncientCultist)
-            {
-                ap += 20;
-            }
-            if (EDownedBosses.downedNihilityTwin)
-            {
-                ap += 30;
-            }
-            ap += 10 * Main.LocalPlayer.Entropy().WeaponBoost;
-            return ap;
-        }
-        public static int getLevel()
-        {
-            int j = 0;
-            if (NPC.downedSlimeKing)
-            {
-                j++;
-            }
-            if (NPC.downedBoss1)
-            {
-                j++;
-            }
-            if (NPC.downedBoss2)
-            {
-                j++;
-            }
-            if (NPC.downedBoss2)
-            {
-                j++;
-            }
-            if (NPC.downedBoss3)
-            {
-                j++;
-            }
-            if (Main.hardMode)
-            {
-                j++;
-            }
-            if (NPC.downedMechBossAny)
-            {
-                j++;
-            }
-            if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
-            {
-                j++;
-            }
-            if (NPC.downedPlantBoss)
-            {
-                j++;
-            }
-            if (NPC.downedGolemBoss)
-            {
-                j++;
-            }
-            if (NPC.downedAncientCultist)
-            {
-                j++;
-            }
-            if (NPC.downedMoonlord)
-            {
-                j++;
-            }
-            if (NPC.downedMoonlord)
-            {
-                j++;
-            }
-            if (EDownedBosses.downedNihilityTwin)
-            {
-                j++;
-            }
-            if (EDownedBosses.downedNihilityTwin)
-            {
-                j++;
-            }
-            if (EDownedBosses.downedNihilityTwin)
-            {
-                j++;
-            }
-            if (EDownedBosses.downedAbyssalWraith)
-            {
-                j++;
-            }
-            if (EDownedBosses.downedCruiser)
-            {
-                j++;
-            }
-            if (EDownedBosses.downedCruiser)
-            {
-                j++;
-            }
-            if (EDownedBosses.downedCruiser)
-            {
-                j++;
-            }
-            return j;
-        }
-
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            tooltips.Add(new TooltipLine(Mod, "Caskept Level", Mod.GetLocalization("hkLevel") + " " + getLevel().ToString() + "/20"));
-        }
-
-        public float damageMul()
-        {
-            float ad = 0.7f;
-            if (NPC.downedSlimeKing)
-            {
-                ad += 0.2f;
-            }
-            if (NPC.downedBoss1)
-            {
-                ad += 0.2f;
-            }
-            if (NPC.downedBoss2)
-            {
-                ad += 0.2f;
-            }
-            if (NPC.downedBoss3)
-            {
-                ad += 0.1f;
-            }
-            if (Main.hardMode)
-            {
-                ad += 0.65f;
-            }
-            if (NPC.downedMechBossAny)
-            {
-                ad += 0.3f;
-            }
-            if (NPC.downedGolemBoss)
-            {
-                ad += 0.2f;
-            }
-            if (NPC.downedAncientCultist)
-            {
-                ad += 0.15f;
-            }
-            if (NPC.downedMoonlord)
-            {
-                ad += 0.5f;
-            }
-            if (EDownedBosses.downedNihilityTwin)
-            {
-                ad += 0.3f;
-            }
-            if (NPC.downedMoonlord)
-            {
-                ad += 0.1f;
-            }
-            if (EDownedBosses.downedNihilityTwin)
-            {
-                ad += 0.1f;
-            }
-            if (EDownedBosses.downedNihilityTwin)
-            {
-                ad += 0.5f;
-            }
-            if (EDownedBosses.downedAbyssalWraith)
-            {
-                ad += 0.6f;
-            }
-            if (EDownedBosses.downedCruiser)
-            {
-                ad += 1.75f;
-            }
-            if (EDownedBosses.downedCruiser)
-            {
-                ad += 0.3f;
-            }
-            if (EDownedBosses.downedCruiser)
-            {
-                ad += 0.5f;
-            }
-            if (EDownedBosses.downedCruiser)
-            {
-                ad += 0.75f;
-            }
-            return ad;
-        }
-        public override void ModifyWeaponCrit(Player player, ref float crit)
-        {
-            float c = 0.0f;
-            if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
-            {
-                c += 15f;
-            }
-            if (NPC.downedGolemBoss)
-            {
-                c += 10f;
-            }
-            if (NPC.downedAncientCultist)
-            {
-                c += 15f;
-            }
-            crit += c;
+            return 50 + 10 * Main.LocalPlayer.Entropy().WeaponBoost;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.FallenStar, 5)
-                .AddIngredient(ItemID.WoodenSword)
-                .AddTile(TileID.WorkBenches).Register();
+                .AddIngredient(ItemID.BreakerBlade)
+                .AddIngredient(ItemID.FragmentStardust, 5)
+                .AddIngredient(ItemID.LunarBar, 5)
+                .AddTile(TileID.LunarCraftingStation).Register();
         }
     }
 }

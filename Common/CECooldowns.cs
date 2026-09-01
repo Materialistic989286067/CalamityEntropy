@@ -24,6 +24,20 @@ namespace CalamityEntropy.Common
         public static int BMAuric = 0;
         public static int MineBoxCd = 0;
         public static int BMTaurus = 0;
+
+        /// <summary>书签触发内置CD表(effect名→剩余帧)。固定时长,不吃冷却缩减。</summary>
+        public static Dictionary<string, int> BMProcCD = new Dictionary<string, int>();
+
+        /// <summary>书签触发统一闸门:未在CD中则放行并上CD(默认60帧=1秒)。仅弹幕主人客户端调用。</summary>
+        public static bool CheckBMProc(string effectName, int cd = 60)
+        {
+            if (BMProcCD.TryGetValue(effectName, out int t) && t > 0)
+            {
+                return false;
+            }
+            BMProcCD[effectName] = cd;
+            return true;
+        }
         public static void Update()
         {
             CountDown(ref BMLightCD);
@@ -34,6 +48,15 @@ namespace CalamityEntropy.Common
             CountDown(ref BMAuric);
             CountDown(ref MineBoxCd);
             CountDown(ref BMTaurus);
+
+            if (BMProcCD.Count > 0)
+            {
+                foreach (string key in new List<string>(BMProcCD.Keys))
+                {
+                    if (--BMProcCD[key] <= 0)
+                        BMProcCD.Remove(key);
+                }
+            }
 
             for (int i = 0; i < cooldowns.Count; i++)
             {

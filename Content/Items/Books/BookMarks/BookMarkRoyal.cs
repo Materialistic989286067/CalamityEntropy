@@ -28,8 +28,8 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             if (book.Projectile.owner == Main.myPlayer)
             {
-                book.ShootSingleProjectile(ModContent.ProjectileType<JewelRuby>(), book.Projectile.Center, Vector2.Zero);
-                book.ShootSingleProjectile(ModContent.ProjectileType<JewelEmerald>(), book.Projectile.Center, Vector2.Zero);
+                book.ShootSingleProjectile(ModContent.ProjectileType<JewelRuby>(), book.Projectile.Center, Vector2.Zero, 1, 1, 1, fixedBaseDamage: 25);
+                book.ShootSingleProjectile(ModContent.ProjectileType<JewelEmerald>(), book.Projectile.Center, Vector2.Zero, 1, 1, 1, fixedBaseDamage: 50);
                 book.ShootSingleProjectile(ModContent.ProjectileType<JewelSapphire>(), book.Projectile.Center, Vector2.Zero);
             }
         }
@@ -38,8 +38,8 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             if (player.whoAmI == Main.myPlayer)
             {
                 var src = player.GetSource_FromThis();
-                Projectile.NewProjectile(src, position, Vector2.Zero, ModContent.ProjectileType<JewelRuby>(), damage, knockback, player.whoAmI);
-                Projectile.NewProjectile(src, position, Vector2.Zero, ModContent.ProjectileType<JewelEmerald>(), damage, knockback, player.whoAmI);
+                Projectile.NewProjectile(src, position, Vector2.Zero, ModContent.ProjectileType<JewelRuby>(), EBookProjectileEffect.FixedDamage(player, 25, DamageClass.Magic), knockback, player.whoAmI);
+                Projectile.NewProjectile(src, position, Vector2.Zero, ModContent.ProjectileType<JewelEmerald>(), EBookProjectileEffect.FixedDamage(player, 50, DamageClass.Magic), knockback, player.whoAmI);
                 Projectile.NewProjectile(src, position, Vector2.Zero, ModContent.ProjectileType<JewelSapphire>(), damage, knockback, player.whoAmI);
             }
         }
@@ -138,7 +138,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 if (shootCooldown <= 0)
                 {
                     shootCooldown = ((EntropyBookHeldProjectile)ShooterModProjectile).GetShootCd() * 3;
-                    ((EntropyBookHeldProjectile)ShooterModProjectile).ShootSingleProjectile(ModContent.ProjectileType<RubyProj>(), Projectile.Center, (target.Center - Projectile.Center), 0.2f, shotSpeedMul: 0.4f);
+                    ((EntropyBookHeldProjectile)ShooterModProjectile).ShootSingleProjectile(ModContent.ProjectileType<RubyProj>(), Projectile.Center, (target.Center - Projectile.Center), 1, shotSpeedMul: 0.4f, fixedBaseDamage: 25);
                 }
             }
             if (shootCooldown > 0)

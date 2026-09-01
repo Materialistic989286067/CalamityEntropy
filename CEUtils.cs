@@ -291,6 +291,10 @@ namespace CalamityEntropy
         }
         public static int GetPriceFromRecipe(this ModItem item, Recipe recipe)
         {
+            if (recipe == null)
+            {
+                return 0;
+            }
             int total = 0;
             foreach (var i in recipe.requiredItem)
             {

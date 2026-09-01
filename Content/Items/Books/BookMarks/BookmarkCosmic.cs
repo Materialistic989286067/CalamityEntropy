@@ -1,5 +1,5 @@
 using CalamityEntropy.Common;
-using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
@@ -48,7 +48,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                         spos = target.Center + CEUtils.randomRot().ToRotationVector2() * 460;
                         rot = (target.Center - spos).ToRotation();
                     }
-                    eb.ShootSingleProjectile(BookmarkCosmic.ProjType, spos, rot.ToRotationVector2(), 0.28f, 1, 1f);
+                    eb.ShootSingleProjectile(BookmarkCosmic.ProjType, spos, rot.ToRotationVector2(), 1, 1, 1f, fixedBaseDamage: 500);
                 }
             }
         }
@@ -234,8 +234,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 320);
-            target.AddBuff<MarkedforDeath>(90);
+            target.AddBuff(ModContent.BuffType<VoidTouch>(), 320);
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {

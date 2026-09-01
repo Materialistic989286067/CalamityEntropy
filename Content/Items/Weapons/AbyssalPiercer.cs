@@ -31,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<AbyssalPiercerThrow>();
             Item.shootSpeed = 40f;
-            Item.DamageType = DamageClass.Ranged;
+            Item.DamageType = DamageClass.Melee;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -47,15 +47,6 @@ namespace CalamityEntropy.Content.Items.Weapons
                 return false;
             }
             return true;
-        }
-        public override void AddRecipes()
-        {
-            CreateRecipe()
-                .AddIngredient(ItemID.FossilOre, 6)
-                .AddIngredient(ItemID.SoulofNight, 2)
-                .DisableDecraft()
-                .AddTile(TileID.Anvils)
-                .Register();
         }
     }
 }

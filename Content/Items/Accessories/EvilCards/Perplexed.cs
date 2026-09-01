@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.Items.Accessories.EvilCards
         {
             player.GetModPlayer<EModPlayer>().PerplexedCard = true;
             player.GetCritChance(DamageClass.Generic) -= 10;
-            player.GetAttackSpeed(DamageClass.Generic) += 0.2f;
+            player.GetAttackSpeed(DamageClass.Melee) += 0.12f;
         }
 
         public override void AddRecipes()

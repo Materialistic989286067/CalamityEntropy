@@ -40,7 +40,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<EmberSpikeThrow>();
             Item.shootSpeed = 12f;
-            Item.DamageType = DamageClass.Ranged;
+            Item.DamageType = DamageClass.Melee;
         }
         public override void AddRecipes()
         {
@@ -93,7 +93,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/EmberSpike";
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Ranged, true, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, true, -1);
             Projectile.width = Projectile.height = 12;
             Projectile.timeLeft = 120 * 4;
             Projectile.MaxUpdates = 3;
@@ -267,7 +267,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/EmberSpike";
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.width = Projectile.height = 12;
             Projectile.timeLeft = 60;
         }
@@ -294,7 +294,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/EmberSpike";
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.width = Projectile.height = 12;
             Projectile.timeLeft = 10000;
         }

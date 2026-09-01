@@ -25,57 +25,29 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             return new LunarBMEffect();
         }
     }
+    /// <summary>夜明书签(2026-08-31 平衡案重做):命中时在敌人头顶落下2~3道月耀射线(固定基伤180)。</summary>
     public class LunarBMEffect : EBookProjectileEffect
     {
-        public void applyEffect(NPC n, float p, Projectile projectile)
-        {
-            n.GetGlobalNPC<LunarBMGlobalNPC>().progress += p;
-            n.GetGlobalNPC<LunarBMGlobalNPC>().decreaceCd = 40;
-            if (n.GetGlobalNPC<LunarBMGlobalNPC>().progress >= 1)
-            {
-                int dmg = (int)(projectile.damage * 1.6f);
-                n.GetGlobalNPC<LunarBMGlobalNPC>().progress = 0;
-                projectile.GetOwner().ApplyDamageToNPC(n, dmg, 0, 0, false, projectile.DamageType);
-                CEUtils.PlaySound("light_bolt", 1, n.Center);
-                for (int i = 0; i < 16; i++)
-                {
-                    //PRT_GlowSpark2 AdditiveBlend走Configure,旧EParticle尾参顺序对齐
-                    PRTLoader.NewParticle<PRT_GlowSpark2>(n.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(6, 12), Color.Lerp(Color.SpringGreen, new Color(200, 230, 255), Main.rand.NextFloat()), Main.rand.NextFloat(0.1f, 0.2f)).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0);
-                }
-                ProjectileLoader.OnHitNPC(projectile, n, n.CalculateHitInfo(dmg, 0, false, 0, projectile.DamageType), dmg);
-            }
-        }
         public override void UpdateProjectile(Projectile projectile, bool ownerClient)
         {
             (projectile.ModProjectile as EBookBaseProjectile).color = Color.YellowGreen;
-            if (ownerClient)
+        }
+        public override void OnHitNPC(Projectile projectile, NPC target, int damageDone)
+        {
+            Player owner = projectile.GetOwner();
+            int count = Main.rand.Next(2, 4);
+            for (int i = 0; i < count; i++)
             {
-                foreach (NPC n in Main.ActiveNPCs)
+                Vector2 spawnPos = target.Center + new Vector2(Main.rand.NextFloat(-140, 140), -Main.rand.NextFloat(480, 620));
+                int p = Projectile.NewProjectile(projectile.GetSource_FromThis(), spawnPos,
+                    (target.Center - spawnPos).SafeNormalize(Vector2.UnitY) * 15f,
+                    ProjectileID.LunarFlare, FixedDamage(owner, 180, projectile.DamageType), projectile.knockBack, projectile.owner);
+                if (p >= 0 && p < Main.maxProjectiles)
                 {
-                    if (!n.friendly && !n.dontTakeDamage)
-                    {
-                        if (projectile.ModProjectile is EBookBaseLaser el)
-                        {
-                            List<Vector2> points = el.getSamplePoints();
-                            foreach (Vector2 point in points)
-                            {
-                                if (CEUtils.getDistance(point, n.Center) < BookMarkLunar.distance)
-                                {
-                                    applyEffect(n, 1f / 120f, projectile);
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (CEUtils.getDistance(projectile.Center, n.Center) < BookMarkLunar.distance)
-                            {
-                                applyEffect(n, 1f / 120f, projectile);
-                            }
-                        }
-                    }
+                    Main.projectile[p].DamageType = projectile.DamageType;
                 }
             }
+            CEUtils.PlaySound("light_bolt", 1, target.Center);
         }
     }
     public class LunarBMGlobalNPC : GlobalNPC

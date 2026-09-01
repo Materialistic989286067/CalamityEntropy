@@ -19,7 +19,7 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = NoneTypeDamageClass.Instance;
+            Projectile.DamageType = DamageClass.Summon;
             Projectile.width = 164;
             Projectile.height = 164;
             Projectile.friendly = true;

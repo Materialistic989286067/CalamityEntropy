@@ -19,7 +19,7 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
             Item.width = 18;
             Item.height = 18;
             Item.value = Item.buyPrice(platinum: 2, gold: 40);
-            Item.defense = 34;
+            Item.defense = 42;
             Item.rare = ModContent.RarityType<VoidPurple>();
         }
 
@@ -33,19 +33,21 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
             player.armorEffectDrawOutlines = true;
         }
 
+        // 2026-08-31 平衡案:职业专属奖励=远程伤害加成额外×1.15、+50%射弹速度
         public override void UpdateArmorSet(Player player)
         {
-            player.GetArmorPenetration(DamageClass.Generic) += 20;
+            player.GetDamage(DamageClass.Ranged) *= 1.15f;
+            player.Entropy().shootSpeed += 0.5f;
             player.Entropy().VFSet = true;
             player.Entropy().VFHelmRanged = true;
-            player.Entropy().shootSpeed += 1.0f;
         }
 
         public override void UpdateEquip(Player player)
         {
             player.Entropy().rangerVF = true;
-            player.GetDamage(DamageClass.Ranged) += 0.32f;
-            player.GetCritChance(DamageClass.Ranged) += 30;
+            player.GetDamage(DamageClass.Ranged) += 0.18f;
+            player.GetCritChance(DamageClass.Ranged) += 25;
+            player.statLifeMax2 += 80;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
@@ -56,8 +58,7 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<VoidBar>(), 14)
-                .AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 4)
+                .AddIngredient(ModContent.ItemType<VoidBar>(), 12)
                 .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();
         }

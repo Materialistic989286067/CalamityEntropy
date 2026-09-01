@@ -88,7 +88,26 @@ namespace CalamityEntropy.Content.Projectiles
             WhipAI();
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => false;
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            // TML 把 ProjectileLoader.Colliding 提前到原版 IsAWhip 鞭节判定之前。
+            // 这里再恒返回 false 会吞掉整条鞭子的命中, 必须自己做节碰撞。
+            List<Vector2> points = Projectile.WhipPointsForCollision;
+            points.Clear();
+            Projectile.FillWhipControlPoints(Projectile, points);
+            int halfW = projHitbox.Width / 2;
+            int halfH = projHitbox.Height / 2;
+            for (int i = 0; i < points.Count; i++)
+            {
+                Point p = points[i].ToPoint();
+                projHitbox.Location = new Point(p.X - halfW, p.Y - halfH);
+                if (projHitbox.Intersects(targetHitbox))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         public virtual void WhipAI()
         {
 

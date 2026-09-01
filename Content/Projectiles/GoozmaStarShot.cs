@@ -62,8 +62,8 @@ namespace CalamityEntropy.Content.Projectiles
             for (int i = 0; i < Main.rand.Next(1, 3); i++)
             {
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, CEUtils.randomVec(24), ModContent.ProjectileType<GRainbowRocket>(), Projectile.damage / 3, Projectile.knockBack, Projectile.owner);
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, CEUtils.randomVec(24), ModContent.ProjectileType<PartySparkle>(), Projectile.damage / 8, Projectile.knockBack, Projectile.owner);
             }
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, CEUtils.randomVec(24), ModContent.ProjectileType<PartySparkle>(), (int)(Projectile.damage * 0.8f), Projectile.knockBack, Projectile.owner);
         }
         public override bool PreDraw(ref Color lightColor)
         {

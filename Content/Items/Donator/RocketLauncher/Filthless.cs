@@ -1,6 +1,7 @@
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo;
+using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault.PRT;
@@ -82,11 +83,10 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 
         public override void AddRecipes()
         {
-            // 灾厄原料按 material-map.md 替换：DivineGeode×20+RuinousSoul×10→虚无碎片（合并为×30）
             CreateRecipe()
-                .AddIngredient<Zeal>()
-                .AddIngredient<OsseousRemains>(20)
-                .AddIngredient<NihilityFragments>(30)
+                .AddIngredient<RustExpeditioner>()
+                .AddIngredient(ItemID.LunarBar, 10)
+                .AddIngredient(ItemID.SpectreBar, 10)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

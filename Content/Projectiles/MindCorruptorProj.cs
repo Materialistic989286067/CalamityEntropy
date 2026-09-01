@@ -1,5 +1,4 @@
 using CalamityEntropy.Content.Buffs;
-using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault.PRT;
 using System;
@@ -183,7 +182,6 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.netUpdate = true;
             CEUtils.PlaySound("corruptwhip_hit2", 1, target.Center);
             target.AddBuff(ModContent.BuffType<MindCorruptorWhipDebuff>(), 240);
-            target.AddBuff(ModContent.BuffType<BrainRot>(), 600);
         }
         public override bool? CanHitNPC(NPC target)
         {

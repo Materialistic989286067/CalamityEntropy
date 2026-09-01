@@ -50,9 +50,9 @@ namespace CalamityEntropy.Content.Items.Weapons.AzafureMissileLauncher
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<HellIndustrialComponents>(8)
+                .AddIngredient<HellIndustrialComponents>(6)
                 .AddIngredient<AzafureCircuitry>(4)
-                .AddIngredient(ItemID.HallowedBar, 10)
+                .AddIngredient(ItemID.ShroomiteBar, 10)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }

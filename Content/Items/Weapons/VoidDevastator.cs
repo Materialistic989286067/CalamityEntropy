@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Content.Rarities;
+﻿using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
 using Terraria;
 using Terraria.DataStructures;
@@ -36,10 +37,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                    .AddIngredient(ItemID.Celeb2, 1)
-                    .AddIngredient(ModContent.ItemType<VoidBar>(), 5)
-                    .AddIngredient(ModContent.ItemType<NihilityFragments>(), 8)
-                    .AddIngredient(ItemID.ChlorophyteBar, 1)
+                    .AddIngredient(ItemID.Celeb2)
+                    .AddIngredient<VoidBar>(5)
                     .AddTile(ModContent.TileType<VoidWellTile>())
                     .Register();
         }

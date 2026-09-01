@@ -26,12 +26,19 @@ namespace CalamityEntropy.Content.AzafureMiners
 
         public override void AddRecipes()
         {
-            //脱离灾厄:灾厄EnergyCore/DubiousPlating按material-map换自有阿扎弗电路/镀层
-            CreateRecipe().AddIngredient<AzafureCircuitry>()
-                .AddIngredient<HellIndustrialComponents>(6)
-                .AddIngredient<AzafurePlating>(6)
-                .AddRecipeGroup(CERecipeGroups.IronBar, 2)
-                .AddTile(TileID.HeavyWorkBench)
+            CreateRecipe()
+                .AddIngredient<HellIndustrialComponents>()
+                .AddIngredient(ItemID.CobaltBar, 10)
+                .AddIngredient(ItemID.HellstoneBar, 10)
+                .AddIngredient(ItemID.MeteoriteBar, 10)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
+            CreateRecipe()
+                .AddIngredient<HellIndustrialComponents>()
+                .AddIngredient(ItemID.PalladiumBar, 10)
+                .AddIngredient(ItemID.HellstoneBar, 10)
+                .AddIngredient(ItemID.MeteoriteBar, 10)
+                .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
     }

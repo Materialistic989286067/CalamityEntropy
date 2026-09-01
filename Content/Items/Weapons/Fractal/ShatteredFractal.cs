@@ -32,6 +32,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<ShatteredFractalHeld>();
             Item.shootSpeed = 12f;
+            Item.scale *= 0.66f;
         }
         public int atkType = 0;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -52,38 +53,34 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public override void AddRecipes()
         {
             CreateRecipe().AddIngredient<BrokenHilt>()
-                .AddIngredient(ItemID.WoodenSword)
                 .AddIngredient(ItemID.GoldBroadsword)
                 .AddIngredient(ItemID.LightsBane)
                 .AddIngredient(ItemID.EnchantedSword)
-                .AddIngredient(ItemID.Muramasa)
+                .AddIngredient(ItemID.FieryGreatsword)
                 .AddTile(TileID.Anvils)
                 .Register();
 
             CreateRecipe().AddIngredient<BrokenHilt>()
-                .AddIngredient(ItemID.WoodenSword)
                 .AddIngredient(ItemID.GoldBroadsword)
                 .AddIngredient(ItemID.BloodButcherer)
                 .AddIngredient(ItemID.EnchantedSword)
-                .AddIngredient(ItemID.Muramasa)
+                .AddIngredient(ItemID.FieryGreatsword)
                 .AddTile(TileID.Anvils)
                 .Register();
 
             CreateRecipe().AddIngredient<BrokenHilt>()
-                .AddIngredient(ItemID.WoodenSword)
                 .AddIngredient(ItemID.PlatinumBroadsword)
                 .AddIngredient(ItemID.LightsBane)
                 .AddIngredient(ItemID.EnchantedSword)
-                .AddIngredient(ItemID.Muramasa)
+                .AddIngredient(ItemID.FieryGreatsword)
                 .AddTile(TileID.Anvils)
                 .Register();
 
             CreateRecipe().AddIngredient<BrokenHilt>()
-                .AddIngredient(ItemID.WoodenSword)
                 .AddIngredient(ItemID.PlatinumBroadsword)
                 .AddIngredient(ItemID.BloodButcherer)
                 .AddIngredient(ItemID.EnchantedSword)
-                .AddIngredient(ItemID.Muramasa)
+                .AddIngredient(ItemID.FieryGreatsword)
                 .AddTile(TileID.Anvils)
                 .Register();
         }
@@ -148,7 +145,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                     shoot = false;
                     if (Main.myPlayer == Projectile.owner)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + Projectile.velocity.normalize() * 100 * Projectile.scale, Projectile.velocity.normalize() * 10, ModContent.ProjectileType<FractalShoot>(), (int)(Projectile.damage * 1.5f), Projectile.knockBack, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + Projectile.velocity.normalize() * 100 * Projectile.scale, Projectile.velocity.normalize() * 7f, ModContent.ProjectileType<FractalShoot>(), (int)(Projectile.damage * 1.5f), Projectile.knockBack, Projectile.owner);
                     }
                     CEUtils.PlaySound("sf_shoot", 1, Projectile.Center, volume: CEUtils.WeapSound);
                 }

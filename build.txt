@@ -1,4 +1,4 @@
-displayName = Calamity Entropy
+displayName = Call Of Void
 author = Polaris
 version = 3.33
 modReferences = InnoVault

@@ -1,6 +1,7 @@
 using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Items.Books.BookMarks;
 using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Lores;
 using CalamityEntropy.Content.Items.Weapons;
@@ -1064,6 +1065,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<LuminarisBag>()));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAstral>(), 3));
 
             // 治疗药水按人 5-15 瓶,隐藏图鉴条目(承接原灾厄 PerPlayer 语义)
             npcLoot.Add(new DropPerPlayerOnThePlayer(ItemID.GreaterHealingPotion, 1, 5, 15, new HiddenDropCondition()));

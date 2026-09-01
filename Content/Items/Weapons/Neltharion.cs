@@ -1,3 +1,4 @@
+using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
@@ -65,10 +66,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<Silence>()
-                .AddIngredient(ItemID.SDMG)
-                .AddIngredient<FadingRunestone>()
-                .AddIngredient<NihilityFragments>(2)
+                .AddIngredient(ItemID.VortexBeater)
+                .AddIngredient(ItemID.OnyxBlaster)
+                .AddIngredient<VoidBar>(5)
                 .AddTile<VoidWellTile>()
                 .Register();
         }

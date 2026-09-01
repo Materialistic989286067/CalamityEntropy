@@ -1,5 +1,4 @@
 using CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo;
-using CalamityEntropy.Content.Items.Weapons;
 using System;
 using Terraria;
 using Terraria.DataStructures;
@@ -69,12 +68,10 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 
         public override void AddRecipes()
         {
-            // RustExpeditioner 为本模组自有武器，保留；AerialiteBar 按 material-map.md 换陨石锭
             CreateRecipe()
-                .AddIngredient<RustExpeditioner>()
-                .AddIngredient<OsseousRemains>(20)
-                .AddIngredient(ItemID.MeteoriteBar, 10)
-                .AddIngredient(ItemID.SunplateBlock, 4)
+                .AddIngredient(ItemID.Minishark)
+                .AddIngredient(ItemID.Feather, 10)
+                .AddIngredient(ItemID.SunplateBlock, 10)
                 .AddTile(TileID.Anvils)
                 .Register();
         }

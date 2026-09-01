@@ -87,7 +87,8 @@ namespace CalamityEntropy.Content.Projectiles
             target.AddBuff(ModContent.BuffType<DragonWhipDebuff>(), 240);
             Main.player[Projectile.owner].MinionAttackTargetNPC = target.whoAmI;
             Projectile.damage = (int)(Projectile.damage * 0.9f);
-            target.AddBuff(ModContent.BuffType<Dragonfire>(), 180);
+            // 2026-08-31 平衡案:造成破晓而非龙焰
+            target.AddBuff(BuffID.Daybreak, 180);
             SoundEngine.PlaySound(in SoundID.Item14, target.Center);
             for (int i = 0; i < 40; i++)
             {
@@ -199,59 +200,53 @@ namespace CalamityEntropy.Content.Projectiles
             return false;
         }
 
-        public override void ModifyControlPoints(List<Vector2> controlPoints)
+        // 2026-08-31 平衡案:改用常规鞭子动画,自定义控制点曲线退役(走 BaseWhip 默认实现)
+    }
+
+    /// <summary>
+    /// 沐生标记引爆:仆从命中标记目标时由 WhipDebuffNPC 触发,0.75秒一次。
+    /// 固定基伤600(召唤),命中附加破晓减益。
+    /// </summary>
+    public class VitalfeatherBurst : ModProjectile
+    {
+        public const int BaseDamage = 600;
+        public override string Texture => CEUtils.WhiteTexPath;
+        public override void SetDefaults()
         {
-            controlPoints.Clear();
-            Projectile proj = Projectile;
-            float timeToFlyOut;
-            int segments;
-            float rangeMultiplier;
-            Projectile.GetWhipSettings(Projectile, out timeToFlyOut, out segments, out rangeMultiplier);
-            rangeMultiplier *= Projectile.GetOwner().whipRangeMultiplier;
-            float timePercent = proj.ai[0] / timeToFlyOut;
-            float num = 31.415928f * (1f - timePercent * 1.5f) * (float)(-(float)proj.spriteDirection) / (float)segments;
-            float hDistancePercent = timePercent * 1.5f;
-            float retractionPercent = 0f;
-            if (hDistancePercent > 1f)
+            Projectile.width = 160;
+            Projectile.height = 160;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+            Projectile.DamageType = DamageClass.Summon;
+            Projectile.penetrate = -1;
+            Projectile.tileCollide = false;
+            Projectile.timeLeft = 3;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
+        }
+        public override void OnSpawn(Terraria.DataStructures.IEntitySource source)
+        {
+            SoundEngine.PlaySound(SoundID.Item14 with { Pitch = 0.4f }, Projectile.Center);
+            for (int i = 0; i < 24; i++)
             {
-                retractionPercent = (hDistancePercent - 1f) / 0.5f;
-                hDistancePercent = MathHelper.Lerp(1f, 0f, retractionPercent);
+                Dust d = Dust.NewDustPerfect(Projectile.Center + CEUtils.randomPointInCircle(60), DustID.SolarFlare, CEUtils.randomVec(7));
+                d.noGravity = true;
+                d.scale = Main.rand.NextFloat(1.4f, 2.2f);
             }
-            Player player = Main.player[proj.owner];
-            Item heldItem = Main.player[proj.owner].HeldItem;
-            float distFactor = (float)(ContentSamples.ItemsByType[heldItem.type].useAnimation * 2) * timePercent * player.whipRangeMultiplier;
-            float pxPerSegment = proj.velocity.Length() * distFactor * hDistancePercent * rangeMultiplier / (float)segments;
-            Vector2 playerArmPosition = Main.GetPlayerArmPosition(proj);
-            Vector2 prev_p = playerArmPosition;
-            float rot = -1.5707964f;
-            Vector2 prev_p2 = prev_p;
-            float rot2 = 1.5707964f + 1.5707964f * (float)proj.spriteDirection;
-            Vector2 prev_p3 = prev_p;
-            float rot3 = 1.5707964f;
-            controlPoints.Add(playerArmPosition);
-            for (int i = 0; i < segments; i++)
+            for (int i = 0; i < 8; i++)
             {
-                float segmentPercent = (float)i / (float)segments;
-                float thisRotation = 3.7070792f * (float)Math.Sin((double)(2f * segmentPercent - 3.42f * timePercent + 0.75f * hDistancePercent)) * (float)(-(float)proj.spriteDirection) + 1.5707964f;
-                Vector2 p = prev_p + Utils.ToRotationVector2(rot) * pxPerSegment * 1.2f;
-                Vector2 p2 = prev_p3 + Utils.ToRotationVector2(rot3) * (pxPerSegment * 2f);
-                Vector2 vector8 = prev_p2 + Utils.ToRotationVector2(rot2) * (pxPerSegment * 2f);
-                float invHDistance = 1f - hDistancePercent;
-                float smoothHDistPercent = 1f - invHDistance * invHDistance;
-                Vector2 value = Vector2.Lerp(p2, p, smoothHDistPercent * 0.9f + 0.1f);
-                Vector2 vector7 = Vector2.Lerp(vector8, value, smoothHDistPercent * 0.7f + 0.3f);
-                Vector2 vector9 = playerArmPosition + (vector7 - playerArmPosition) * new Vector2(1.7f, 1.65f);
-                float smoothRetractPercent = retractionPercent;
-                smoothRetractPercent *= smoothRetractPercent;
-                Vector2 item = Utils.RotatedBy(vector9, (double)(proj.rotation + 0f * smoothRetractPercent * (float)proj.spriteDirection), playerArmPosition);
-                controlPoints.Add(item);
-                rot = thisRotation;
-                rot3 = thisRotation;
-                rot2 = thisRotation;
-                prev_p = p;
-                prev_p3 = p2;
-                prev_p2 = vector8;
+                Dust d = Dust.NewDustPerfect(Projectile.Center, DustID.GoldFlame, CEUtils.randomVec(4));
+                d.noGravity = true;
+                d.scale = Main.rand.NextFloat(1.6f, 2.4f);
             }
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(BuffID.Daybreak, 180);
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            return false;
         }
     }
 }

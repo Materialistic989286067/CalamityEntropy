@@ -1,5 +1,7 @@
-﻿using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Content.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -47,6 +49,15 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override bool MagicPrefix()
         {
             return true;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe()
+                .AddIngredient<VoidEcho>()
+                .AddIngredient<FadingRunestone>()
+                .AddTile(ModContent.TileType<VoidWellTile>())
+                .Register();
         }
     }
 }

@@ -46,7 +46,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             CreateRecipe()
                 .AddIngredient(ItemID.LicenseCat)
-                .AddIngredient(ItemID.Dynamite, 3)
+                .AddIngredient(ItemID.Dynamite, 99)
                 .AddTile(TileID.Anvils)
                 .Register();
         }

@@ -1,4 +1,6 @@
-﻿using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Content.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -25,12 +27,16 @@ namespace CalamityEntropy.Content.Items
             Item.value = Item.sellPrice(silver: 1);
             Item.rare = ItemRarityID.Orange;
             Item.ammo = AmmoID.Rocket;
-            Item.damage = 100;
+            Item.damage = 125;
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe(250).AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 5).AddIngredient(ItemID.ChlorophyteBar, 1).AddTile(TileID.LunarCraftingStation).Register();
+            CreateRecipe(250)
+                .AddIngredient<VoidBar>()
+                .AddIngredient(ItemID.MiniNukeI, 250)
+                .AddTile<VoidWellTile>()
+                .Register();
         }
     }
 }

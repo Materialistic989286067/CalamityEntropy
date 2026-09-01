@@ -9,7 +9,7 @@ namespace CalamityEntropy.Content.Items.Accessories.Cards
 {
     public class WisdomCard : ModItem
     {
-        public static float ManaCostMul = 0.8f; //减少魔力消耗
+        public static float ManaCostMul = 0.9f; //减少魔力消耗
         public override void SetDefaults()
         {
             Item.width = 22;

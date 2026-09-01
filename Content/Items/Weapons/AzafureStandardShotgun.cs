@@ -42,8 +42,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             CreateRecipe()
                 .AddIngredient(ItemID.Shotgun)
-                .AddIngredient<HellIndustrialComponents>(8)
-                .AddIngredient(ItemID.ChlorophyteBar, 8)
+                .AddIngredient<HellIndustrialComponents>(6)
+                .AddIngredient(ItemID.ChlorophyteBar, 12)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }

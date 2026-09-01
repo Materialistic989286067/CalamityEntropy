@@ -17,7 +17,7 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.width = 10;
             Projectile.height = 10;
             Projectile.friendly = true;
-            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 300;
             Projectile.extraUpdates = 1;

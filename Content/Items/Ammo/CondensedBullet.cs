@@ -30,8 +30,9 @@ namespace CalamityEntropy.Content.Items.Ammo
         public override void AddRecipes()
         {
             CreateRecipe(50)
-                .AddIngredient(ItemID.PinkGel)
-                .AddTile(TileID.WorkBenches)
+                .AddIngredient(ItemID.Gel, 10)
+                .AddIngredient(ItemID.SoulofLight, 1)
+                .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
     }

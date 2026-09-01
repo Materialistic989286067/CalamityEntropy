@@ -62,7 +62,7 @@ namespace CalamityEntropy.Content.Items.Accessories.SoulCards
                 .AddIngredient<RequiemCard>()
                 .AddIngredient<WisperCard>()
                 .AddIngredient<CursedThread>()
-                .AddIngredient(ItemID.ChlorophyteBar)
+                .AddIngredient(ItemID.LunarBar, 5)
                 .AddTile(TileID.Bookcases)
                 .Register();
         }

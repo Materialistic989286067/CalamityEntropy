@@ -1,6 +1,5 @@
 using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs;
-using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Core.Graphics;
 using CalamityEntropy.Utilities;
@@ -72,7 +71,6 @@ namespace CalamityEntropy.Content.Projectiles
             ScreenShaker.AddShake(new ScreenShaker.NoDirQuickShake(7));
             base.OnHitNPC(target, hit, damageDone);
             CEUtils.PlaySound("FleshWhipHit", Main.rand.NextFloat(0.8f, 1.2f), EndPoint);
-            target.AddBuff(ModContent.BuffType<BurningBlood>(), 600);
             target.AddBuff(ModContent.BuffType<SinewLashWhipDebuff>(), 240);
             for (int i = 0; i < 3; i++)
             {

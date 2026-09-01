@@ -31,7 +31,6 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.MaxUpdates = 5;
-            Projectile.ArmorPenetration = 100;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
             Projectile.light = 0.4f;

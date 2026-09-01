@@ -7,6 +7,8 @@ namespace CalamityEntropy.Content.Items.Accessories.SoulCards
     public class GrudgeCard : ModItem
     {
         public static float TempDefense = 6;
+        public static int HealAmount = 4;
+        public static int TriggerCooldown = 140;
         public override void SetDefaults()
         {
             Item.width = 22;

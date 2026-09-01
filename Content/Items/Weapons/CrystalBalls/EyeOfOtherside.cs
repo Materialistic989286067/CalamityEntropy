@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.ID;
@@ -31,8 +32,8 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<NihilityFragments>(), 20)
-                .AddIngredient(ItemID.CrystalBall, 1)
+                .AddIngredient(ItemID.CrystalBall)
+                .AddIngredient<NihilityFragments>(15)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

@@ -16,7 +16,6 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override Texture2D UITexture => BookMark.GetUITexture("Flesh");
         public override void ModifyStat(EBookStatModifer modifer)
         {
-            modifer.PenetrateAddition += 1;
             modifer.lifeSteal += 0.25f;
         }
         public override Color tooltipColor => Color.Red;
@@ -34,7 +33,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 for (int i = 0; i < 4; i++)
                 {
                     // 原灾厄 BloodBeam 改用自有 BloodSpray
-                    Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, CEUtils.randomRot().ToRotationVector2() * 4, ModContent.ProjectileType<BloodSpray>(), (damageDone / 9).Softlimitation(200), projectile.knockBack / 3, projectile.owner);
+                    Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, CEUtils.randomRot().ToRotationVector2() * 4, ModContent.ProjectileType<BloodSpray>(), EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 10, projectile.DamageType), projectile.knockBack / 3, projectile.owner);
                 }
             }
         }

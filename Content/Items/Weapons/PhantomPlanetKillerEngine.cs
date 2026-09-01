@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Items.Weapons.SupportRemote;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
@@ -50,8 +51,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.StardustDragonStaff)
-                .AddIngredient(ItemID.StardustCellStaff)
+                .AddIngredient<AzafureSupportRemote>()
                 .AddIngredient(ModContent.ItemType<VoidBar>(), 5)
                 .AddTile(ModContent.TileType<VoidWellTile>()).Register();
         }

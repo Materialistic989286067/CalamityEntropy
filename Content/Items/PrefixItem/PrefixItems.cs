@@ -262,7 +262,7 @@ namespace CalamityEntropy.Content.Items.PrefixItem
                 return;
             CreateRecipe().AddIngredient(ItemID.LunarOre, 5)
                 .AddIngredient(ItemID.Glass, 5)
-                .AddIngredient<WraithSoulEssence>(1)
+                .AddIngredient<NihilityFragments>(5)
                 .Register();
         }
     }

@@ -712,3 +712,76 @@
 [Mods.CalamityEntropy.RiftWraithBestiary] - added
 [Mods.CalamityEntropy.EntropyFiendBestiary] - added
 [Mods.CalamityEntropy.Items.OdinsRefuge.Tooltip] - changed // 上神之佑加回盾冲(自研圣佑冲锋:双击/冲刺键触发,盾撞1000近战+首撞圣光冲击波300点燃神圣之火+命中后1.5秒15%减伤),并把切换恐慌项链一行补上"按住Shift"(与代码判定一致)
+
+// ===== 2026-08-31 平衡性大调整(docx 平衡案)本地化收尾 =====
+[Mods.CalamityEntropy.Items.BookMarkBrimstone.DisplayName] - changed // 硫磺火书签→恶魔书签(改名),tooltip补掉落来源
+[Mods.CalamityEntropy.Items.BookMarkAuric.DisplayName] - changed // 金源书签→耀日书签(改名),tooltip重写(3黄金七彩矢/微光转化)
+[Mods.CalamityEntropy.Items.BookMarkProfaned.DisplayName] - changed // 亵渎书签→祭祀书签(改名),tooltip重写(2追踪火球+2暗影火球)
+[Mods.CalamityEntropy.Items.BookMarkSilva.DisplayName] - changed // 始源林海书签→苍绿书签(改名),tooltip重写(酸性毒液/回血/树妖祝福)
+[Mods.CalamityEntropy.Items.BookMarkSunkenSea.DisplayName] - changed // 沉沦海书签→碎晶书签(改名)
+[Mods.CalamityEntropy.Items.BookmarkSulphurous.DisplayName] - changed // 硫磺书签→咒噬书签(改名),无泡泡改诅咒狱火,补爬藤怪掉落
+[Mods.CalamityEntropy.Items.BookMarkOfLight.Tooltip] - changed // 重做:光明能量回5魔力+20%跳跃速度
+[Mods.CalamityEntropy.Items.BookMarkAstral.Tooltip] - changed // 重做:命中召唤追踪幻星弹
+[Mods.CalamityEntropy.Items.BookMarkTerra.Tooltip] - changed // 重做:头顶智能弹跳泰拉巨石+10防御
+[Mods.CalamityEntropy.Items.BookMarkLunar.Tooltip] - changed // 重做:头顶落2~3道月耀射线
+[Mods.CalamityEntropy.Items.BookMarkAquarius.Tooltip] - changed // 重做:治愈水滴(1血3魔)
+[Mods.CalamityEntropy.Items.BookMarkAries.Tooltip] - changed // 重做:攻击召唤暗影之手
+[Mods.CalamityEntropy.Items.BookMarkCancer.Tooltip] - changed // 重做:+50%弹幕大小/-10%魔耗/大幅击退
+[Mods.CalamityEntropy.Items.BookMarkSagittarius.Tooltip] - changed // 重做:+33%弹速/刷怪率翻倍/骷髅王掉落
+[Mods.CalamityEntropy.Items.BookMarkPisces.Tooltip] - changed // 重做:命中召唤小型克苏鲁旋风
+[Mods.CalamityEntropy.Items.BookmarkStarwreckage.Tooltip] - changed // 重做:随机四柱碎片(无视无敌帧)
+[Mods.CalamityEntropy.Items.BookMarkTaurus.Tooltip] - changed // 限定仅书本体弹幕分裂
+[Mods.CalamityEntropy.TooltipBookMark] - changed // 补书签统一触发规则(本体弹幕触发/1秒内置CD)
+[Mods.CalamityEntropy.Items.OracleDeck.Tooltip] - changed // 卡组重做(5防/5%三维/10%移速攻速魔耗/団队治疗/66.7%伤害上限)
+[Mods.CalamityEntropy.Items.TaintedDeck.Tooltip] - changed // 卡组重做(+30%伤害/受伤×1.25/召唤栏叠伤/投掷追踪/暗影火焰/近战攻速/魔耗/断再生)
+[Mods.CalamityEntropy.Items.Godhead.Tooltip] - changed // 重做:60格隐形伤害光环(40伤/0.25s/25穿甲/破晓)
+[Mods.CalamityEntropy.Items.OdinsRefuge.Tooltip] - changed // 重做:18防/免疫大多数减益击退/神圣屏障格挡/团队15%免伤/+600仇恨(盾冲退役)
+[Mods.CalamityEntropy.Items.HolyMoonlight.Tooltip] - changed // 重做:40魔力/10%魔伤/50%魔力护盾上限250/魔力病减半/冷却期100:1吸血
+[Mods.CalamityEntropy.Items.CelestialRing.Tooltip] - changed // 重做:1再生/2召唤栏/15%召唤伤/15%鞭速鞭长
+[Mods.CalamityEntropy.Items.SilvasCrown.Tooltip] - changed // 重做:2防/+25生命/蜂蜜
+[Mods.CalamityEntropy.Items.HeartOfStorm.Tooltip] - changed // 重做:命中召唤闪电(基伤800/1秒CD)
+[Mods.CalamityEntropy.Items.WispLantern.Tooltip] - changed // 重做:75%生效1件/25%生效2件/同类互斥
+[Mods.CalamityEntropy.Items.ShadeCloak.Tooltip] - changed // 重做:自带暗影冲刺/冲刺无敌/5秒CD/排他
+[Mods.CalamityEntropy.Items.SusiesBracelet.Tooltip] - changed // 重做:免疫击退+近战伤害/暴击阶梯(11档)
+[Mods.CalamityEntropy.LegendaryAbility.SusiesBracelet.Trials] - changed // 试炼阶梯重排为11档(t0~t10),Lores 合并至 l0~l10
+[Mods.CalamityEntropy.Items.CelestialChronometer.Tooltip] - changed // 重做:75血/神话护身符/减33%debuff/6+1再生/草药机制(shift开关)/站草药+20防
+[Mods.CalamityEntropy.Items.Vast.Tooltip] - changed // 去成长重做:固定效果+魔流(250魔耗/层,3%魔暴伤),TooltipBase/Level0-6 阶梯键废弃
+[Mods.CalamityEntropy.Items.Leyla.Tooltip] - changed // 去成长重做:40血/2再生/团队蜂蜜/+50%debuff伤/霜冻毒液咒火
+[Mods.CalamityEntropy.Items.PlagueInternalCombustionEngine.Tooltip] - changed // 重做:受击AoE困惑+毒液/命中召唤穿墙瘟疫能量
+[Mods.CalamityEntropy.Items.TalismanOfTheAzureAbyss.Tooltip] - changed // 重做:无敌帧/命中漩涡/受击3漩涡5秒CD(水下机动保留)
+[Mods.CalamityEntropy.Items.ThiefsPocketwatchOfEclipse.Tooltip] - changed // 补跳跃速度与死亡复活(120秒CD)
+[Mods.CalamityEntropy.Items.LurkersCharm.Tooltip] - changed // [D]占位从减伤改为跳跃速度
+[Mods.CalamityEntropy.Items.VoidCore.Tooltip] - changed // 删除暴击伤害行(效果已移除)
+[Mods.CalamityEntropy.Items.VoidEaterLeggings.Tooltip] - changed // 补+8%伤害与暴击
+[Mods.CalamityEntropy.VoidEaterBonus] - changed // 套装奖励:魔力+100→+60,新增+40生命
+[Mods.CalamityEntropy.ChaoticSetBonus] - changed // 套装奖励:生命+80/魔力+60,原12%伤害减免与仆从栏行退役
+[Mods.CalamityEntropy.MariviniumSet] - changed // 渊洋神迹套装奖励重写(水中畅行/无限飞行/4再生/接触-20%/3仆从栏/20%近战攻速/两层渊海护盾)
+[Mods.CalamityEntropy.Items.MariviniumHelmet.Tooltip] - changed // 头盔:攻速移除,生命魔力+100
+[Mods.CalamityEntropy.Items.MariviniumBodyArmor.Tooltip] - changed // 胸甲:+15%伤5%暴
+[Mods.CalamityEntropy.Items.MariviniumLeggings.Tooltip] - changed // 护腿:30%移速30%跳跃
+[Mods.CalamityEntropy.Items.VoidFaquirBodyArmor.Tooltip] - changed // 胸甲12%伤5%暴(穿甲行删)
+[Mods.CalamityEntropy.Items.VoidFaquirDevourerHelm.Tooltip] - changed // 吞天盔新数值(20/12/80血)
+[Mods.CalamityEntropy.Items.VoidFaquirCosmosHood.Tooltip] - changed // 宙法盔新数值(23/18/100魔80血)
+[Mods.CalamityEntropy.Items.VoidFaquirEvokerHelm.Tooltip] - changed // 唤灵盔新数值(40%召伤/1栏/80血100魔)
+[Mods.CalamityEntropy.Items.VoidFaquirShadowHelm.Tooltip] - changed // 猎影盔新数值(18/25/80血)
+[Mods.CalamityEntropy.Items.VoidFaquirLurkerMask.Tooltip] - changed // 标注暂不可获取
+[Mods.CalamityEntropy.helmvfc] - changed // 宙法盔奖励:魔力病减半+命中强再生
+[Mods.CalamityEntropy.helmvfd] - changed // 吞天盔奖励:20%近战攻速+接触伤害-15%
+[Mods.CalamityEntropy.helmvfs] - changed // 猎影盔奖励:+15%远程伤害+50%弹速
+[Mods.CalamityEntropy.helmvfe] - changed // 唤灵盔奖励:+4召唤栏+迷你虚空吞噬者
+[Mods.CalamityEntropy.Items.HorizonssKey.Tooltip] - changed // 重做:8栏召唤武器(去成长)
+[Mods.CalamityEntropy.Items.Vitalfeather.Tooltip] - changed // 重做:破晓标记(0.75s爆炸+回血),月总掉落
+[Mods.CalamityEntropy.Items.AshTranscript.Tooltip] - changed // 重做:5扇形远古光明妖,拜月邪教徒掉落
+[Mods.CalamityEntropy.Items.TabooVolume.Tooltip] - changed // 补硫磺暴弹3秒内置冷却
+[Mods.CalamityEntropy.Items.Zyphros.Tooltip] - changed // 重做:5连水晶箭/30%幻影箭/协同水晶无减益无视护甲
+[Mods.CalamityEntropy.Items.Bramblecleave.Tooltip] - changed // 去成长(等级行删)
+[Mods.CalamityEntropy.Projectiles.MiniVoidDevourer.DisplayName] - added // 迷你虚空吞噬者(唤灵盔仆从)
+[Mods.CalamityEntropy.Projectiles.VitalfeatherBurst.DisplayName] - added // 破晓爆炸
+[Mods.CalamityEntropy.Projectiles.AshAncientLight.DisplayName] - added // 远古光明妖
+[Mods.CalamityEntropy.Projectiles.ZyphrosPhantomArrow.DisplayName] - added // 幻影箭
+[Mods.CalamityEntropy.Projectiles.GodheadAura.DisplayName] - added // 神性光环
+[Mods.CalamityEntropy.Projectiles.PlagueEnergy.DisplayName] - added // 瘟疫能量
+[Mods.CalamityEntropy.Projectiles.AriesShadowHand.DisplayName] - added // 暗影之手
+[Mods.CalamityEntropy.Projectiles.PiscesWhirlwind.DisplayName] - added // 克苏鲁旋风
+[Mods.CalamityEntropy.Projectiles.ProfanedFireball.DisplayName] - added // 祭祀火球
+[Mods.CalamityEntropy.Projectiles.PillarShardProj.DisplayName] - added // 四柱碎片

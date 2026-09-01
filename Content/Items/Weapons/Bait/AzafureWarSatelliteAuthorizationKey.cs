@@ -61,7 +61,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
         {
             CreateRecipe()
                 .AddIngredient<AzafureMicroBeacon>()
-                .AddIngredient(ItemID.HallowedBar, 8)
+                .AddIngredient(ItemID.SunStone)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }

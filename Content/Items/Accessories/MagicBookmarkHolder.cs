@@ -37,9 +37,9 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.FallenStar, 2)
+                .AddIngredient(ItemID.ManaCrystal, 2)
                 .AddIngredient(ItemID.Silk, 5)
-                .AddIngredient(ItemID.RichMahogany, 4)
+                .AddIngredient(ItemID.RichMahogany, 5)
                 .AddTile(TileID.WorkBenches)
                 .Register();
         }

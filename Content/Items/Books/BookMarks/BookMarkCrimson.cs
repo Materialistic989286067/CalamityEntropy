@@ -43,7 +43,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 for (int i = 0; i < 16; i++)
                 {
                     // 原灾厄 BloodBlast 改用自有 BloodSpray; 血珠自地下升起, 关掉碰撞并缩短寿命保持原节奏
-                    var blood = Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center + new Vector2(Main.rand.NextFloat(-80, 80), 400), new Vector2(0, -18), ModContent.ProjectileType<BloodSpray>(), (damageDone / 36).Softlimitation(75), projectile.knockBack / 3, projectile.owner).ToProj();
+                    var blood = Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center + new Vector2(Main.rand.NextFloat(-80, 80), 400), new Vector2(0, -18), ModContent.ProjectileType<BloodSpray>(), EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 8, projectile.DamageType), projectile.knockBack / 3, projectile.owner).ToProj();
                     blood.DamageType = projectile.DamageType;
                     blood.tileCollide = false;
                     blood.timeLeft = 90;

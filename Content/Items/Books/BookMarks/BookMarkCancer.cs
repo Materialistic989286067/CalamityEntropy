@@ -18,34 +18,12 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Cancer");
         public override Color tooltipColor => Color.LightBlue;
+        // 2026-08-31 平衡案重做:+50%弹幕大小,-10%魔力消耗,大幅提升击退(原减速敌方弹幕效果退役)
         public override void ModifyStat(EBookStatModifer modifer)
         {
             modifer.Size += 0.5f;
-        }
-        public override EBookProjectileEffect getEffect()
-        {
-            return new CancerBMEffect();
-        }
-    }
-
-    public class CancerBMEffect : EBookProjectileEffect
-    {
-        public override void UpdateProjectile(Projectile projectile, bool ownerClient)
-        {
-            foreach (Projectile p in Main.ActiveProjectiles)
-            {
-                if (p.hostile && projectile.Colliding(projectile.getRect(), p.getRect()))
-                {
-                    float mul = 0.976f;
-                    if (projectile.ModProjectile is EBookBaseLaser)
-                        mul = 0.99f;
-                    if (p.velocity.Length() * p.MaxUpdates > 4)
-                    {
-                        p.velocity *= mul;
-                    }
-                    p.damage = (int)(p.damage * mul);
-                }
-            }
+            modifer.ManaCost *= 0.9f;
+            modifer.Knockback += 4f;
         }
     }
 }

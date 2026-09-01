@@ -8,10 +8,11 @@ namespace CalamityEntropy.Content.Items.Accessories
     public class CelestialRing : ModItem
     {
 
+        // 2026-08-31 平衡案重做:4防1自然生命再生,+2召唤栏,+15%召唤伤害,15%鞭子攻速与15%鞭子攻击距离
         public override void SetDefaults()
         {
             Item.width = 26;
-            Item.defense = 15;
+            Item.defense = 4;
             Item.height = 26;
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
             Item.rare = ModContent.RarityType<NihilityBlue>();
@@ -20,24 +21,20 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.GetDamage(DamageClass.Generic) += 0.15f;
-            player.GetKnockback(DamageClass.Summon) += 0.75f;
-            player.GetCritChance(DamageClass.Generic) += 5;
-            player.pickSpeed *= 1.2f;
-            player.GetAttackSpeed(DamageClass.Melee) += 0.05f;
-            player.Entropy().CRing = true;
-            player.lifeRegen += 5;
+            player.lifeRegen += 2;
             player.maxMinions += 2;
+            player.GetDamage(DamageClass.Summon) += 0.15f;
+            player.GetAttackSpeed(DamageClass.SummonMeleeSpeed) += 0.15f;
+            player.whipRangeMultiplier += 0.15f;
         }
 
         public override void AddRecipes()
         {
-            // 脱离灾厄:灾厄暗日戒指改为原版天界石(表外裁定,拜月后同档)
             CreateRecipe().
                 AddIngredient(ItemID.CelestialShell).
-                AddIngredient(ItemID.CelestialStone).
-                AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 4).
-                AddIngredient(ModContent.ItemType<VoidBar>(), 5)
+                AddIngredient(ItemID.PapyrusScarab).
+                AddIngredient(ItemID.GoldRing).
+                AddIngredient(ItemID.LunarBar, 5)
                 .AddTile(TileID.LunarCraftingStation).
                 Register();
         }

@@ -82,7 +82,13 @@ namespace CalamityEntropy.Content.Items
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ItemID.LifeCrystal, 5).AddIngredient(ItemID.GoldBar, 6).AddIngredient(ItemID.Ruby, 4).AddTile(TileID.Anvils).Register();
+            CreateRecipe()
+                .AddIngredient(ItemID.GoldBar, 10)
+                .AddIngredient(ItemID.Ruby, 10)
+                .AddIngredient(ItemID.Bone, 10)
+                .AddIngredient(ItemID.LifeCrystal)
+                .AddTile(TileID.Anvils)
+                .Register();
         }
     }
 }

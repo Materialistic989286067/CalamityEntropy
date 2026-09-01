@@ -1,6 +1,6 @@
-﻿using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityEntropy.Content.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -36,9 +36,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.SDMG)
-                .AddIngredient(ModContent.ItemType<VoidBar>(), 5)
-                .AddTile(ModContent.TileType<VoidWellTile>())
+                .AddIngredient(ItemID.ElfMelter)
+                .AddIngredient<ChaoticPiece>(10)
+                .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
     }

@@ -48,10 +48,10 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.Minishark)
-                .AddIngredient<HellIndustrialComponents>(6)
-                .AddIngredient(ItemID.SoulofLight, 6)
-                .AddTile(TileID.Anvils)
+                .AddIngredient(ItemID.ClockworkAssaultRifle)
+                .AddIngredient<HellIndustrialComponents>(5)
+                .AddIngredient(ItemID.AdamantiteBar, 10)
+                .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
         public int AmmoLeft = 0;

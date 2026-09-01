@@ -19,7 +19,7 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
             Item.width = 18;
             Item.height = 18;
             Item.value = Item.buyPrice(platinum: 2, gold: 40);
-            Item.defense = 10;
+            Item.defense = 28;
             Item.rare = ModContent.RarityType<VoidPurple>();
         }
 
@@ -33,21 +33,22 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
             player.armorEffectDrawOutlines = true;
         }
 
+        // 2026-08-31 平衡案:职业专属奖励=+32%召唤伤害、+4仆从栏、召唤迷你虚空吞噬者(VFHelmSummoner 驱动)
         public override void UpdateArmorSet(Player player)
         {
-            player.GetDamage(DamageClass.Summon) += 0.8f;
-            player.GetArmorPenetration(DamageClass.Generic) += 20;
-            player.maxMinions += 7;
+            player.GetDamage(DamageClass.Summon) += 0.32f;
+            player.maxMinions += 4;
             player.Entropy().VFSet = true;
             player.Entropy().VFHelmSummoner = true;
-
         }
 
         public override void UpdateEquip(Player player)
         {
             player.Entropy().summonerVF = true;
-            player.GetDamage(DamageClass.Summon) += 0.25f;
-
+            player.GetDamage(DamageClass.Summon) += 0.40f;
+            player.maxMinions += 1;
+            player.statLifeMax2 += 80;
+            player.statManaMax2 += 100;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
@@ -58,8 +59,7 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<VoidBar>(), 14)
-                .AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 4)
+                .AddIngredient(ModContent.ItemType<VoidBar>(), 12)
                 .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();
         }

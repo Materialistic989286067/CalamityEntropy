@@ -20,7 +20,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         }
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Melee, true, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, true, -1);
             Projectile.width = Projectile.height = 24;
             Projectile.localNPCHitCooldown = 6;
         }

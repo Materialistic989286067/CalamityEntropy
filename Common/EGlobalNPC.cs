@@ -16,6 +16,7 @@ using CalamityEntropy.Content.Items.Pets;
 using CalamityEntropy.Content.Items.Vanity;
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Items.Weapons.Bait;
+using CalamityEntropy.Content.Items.Weapons.Swirlblades;
 using CalamityEntropy.Content.Items.Weapons.Whips;
 using CalamityEntropy.Content.NPCs;
 using CalamityEntropy.Content.NPCs.FriendFinderNPC;
@@ -78,7 +79,8 @@ namespace CalamityEntropy.Common
             {
                 if (player.Entropy().hasAcc("Leyla"))
                 {
-                    r += Leyla.DoTDmgMult(Leyla.Level());
+                    // 2026-08-31 平衡案:莱拉去成长,固定+50% debuff伤害
+                    r += Leyla.DoTBonus;
                 }
             }
             return r;
@@ -149,7 +151,7 @@ namespace CalamityEntropy.Common
 
             // 原灾厄 DR 越高衰减越弱的补偿项已随灾厄 DR 体系移除，倍率直接生效
             if (npc.HasBuff<LifeOppress>())
-                mult -= 0.35f;
+                mult -= 0.25f;
 
             if (mult < 0)
                 mult = 0;
@@ -629,14 +631,7 @@ namespace CalamityEntropy.Common
                 }
                 if (!(npc.ModNPC is VoidCultist))
                 {
-                    if (npc.boss)
-                    {
-                        if (VoidTouchDR < 0.2f)
-                        {
-                            npc.velocity *= 0.98f;
-                        }
-                    }
-                    else
+                    if (!npc.boss)
                     {
                         npc.velocity *= 0.96f;
                     }
@@ -658,10 +653,6 @@ namespace CalamityEntropy.Common
         }
         public override void ModifyIncomingHit(NPC npc, ref NPC.HitModifiers modifiers)
         {
-            if (HungryTagged > 0)
-            {
-                modifiers.SourceDamage *= 1f + (HungryLantern.TagDamage);
-            }
             modifiers.SourceDamage += MissileDamageAddition;
             if (npc.active)
             {
@@ -724,17 +715,17 @@ namespace CalamityEntropy.Common
                 {
                     modifiers.ArmorPenetration += npc.defense * DevouringCard.ArmorPene;
                 }
+                if (projectile.GetOwner().Entropy().hasAcc(SmartScope.ID))
+                {
+                    modifiers.FinalDamage *= 0.75f;
+                }
             }
             if (projectile.owner >= 0)
             {
                 if (projectile.owner.ToPlayer().Entropy().VFSet)
                 {
-
-                    if (projectile.owner.ToPlayer().Entropy().VFHelmMelee)
-                    {
-                        projectile.owner.ToPlayer().Entropy().VoidCharge += 0.005f;
-                    }
                     // 潜行系统退役：原潜伏攻击额外充能分支移除，统一按普通命中充能
+                    // 2026-08-31 平衡案:虚湮吞天盔额外充能随职业奖励重做退役
                     projectile.owner.ToPlayer().Entropy().VoidCharge += 0.008f;
                     if (projectile.owner.ToPlayer().Entropy().VoidCharge > 1)
                     {
@@ -773,10 +764,6 @@ namespace CalamityEntropy.Common
             if (player.Entropy().VFSet)
             {
                 player.Entropy().VoidCharge += 0.008f;
-                if (player.Entropy().VFHelmMelee)
-                {
-                    player.Entropy().VoidCharge += 0.005f;
-                }
 
                 if (player.Entropy().VoidCharge > 1)
                 {
@@ -856,41 +843,50 @@ namespace CalamityEntropy.Common
             if (npc.type == NPCID.MoonLordCore)
             {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<MoonlightCore>(), 3));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Nothing>(), 3));
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsMasterMode(), ModContent.ItemType<DeusCore>()));
+            }
+            if (npc.type == NPCID.GoblinSorcerer)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Tarnish>(), 3));
+            }
+            if (npc.type == NPCID.BloodNautilus)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Fool>(), 5));
             }
             if (npc.type == NPCID.WallofFlesh)
             {
-                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<HungryLantern>(), 3));
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<HungryLantern>(), 5));
             }
             if (npc.type == NPCID.BrainofCthulhu)
             {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<CreeperWand>(), 3));
-                // 重挂：原灾厄血肉宿主 1/3（bookmark-rehang）
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SinewLash>(), 3));
-            }
-            if (npc.type == NPCID.EaterofWorldsHead || npc.type == NPCID.EaterofWorldsBody || npc.type == NPCID.EaterofWorldsTail)
-            {
-                // 重挂：原灾厄腐巢意志 1/3，改挂原版世界吞噬者（LegacyHack 保证整体击杀只结算一次）
-                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.LegacyHack_IsABoss(), ModContent.ItemType<MindCorruptor>(), 3));
             }
             if (npc.type == NPCID.SkeletronHead)
             {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<OblivionSkull>()));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkSagittarius>()));
             }
             if (npc.type == NPCID.KingSlime)
             {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<ExquisiteCrown>(), 3));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<EntityCard>(), 3));
             }
             if (npc.type == NPCID.EyeofCthulhu)
             {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<RottenFangs>(), 3));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<WisperCard>(), 3));
             }
             if (npc.type == NPCID.Deerclops)
             {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<BookmarkSnowgrave>(), 5));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Frail>(), 3));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAries>(), 3));
             }
             if (npc.type == NPCID.Paladin)
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<DevouringCard>(), 2));
+                npcLoot.Add(ItemDropRule.ByCondition(new PostMoonLord(), ModContent.ItemType<AnimaSola>(), 20));
             }
             if (npc.type == NPCID.Golem)
             {
@@ -909,10 +905,12 @@ namespace CalamityEntropy.Common
                 // 原 3/5 与 2/5 概率，分子写法保持不化简
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<LashingBramblerod>(), 5, 1, 1, 3));
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<MutantBulb>(), 5, 1, 1, 2));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAquarius>(), 3));
             }
             if (npc.type == NPCID.WyvernHead)
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<VetrasylsEye>(), 20));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAerialite>(), 10));
             }
             if (npc.boss)
             {
@@ -929,10 +927,9 @@ namespace CalamityEntropy.Common
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkLeo>(), 30));
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<DustyWhistle>(), 25));
             }
-            if (npc.type == NPCID.Antlion || npc.type == NPCID.WalkingAntlion || npc.type == NPCID.FlyingAntlion || npc.type == NPCID.GiantWalkingAntlion || npc.type == NPCID.GiantFlyingAntlion || npc.type == NPCID.LarvaeAntlion)
+            if (npc.type == NPCID.TombCrawlerHead)
             {
-                // 原灾厄荒漠灾虫掉落，改挂蚁狮类敌怪
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<AntlionShell>(), 15));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<AntlionShell>(), 3));
             }
             if (npc.type == NPCID.AnomuraFungus || npc.type == NPCID.MushiLadybug || npc.type == NPCID.FungiBulb || npc.type == NPCID.GiantFungiBulb || npc.type == NPCID.FungoFish || npc.type == NPCID.ZombieMushroom || npc.type == NPCID.ZombieMushroomHat)
             {
@@ -942,6 +939,11 @@ namespace CalamityEntropy.Common
                 // 新材料星辉鳞尘（material-map §一）：夜间 25% 掉 1–3
                 npcLoot.Add(ItemDropRule.ByCondition(new IsNight(), ModContent.ItemType<StarlitScaleDust>(), 4, 1, 3));
             }
+            if (npc.type == NPCID.Shark)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<TerrorOfAbyss>(), 100));
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsHardmode(), ModContent.ItemType<AbyssalPiercer>(), 50));
+            }
             if (npc.type == NPCID.Shark || npc.type == NPCID.Squid || npc.type == NPCID.SeaSnail || npc.type == NPCID.PinkJellyfish)
             {
                 // 原灾厄深渊怪宠物掉落，改挂困难模式海洋敌怪（misc-map §五增补段）
@@ -949,34 +951,67 @@ namespace CalamityEntropy.Common
             }
             if (npc.type == NPCID.CultistBoss)
             {
-                // 原灾厄死亡模式限定饰品，按 difficulty-map（death→大师）改挂大师模式拜月邪教徒 100%
-                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsMasterMode(), ModContent.ItemType<DeusCore>()));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacrificalMask>()));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacredStone>(), 3));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Content.Items.Weapons.BuriedSun>(), 3));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Revelation>(), 3));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BlazingSwirlblade>(), 3));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkProfaned>()));
             }
             if (npc.type == NPCID.Crab)
             {
                 // 原灾厄菌生蟹掉落，改挂海洋螃蟹
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkCancer>(), 30));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkCancer>(), 100));
             }
-            if (npc.type == NPCID.IceElemental || npc.type == NPCID.IcyMerman || npc.type == NPCID.IceTortoise || npc.type == NPCID.ArmoredViking || npc.type == NPCID.IceGolem || npc.type == NPCID.Wolf)
+            if (npc.type == NPCID.IceElemental || npc.type == NPCID.IcyMerman || npc.type == NPCID.IceTortoise || npc.type == NPCID.ArmoredViking || npc.type == NPCID.Wolf)
             {
                 // 原灾厄极地之灵掉落，改挂困难模式冰雪群系敌怪
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkIce>(), 40));
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<FrostboundCage>(), 50));
+            }
+            if (npc.type == NPCID.IceGolem)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<FrostboundCage>(), 5));
+            }
+            if (npc.type == NPCID.RedDevil)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<EvilFriend>(), 20));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkBrimstone>(), 50));
+            }
+            if (npc.type == NPCID.Lavabat)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<FriendBox>(), 100));
             }
             if (npc.type == ModContent.NPCType<Content.NPCs.Cruiser.CruiserHead>())
             {
                 // 原灾厄渊海灾虫掉落，槽位并入巡游者（progression-map §五）
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<WyrmTooth>(), 1, 65, 80));
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkMarivium>()));
-                // 原灾厄犽戎普通模式掉落（条件照搬 IsNormal）
-                npcLoot.Add(ItemDropRule.ByCondition(new IsNormal(), ModContent.ItemType<Vitalfeather>(), 4));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkCosmic>(), 2));
+                // 2026-08-31 平衡案:沐生之羽改由月亮领主掉落(Vitalfeather.cs 的 VitalfeatherDropGNPC),巡游者侧退役
             }
             if (npc.type == ModContent.NPCType<Content.NPCs.AbyssalWraith.AbyssalWraith>())
             {
                 // 深渊亡魂扶正掉落表（原 DoG / 幽海飞龙掉落重挂；幽渊魂髓的掉落在 AbyssalWraith.ModifyNPCLoot 侧）
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkCosmic>()));
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAbyss>(), 2));
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Nothing>(), 2));
+            }
+            if (npc.type == NPCID.BoneLee)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkBlackKnife>(), 10));
+            }
+            if (npc.type == NPCID.Unicorn)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkCapricorn>(), 50));
+            }
+            if (npc.type == NPCID.TheDestroyer)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkOfNight>(), 2));
+            }
+            if (npc.type == NPCID.Clinger)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkSulphurous>(), 50));
+            }
+            if (npc.type == NPCID.DesertScorpionWalk || npc.type == NPCID.DesertScorpionWall)
+            {
+                npcLoot.Add(ItemDropRule.ByCondition(new PostPlantera(), ModContent.ItemType<BookMarkScorpio>(), 50));
             }
         }
         public float WhiteLerp = 0;
@@ -1117,13 +1152,6 @@ namespace CalamityEntropy.Common
                     Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<BitternessCard>()));
                 }
             }
-            if (NPC.downedMechBossAny && Main.player[Player.FindClosest(npc.Center, 1000000, 1000000)].ZoneDungeon)
-            {
-                if (Main.rand.NextBool(160))
-                {
-                    Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<BookMarkBlackKnife>()));
-                }
-            }
             if (!npc.friendly && npc.lifeMax > 20)
             {
                 if (Main.bloodMoon)
@@ -1132,15 +1160,7 @@ namespace CalamityEntropy.Common
                     {
                         Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<CrimsonNight>()));
                     }
-                    // 原灾厄掉落的两张邪恶卡，改挂血月敌怪各 1/40（misc-map §五增补段）
-                    if (Main.rand.NextBool(40))
-                    {
-                        Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<Fool>()));
-                    }
-                    if (Main.rand.NextBool(40))
-                    {
-                        Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<Frail>()));
-                    }
+                    // 原灾厄掉落的两张邪恶卡已改挂专属 Boss 掉落（批次I）
                 }
                 Player n = null;
                 Player h = null;
@@ -1223,13 +1243,6 @@ namespace CalamityEntropy.Common
             {
                 Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<Perplexed>()));
             }
-            if (npc.type == NPCID.GoblinSorcerer)
-            {
-                if (Main.rand.NextBool(4))
-                {
-                    Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<Tarnish>()));
-                }
-            }
             if (npc.type == NPCID.GiantWormHead)
             {
                 if (Main.rand.NextDouble() < 0.04f)
@@ -1268,6 +1281,20 @@ namespace CalamityEntropy.Common
             public bool CanDrop(DropAttemptInfo info) => !Main.expertMode;
             public bool CanShowItemDropInUI() => !Main.expertMode;
             public string GetConditionDescription() => "Normal Only";
+        }
+        /// <summary>月亮领主击败后才掉落(原版无现成条件,2026-08-31 平衡案)。</summary>
+        public class PostMoonLord : IItemDropRuleCondition, IProvideItemConditionDescription
+        {
+            public bool CanDrop(DropAttemptInfo info) => NPC.downedMoonlord;
+            public bool CanShowItemDropInUI() => true;
+            public string GetConditionDescription() => null;
+        }
+        /// <summary>世纪之花击败后才掉落。</summary>
+        public class PostPlantera : IItemDropRuleCondition, IProvideItemConditionDescription
+        {
+            public bool CanDrop(DropAttemptInfo info) => NPC.downedPlantBoss;
+            public bool CanShowItemDropInUI() => true;
+            public string GetConditionDescription() => null;
         }
         public class IsNight : IItemDropRuleCondition, IProvideItemConditionDescription
         {
@@ -1322,33 +1349,19 @@ namespace CalamityEntropy.Common
                 {
                     if (Main.rand.NextBool(4) && !CECooldowns.HasCooldown("GrudgeCD"))
                     {
-                        CECooldowns.AddCooldown("GrudgeCD", 50);
+                        CECooldowns.AddCooldown("GrudgeCD", GrudgeCard.TriggerCooldown);
                         Projectile.NewProjectile(player.GetSource_FromThis(), npc.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(4, 5), ModContent.ProjectileType<HealingSpirit>(), 0, 0, player.whoAmI);
                     }
                 }
                 if (player.Entropy().heartOfStorm)
                 {
-                    int lasertype = ModContent.ProjectileType<ElectricLaser>();
-                    if (source == null || ((source is Projectile pj) && ((!(pj.type == lasertype)) || pj.ai[2] < Main.rand.Next(1, 6))))
+                    // 2026-08-31 平衡案:重做为命中目标时召唤闪电,内置冷却1秒,基础伤害800
+                    if (source is not Projectile srcProj || srcProj.type != ModContent.ProjectileType<ElectricLaser>())
                     {
-                        if ((source is Projectile j && j.type == lasertype) || Main.rand.NextBool(3))
+                        if (CECooldowns.CheckBMProc("HeartOfStormBolt", 60))
                         {
-                            NPC target = null;
-                            float dist = 500;
-                            foreach (NPC npcf in Main.ActiveNPCs)
-                            {
-                                float d = CEUtils.getDistance(npcf.Center, npc.Center);
-                                if (npcf.whoAmI != npc.whoAmI && !npcf.friendly && d < dist && npcf.Entropy().noelctime <= 0)
-                                {
-                                    target = npcf;
-                                    dist = d;
-                                }
-                            }
-                            if (target != null)
-                            {
-                                noelctime = 4;
-                                Projectile.NewProjectile(player.GetSource_FromThis(), npc.Center, Vector2.Zero, lasertype, damage.ApplyAccArmorDamageBonus(player) / 10, 0, player.whoAmI, target.Center.X, target.Center.Y, (source is Projectile p && p.type == lasertype) ? p.ai[2] + 1 : 0);
-                            }
+                            int boltDamage = (int)player.GetTotalDamage(DamageClass.Generic).ApplyTo(800);
+                            Projectile.NewProjectile(player.GetSource_FromThis(), npc.Center - new Vector2(0, 480), Vector2.Zero, ModContent.ProjectileType<ElectricLaser>(), boltDamage, 0, player.whoAmI, npc.Center.X, npc.Center.Y, 0);
                         }
                     }
                 }
@@ -1372,7 +1385,7 @@ namespace CalamityEntropy.Common
             {
                 NihilityShell.checkDamage(player, hit);
             }
-            if (player.Entropy().ConfuseCard)
+            if (player.Entropy().ConfuseCard && !npc.boss)
             {
                 npc.AddBuff(ModContent.BuffType<Deceive>(), 420);
             }
@@ -1445,7 +1458,7 @@ namespace CalamityEntropy.Common
                     player.Entropy().deusCoreBloodOut -= btransfer;
                     deusBloodOut += btransfer * 5;
                 }
-                if (player.Entropy().ConfuseCard)
+                if (player.Entropy().ConfuseCard && !npc.boss)
                 {
                     npc.AddBuff(ModContent.BuffType<Deceive>(), 420);
                 }
@@ -1516,6 +1529,10 @@ namespace CalamityEntropy.Common
 
         public override void ModifyShop(NPCShop shop)
         {
+            if (shop.NpcType == NPCID.Clothier)
+            {
+                shop.Add(ModContent.ItemType<Barren>());
+            }
             if (shop.NpcType == 17)
             {
                 shop.Add(ModContent.ItemType<SoyMilk>(), new Condition(Mod.GetLocalization("DownedBoss2").Value, () => NPC.downedBoss2));
@@ -1525,23 +1542,12 @@ namespace CalamityEntropy.Common
             {
                 shop.Add(ModContent.ItemType<AuraCard>(), new Condition(Mod.GetLocalization("HaveOracleDeck"), () => Main.LocalPlayer.Entropy().oracleDeckInInv));
                 shop.Add(ModContent.ItemType<BrillianceCard>(), new Condition(Mod.GetLocalization("HaveOracleDeck"), () => Main.LocalPlayer.Entropy().oracleDeckInInv));
-                shop.Add(ModContent.ItemType<EnduranceCard>(), new Condition(Mod.GetLocalization("HaveOracleDeck"), () => Main.LocalPlayer.Entropy().oracleDeckInInv));
-                shop.Add(ModContent.ItemType<EntityCard>(), new Condition(Mod.GetLocalization("HaveOracleDeck"), () => Main.LocalPlayer.Entropy().oracleDeckInInv));
                 shop.Add(ModContent.ItemType<InspirationCard>(), new Condition(Mod.GetLocalization("HaveOracleDeck"), () => Main.LocalPlayer.Entropy().oracleDeckInInv));
-                shop.Add(ModContent.ItemType<MetropolisCard>(), new Condition(Mod.GetLocalization("HaveOracleDeck"), () => Main.LocalPlayer.Entropy().oracleDeckInInv));
-                shop.Add(ModContent.ItemType<RadianceCard>(), new Condition(Mod.GetLocalization("HaveOracleDeck"), () => Main.LocalPlayer.Entropy().oracleDeckInInv));
                 shop.Add(ModContent.ItemType<TemperanceCard>(), new Condition(Mod.GetLocalization("HaveOracleDeck"), () => Main.LocalPlayer.Entropy().oracleDeckInInv));
                 shop.Add(ModContent.ItemType<WisdomCard>(), new Condition(Mod.GetLocalization("HaveOracleDeck"), () => Main.LocalPlayer.Entropy().oracleDeckInInv));
 
-                shop.Add(ModContent.ItemType<Barren>(), new Condition(Mod.GetLocalization("HaveTaintedDeck"), () => Main.LocalPlayer.Entropy().taintedDeckInInv));
                 shop.Add(ModContent.ItemType<Confuse>(), new Condition(Mod.GetLocalization("HaveTaintedDeck"), () => Main.LocalPlayer.Entropy().taintedDeckInInv));
-                shop.Add(ModContent.ItemType<Fool>(), new Condition(Mod.GetLocalization("HaveTaintedDeck"), () => Main.LocalPlayer.Entropy().taintedDeckInInv));
-                shop.Add(ModContent.ItemType<Frail>(), new Condition(Mod.GetLocalization("HaveTaintedDeck"), () => Main.LocalPlayer.Entropy().taintedDeckInInv));
-                shop.Add(ModContent.ItemType<GreedCard>(), new Condition(Mod.GetLocalization("HaveTaintedDeck"), () => Main.LocalPlayer.Entropy().taintedDeckInInv));
-                shop.Add(ModContent.ItemType<Nothing>(), new Condition(Mod.GetLocalization("HaveTaintedDeck"), () => Main.LocalPlayer.Entropy().taintedDeckInInv));
                 shop.Add(ModContent.ItemType<Perplexed>(), new Condition(Mod.GetLocalization("HaveTaintedDeck"), () => Main.LocalPlayer.Entropy().taintedDeckInInv));
-                shop.Add(ModContent.ItemType<Sacrifice>(), new Condition(Mod.GetLocalization("HaveTaintedDeck"), () => Main.LocalPlayer.Entropy().taintedDeckInInv));
-                shop.Add(ModContent.ItemType<Tarnish>(), new Condition(Mod.GetLocalization("HaveTaintedDeck"), () => Main.LocalPlayer.Entropy().taintedDeckInInv));
 
                 AddSoulCard<BitternessCard>(shop);
                 AddSoulCard<DevouringCard>(shop);
@@ -1551,7 +1557,6 @@ namespace CalamityEntropy.Common
                 AddSoulCard<ObscureCard>(shop);
                 AddSoulCard<PurificationCard>(shop);
                 AddSoulCard<RequiemCard>(shop);
-                AddSoulCard<WisperCard>(shop);
             }
             if (shop.NpcType == 20)
             {

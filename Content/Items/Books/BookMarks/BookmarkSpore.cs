@@ -34,7 +34,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 if (projectile.GetOwner().ownedProjectileCounts[BookmarkSpore.ProjType] < 1)
                 {
                     if (projectile.ModProjectile is EntropyBookHeldProjectile eb)
-                        eb.ShootSingleProjectile(BookmarkSpore.ProjType, projectile.Center, projectile.rotation.ToRotationVector2() * 3 + new Vector2(0, -8));
+                        eb.ShootSingleProjectile(BookmarkSpore.ProjType, projectile.Center, projectile.rotation.ToRotationVector2() * 3 + new Vector2(0, -8), 1, 1, 1, fixedBaseDamage: 10);
                 }
             }
         }
@@ -156,7 +156,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (target.velocity.Length() > 2)
+            if (target.velocity.Length() > 2 && !target.boss)
                 target.velocity *= 0.64f;
         }
     }

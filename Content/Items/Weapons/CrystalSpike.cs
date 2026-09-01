@@ -39,14 +39,15 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.rare = ItemRarityID.Blue;
             Item.shoot = ModContent.ProjectileType<CrystalSpikeThrow>();
             Item.shootSpeed = 12f;
-            Item.DamageType = DamageClass.Ranged;
+            Item.DamageType = DamageClass.Melee;
         }
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.Starfish)
-                .AddIngredient(ItemID.ManaCrystal, 2)
-                .AddTile(TileID.Anvils)
+                .AddIngredient(ItemID.Amethyst, 10)
+                .AddIngredient(ItemID.Sapphire, 10)
+                .AddIngredient(ItemID.Diamond, 10)
+                .AddTile(TileID.WorkBenches)
                 .Register();
         }
 
@@ -103,7 +104,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/CrystalSpike";
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Ranged, true, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, true, -1);
             Projectile.width = Projectile.height = 14;
             Projectile.timeLeft = 120 * 4;
             Projectile.MaxUpdates = 3;
@@ -223,7 +224,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/CrystalSpike";
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.width = Projectile.height = 12;
             Projectile.timeLeft = 60;
         }
@@ -250,7 +251,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/CrystalSpike";
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.width = Projectile.height = 12;
             Projectile.timeLeft = 10000;
         }

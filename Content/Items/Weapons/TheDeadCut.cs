@@ -61,7 +61,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             Recipe recipe = CreateRecipe();
             recipe.AddIngredient(ModContent.ItemType<Revelation>());
-            recipe.AddIngredient<WraithSoulEssence>(5);
+            recipe.AddIngredient(ItemID.LunarBar, 10);
             recipe.AddTile(TileID.LunarCraftingStation);
             recipe.Register();
         }

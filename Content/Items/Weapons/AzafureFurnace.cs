@@ -38,8 +38,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             CreateRecipe().
                 AddIngredient<OverloadFurnace>().
-                AddIngredient<HellIndustrialComponents>(4).
-                AddIngredient(ItemID.SoulofNight, 10).
+                AddIngredient(ItemID.Nanites, 100).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

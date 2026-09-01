@@ -47,11 +47,11 @@ namespace CalamityEntropy.Content.Items
         }
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ModContent.ItemType<StarlitScaleDust>(), 6).
-                AddIngredient(ItemID.FallenStar, 2).
-                AddTile(TileID.WorkBenches).
-                Register();
+            CreateRecipe()
+                .AddIngredient<StarlitScaleDust>(6)
+                .AddIngredient(ItemID.HallowedBar, 4)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
         }
     }
 }

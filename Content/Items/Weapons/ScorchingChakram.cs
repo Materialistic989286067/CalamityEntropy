@@ -39,7 +39,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<ScorchingChakramThrown>();
             Item.shootSpeed = 50f;
-            Item.DamageType = DamageClass.Melee;
+            Item.DamageType = DamageClass.Ranged;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -61,7 +61,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/ScorchingChakram";
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.width = Projectile.height = 80;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 16;
@@ -244,7 +244,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void SetDefaults()
         {
-            Projectile.DamageType = DamageClass.Melee;
+            Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 40;
             Projectile.height = 40;
             Projectile.friendly = true;

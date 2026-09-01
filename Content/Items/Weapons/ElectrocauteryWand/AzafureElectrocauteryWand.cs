@@ -42,9 +42,8 @@ namespace CalamityEntropy.Content.Items.Weapons.ElectrocauteryWand
         {
             CreateRecipe()
                 .AddIngredient<AzafurePulseWand>()
-                .AddIngredient<HellIndustrialComponents>(6)
-                .AddRecipeGroup(CERecipeGroups.AnyOrichalcumBar, 8)
-                .AddTile(TileID.Anvils)
+                .AddIngredient(ItemID.SoulofMight, 20)
+                .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
 

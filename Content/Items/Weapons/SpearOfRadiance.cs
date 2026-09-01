@@ -49,8 +49,9 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ItemID.HallowedBar, 8)
-                .AddIngredient(ItemID.SoulofLight, 6)
+            CreateRecipe()
+                .AddIngredient(ItemID.Gungnir)
+                .AddIngredient(ItemID.ChlorophyteBar, 20)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }

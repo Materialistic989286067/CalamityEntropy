@@ -36,6 +36,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<AshesSworldHoldout>();
             Item.shootSpeed = 12f;
+            Item.scale *= 0.66f;
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

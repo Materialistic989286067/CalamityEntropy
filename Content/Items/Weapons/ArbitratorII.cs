@@ -30,7 +30,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<ArbitratorIIThrow>();
             Item.shootSpeed = 50f;
-            Item.DamageType = DamageClass.Ranged;
+            Item.DamageType = DamageClass.Melee;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -48,10 +48,12 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ItemID.HallowedBar, 6)
-                .AddIngredient(ItemID.Ectoplasm, 4)
-                .AddIngredient(ItemID.Nanites, 1)
-                .AddTile(TileID.MythrilAnvil).Register();
+            CreateRecipe()
+                .AddIngredient(ItemID.AdamantiteGlaive)
+                .AddIngredient(ItemID.MartianConduitPlating, 10)
+                .AddIngredient(ItemID.LihzahrdBrick, 50)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
         }
     }
 }

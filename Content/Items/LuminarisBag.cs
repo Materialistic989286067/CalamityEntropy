@@ -60,7 +60,8 @@ namespace CalamityEntropy.Content.Items
             itemLoot.Add(new CommonDrop(ModContent.ItemType<PhantomLightWing>(), 5, 1, 1, 4));
             itemLoot.Add(new CommonDrop(ModContent.ItemType<LunarPlank>(), 5, 1, 1, 3));
             itemLoot.Add(new CommonDrop(ModContent.ItemType<BottledStarlightCocoon>(), 5, 1, 1, 4));
-            itemLoot.Add(new CommonDrop(ModContent.ItemType<ShadeCloak>(), 5, 1, 1, 4));
+            // 2026-08-31 平衡案:暗影披风掉落率与其他专家饰品一致(100%)
+            itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<ShadeCloak>()));
             itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<StarlitScaleDust>(), 1, 52, 74));
             //脱离灾厄:原灾厄DefineConditionalDropSet(1/4几率成套)换原生前置条件规则
             LeadingConditionRule vanitySet = new LeadingConditionRule(new LuminarVanityChance());

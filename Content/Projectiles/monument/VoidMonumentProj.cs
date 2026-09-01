@@ -1,4 +1,4 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Content.Projectiles.monument;
 using CalamityEntropy.Content.Dusts;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
@@ -164,7 +164,6 @@ namespace CalamityEntropy.Content.Projectiles.monument
                     Main.projectile[pj].netUpdate = true;
                 }
             }
-            EGlobalNPC.AddVoidTouch(target, 60, 1, 460, 10);
         }
 
         public override bool PreDraw(ref Color dc)

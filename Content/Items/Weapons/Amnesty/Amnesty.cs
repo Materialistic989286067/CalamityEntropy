@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Core.Graphics;
@@ -56,8 +57,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Amnesty
         {
             CreateRecipe()
                 .AddIngredient<Depletion.Depletion>()
-                .AddIngredient(ItemID.LastPrism)
-                .AddIngredient<WraithSoulEssence>(10)
+                .AddIngredient<ChaoticPiece>(10)
+                .AddIngredient(ItemID.LunarBar, 10)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

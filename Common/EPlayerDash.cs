@@ -138,8 +138,10 @@ public class EPlayerDash : ModPlayer
 
     private bool CanUseDash()
     {
+        // 暗影披风排他:装备期间禁用符文冲刺(2026-08-31 平衡案)
         return DashAccessoryEquipped
                && !Player.setSolar && !Player.mount.Active
+               && !Player.Entropy().shadeDashExclusive
                && Player.wingTime > 20;
     }
 }

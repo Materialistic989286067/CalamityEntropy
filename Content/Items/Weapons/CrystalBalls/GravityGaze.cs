@@ -30,8 +30,9 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.MeteoriteBar, 5)
                 .AddIngredient(ItemID.Glass, 10)
+                .AddIngredient(ItemID.Bone, 30)
+                .AddIngredient(ItemID.Feather, 10)
                 .AddTile(TileID.WorkBenches)
                 .Register();
         }

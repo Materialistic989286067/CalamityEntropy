@@ -5,6 +5,7 @@ using CalamityEntropy.Core.Cooldowns;
 using CalamityEntropy.Content.Cooldowns;
 using CalamityEntropy.Content.ILEditing;
 using CalamityEntropy.Content.Items.Accessories;
+using CalamityEntropy.Content.Items.Accessories.Cards;
 using CalamityEntropy.Content.Items.Accessories.EvilCards;
 using CalamityEntropy.Content.Items.Accessories.Hungry;
 using CalamityEntropy.Content.Items.Accessories.Oath;
@@ -128,6 +129,24 @@ namespace CalamityEntropy.Common
         public bool VFHelmSummoner;
         public bool VFHelmRogue;
         public bool VFHelmMelee;
+        /// <summary>魔力病持续时间减半(虚灵宙法盔/圣洁月光共用;2026-08-31 平衡案)。</summary>
+        public bool halfManaSick;
+        /// <summary>暗影披风冲刺排他:装备期间禁用其他冲刺来源(2026-08-31 平衡案)。</summary>
+        public bool shadeDashExclusive;
+        /// <summary>上神之佑团队免伤光环持有者标记(2026-08-31 平衡案)。</summary>
+        public bool odinAura;
+        /// <summary>莱拉蜂蜜光环持有者标记(2026-08-31 平衡案)。</summary>
+        public bool leylaAura;
+        /// <summary>蚀之窃贼怀表持有标记(死亡复活,2026-08-31 平衡案)。</summary>
+        public bool thiefWatch;
+        // 书签玩家侧被动票据:由各书签 BookUpdate 每帧续期,消费处自行倒数(2026-08-31 平衡案)
+        public int bmLightJumpTime;
+        public int bmTerraDefTime;
+        public int bmSilvaRegenTime;
+        public int bmSagSpawnTime;
+        private int manaSickPrev = 0;
+        /// <summary>虚灵宙法盔:攻击敌人后的强再生剩余帧(5hp/s)。</summary>
+        public int cosmosRegenTime = 0;
         public bool mariviniumBody = false;
         public int vfcd = 0;
         public float voidcharge = 0;
@@ -246,6 +265,15 @@ namespace CalamityEntropy.Common
         
         public override bool PreKill(double damage, int hitDirection, bool pvp, ref bool playSound, ref bool genDust, ref PlayerDeathReason damageSource)
         {
+            // 2026-08-31 平衡案:蚀之窃贼怀表——死亡后复活并回复100生命,120秒冷却
+            if (thiefWatch && CECooldowns.CheckBMProc("ThiefWatchRevive", 120 * 60))
+            {
+                Player.statLife = 100;
+                Player.HealEffect(100);
+                immune = 120;
+                CEUtils.PlaySound("ARCD", 1.2f, Player.Center, 6, 0.8f);
+                return false;
+            }
             deusCoreBloodOut = 0;
             if (Player.GetModPlayer<VanityModPlayer>().vanityEquipped == nameof(LostHeirloom))
             {
@@ -340,7 +368,8 @@ namespace CalamityEntropy.Common
             //脱离灾厄:SilvasCrown 原有的灾厄防御损伤(defenseDamageRatio)联动已退役
             if (Thorn > 0)
             {
-                Player.ApplyDamageToNPC(npc, (int)(hurtInfo.Damage * Thorn), 0, 0, false);
+                int thornDamage = (int)Math.Min(hurtInfo.Damage * Thorn, 1000);
+                Player.ApplyDamageToNPC(npc, thornDamage, 0, 0, false);
             }
         }
         public override void OnHitByProjectile(Projectile proj, Player.HurtInfo hurtInfo)
@@ -427,6 +456,17 @@ namespace CalamityEntropy.Common
                 cur = halved;
             }
             voidTouchPrevTime = cur;
+
+            // 魔力病持续时间减半(同上,帧间跳变侦测新施加;虚灵宙法盔/圣洁月光)
+            int msIdx = Player.FindBuffIndex(BuffID.ManaSickness);
+            int msCur = msIdx >= 0 ? Player.buffTime[msIdx] : 0;
+            if (halfManaSick && msIdx >= 0 && msCur > manaSickPrev + 1)
+            {
+                int halved = System.Math.Max(manaSickPrev - 1, msCur / 2);
+                Player.buffTime[msIdx] = halved;
+                msCur = halved;
+            }
+            manaSickPrev = msCur;
         }
         public bool MariviniumSet = false;
         public void addEquip(string id, bool hasVisual = true)
@@ -724,7 +764,8 @@ namespace CalamityEntropy.Common
         }
         public void UpdateVoidShield(bool Equiped, string CooldownID, ref float Scale, ref int shieldCount, ref int regenDelay, ref int rechargeCounter, int MaxShield, int RechargeTime)
         {
-            Scale = float.Lerp(Scale, Equiped ? (shieldCount > 0 ? (0.6f + 0.4f * ((float)Scale / MaxShield)) : 0.5f) : 0, 0.05f);
+            // 修复:此处曾误用 Scale/MaxShield(恒近0),护盾视觉不随护盾量变化,观感上"护盾没生成"
+            Scale = float.Lerp(Scale, Equiped ? (shieldCount > 0 ? (0.6f + 0.4f * ((float)shieldCount / MaxShield)) : 0.5f) : 0, 0.05f);
             if (Equiped)
             {
                 if (Player.EntropyCooldowns().cooldowns.TryGetValue(CooldownID, out var value4))
@@ -781,7 +822,7 @@ namespace CalamityEntropy.Common
         }
         public void UpdateRatzielShield(bool Equiped, string CooldownID, ref float Scale, ref int shieldCount, ref int regenDelay, ref int rechargeCounter, int MaxShield, int RechargeTime)
         {
-            Scale = float.Lerp(Scale, Equiped ? (shieldCount > 0 ? (0.6f + 0.4f * ((float)Scale / MaxShield)) : 0.5f) : 0, 0.05f);
+            Scale = float.Lerp(Scale, Equiped ? (shieldCount > 0 ? (0.6f + 0.4f * ((float)shieldCount / MaxShield)) : 0.5f) : 0, 0.05f);
             if (Equiped)
             {
                 if (Player.EntropyCooldowns().cooldowns.TryGetValue(CooldownID, out var value4))
@@ -981,7 +1022,7 @@ namespace CalamityEntropy.Common
                 regenDelay = (int)(5f * 60);
                 for (int i = 0; i < int.Min(20, reduceDmg / 5 + 1); i++)
                 {
-                    PRTLoader.NewParticle<PRT_TechyHolosquare>(Player.Center + CEUtils.randomPointInCircle(64 * NihShieldScale), CEUtils.randomPointInCircle(16), new Color(160, 160, 255) * 0.8f, Main.rand.NextFloat(1.2f, 1.4f)).Configure(Main.rand.Next(15, 18));
+                    PRTLoader.NewParticle<PRT_TechyHolosquare>(Player.Center + CEUtils.randomPointInCircle(64 * VoidCoreShieldScale), CEUtils.randomPointInCircle(16), new Color(160, 160, 255) * 0.8f, Main.rand.NextFloat(1.2f, 1.4f)).Configure(Main.rand.Next(15, 18));
                 }
                 ShieldAlphaAdd = 1;
                 CombatText.NewText(Player.getRect(), Color.LightSkyBlue, "-" + reduceDmg);
@@ -1187,6 +1228,11 @@ namespace CalamityEntropy.Common
             VFHelmSummoner = false;
             VFHelmRogue = false;
             VFHelmMelee = false;
+            halfManaSick = false;
+            shadeDashExclusive = false;
+            odinAura = false;
+            leylaAura = false;
+            thiefWatch = false;
             SCrown = false;
             GreedCard = false;
             enhancedMana = 0;
@@ -1407,7 +1453,7 @@ namespace CalamityEntropy.Common
             }
             if (!Main.dedServ && vetrasylsEye && vShieldCD <= 0 && CEKeybinds.VetrasylsEyeBlockHotKey.JustPressed)
             {
-                vShieldCD = 180.ApplyCdDec(Player);
+                vShieldCD = VetrasylsEye.GetShieldCooldown().ApplyCdDec(Player);
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, (Main.MouseWorld - Player.Center).normalize() * 6, ModContent.ProjectileType<WelkingShield>(), 0, 0, Player.whoAmI);
             }
             vShieldCD -= 1;
@@ -1563,8 +1609,9 @@ namespace CalamityEntropy.Common
                 {
                     if (BlackFlameCd < 1)
                     {
-                        Projectile.NewProjectile(Player.GetSource_FromAI(), Player.Center, (Main.MouseWorld - Player.Center).SafeNormalize(Vector2.One) * 14, ModContent.ProjectileType<BlackFire>(), Player.GetWeaponDamage(Player.HeldItem) / 8 + 1, 2, Player.whoAmI);
-                        BlackFlameCd = 45;
+                        int useTime = Player.HeldItem.useTime > 0 ? Player.HeldItem.useTime : Player.HeldItem.useAnimation;
+                        BlackFlameCd = Math.Max(useTime, Tarnish.BlackFireCooldownMin);
+                        Projectile.NewProjectile(Player.GetSource_FromAI(), Player.Center, (Main.MouseWorld - Player.Center).SafeNormalize(Vector2.One) * 14, ModContent.ProjectileType<BlackFire>(), Tarnish.BlackFireDamage, 2, Player.whoAmI);
                     }
                 }
             }
@@ -1662,11 +1709,7 @@ namespace CalamityEntropy.Common
                 Player.runAcceleration *= 1.2f;
                 Player.maxRunSpeed *= 1.2f;
             }
-            if (Player.Entropy().oracleDeck)
-            {
-                Player.runAcceleration *= 1.15f;
-                Player.maxRunSpeed *= 1.15f;
-            }
+            // 2026-08-31 平衡案:神谕卡组移速改为+10%(走 moveSpeed 字段,在 OracleDeck 里),原跑速乘区退役
             if (MagiShield > 0)
             {
                 Player.runAcceleration *= 1.1f;
@@ -1733,6 +1776,24 @@ namespace CalamityEntropy.Common
         public int ffDecSlot = 0;
         public override void UpdateLifeRegen()
         {
+            // 虚灵宙法盔:攻击敌人后5秒内大幅提升自然生命再生(5hp/s)
+            if (cosmosRegenTime > 0)
+            {
+                cosmosRegenTime--;
+                Player.lifeRegen += 10;
+            }
+            // 苍绿书签:每秒恢复2点生命(2026-08-31 平衡案)
+            if (bmSilvaRegenTime > 0)
+            {
+                bmSilvaRegenTime--;
+                Player.lifeRegen += 4;
+            }
+            // 堕化卡组:自然生命再生降低100%(2026-08-31 平衡案)
+            if (EvilDeck)
+            {
+                Player.lifeRegenTime = 0;
+                Player.lifeRegen = int.Min(0, Player.lifeRegen);
+            }
             if (deusCore && Player.lifeRegen > 0)
             {
                 Player.lifeRegen /= 2;
@@ -1865,11 +1926,7 @@ namespace CalamityEntropy.Common
                     }
                 }
             }
-            if (hasAcc(LurkersCharm.ID))
-            {
-                //脱离灾厄:原为潜行值>80%时生效,潜行系统退役后改为常驻(后续按武器大招体系重做)
-                Player.Entropy().damageReduce += LurkersCharm.endurance;
-            }
+            // 2026-08-31 平衡案:幽影护符效果重做,原减伤项退役(新效果在 LurkersCharm.UpdateAccessory)
             float d = damageReduce - 1;
             if (Player.Entropy().enduranceCard)
             {
@@ -1879,9 +1936,23 @@ namespace CalamityEntropy.Common
             {
                 d += 0.05f;
             }
-            if (Player.Entropy().VFHelmMelee)
+            // 2026-08-31 平衡案:虚湮吞天盔职业奖励重做,原+10%全减伤退役(改为接触伤害-15%,在头盔文件里)
+            // 上神之佑:自己或任一队友持有时+15%免伤(不叠加)
+            bool odinWard = odinAura;
+            if (!odinWard)
             {
-                d += 0.1f;
+                foreach (Player teammate in Main.ActivePlayers)
+                {
+                    if (!teammate.dead && teammate.whoAmI != Player.whoAmI && teammate.team == Player.team && teammate.Entropy().odinAura)
+                    {
+                        odinWard = true;
+                        break;
+                    }
+                }
+            }
+            if (odinWard)
+            {
+                d += OdinsRefuge.TeamWardDR;
             }
             Player.endurance += d;
             if (rBadgeActive)
@@ -1981,15 +2052,21 @@ namespace CalamityEntropy.Common
                 Player.statDefense += Player.maxMinions * 1;
                 Player.endurance += Player.maxMinions * 0.004f;
             }
-            if (OdinWardTime > 0)
+            // 2026-08-31 平衡案:上神之佑重做,原盾撞圣佑窗口退役(改为常驻团队15%免伤,见减伤汇总处)
+            // 书签玩家侧被动:光明书签+20%跳跃速度,泰拉书签+10防御
+            if (bmLightJumpTime > 0)
             {
-                // 圣佑窗口生效期:额外减伤+周身少量金光提示
-                Player.endurance += OdinsRefuge.WardDR;
-                if (!Main.dedServ && Main.GameUpdateCount % 6 == 0)
-                {
-                    PRTLoader.NewParticle<PRT_GlowSpark>(Player.Center + CEUtils.randomPointInCircle(20), new Vector2(0, -Main.rand.NextFloat(0.5f, 1.2f)),
-                        Color.Gold, Main.rand.NextFloat(0.06f, 0.09f)).Configure(0.7f, true, PRTDrawModeEnum.AdditiveBlend, 0, 16);
-                }
+                bmLightJumpTime--;
+                Player.jumpSpeedBoost += Player.jumpSpeed * 0.2f;
+            }
+            if (bmTerraDefTime > 0)
+            {
+                bmTerraDefTime--;
+                Player.statDefense += 10;
+            }
+            if (bmSagSpawnTime > 0)
+            {
+                bmSagSpawnTime--;
             }
             //基于尺寸更改机动性
             Player.jumpSpeed *= float.Lerp(Scale, 1, 0.55f);
@@ -2031,25 +2108,12 @@ namespace CalamityEntropy.Common
             {
                 CEUtils.PlaySound("YharonFireball1", 2.2f, Player.Center);
             }
-            if (info.Damage > Player.statLifeMax2 * 0.35f)
+            // 2026-08-31 平衡案:苍溟护符重做——受击时召唤3个追踪深渊漩涡,5秒效果冷却(原大伤护盾环退役)
+            if (accAzureAbyss && CECooldowns.CheckBMProc("AzureVortexOnHurt", 300))
             {
-                if (accAzureAbyss)
+                for (int i = 0; i < 3; i++)
                 {
-                    if (CECooldowns.CheckCD("AzureAbyssRingCd", 12 * 60))
-                    {
-                        Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<AzureShield>(), 0, 0, Player.whoAmI);
-                        for (int i = 0; i < 3; i++)
-                        {
-                            Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, CEUtils.randomRot().ToRotationVector2() * 16, ModContent.ProjectileType<AzureVortex>(), (int)(Player.GetBestClassDamage().ApplyTo(1300.ApplyAccArmorDamageBonus())), 0, Player.whoAmI);
-                        }
-                    }
-                }
-            }
-            if (AzureShield > 0)
-            {
-                if (info.Damage > 9)
-                {
-                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, CEUtils.randomRot().ToRotationVector2() * 16, ModContent.ProjectileType<AzureVortex>(), (int)(Player.GetBestClassDamage().ApplyTo(1200.ApplyAccArmorDamageBonus())), 0, Player.whoAmI);
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, CEUtils.randomRot().ToRotationVector2() * 16, ModContent.ProjectileType<AzureVortex>(), (int)(Player.GetBestClassDamage().ApplyTo(TalismanOfTheAzureAbyss.VortexBaseDamage.ApplyAccArmorDamageBonus())), 0, Player.whoAmI);
                 }
             }
             BloodthirstyEffect += (info.Damage / (float)Player.statLifeMax2) * 27;
@@ -2078,8 +2142,20 @@ namespace CalamityEntropy.Common
                     }
                 }
             }
-            if (DriverShield <= 0)
-                DriverRecharge = 0;
+            // 修复:驱动核心护盾曾在每次受击时清零充能进度,战斗中永远攒不满(20s),
+            // 即"护盾无法生成"。与虚空核心护盾对齐:受击不再打断充能。
+            // 2026-08-31 平衡案:瘟疫内燃机——受击时使附近敌人遭受困惑与酸性毒液
+            if (plagueEngine)
+            {
+                foreach (NPC npc in Main.ActiveNPCs)
+                {
+                    if (!npc.friendly && !npc.dontTakeDamage && CEUtils.getDistance(npc.Center, Player.Center) < PlagueInternalCombustionEngine.HurtDebuffRadius)
+                    {
+                        npc.AddBuff(BuffID.Confused, 180);
+                        npc.AddBuff(BuffID.Venom, 300);
+                    }
+                }
+            }
             if (Player.statLife - info.Damage > 0)
             {
                 if ((hasAcc("VastLV2") && ManaRegenTime > 0) || Player.HasBuff<ManaAwaken>())
@@ -2099,6 +2175,34 @@ namespace CalamityEntropy.Common
             //脱离灾厄:血肉巢穴Lore受击回血随灾厄Lore下线删除
         }
         public bool JustHit = false;
+        // 2026-08-31 平衡案:瘟疫内燃机/苍溟护符的命中派生统一挂在此处
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (Player.whoAmI != Main.myPlayer)
+                return;
+            // 瘟疫内燃机:手持武器攻击命中时召唤穿墙瘟疫能量(0.5秒内置CD)
+            if (plagueEngine && CECooldowns.CheckBMProc("PlagueEnergy", 30))
+            {
+                int dmg = (int)Player.GetTotalDamage(DamageClass.Generic).ApplyTo(PlagueInternalCombustionEngine.EnergyBaseDamage);
+                int p = Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center,
+                    (target.Center - Player.Center).SafeNormalize(Vector2.UnitX).RotatedByRandom(0.6f) * 9f,
+                    ModContent.ProjectileType<PlagueEnergy>(), dmg, 2f, Player.whoAmI, target.whoAmI);
+                CEUtils.SyncProj(p);
+            }
+            // 苍溟护符:武器命中时不断召唤追踪的深渊漩涡(0.5秒内置节流)
+            if (accAzureAbyss && CECooldowns.CheckBMProc("AzureVortexOnHit", 30))
+            {
+                int vp = Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center,
+                    (target.Center - Player.Center).SafeNormalize(Vector2.UnitX) * 16,
+                    ModContent.ProjectileType<AzureVortex>(), (int)(Player.GetBestClassDamage().ApplyTo(TalismanOfTheAzureAbyss.VortexBaseDamage.ApplyAccArmorDamageBonus())), 0, Player.whoAmI);
+                CEUtils.SyncProj(vp);
+            }
+            // 无垠:魔法暴击给予目标3秒灵魂紊乱
+            if (hasAcc("Vast") && hit.Crit && hit.DamageType.CountsAsClass(DamageClass.Magic))
+            {
+                target.AddBuff(ModContent.BuffType<SoulDisorder>(), 180);
+            }
+        }
         public override bool FreeDodge(Player.HurtInfo info)
         {
             if (immune > 0)
@@ -2126,11 +2230,11 @@ namespace CalamityEntropy.Common
                 immune = 30;
                 return true;
             }
-            if (info.Damage > Player.statLifeMax2 / 20 && MariviniumShieldCount > 0)
+            // 2026-08-31 平衡案:渊海护盾改为抵挡一次超过50点的伤害并消失,破盾给深渊狂怒
+            if (info.Damage > 50 && MariviniumShieldCount > 0)
             {
                 immune = 60;
                 MariviniumShieldCount--;
-                Player.Heal(100);
                 CEUtils.PlaySound("crystalShieldBreak", 1, Player.Center, 1, 0.7f);
                 Player.AddBuff(ModContent.BuffType<AbyssalWrath>(), 600);
                 for (int i = 0; i < 42; i++)
@@ -2249,7 +2353,7 @@ namespace CalamityEntropy.Common
             {
                 return;
             }
-            if (MariviniumShieldCount > 0 && info.Damage > Player.statLifeMax2 / 20)
+            if (MariviniumShieldCount > 0 && info.Damage > 50)
             {
                 return;
             }
@@ -2272,8 +2376,9 @@ namespace CalamityEntropy.Common
                     immune = 60;
                     SulphurousBubbleRecharge = 0;
                     SulphurousBubble = false;
+                    // 2026-08-31 平衡案:咒噬书签泡泡爆炸不再造成硫磺海剧毒
                     if (BookMarkLoader.GetPlayerHeldEntropyBook(Player, out var ebk))
-                        ((CommonExplotionFriendly)CEUtils.SpawnExplotionFriendly(Player.GetSource_FromThis(), Player, Player.Center, ebk.CauculateProjectileDamage(12), 580, DamageClass.Magic).ModProjectile).onHitAction = (target, hit, dmg) => { target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 600); }; //debuff-map:硫磺中毒已自研移植(PortsDoT)
+                        CEUtils.SpawnExplotionFriendly(Player.GetSource_FromThis(), Player, Player.Center, ebk.CauculateProjectileDamage(12), 580, DamageClass.Magic);
                     PRTLoader.NewParticle<PRT_PulseRing>(Player.Center, Vector2.Zero, new Color(10, 190, 10), 0.2f).Configure(5.45f, 16);
                     PRTLoader.NewParticle<PRT_PulseRing>(Player.Center, Vector2.Zero, new Color(10, 190, 10), 0.2f).Configure(5.8f, 16);
                     if (!Main.dedServ)
@@ -2551,7 +2656,7 @@ namespace CalamityEntropy.Common
             {
                 if(plr.whoAmI != Player.whoAmI && plr.Entropy().oathBanner && plr.team == Player.team)
                 {
-                    if(plr.Distance(Player.Center) < 10000)
+                    if(plr.Distance(Player.Center) < OathBanner.TeamBuffRange)
                         Player.AddBuff(ModContent.BuffType<OathofCommand>(), 8);
                 }
             }
@@ -2897,87 +3002,62 @@ namespace CalamityEntropy.Common
             {
                 dashing = false;
             }
-            if ((Player.GetModPlayer<SCDashMP>().Cooldown > 0 || (!hasAcc(ShadeCloak.ID) && !hasAccVisual(ShadeCloak.ID))) && !NDFlag)
+            // 2026-08-31 平衡案:暗影披风重做——自带暗影冲刺,冲刺期间无敌,固定5秒冷却。
+            // 冲刺本体走原版 dashType=1(忍者大师足具同源),此处只管无敌窗口/冷却/演出。
+            SCDashMP scDash = Player.GetModPlayer<SCDashMP>();
+            if (hasAcc(ShadeCloak.ID) || hasAccVisual(ShadeCloak.ID))
             {
-            }
-            else
-            {
-                if (Player.dashDelay < 0)
+                if (Player.timeSinceLastDashStarted <= 1 && scDash.flag)
                 {
+                    scDash.flag = false;
+                    scDash.Cooldown = ShadeCloak.CooldownTicks;
                     if (hasAccVisual(ShadeCloak.ID))
                     {
-                        if (avTrail == null || !avTrail.active)
+                        CEUtils.PlaySound("Dash2", 1, Player.Center);
+                        avTrail = PRTLoader.NewParticle<PRT_DashBeam>(Player.Center, Vector2.Zero, new Color(0, 0, 0, 210), 1f)
+                            .Configure(1, true, PRTDrawModeEnum.NonPremultiplied);
+                        avTrail.maxLength = 30;
+                        for (int i = 0; i < 12; i++)
                         {
-                            avTrail = PRTLoader.NewParticle<PRT_DashBeam>(Player.Center, Vector2.Zero, new Color(0, 0, 0, 210), 1f)
-                                .Configure(1, true, PRTDrawModeEnum.NonPremultiplied);
-                            avTrail.maxLength = 30;
+                            var __prt = PRTLoader.NewParticle<PRT_ShadeCloakOrb>(Vector2.Zero, CEUtils.randomPointInCircle(4), Color.Black, 1).Configure(1, true, PRTDrawModeEnum.NonPremultiplied, -1, ShadeCloak.CooldownTicks);
+                            __prt.PlayerIndex = Player.whoAmI;
                         }
                     }
-                    if (Player.GetModPlayer<SCDashMP>().flag)
-                    {
-                        int cd = ShadeCloak.CooldownTicks.ApplyCdDec(Player);
-                        Player.GetModPlayer<SCDashMP>().Cooldown = cd;
-                        Player.GetModPlayer<SCDashMP>().flag = false;
-                        if (hasAccVisual(ShadeCloak.ID))
-                        {
-                            CEUtils.PlaySound("Dash2", 1, Player.Center);
-
-                            for (int i = 0; i < 12; i++)
-                            {
-                                var __prt = PRTLoader.NewParticle<PRT_ShadeCloakOrb>(Vector2.Zero, CEUtils.randomPointInCircle(4), Color.Black, 1).Configure(1, true, PRTDrawModeEnum.NonPremultiplied, -1, cd);
-                                __prt.PlayerIndex = Player.whoAmI;
-                            }
-                        }
-                        NDFlag = true;
-
-                    }
-                    else
-                    {
-                        if (hasAcc(ShadeCloak.ID))
-                        {
-                            Player.velocity /= 1.25f;
-                        }
-                    }
-                    if (Player.GetModPlayer<SCDashMP>().Cooldown > 160.ApplyCdDec(Player) - 24)
-                    {
-                        if (hasAccVisual(ShadeCloak.ID))
-                        {
-                            avTrail.Lifetime = avTrail.Time + 30;
-                            for (int i = 0; i < 4; i++)
-                            {
-                                PRTLoader.NewParticle<PRT_ShadeDashParticle>(Player.Center + Player.velocity * 6
-                                    + CEUtils.randomPointInCircle(26), -(Player.velocity.normalize().RotatedByRandom(0.12f)) * 40, Color.White, 1).Configure(1, true, PRTDrawModeEnum.NonPremultiplied, 0, 16);
-                            }
-                        }
-                        if (hasAcc(ShadeCloak.ID))
-                        {
-                            //Player.velocity = new Vector2(Math.Sign(Player.velocity.X), 0) * Player.velocity.Length();
-                        }
-                    }
+                }
+                if (!scDash.flag && Player.timeSinceLastDashStarted < 24)
+                {
+                    // 冲刺无敌窗口
                     if (hasAcc(ShadeCloak.ID))
                     {
-                        //脱离灾厄:灾厄WulfrumHook钩爪特判随灾厄移除,原版钩爪由RemoveAllGrapplingHooks统一收回
                         Player.RemoveAllGrapplingHooks();
-                        if (Player.Entropy().immune < 6)
-                            Player.Entropy().immune = 6;
-                        Player.velocity *= 1.25f;
-
+                        if (Player.Entropy().immune < 4)
+                            Player.Entropy().immune = 4;
+                    }
+                    if (hasAccVisual(ShadeCloak.ID) && Player.velocity.Length() > 2)
+                    {
+                        for (int i = 0; i < 2; i++)
+                        {
+                            PRTLoader.NewParticle<PRT_ShadeDashParticle>(Player.Center + Player.velocity * 6
+                                + CEUtils.randomPointInCircle(26), -(Player.velocity.normalize().RotatedByRandom(0.12f)) * 40, Color.White, 1).Configure(1, true, PRTDrawModeEnum.NonPremultiplied, 0, 16);
+                        }
                     }
                 }
-                else
+                if (Player.timeSinceLastDashStarted > 30)
                 {
-                    Player.GetModPlayer<SCDashMP>().flag = true;
-                    NDFlag = false;
+                    if (!scDash.flag && avTrail != null)
+                    {
+                        avTrail.Lifetime = avTrail.Time + 30;
+                    }
+                    scDash.flag = true;
                 }
-
             }
             if (avTrail != null)
             {
                 avTrail.AddPoint(Player.Center + Player.velocity * 2);
             }
-            if (Player.GetModPlayer<SCDashMP>().Cooldown > 2 || !dashing)
+            if (scDash.Cooldown > 0)
             {
-                Player.GetModPlayer<SCDashMP>().Cooldown--;
+                scDash.Cooldown--;
             }
 
             float mhrot = (Player.legs == EquipLoader.GetEquipSlot(Mod, "MariviniumLeggings", EquipType.Legs) ? 0f : 0.64f) + (float)Math.Cos(Main.GameUpdateCount * 0.04f) * 0.16f;
@@ -3260,9 +3340,14 @@ namespace CalamityEntropy.Common
             }
             if (VFHelmSummoner)
             {
-                if (Player.ownedProjectileCounts[ModContent.ProjectileType<VoidMonster>()] < 1)
+                // 2026-08-31 平衡案:套装仆从换为迷你虚空吞噬者(原 VoidMonster 退役)
+                if (Player.ownedProjectileCounts[ModContent.ProjectileType<MiniVoidDevourer>()] < 1)
                 {
-                    Projectile.NewProjectile(Player.GetSource_FromAI(), Player.Center, Vector2.Zero, ModContent.ProjectileType<VoidMonster>(), (int)(Player.GetTotalDamage(DamageClass.Summon).ApplyTo(680)), 4, Player.whoAmI);
+                    int mvd = Projectile.NewProjectile(Player.GetSource_FromAI(), Player.Center, Vector2.Zero, ModContent.ProjectileType<MiniVoidDevourer>(), (int)(Player.GetTotalDamage(DamageClass.Summon).ApplyTo(680)), 4, Player.whoAmI);
+                    if (mvd >= 0 && mvd < Main.maxProjectiles)
+                    {
+                        Main.projectile[mvd].originalDamage = 680;
+                    }
                 }
             }
             serviceWhipDamageBonus *= 0.995f;
@@ -3499,12 +3584,7 @@ namespace CalamityEntropy.Common
                 Player.ManageSpecialBiomeVisuals("HeatDistortion", true);
             }
             AWraith = false;
-            scHealCD--;
-            if (scHealCD < 0 && Player.statLife < Player.statLifeMax2 && SCrown)
-            {
-                scHealCD = 60;
-                Player.Heal(2);
-            }
+            // 2026-08-31 平衡案:始源冠冕重做(2防/+25生命/蜂蜜),原每秒回血退役
             if (!Player.dead)
             {
                 if (Player.statLife < Player.statLifeMax2 && lifeRegenPerSec > 0)
@@ -3590,8 +3670,10 @@ namespace CalamityEntropy.Common
             shielddamagecd--;
             if (holyMoonlight)
             {
+                // 2026-08-31 平衡案:护盾存在时魔力病持续时间减半
                 if (MagiShield > 0)
                 {
+                    halfManaSick = true;
                     magiShieldCd = (30 * 60).ApplyCdDec(Player);
                 }
                 if (magiShieldCd > 0)
@@ -3603,7 +3685,8 @@ namespace CalamityEntropy.Common
                 }
                 else
                 {
-                    int magiShieldAddCount = (int)(Player.statManaMax2 * 0.25f);
+                    // 2026-08-31 平衡案:护盾取最大魔力50%,上限250
+                    int magiShieldAddCount = int.Min(250, (int)(Player.statManaMax2 * 0.5f));
                     magiShieldCd = 30 * 60;
                     if (MagiShield < magiShieldAddCount)
                     {
@@ -3673,7 +3756,8 @@ namespace CalamityEntropy.Common
             {
                 if (OracleDeckHealCd <= 0)
                 {
-                    OracleDeckHealCd = 300.ApplyCdDec(Player);
+                    // 2026-08-31 平衡案:每10秒固定一跳(不吃冷却缩减)
+                    OracleDeckHealCd = 600;
                     if (CEUtils.getDistance(Main.LocalPlayer.Center, Player.Center) < 6000)
                     {
                         if (Main.LocalPlayer.statLife < Main.LocalPlayer.statLifeMax2)
@@ -3686,6 +3770,13 @@ namespace CalamityEntropy.Common
             if (OracleDeckHealCd > 0)
             {
                 OracleDeckHealCd--;
+            }
+            // 莱拉:为自己与附近队友提供蜂蜜增益(各端只给本地玩家上buff,天然同步)
+            if (Player.Entropy().leylaAura && !Main.dedServ && !Main.LocalPlayer.dead
+                && (Player.whoAmI == Main.myPlayer || Main.LocalPlayer.team == Player.team)
+                && CEUtils.getDistance(Main.LocalPlayer.Center, Player.Center) < 2000)
+            {
+                Main.LocalPlayer.AddBuff(BuffID.Honey, 2);
             }
             //脱离灾厄:灾厄NOU减益判定随灾厄移除(该减益已无施加源)
             if (Player.whoAmI == Main.myPlayer)
@@ -3920,6 +4011,22 @@ namespace CalamityEntropy.Common
         }
         public override void PostUpdateEquips()
         {
+            // 护盾吸收/受击生成细胞的开关必须在受伤结算前就绪。
+            // 只在 PostUpdate 里推导会晚一步:ResetEffects 每帧清 false,受击发生在 PostUpdate 之前,
+            // 结算时开关恒为 false(历史 bug:噬虚者护盾能生成但无法生效)。联结伙伴同理。
+            if (NihilitySet)
+                NihilityShieldEnabled = true;
+            if (ChaoticSet)
+                SpawnChaoticCellOnHurt = true;
+            if (NihTwinArmorConnetPlayer != -1 && Main.player[NihTwinArmorConnetPlayer].active && !Main.player[NihTwinArmorConnetPlayer].dead)
+            {
+                EModPlayer mp = NihTwinArmorConnetPlayer.ToPlayer().Entropy();
+                if ((NihilitySet || ChaoticSet) && (mp.NihilitySet || mp.ChaoticSet))
+                {
+                    NihilityShieldEnabled = true;
+                    SpawnChaoticCellOnHurt = true;
+                }
+            }
             if (!Player.HeldItem.IsAir && Player.HeldItem.ModItem != null)
             {
                 if(Player.HeldItem.ModItem is Fooveria)
@@ -3958,8 +4065,9 @@ namespace CalamityEntropy.Common
                 }
                 if (p.owner == Player.whoAmI && p.ModProjectile != null && p.ModProjectile is CarverSpirit cs && cs.mode == CarverSpirit.Mode.Defending)
                 {
-                    Player.statDefense += 6;
-                    Player.endurance += 0.05f;
+                    // 2026-08-31 平衡案:防御魔灵加成降至每个4防御+2%伤害减免
+                    Player.statDefense += 4;
+                    Player.endurance += 0.02f;
                 }
             }
             //脱离灾厄:潜伏攻击消耗减免(stealthStrike75Cost/HalfCost)已随盗贼系统退役
@@ -3991,18 +4099,7 @@ namespace CalamityEntropy.Common
                 Player.GetAttackSpeed(DamageClass.Generic) += 1;
                 Player.GetDamage(DamageClass.Generic) += 1;
             }
-            if (MariviniumSet)
-            {
-                int crit = (int)(Player.GetTotalCritChance(DamageClass.Default) + 5E-06f); ;
-                if (Player.HeldItem.type != ItemID.None)
-                {
-                    crit = Player.GetWeaponCrit(Player.HeldItem);
-                }
-                if (crit > 100)
-                {
-                    Player.GetDamage(DamageClass.Default) += (crit - 100) * 0.01f;
-                }
-            }
+            // 2026-08-31 平衡案:渊洋神迹套装奖励重做,原溢出暴击转伤害的旧奖励退役
             Player.GetDamage(DamageClass.Generic) += serviceWhipDamageBonus;
             Player.GetCritChance(DamageClass.Generic) += (int)(serviceWhipDamageBonus * 180);
             Player.pickSpeed -= serviceWhipDamageBonus * 4.3f;
@@ -4027,23 +4124,26 @@ namespace CalamityEntropy.Common
             //脱离灾厄:SilvasCrown 原有的灾厄防御损伤(defenseDamageRatio)联动已退役
             if (Player.Entropy().wisdomCard)
             {
-                Player.manaCost *= 0.8f;
+                Player.manaCost *= WisdomCard.ManaCostMul;
             }
             if (Player.Entropy().oracleDeck)
             {
-                Player.manaCost *= 0.7f;
+                // 2026-08-31 平衡案:魔力减耗 30%→10%
+                Player.manaCost *= 0.9f;
             }
             if (MagiShield > 0)
             {
                 Player.manaCost *= 0.9f;
             }
-            if (VFHelmMagic)
-            {
-                Player.manaCost *= 0.75f;
-            }
+            // 2026-08-31 平衡案:虚灵宙法盔职业奖励重做,原-25%魔力消耗退役(改为魔力病减半+命中强再生)
             if (GreedCard)
             {
-                Player.GetDamage(DamageClass.Generic) += Player.maxMinions * (EvilDeck ? 0.03f : 0.02f);
+                float greedDamage = Player.maxMinions * Content.Items.Accessories.EvilCards.GreedCard.DamagePerMinion;
+                if (greedDamage > Content.Items.Accessories.EvilCards.GreedCard.DamageCap)
+                {
+                    greedDamage = Content.Items.Accessories.EvilCards.GreedCard.DamageCap;
+                }
+                Player.GetDamage(DamageClass.Generic) += greedDamage;
             }
             if (VoidInspire > 0)
             {
@@ -4051,15 +4151,8 @@ namespace CalamityEntropy.Common
                 //脱离灾厄:原灾厄infiniteFlight,改为每帧回满飞行时间的自研等价
                 Player.wingTime = Player.wingTimeMax;
             }
-            if (ArchmagesMirror)
-            {
-                enhancedMana += 0.25f;
-            }
-            enhancedMana += Player.GetModPlayer<VastMPlayer>().GetEnhancedMana;
-            if (EvilDeck)
-            {
-                lifeRegenPerSec = (int)(lifeRegenPerSec * 0.3f);
-            }
+            // 2026-08-31 平衡案:无垠重做,强化魔力贡献退役(魔流改为+3%魔法暴击伤害/层)
+            // 2026-08-31 平衡案:堕化卡组自然再生惩罚改为-100%(见 UpdateLifeRegen),原30%惩罚退役
             if (shadowRune)
             {
                 Player.maxMinions += (int)((Player.GetDamage(DamageClass.Summon).Additive - 1.0f) * ShadowRune.SummonDmgToMinionSlot);
@@ -4176,11 +4269,10 @@ namespace CalamityEntropy.Common
 
         public override void CatchFish(FishingAttempt attempt, ref int itemDrop, ref int npcSpawn, ref AdvancedPopupRequest sonar, ref Vector2 sonarPosition)
         {
-            // 群系判定按 biome-map.md（GreedCard→发光蘑菇；灾厄 Voidstone 词条整体删除；FetalDream→血月海洋）。
+            // 群系判定按 biome-map.md（GreedCard→腐化/猩红钓鱼；灾厄 Voidstone 词条整体删除；FetalDream→血月海洋）。
             // 词条为先命中先得的优先级结构：命中即返回，替代旧的顺序赋值互相覆盖（2026-08-27 修正）。
-            if (Player.ZoneGlowshroom && attempt.uncommon && Main.rand.NextBool(18))
+            if ((Player.ZoneCorrupt || Player.ZoneCrimson) && Main.rand.NextBool(3))
             {
-                // 最终期望：发光蘑菇 uncommon 渔获 1/18
                 itemDrop = ModContent.ItemType<GreedCard>();
                 return;
             }
@@ -4203,11 +4295,6 @@ namespace CalamityEntropy.Common
             {
                 itemDrop = ModContent.ItemType<AbyssalPiercer>();
                 return;
-            }
-            // 增补段（bookmark-rehang §五）：海洋，标称 1/25。最终期望前困难 ≈ 19/20 × 1/25 = 3.8%，困难 ≈ 19/20 × 19/20 × 1/25 ≈ 3.6%
-            if (Main.rand.NextBool(25))
-            {
-                itemDrop = ModContent.ItemType<TerrorOfAbyss>();
             }
         }
 

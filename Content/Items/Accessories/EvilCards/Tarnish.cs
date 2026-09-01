@@ -7,6 +7,8 @@ namespace CalamityEntropy.Content.Items.Accessories.EvilCards
 {
     public class Tarnish : ModItem
     {
+        public static int BlackFireDamage = 25;
+        public static int BlackFireCooldownMin = 8;
 
         public override void SetDefaults()
         {

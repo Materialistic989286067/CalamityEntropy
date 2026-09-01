@@ -21,35 +21,28 @@ namespace CalamityEntropy.Content.Items.Accessories.EvilCards
         {
             return !(equippedItem.ModItem is IDeck && incomingItem.ModItem is IDeck);
         }
+        // 2026-08-31 平衡案重做:+30%伤害但受伤×1.25;每召唤栏+1.5%伤害(上限15%,走贪婪卡公式);
+        // 投掷武器轻微追踪(EGlobalProjectile 的 EvilDeck 站点);攻击时追踪暗影火焰并附蒙蔽/虚空之触
+        // (晦暗+迷惑+虚无三卡旗标);+12%近战攻速,-10%暴击,+25%魔耗;自然生命再生-100%(UpdateLifeRegen)。
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.GetModPlayer<EModPlayer>().EvilDeck = true;
 
-            player.GetModPlayer<EModPlayer>().BarrenCard = true;
-
-            player.GetModPlayer<EModPlayer>().ConfuseCard = true;
-
-            player.GetModPlayer<EModPlayer>().FoolCard = true;
-            player.Entropy().ManaCost += 0.16f;
-
-            player.Entropy().FrailCard = true;
-            player.Entropy().damageReduce -= 0.5f;
+            player.GetDamage(DamageClass.Generic) += 0.30f;
+            player.Entropy().damageReduce -= 0.25f;
 
             player.GetModPlayer<EModPlayer>().GreedCard = true;
 
-            player.GetModPlayer<EModPlayer>().NothingCard = true;
-            player.Entropy().AttackVoidTouch += 0.06f;
-
-            player.GetModPlayer<EModPlayer>().PerplexedCard = true;
-
-            player.GetModPlayer<EModPlayer>().SacrificeCard = true;
-
-            player.GetDamage(DamageClass.Generic) += 0.35f;
-
             player.GetModPlayer<EModPlayer>().TarnishCard = true;
+            player.GetModPlayer<EModPlayer>().ConfuseCard = true;
+            player.GetModPlayer<EModPlayer>().NothingCard = true;
+            player.Entropy().AttackVoidTouch += 0.03f;
+
+            player.GetAttackSpeed(DamageClass.Melee) += 0.12f;
+            player.GetCritChance(DamageClass.Generic) -= 10;
+            player.Entropy().ManaCost += 0.25f;
 
             player.Entropy().taintedDeckInInv = true;
-            ModContent.GetInstance<Perplexed>().UpdateAccessory(player, hideVisual);
             player.Entropy().addEquip("TaintedDeck", !hideVisual);
         }
         public override void UpdateInventory(Player player)
@@ -69,7 +62,7 @@ namespace CalamityEntropy.Content.Items.Accessories.EvilCards
                 .AddIngredient<Nothing>()
                 .AddIngredient<Fool>()
                 .AddIngredient<ThreadOfAbyss>()
-                .AddIngredient(ItemID.ChlorophyteBar)
+                .AddIngredient(ItemID.LunarBar, 5)
                 .AddTile(TileID.Bookcases)
                 .Register();
         }

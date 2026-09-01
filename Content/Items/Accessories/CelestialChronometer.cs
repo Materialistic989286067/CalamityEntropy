@@ -1,17 +1,20 @@
 using CalamityEntropy.Content.Items.Donator;
 using CalamityEntropy.Content.Rarities;
-using CalamityEntropy.Content.Tiles;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
     public class CelestialChronometer : ModItem, IDonatorItem
     {
         public string DonatorName => "丰川祥子";
+        // 2026-08-31 平衡案重做:8防,+75生命,神话护身符的-25%药水冷却,-33%减益持续,
+        // 大幅自然再生(6hp/s)且直接回血(1hp/s),走过草地长出草药(shift右键开关),站在草药上+20防御。
         public override void SetDefaults()
         {
             Item.width = 40;
@@ -19,12 +22,12 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
             Item.rare = ModContent.RarityType<NihilityBlue>();
             Item.accessory = true;
-            Item.defense = 28;
+            Item.defense = 8;
         }
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             Vector2 c = (player.Center + new Vector2(0, player.height / 2 - 2)) / 16;
-            if (!hideVisual && Main.rand.NextBool(10))
+            if (herbPlanting && Main.rand.NextBool(10))
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient && TileLoader.CanPlace((int)c.X, (int)c.Y, 84) && Main.tile[(int)c.X, (int)c.Y + 1].HasTile)
                 {
@@ -71,31 +74,65 @@ namespace CalamityEntropy.Content.Items.Accessories
                     }
                 }
             }
-            player.Entropy().lifeRegenPerSec += 4;
+            player.statLifeMax2 += 75;
+            // 神话护身符效果(-25%治疗药水冷却与其生命再生)
+            player.pStone = true;
+            // 减少33%减益持续时间(与净化卡同一通道)
+            player.Entropy().DebuffTime -= 0.33f;
+            // 大幅自然再生(6hp/s)+直接回血(1hp/s)
+            player.lifeRegen += 12;
+            player.Entropy().lifeRegenPerSec += 1;
+            // 站在草药上+20防御
             if (CEUtils.inWorld((int)c.X, (int)c.Y) && Main.tile[(int)c.X, (int)c.Y].HasTile)
             {
                 int type = Main.tile[(int)c.X, (int)c.Y].TileType;
                 if (type >= 82 && type <= 84)
                 {
-                    player.endurance += 0.2f;
+                    player.statDefense += 20;
                 }
             }
-            // 脱离灾厄:原委托三件灾厄回复饰品(血神圣杯/吸收者/光辉)的效果,改为等价自有回复包(表外裁定,数值供收尾实测调)
-            player.Entropy().lifeRegenPerSec += 2;
-            player.endurance += 0.05f;
-            player.Entropy().LifeStealP += 0.01f;
         }
+
+        #region 草药种植开关(shift右键)
+        private bool herbPlanting = true;
+        public override bool CanRightClick() => Main.keyState.PressingShift();
+        public override void RightClick(Player player)
+        {
+            herbPlanting = !herbPlanting;
+            Item.NetStateChanged();
+        }
+        public override bool ConsumeItem(Player player) => false;
+        public override void SaveData(TagCompound tag)
+        {
+            tag.Add("herb", herbPlanting);
+        }
+        public override void LoadData(TagCompound tag)
+        {
+            herbPlanting = !tag.ContainsKey("herb") || tag.GetBool("herb");
+        }
+        public override void NetSend(BinaryWriter writer)
+        {
+            writer.Write(herbPlanting);
+        }
+        public override void NetReceive(BinaryReader reader)
+        {
+            herbPlanting = reader.ReadBoolean();
+        }
+        public override void PostDrawInInventory(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            CEUtils.DrawInventoryDot(spriteBatch, position, new Vector2(16, 16) * Main.inventoryScale, herbPlanting);
+        }
+        #endregion
 
         public override void AddRecipes()
         {
-            // 脱离灾厄:三件灾厄回复饰品原料改为原版回复饰品(misc-map 同类先例)
             CreateRecipe().
+                    AddIngredient(ItemID.ShinyStone).
+                    AddIngredient(ModContent.ItemType<SilvasCrown>()).
                     AddIngredient(ItemID.CharmofMyths).
-                    AddIngredient(ItemID.FrozenTurtleShell).
-                    AddIngredient(ItemID.CelestialShell).
-                    AddIngredient(5295).
-                    AddIngredient<FadingRunestone>(3).
-                    AddTile<VoidWellTile>().
+                    AddIngredient(ItemID.AcornAxe).
+                    AddIngredient(ModContent.ItemType<ChaoticPiece>(), 10).
+                    AddTile(TileID.LunarCraftingStation).
                     Register();
         }
 

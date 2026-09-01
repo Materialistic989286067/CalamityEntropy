@@ -24,13 +24,11 @@ namespace CalamityEntropy.Content.Items.Books
         internal static Asset<Texture2D> BookMarkSlotTex;
         public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<NightEpicHeld>();
-        public override int SlotCount => 4;
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient<RedemptionBible>()
-                .AddIngredient(ItemID.FragmentNebula, 8)
-                .AddIngredient<StarlitScaleDust>(6)
+            CreateRecipe().AddIngredient<BurntLostClassics>()
+                .AddIngredient(ItemID.FragmentNebula, 10)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

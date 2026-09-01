@@ -212,9 +212,10 @@ namespace CalamityEntropy.Content.Buffs
                 }
             }
 
+            // 2026-08-31 平衡案:暗影符石(ShadowRune)召唤物护甲穿透 128→25
             if (projectile.GetOwner().Entropy().shadowRune)
             {
-                modifiers.ArmorPenetration += 128;
+                modifiers.ArmorPenetration += 25;
             }
 
             if (crit)
@@ -252,13 +253,13 @@ namespace CalamityEntropy.Content.Buffs
             {
                 if (npc.HasBuff<DragonWhipDebuff>())
                 {
-                    if (!Main.rand.NextBool(3))
+                    // 2026-08-31 平衡案:沐生标记重做。仆从命中标记目标时每0.75秒引爆一次:
+                    // 600固定基伤的破晓爆炸(召唤伤害)+为玩家回复1生命,爆炸附加破晓减益。
+                    if (projectile.TryGetOwner(out var owner) && CECooldowns.CheckCD("VitalfeatherBurst", 45))
                     {
-                        Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, CEUtils.randomRot().ToRotationVector2() * 24, ModContent.ProjectileType<DragonGoldenFire>(), projectile.damage / 8, 1, projectile.owner);
-                    }
-                    if (projectile.TryGetOwner(out var owner) && CECooldowns.CheckCD("DragonWhipHeal", 16))
-                    {
-                        owner.Heal((int)MathHelper.Max(damageDone / 1200 + 1, 0));
+                        int burstDamage = (int)owner.GetTotalDamage(DamageClass.Summon).ApplyTo(VitalfeatherBurst.BaseDamage);
+                        Projectile.NewProjectile(projectile.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<VitalfeatherBurst>(), burstDamage, 4f, projectile.owner);
+                        owner.Heal(1);
                     }
                 }
                 foreach (var t in Tags)

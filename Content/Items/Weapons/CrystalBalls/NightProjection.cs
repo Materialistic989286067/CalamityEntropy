@@ -28,6 +28,15 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
             Item.mana = 2;
             Item.DamageType = DamageClass.Magic;
         }
+        public override void AddRecipes()
+        {
+            CreateRecipe()
+                .AddIngredient(ItemID.CrystalBall)
+                .AddIngredient(ItemID.FairyQueenMagicItem)
+                .AddIngredient(ItemID.MartianConduitPlating, 30)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
+        }
         public override bool MagicPrefix()
         {
             return true;

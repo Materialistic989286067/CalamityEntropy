@@ -25,7 +25,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 
         public override void SetDefaults()
         {
-            Item.DamageType = DamageClass.Melee;
+            Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 42;
             Item.width = 70;
             Item.height = 70;
@@ -56,13 +56,14 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         }
         public override void AddRecipes()
         {
+            // 2026-08-31 平衡案:"灵魂轮刃"按轮刃链裁定为上一级符文轮刃
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<RunicSwirlblade>())
-                .AddIngredient(ItemID.SoulofNight, 8)
+                .AddIngredient(ItemID.FragmentNebula, 10)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
-        public override bool MeleePrefix()
+        public override bool RangedPrefix()
         {
             return true;
         }
@@ -251,7 +252,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
     {
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.width = 28;
             Projectile.height = 28;
             Projectile.tileCollide = false;

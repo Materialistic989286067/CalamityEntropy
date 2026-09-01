@@ -18,7 +18,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public override void SetDefaults()
         {
             Item.damage = 36;
-            Item.crit = 4;
             Item.DamageType = DamageClass.Melee;
             Item.width = 48;
             Item.height = 60;
@@ -33,6 +32,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<WelkinFractalHeld>();
             Item.shootSpeed = 12f;
+            Item.scale *= 0.66f;
         }
         public int atkType = 0;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -54,8 +54,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         {
             CreateRecipe()
                 .AddIngredient<ShatteredFractal>()
-                .AddIngredient(ItemID.Starfury)
                 .AddIngredient(ItemID.BeeKeeper)
+                .AddIngredient(ItemID.Starfury)
+                .AddIngredient(ItemID.Bone, 40)
                 .AddTile(TileID.Anvils)
                 .Register();
         }

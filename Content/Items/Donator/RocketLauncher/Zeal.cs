@@ -77,7 +77,6 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
                 .AddIngredient<Pardon>()
                 .AddIngredient<OsseousRemains>(20)
                 .AddIngredient(ItemID.LunarBar, 5)
-                .AddIngredient(ItemID.FragmentVortex, 5)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

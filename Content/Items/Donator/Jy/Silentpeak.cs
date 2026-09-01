@@ -85,24 +85,24 @@ namespace CalamityEntropy.Content.Items.Donator.Jy
         };
         public static int Level()
         {
-            // 成长阶梯按 progression-map.md 重排：原版节点 + 自有 Boss 线
-            if (EDownedBosses.downedCruiser)
+            // 2026-08-31 平衡案:成长阶段重置为11档(11档亚波伦暂用幽邃魔灵代替)
+            if (EDownedBosses.downedAbyssalWraith)
                 return 11;
             if (EDownedBosses.downedCruiser)
                 return 10;
-            if (EDownedBosses.downedAbyssalWraith)
-                return 9;
             if (EDownedBosses.downedNihilityTwin)
-                return 8;
+                return 9;
             if (NPC.downedMoonlord)
+                return 8;
+            if (NPC.downedGolemBoss)
                 return 7;
-            if (NPC.downedPlantBoss && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
+            if (NPC.downedPlantBoss)
                 return 6;
-            if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
+            if (NPC.downedMechBossAny)
                 return 5;
             if (Main.hardMode)
                 return 4;
-            if (NPC.downedQueenBee || NPC.downedBoss3)
+            if (NPC.downedBoss3)
                 return 3;
             if (NPC.downedBoss2)
                 return 2;

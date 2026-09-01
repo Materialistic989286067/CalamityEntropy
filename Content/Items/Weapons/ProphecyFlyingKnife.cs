@@ -42,7 +42,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<FutureKnife>();
             Item.shootSpeed = 26f;
-            Item.DamageType = DamageClass.Ranged;
+            Item.DamageType = DamageClass.Melee;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -93,7 +93,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void SetDefaults()
         {
-            Projectile.DamageType = DamageClass.Magic;
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -198,7 +198,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => "CalamityEntropy/Content/Projectiles/FutureKnife";
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.width = Projectile.height = 36;
             Projectile.timeLeft = 90;
         }

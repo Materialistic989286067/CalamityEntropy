@@ -31,8 +31,8 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
         {
             CreateRecipe()
                 .AddIngredient(ItemID.WhitePearl, 2)
-                .AddIngredient(ItemID.Coral, 5)
-                .AddIngredient(ItemID.Glass, 10)
+                .AddIngredient(ItemID.Sapphire, 10)
+                .AddIngredient(ItemID.Diamond, 10)
                 .AddTile(TileID.WorkBenches)
                 .Register();
         }

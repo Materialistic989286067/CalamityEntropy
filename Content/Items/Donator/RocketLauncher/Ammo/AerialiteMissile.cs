@@ -1,5 +1,6 @@
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault.PRT;
+using CalamityEntropy.Content.Items.Donator.RocketLauncher;
 using System;
 using Terraria;
 using Terraria.Audio;
@@ -26,11 +27,10 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
 
         public override void AddRecipes()
         {
-            // 灾厄原料按 material-map.md 替换：AerialiteBar→陨石锭
             CreateRecipe(100)
-                .AddIngredient(ItemID.MeteoriteBar, 1)
-                .AddIngredient(ModContent.ItemType<OsseousRemains>())
-                .AddTile(TileID.Anvils)
+                .AddIngredient(ItemID.SoulofFlight)
+                .AddIngredient<OsseousRemains>()
+                .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
     }

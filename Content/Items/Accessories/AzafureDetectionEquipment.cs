@@ -35,8 +35,8 @@ namespace CalamityEntropy.Content.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<RustyDetectionEquipment>().
-                AddIngredient<HellIndustrialComponents>(4).
-                AddIngredient(ItemID.MeteoriteBar, 8).
+                AddIngredient<HellIndustrialComponents>(5).
+                AddIngredient(ItemID.CobaltBar, 10).
                 AddTile(TileID.Anvils).
                 Register();
         }

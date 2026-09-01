@@ -20,7 +20,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public override void SetDefaults()
         {
             Item.damage = 600;
-            Item.crit = 10;
             Item.DamageType = DamageClass.Melee;
             Item.width = 48;
             Item.height = 60;
@@ -35,7 +34,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<VoidFractalHeld>();
             Item.shootSpeed = 12f;
-            Item.ArmorPenetration = 30;
+            Item.scale *= 0.66f;
         }
         public int atkType = 0;
         public override bool CanUseItem(Player player)
@@ -88,8 +87,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public override void AddRecipes()
         {
             CreateRecipe()
+                .AddIngredient<ElementalFractal>()
                 .AddIngredient<SpiritFractal>()
-                .AddIngredient<VoidAnnihilate>()
                 .AddIngredient<VoidBar>(5)
                 .AddTile<VoidWellTile>()
                 .Register();
@@ -297,7 +296,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         {
             if (Projectile.ai[0] == 3)
             {
-                modifiers.SetCrit();
                 modifiers.FinalDamage *= 1.4f;
                 modifiers.SourceDamage *= 1.4f;
             }
@@ -453,7 +451,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Projectile.light = 0f;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
-            Projectile.ArmorPenetration = 128;
             Projectile.timeLeft = 36;
         }
         public List<Vector2> points = new List<Vector2>();

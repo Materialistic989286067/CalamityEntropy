@@ -1,6 +1,7 @@
-﻿using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Items.Weapons;
+using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityEntropy.Content.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -37,10 +38,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<StarlessNight>(), 1).
-                AddIngredient(ItemID.SpookyWood, 10).
-                AddIngredient(ModContent.ItemType<VoidBar>(), 5).
-                AddTile(ModContent.TileType<VoidWellTile>()).
+                AddIngredient<RuneSong>().
+                AddIngredient<ChaoticPiece>(5).
+                AddTile(TileID.LunarCraftingStation).
                 Register();
         }
 

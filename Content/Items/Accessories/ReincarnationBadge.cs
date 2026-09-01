@@ -1,6 +1,8 @@
 using CalamityEntropy.Common;
+using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Armor;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Content.Tiles;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -34,8 +36,8 @@ namespace CalamityEntropy.Content.Items.Accessories
         {
             // 脱离灾厄:灾厄升华勋章改为原版飞升徽记(其灾厄配方本源),站台改远古操纵机
             CreateRecipe().AddIngredient(ItemID.EmpressFlightBooster)
-                .AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 4)
-                .AddTile(TileID.LunarCraftingStation).Register();
+                .AddIngredient<VoidBar>(5)
+                .AddTile<VoidWellTile>().Register();
         }
     }
 }

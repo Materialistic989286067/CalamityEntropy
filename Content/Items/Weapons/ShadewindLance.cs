@@ -55,7 +55,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.ChlorophyteClaymore)
+                .AddIngredient(ItemID.DayBreak)
                 .AddIngredient(ModContent.ItemType<VoidBar>(), 5)
                 .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();

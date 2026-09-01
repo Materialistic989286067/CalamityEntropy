@@ -54,10 +54,6 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
-            CreateRecipe()
-                .AddIngredient(ItemID.SoulofNight, 18)
-                .AddTile(TileID.LunarCraftingStation)
-                .Register();
         }
     }
 

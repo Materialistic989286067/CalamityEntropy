@@ -63,6 +63,16 @@ namespace CalamityEntropy.Content.Items.Accessories
         /// <summary>盾撞冲刺结束后的统一冷却（对齐灾厄 UniversalShieldSlamCooldown）。</summary>
         private const int ShieldSlamCooldown = 30;
 
+        /// <summary>
+        /// 冲刺进行中标志（自有状态）。不能借用原版 dashDelay 记录状态：
+        /// 这些饰品每帧写 dashType=0，原版 DashMovement 对 dash==0 会把 dashDelay 强制归零，
+        /// 借用它会让冲刺启动当帧即被打断（历史 bug：无法充能冲刺）。
+        /// </summary>
+        private bool dashing;
+
+        /// <summary>盾撞冲刺自有冷却计时（替代原版 dashDelay>0 的冷却语义）。</summary>
+        private int slamCooldown;
+
         public override void ResetEffects()
         {
             ActiveDash = null;
@@ -82,20 +92,29 @@ namespace CalamityEntropy.Content.Items.Accessories
             if (Player.whoAmI != Main.myPlayer)
                 return;
 
+            if (slamCooldown > 0)
+                slamCooldown--;
+
             if (ActiveDash == null)
             {
-                if (Player.dashDelay >= 0)
-                    usedDash = null;
+                // 饰品被卸下或充能不足：终止进行中的冲刺并进入冷却
+                if (dashing)
+                {
+                    dashing = false;
+                    slamCooldown = ShieldSlamCooldown;
+                }
+                usedDash = null;
                 return;
             }
 
-            if (Player.dashDelay < 0 && usedDash != null)
+            if (dashing && usedDash != null)
             {
                 UpdateActiveDash();
                 return;
             }
 
-            if (Player.dashDelay == 0 && !Player.mount.Active && TryGetDashDirection(out int direction))
+            // 暗影披风排他:装备期间不允许盾冲刺(2026-08-31 平衡案)
+            if (slamCooldown == 0 && !Player.mount.Active && !Player.Entropy().shadeDashExclusive && TryGetDashDirection(out int direction))
                 StartDash(direction);
         }
 
@@ -103,6 +122,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         {
             usedDash = ActiveDash;
             usedDash.dashTime = 0;
+            dashing = true;
             Player.velocity.X = direction * usedDash.CalculateDashSpeed(Player);
 
             // 前方贴墙时腰斩初速（对齐灾厄 DoADash 的物块检测）
@@ -112,13 +132,15 @@ namespace CalamityEntropy.Content.Items.Accessories
                 Player.velocity.X /= 2f;
 
             Player.timeSinceLastDashStarted = 0;
-            Player.dashDelay = -1;
             Player.Entropy().LastUsedDashID = usedDash.DashID;
             usedDash.OnDashEffects(Player);
         }
 
         private void UpdateActiveDash()
         {
+            // 每帧对外镜像"冲刺中"（供读取原版字段的系统用）；自身逻辑不读它，原版帧尾会归零
+            Player.dashDelay = -1;
+
             // 冲撞判定（对齐灾厄 ModDashMovement 的碰撞盒与免疫处理）
             Rectangle hitArea = new((int)(Player.position.X + Player.velocity.X * 0.5 - 4f), (int)(Player.position.Y + Player.velocity.Y * 0.5 - 4), Player.width + 8, Player.height + 8);
             foreach (NPC n in Main.ActiveNPCs)
@@ -164,7 +186,8 @@ namespace CalamityEntropy.Content.Items.Accessories
                 return;
             }
 
-            Player.dashDelay = ShieldSlamCooldown;
+            dashing = false;
+            slamCooldown = ShieldSlamCooldown;
             if (Player.velocity.X < 0f)
                 Player.velocity.X = -runSpeed;
             else if (Player.velocity.X > 0f)

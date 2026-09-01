@@ -14,7 +14,7 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
             Projectile.width = 20;
             Projectile.height = 20;
             Projectile.friendly = true;
-            Projectile.penetrate = -1; Projectile.DamageType = NoneTypeDamageClass.Instance;
+            Projectile.penetrate = -1; Projectile.DamageType = DamageClass.Summon;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 12;
         }

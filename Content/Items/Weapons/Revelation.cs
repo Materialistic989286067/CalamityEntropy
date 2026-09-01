@@ -67,14 +67,6 @@ namespace CalamityEntropy.Content.Items.Weapons
             }
             return false;
         }
-        public override void AddRecipes()
-        {
-            Recipe recipe = CreateRecipe();
-            recipe.AddIngredient(ItemID.ChlorophyteClaymore, 1);
-            recipe.AddIngredient(ItemID.SoulofNight, 12);
-            recipe.AddTile(TileID.LunarCraftingStation);
-            recipe.Register();
-        }
     }
     public class RevelationThrown : ModProjectile
     {

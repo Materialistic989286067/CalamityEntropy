@@ -2,6 +2,7 @@ using CalamityEntropy.Common;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -9,7 +10,9 @@ using Terraria.ModLoader.IO;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
-    public class SusiesBracelet : ModItem, IGetFromStarterBag
+    // 2026-08-31 平衡案重做:获取改为海龟25%掉落;升级阶段重置为11档,
+    // 全程免疫击退,近战伤害/暴击随击败Boss成长(终阶18%伤害/5%暴击)。
+    public class SusiesBracelet : ModItem
     {
         public override void SetDefaults()
         {
@@ -22,10 +25,9 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.statDefense += AddDef;
-            player.GetDamage(DamageClass.Generic) += AddDamage;
-            player.statLifeMax2 += AddHP;
-            player.statManaMax2 += AddMana;
+            player.noKnockback = true;
+            player.GetDamage(DamageClass.Melee) += AddMeleeDamage;
+            player.GetCritChance(DamageClass.Melee) += AddMeleeCrit;
         }
 
         public int Level = 0;
@@ -55,12 +57,6 @@ namespace CalamityEntropy.Content.Items.Accessories
             return Level;
         }
 
-        public bool OwnAble(Player player, ref int count)
-        {
-            if (player.Entropy().drCrystals == null) return false;
-            return player.Entropy().drCrystals[3];
-        }
-
         public void CheckUpdate()
         {
             void Check(bool f, int lv)
@@ -70,18 +66,16 @@ namespace CalamityEntropy.Content.Items.Accessories
                     Level = lv;
                 }
             }
-            // 脱离灾厄:灾厄 downed 旗标按 progression-map.md §三逐条替换到原版节点/自有 Boss
-            Check(NPC.downedBoss1 || NPC.downedSlimeKing, 1);
-            Check(NPC.downedBoss2, 2);
-            Check(NPC.downedBoss3 || NPC.downedQueenBee, 3);
-            Check(Main.hardMode, 4);
-            Check(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3, 5);
-            Check(NPC.downedPlantBoss || (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3), 6);
-            Check(NPC.downedMoonlord, 7);
-            Check(EDownedBosses.downedNihilityTwin, 8);
-            Check(EDownedBosses.downedNihilityTwin, 9);
-            Check(EDownedBosses.downedAbyssalWraith, 10);
-            Check(EDownedBosses.downedCruiser, 11);
+            Check(NPC.downedSlimeKing, 1);
+            Check(NPC.downedBoss1, 2);
+            Check(NPC.downedBoss2, 3);
+            Check(NPC.downedBoss3, 4);
+            Check(Main.hardMode, 5);
+            Check(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3, 6);
+            Check(NPC.downedPlantBoss, 7);
+            Check(NPC.downedGolemBoss, 8);
+            Check(EDownedBosses.downedProphet, 9);
+            Check(NPC.downedMoonlord, 10);
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
@@ -94,89 +88,63 @@ namespace CalamityEntropy.Content.Items.Accessories
                 }
             }
             index++;
-            if (GetLevel() < 11)
+            if (GetLevel() < 10)
             {
                 tooltips.Add(new TooltipLine(Mod, $"Tooltip{index}", GetLt($"Trial", "Trials").Value + $"{GetLevel() + 1} - " + GetLt($"t{GetLevel()}", "Trials").Value) { OverrideColor = Color.Yellow });
             }
             else
             {
-                tooltips.Add(new TooltipLine(Mod, $"Tooltip{index}", GetLt("t11", "Trials").Value) { OverrideColor = Color.Yellow });
+                tooltips.Add(new TooltipLine(Mod, $"Tooltip{index}", GetLt("t10", "Trials").Value) { OverrideColor = Color.Yellow });
             }
 
             tooltips.Add(new TooltipLine(Mod, $"Tooltip{index}", GetLt($"l{GetLevel()}").Value) { OverrideColor = Color.Pink });
 
-            tooltips.Replace("[DMG]", AddDamage.ToPercent().ToString());
-            tooltips.Replace("[LIFE]", AddHP.ToString());
-            tooltips.Replace("[MANA]", AddMana.ToString());
-            tooltips.Replace("[DEF]", AddDef.ToString());
+            tooltips.Replace("[DMG]", AddMeleeDamage.ToPercent().ToString());
+            tooltips.Replace("[CRIT]", AddMeleeCrit.ToString());
         }
-        public float AddDamage => GetLevel() switch
+        public float AddMeleeDamage => GetLevel() switch
         {
-            0 => 0.02f,
-            1 => 0.04f,
-            2 => 0.06f,
-            3 => 0.08f,
-            4 => 0.1f,
-            5 => 0.12f,
-            6 => 0.14f,
-            7 => 0.16f,
-            8 => 0.18f,
-            9 => 0.2f,
-            10 => 0.22f,
-            11 => 0.24f,
-            _ => 0.24f
+            0 => 0.01f,
+            1 => 0.02f,
+            2 => 0.03f,
+            3 => 0.04f,
+            4 => 0.05f,
+            5 => 0.06f,
+            6 => 0.07f,
+            7 => 0.08f,
+            8 => 0.10f,
+            9 => 0.12f,
+            _ => 0.18f
         };
-        public int AddHP => GetLevel() switch
+        public int AddMeleeCrit => GetLevel() switch
         {
-            0 => 10,
-            1 => 15,
-            2 => 20,
-            3 => 25,
-            4 => 30,
-            5 => 40,
-            6 => 50,
-            7 => 60,
-            8 => 70,
-            9 => 80,
-            10 => 90,
-            11 => 100,
-            _ => 100
-        };
-        public int AddMana => GetLevel() switch
-        {
-            0 => 30,
-            1 => 40,
-            2 => 60,
-            3 => 80,
-            4 => 90,
-            5 => 100,
-            6 => 110,
-            7 => 120,
-            8 => 130,
-            9 => 140,
-            10 => 150,
-            11 => 160,
-            _ => 160
-        };
-        public int AddDef => GetLevel() switch
-        {
-            0 => 2,
-            1 => 4,
-            2 => 6,
-            3 => 8,
-            4 => 10,
-            5 => 12,
-            6 => 14,
-            7 => 16,
-            8 => 18,
-            9 => 20,
-            10 => 22,
-            11 => 25,
-            _ => 25
+            0 => 0,
+            1 => 0,
+            2 => 0,
+            3 => 1,
+            4 => 1,
+            5 => 2,
+            6 => 2,
+            7 => 3,
+            8 => 4,
+            9 => 4,
+            _ => 5
         };
         public static LocalizedText GetLt(string n, string h = "Lores")
         {
             return Language.GetText($"Mods.CalamityEntropy.LegendaryAbility.SusiesBracelet.{h}.{n}");
+        }
+    }
+
+    /// <summary>苏西腕带掉落:海龟 25%。</summary>
+    public class SusiesBraceletDropGNPC : GlobalNPC
+    {
+        public override void ModifyNPCLoot(NPC npc, NPCLoot npcLoot)
+        {
+            if (npc.type == NPCID.SeaTurtle)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SusiesBracelet>(), 4));
+            }
         }
     }
 }

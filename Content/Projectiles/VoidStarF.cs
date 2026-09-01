@@ -32,7 +32,6 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.usesIDStaticNPCImmunity = true;
             Projectile.localNPCHitCooldown = 16;
             Projectile.extraUpdates = 1;
-            Projectile.ArmorPenetration = 40;
         }
         public override bool? CanHitNPC(NPC target)
         {

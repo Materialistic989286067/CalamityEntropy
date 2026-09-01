@@ -266,7 +266,9 @@ namespace CalamityEntropy.Core.Graphics
         {
             GraphicsDevice device = Main.instance.GraphicsDevice;
             device.RasterizerState = cullNoneScissor;
-            device.ScissorRectangle = new Rectangle(0, 0, Main.screenWidth, Main.screenHeight);
+            // 裁剪矩形取真实视口而非 Main.screenWidth/Height:
+            // 背景绘制窗口内后者被背景缩放预除,天空里画图元会被裁到左上角;常规绘制两者相等
+            device.ScissorRectangle = new Rectangle(0, 0, device.Viewport.Width, device.Viewport.Height);
 
             CalculatePerspectiveMatrices(out Matrix view, out Matrix projection);
 

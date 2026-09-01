@@ -11,7 +11,7 @@ namespace CalamityEntropy.Common
             int damageApply = 0;
             if (Player.HasBuff<LifeOppress>())
             {
-                damageApply += 60;
+                damageApply += 40;
             }
             var dict = DotBuff.InstanceByType();
             for (int i = 0; i < Player.buffType.Length; i++)

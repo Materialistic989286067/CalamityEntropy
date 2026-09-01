@@ -54,13 +54,12 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override void AddRecipes()
         {
-            // 脱离灾厄:DubiousPlating→阿扎弗镀层、AerialiteBar→陨石锭(material-map)
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(6)
                 .AddIngredient<AzafurePlating>(10)
-                .AddIngredient(ItemID.MeteoriteBar, 5)
+                .AddIngredient(ItemID.HallowedBar, 5)
                 .AddIngredient(ItemID.HellstoneBar, 5)
-                .AddTile(TileID.Anvils)
+                .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
     }

@@ -36,7 +36,9 @@ namespace CalamityEntropy.Common
             if (!hideVisual)
                 player.GetModPlayer<PGetPlayer>().accVnTime = 3;
             player.endurance += 0.05f * player.GetModPlayer<PGetPlayer>().count;
-            player.GetDamage(DamageClass.Generic) += player.GetModPlayer<PGetPlayer>().count * 0.1f;
+            player.statDefense += player.GetModPlayer<PGetPlayer>().count;
+            player.GetDamage(DamageClass.Generic) += player.GetModPlayer<PGetPlayer>().count * 0.01f;
+            player.Entropy().moveSpeed += player.GetModPlayer<PGetPlayer>().count * 0.01f;
         }
         public override void UpdateVanity(Player player)
         {

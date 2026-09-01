@@ -1,4 +1,6 @@
 ﻿using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Tiles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
 using InnoVault;
@@ -27,6 +29,14 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             return new DecayPactBMEffect();
         }
+        public override void AddRecipes()
+        {
+            CreateRecipe()
+                .AddIngredient<FadingRunestone>()
+                .AddIngredient<BookMarkBrimstone>()
+                .AddTile(ModContent.TileType<VoidWellTile>())
+                .Register();
+        }
     }
 
     public class DecayPactBMEffect : EBookProjectileEffect
@@ -34,7 +44,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override void OnActive(EntropyBookHeldProjectile book)
         {
             int projtype = ModContent.ProjectileType<DecayPactMaelstrom>();
-            book.ShootSingleProjectile(projtype, book.Projectile.Center, (Main.MouseWorld - book.Projectile.Center), 0.5f, 1);
+            book.ShootSingleProjectile(projtype, book.Projectile.Center, (Main.MouseWorld - book.Projectile.Center), 1, 1, fixedBaseDamage: 500);
         }
         public override void OnHitNPC(Projectile projectile, NPC target, int damageDone)
         {
@@ -43,7 +53,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override void OnStandaloneAttack(Player player, Vector2 position, Vector2 direction, int damage, float knockback)
         {
             int projtype = ModContent.ProjectileType<DecayPactMaelstrom>();
-            Projectile.NewProjectile(player.GetSource_FromThis(), position, direction, projtype, (int)(damage * 0.5f), knockback, player.whoAmI);
+            Projectile.NewProjectile(player.GetSource_FromThis(), position, direction, projtype, EBookProjectileEffect.FixedDamage(player, 500, DamageClass.Magic), knockback, player.whoAmI);
         }
     }
 
@@ -53,6 +63,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override void SetDefaults()
         {
             base.SetDefaults();
+            fixedBaseDamage = 500;
             Projectile.width = 300;
             Projectile.height = 300;
             Projectile.localNPCHitCooldown = 3;
@@ -80,7 +91,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         internal static Texture2D CenterBloomTex;
         NPC target = null;
         Vector2 targetPos = Vector2.Zero;
-        public override float DamageMult => 0.5f;
+        public override float DamageMult => 1f;
         public override void AI()
         {
             base.AI();

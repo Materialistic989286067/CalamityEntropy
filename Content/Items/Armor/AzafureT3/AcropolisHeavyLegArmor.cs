@@ -27,7 +27,6 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
             CreateRecipe()
                 .AddIngredient<AzafureSteamKnightLeggings>()
                 .AddIngredient(ItemID.LunarBar, 10)
-                .AddIngredient<NihilityFragments>(4)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

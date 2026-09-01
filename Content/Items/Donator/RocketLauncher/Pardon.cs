@@ -73,13 +73,11 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 
         public override void AddRecipes()
         {
-            // 灾厄原料按 material-map.md 替换：LifeAlloy→神圣锭、InfectedArmorPlating→叶绿锭
             CreateRecipe()
                 .AddIngredient<Struggle>()
                 .AddIngredient<OsseousRemains>(20)
-                .AddIngredient(ItemID.HallowedBar, 5)
-                .AddIngredient(ItemID.ChlorophyteBar, 10)
-                .AddTile(TileID.MythrilAnvil)
+                .AddIngredient(ItemID.FragmentVortex, 10)
+                .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
         public static void OnKillAction(Projectile Projectile)

@@ -7,6 +7,8 @@ namespace CalamityEntropy.Content.Items.Accessories.EvilCards
 {
     public class GreedCard : ModItem
     {
+        public static float DamagePerMinion = 0.015f;
+        public static float DamageCap = 0.15f;
 
         public override void SetDefaults()
         {

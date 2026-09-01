@@ -52,9 +52,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(6)
-                .AddIngredient<AzafureCircuitry>()
-                .AddIngredient(ItemID.HealingPotion)
-                .AddTile(TileID.Anvils)
+                .AddRecipeGroup(CERecipeGroups.AnyOrichalcumBar, 10)
+                .AddIngredient(ItemID.GreaterHealingPotion, 5)
+                .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
     }

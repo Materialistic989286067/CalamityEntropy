@@ -17,7 +17,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public override void SetDefaults()
         {
             Item.damage = 65;
-            Item.crit = 5;
             Item.DamageType = DamageClass.Melee;
             Item.width = 48;
             Item.height = 60;
@@ -32,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<BrilliantFractalHeld>();
             Item.shootSpeed = 12f;
-            Item.ArmorPenetration = 5;
+            Item.scale *= 0.66f;
         }
         public int atkType = 1;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -49,9 +48,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public override void AddRecipes()
         {
             CreateRecipe().AddIngredient<WelkinFractal>()
+                .AddIngredient(ItemID.ChlorophyteClaymore)
                 .AddIngredient(ItemID.BreakerBlade)
-                .AddIngredient(ItemID.Excalibur)
-                .AddIngredient(ItemID.FieryGreatsword)
                 .AddTile(TileID.MythrilAnvil).Register();
         }
     }
@@ -97,7 +95,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 {
                     int dir = (int)(Projectile.ai[0]) * (Projectile.velocity.X > 0 ? -1 : 1);
                     spawnProj = false;
-                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + Projectile.rotation.ToRotationVector2() * 49, (Vector2)(CEUtils.normalize(Projectile.velocity.RotatedBy(dir * MathHelper.PiOver2)) * 6 + CEUtils.randomPointInCircle(2)), ModContent.ProjectileType<FractalShadow>(), Projectile.damage, Projectile.knockBack * 4, Projectile.owner, Projectile.rotation, dir);
+                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + Projectile.rotation.ToRotationVector2() * 49, (Vector2)(CEUtils.normalize(Projectile.velocity.RotatedBy(dir * MathHelper.PiOver2)) * 4.2f + CEUtils.randomPointInCircle(2)), ModContent.ProjectileType<FractalShadow>(), Projectile.damage, Projectile.knockBack * 4, Projectile.owner, Projectile.rotation, dir);
                 }
             }
             if (init)

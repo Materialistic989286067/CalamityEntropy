@@ -45,9 +45,11 @@ namespace CalamityEntropy.Content.Items
         }
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ItemID.Book, 4)
-                .AddIngredient(ItemID.SoulofLight, 6)
-                .AddTile(TileID.WorkBenches)
+            CreateRecipe()
+                .AddIngredient(ItemID.Book, 6)
+                .AddIngredient(ItemID.SoulofLight, 15)
+                .AddIngredient(ItemID.Ectoplasm, 15)
+                .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
     }

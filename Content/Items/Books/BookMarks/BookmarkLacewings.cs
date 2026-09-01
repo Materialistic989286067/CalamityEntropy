@@ -102,7 +102,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 Projectile.pushByOther(0.05f);
                 if (CEUtils.getDistance(Projectile.Center, target.Center) < 600 && Delay <= 0)
                 {
-                    CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromAI(), Projectile.GetOwner(), target.Center + target.velocity, (int)(Projectile.damage / 2.4f), 6, Projectile.DamageType).CritChance = Projectile.CritChance;
+                    CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromAI(), Projectile.GetOwner(), target.Center + target.velocity, EBookProjectileEffect.FixedDamage(Projectile.GetOwner(), 30, Projectile.DamageType), 6, Projectile.DamageType).CritChance = Projectile.CritChance;
                     for (float i = 0.04f; i <= 1; i += 0.02f)
                     {
                         Color rgbColor = Main.hslToRgb(i, 0.5f, 0.6f) * 0.25f;
@@ -111,7 +111,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                     }
                     if (Projectile.penetrate > 0)
                         Projectile.penetrate--;
-                    Delay = (int)(Main.rand.Next(16, 25) / DelayMult);
+                    Delay = (int)(30 / DelayMult);
                 }
                 else
                 {

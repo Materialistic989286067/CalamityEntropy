@@ -28,11 +28,12 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override void AddRecipes()
         {
             CreateRecipe()
-            .AddIngredient(ModContent.ItemType<HellIndustrialComponents>(), 10)
-            .AddIngredient(ItemID.SoulofNight, 10)
-            .AddIngredient(ItemID.SoulofLight, 10)
-            .AddTile(TileID.MythrilAnvil)
-            .Register();
+                .AddIngredient(ItemID.HallowedBar, 4)
+                .AddIngredient(ItemID.SoulofFright, 3)
+                .AddIngredient(ItemID.SoulofMight, 3)
+                .AddIngredient(ItemID.SoulofSight, 3)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
         }
     }
     public class MechanicalBMEffect : EBookProjectileEffect
@@ -41,7 +42,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             if (ownerClient && (projectile.ModProjectile is EBookBaseProjectile eb && eb.mainProj) && Main.rand.NextBool(projectile.HasEBookEffect<APlusBMEffect>() ? 5 : 8) && CECooldowns.CheckCD("MechanicalBookmark", 30))
             {
-                Projectile.NewProjectile(projectile.GetSource_FromAI(), projectile.Center, Vector2.UnitY * -8, ModContent.ProjectileType<Detector>(), projectile.damage / 5, projectile.knockBack, projectile.owner);
+                Projectile.NewProjectile(projectile.GetSource_FromAI(), projectile.Center, Vector2.UnitY * -8, ModContent.ProjectileType<Detector>(), EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 20, projectile.DamageType), projectile.knockBack, projectile.owner);
             }
         }
     }

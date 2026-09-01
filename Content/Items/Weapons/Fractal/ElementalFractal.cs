@@ -18,7 +18,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public override void SetDefaults()
         {
             Item.damage = 480;
-            Item.crit = 10;
             Item.DamageType = DamageClass.Melee;
             Item.width = 60;
             Item.height = 60;
@@ -33,6 +32,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<ElementalFractalHeld>();
             Item.shootSpeed = 12f;
+            Item.scale *= 0.66f;
         }
         public int atkType = 0;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -50,10 +50,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         {
             CreateRecipe()
                 .AddIngredient<StarlitFractal>()
-                .AddIngredient(ItemID.TrueNightsEdge)
-                .AddIngredient(ItemID.LunarBar, 5)
-                .AddIngredient(ItemID.HallowedBar, 5)
-                .AddIngredient(ItemID.FragmentSolar, 5)
+                .AddIngredient(ItemID.LunarBar, 10)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

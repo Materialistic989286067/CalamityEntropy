@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.DataStructures;
@@ -50,9 +51,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<Kinanition>())
-                .AddIngredient(ItemID.Obsidian, 6)
-                .AddIngredient(ModContent.ItemType<ChaoticPiece>(), 6)
+                .AddIngredient<Kinanition>()
+                .AddIngredient<ChaoticPiece>(10)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

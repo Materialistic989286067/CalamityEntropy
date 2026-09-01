@@ -25,16 +25,14 @@ namespace CalamityEntropy.Content.Items.Books
         internal static Asset<Texture2D> BookMarkSlotTex;
         public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<DarkScriptureHeld>();
-        public override int SlotCount => 3;
 
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<UpdraftTome>()
-                .AddIngredient(ItemID.SoulofNight, 8)
-                .AddIngredient(ItemID.Book)
-                .AddIngredient(ItemID.FallenStar, 2)
-                .AddTile(TileID.WorkBenches)
+                .AddIngredient<OuijaBoard>()
+                .AddIngredient(ItemID.SoulofFright, 15)
+                .AddIngredient(ItemID.SoulofNight, 15)
+                .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
     }
@@ -48,8 +46,8 @@ namespace CalamityEntropy.Content.Items.Books
         public override EBookStatModifer getBaseModifer()
         {
             var m = base.getBaseModifer();
-            m.Homing = 1f;
-            m.HomingRange = 1.25f;
+            m.Homing = 0.5f;
+            m.HomingRange = 0.625f;
             m.armorPenetration += 16;
             return m;
         }

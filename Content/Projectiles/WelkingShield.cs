@@ -1,3 +1,5 @@
+using System;
+using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -76,7 +78,7 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.GetOwner().velocity = Projectile.rotation.ToRotationVector2() * -4;
             Projectile.GetOwner().Entropy().immune = 46;
             CalamityEntropy.Instance.screenShakeAmp = 4;
-            Projectile.GetOwner().Entropy().vShieldCD = 100.ApplyCdDec(Projectile.GetOwner());
+            Projectile.GetOwner().Entropy().vShieldCD = VetrasylsEye.GetShieldCooldown().ApplyCdDec(Projectile.GetOwner());
             if (!Main.dedServ)
             {
                 SoundEngine.PlaySound(sound, Projectile.Center);
@@ -118,6 +120,16 @@ namespace CalamityEntropy.Content.Projectiles
                 }
             }
         }
+        private static void ReflectProjectile(Projectile projectile, Projectile shield, Player owner)
+        {
+            projectile.velocity = shield.velocity.normalize() * projectile.velocity.Length();
+            projectile.hostile = false;
+            projectile.friendly = true;
+            projectile.owner = owner.whoAmI;
+            projectile.damage = (int)Math.Min(projectile.damage * VetrasylsEye.ReflectDamageRatio, VetrasylsEye.ReflectDamageCap);
+            projectile.GetGlobalProjectile<WelkingShieldGProj>().friendly = true;
+        }
+
         public override bool CanHitPlayer(Projectile projectile, Player target)
         {
             if (projectile.damage > 0 && projectile.hostile && projectile.Colliding(projectile.getRect(), target.getRect()) && target.ownedProjectileCounts[ModContent.ProjectileType<WelkingShield>()] > 0)
@@ -128,16 +140,8 @@ namespace CalamityEntropy.Content.Projectiles
                     {
                         if (CEUtils.GetAngleBetweenVectors(proj.velocity, projectile.Center - proj.Center) < MathHelper.ToRadians(65))
                         {
-                            projectile.velocity = proj.velocity.normalize() * projectile.velocity.Length();
+                            ReflectProjectile(projectile, proj, target);
                             ws.Block();
-                            /*if(int.Max(projectile.width, projectile.height) < 90)
-                            {
-                                projectile.hostile = false;
-                                projectile.friendly = true;
-                                projectile.owner = proj.owner;
-                                friendly = true;
-                                projectile.damage *= 10;
-                            }*/
                             return false;
                         }
                     }
@@ -158,16 +162,8 @@ namespace CalamityEntropy.Content.Projectiles
                         {
                             if (CEUtils.GetAngleBetweenVectors(proj.velocity, projectile.Center - proj.Center) < MathHelper.ToRadians(65))
                             {
-                                projectile.velocity = proj.velocity.normalize() * projectile.velocity.Length();
+                                ReflectProjectile(projectile, proj, target);
                                 ws.Block();
-                                /*if (int.Max(projectile.width, projectile.height) < 90)
-                                {
-                                    projectile.hostile = false;
-                                    projectile.friendly = true;
-                                    projectile.owner = proj.owner;
-                                    friendly = true;
-                                    projectile.damage *= 10;
-                                }*/
                                 break;
                             }
                         }

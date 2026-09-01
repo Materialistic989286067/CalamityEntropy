@@ -142,9 +142,8 @@ namespace CalamityEntropy.Content.Items.Donator
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.VortexBeater)
-                .AddIngredient(ItemID.FragmentVortex, 6)
-                .AddIngredient(ItemID.LunarBar, 8)
+                .AddIngredient(ItemID.ChainGun)
+                .AddIngredient(ItemID.LunarBar, 10)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

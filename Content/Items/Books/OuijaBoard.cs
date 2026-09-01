@@ -20,7 +20,6 @@ namespace CalamityEntropy.Content.Items.Books
             Item.mana = 5;
         }
         public override int HeldProjectileType => ModContent.ProjectileType<OuijaBoardHeld>();
-        public override int SlotCount => 1;
         [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/OB")]
         internal static Asset<Texture2D> BookMarkSlotTex;
         public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
@@ -29,8 +28,10 @@ namespace CalamityEntropy.Content.Items.Books
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.StoneBlock, 19)
-                .AddRecipeGroup(CERecipeGroups.gems, 3)
+                .AddIngredient(ItemID.StoneBlock, 20)
+                .AddIngredient(ItemID.Marble, 20)
+                .AddIngredient(ItemID.Granite, 20)
+                .AddIngredient(ItemID.Ruby, 10)
                 .AddTile(TileID.WorkBenches)
                 .Register();
         }

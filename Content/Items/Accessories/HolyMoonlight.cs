@@ -19,23 +19,23 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         }
 
+        // 2026-08-31 平衡案重做:+40魔力上限与10%魔法伤害;每30秒获得魔力护盾
+        // (取最大魔力50%,上限250);护盾存在时魔力病减半;护盾接触伤害与耗尽爆炸保留;
+        // 护盾冷却期间按魔力吸血(100:1,45帧CD,单次上限5)。
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.statManaMax2 += 50;
-            player.GetDamage(DamageClass.Magic) += 0.15f;
+            player.statManaMax2 += 40;
+            player.GetDamage(DamageClass.Magic) += 0.10f;
             player.Entropy().holyMoonlight = true;
             player.Entropy().visualMagiShield = !hideVisual;
         }
 
         public override void AddRecipes()
         {
-            // 脱离灾厄:三件灾厄饰品原料改为原版同职能饰品(表外裁定,档位由虚空井/虚空锭把关)
             CreateRecipe().
-                AddIngredient(ItemID.ObsidianShield, 1).
+                AddIngredient(ItemID.MoonStone, 1).
                 AddIngredient(ItemID.ManaFlower, 1).
-                AddIngredient(ItemID.FrozenShield, 1).
                 AddIngredient(ModContent.ItemType<VoidBar>(), 5).
-                AddIngredient(ModContent.ItemType<WraithSoulEssence>(), 4).
                 AddTile(ModContent.TileType<VoidWellTile>()).
                 Register();
         }

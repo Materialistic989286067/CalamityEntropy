@@ -33,10 +33,8 @@ namespace CalamityEntropy.Content.Items
 
         public override void AddRecipes()
         {
-            // 灾厄 Exo棱晶/湮灭之灰 按映射表换为自有终局材料（虚空锭行合并）
             CreateRecipe()
-                .AddIngredient<VoidScales>(5)
-                .AddIngredient<VoidBar>(10)
+                .AddIngredient<VoidBar>(9999)
                 .AddTile<VoidWellTile>()
                 .Register();
         }

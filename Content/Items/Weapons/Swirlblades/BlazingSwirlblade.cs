@@ -27,7 +27,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 
         public override void SetDefaults()
         {
-            Item.DamageType = DamageClass.Melee;
+            Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 30;
             Item.width = 74;
             Item.height = 74;
@@ -57,16 +57,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             }
             return false;
         }
-        public override void AddRecipes()
-        {
-            CreateRecipe()
-                .AddIngredient(ModContent.ItemType<ExergySwirlblade>())
-                .AddIngredient(ItemID.StarWrath)
-                .AddIngredient<NihilityFragments>(20)
-                .AddTile(TileID.MythrilAnvil)
-                .Register();
-        }
-        public override bool MeleePrefix()
+        public override bool RangedPrefix()
         {
             return true;
         }
@@ -223,7 +214,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
     {
         public override void SetDefaults()
         {
-            Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.width = 28;
             Projectile.height = 28;
             Projectile.tileCollide = false;

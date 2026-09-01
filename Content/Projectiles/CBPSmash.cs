@@ -14,7 +14,7 @@ namespace CalamityEntropy.Content.Projectiles
         public List<Vector2> oldPos = new List<Vector2>();
         public override void SetDefaults()
         {
-            Projectile.DamageType = DamageClass.Magic;
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 64;
             Projectile.height = 64;
             Projectile.hostile = false;

@@ -12,6 +12,7 @@ using CalamityEntropy.Content.Items.Weapons.Whips;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.Cruiser;
+using CalamityEntropy.Content.Skies;
 using CalamityEntropy.Content.Tiles;
 using CalamityEntropy.Core.Graphics;
 using InnoVault;
@@ -643,6 +644,11 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                 NPC.Entropy().damageMul = 1;
             }
             counterc++;
+            //天空强度续租(各端本地):骑瓶蓄力期渐临到 0.6,揭幕后推满;P2 转换抬躁动
+            //死亡演出分支在上方提前 return,续租自然过期,天空威压随死亡消退
+            float skyDrive = noaitime > 0 ? (1f - noaitime / 280f) * 0.6f : 1f;
+            float skyAgitation = phase == 2 ? MathHelper.Clamp(phaseTrans / 122f, 0f, 1f) : 0f;
+            CruiserSkyDrive.Report(skyDrive, skyAgitation);
             if (noaitime > 0)
             {
                 NPC.dontTakeDamage = true;
@@ -671,6 +677,8 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             if (noaitime == 0)
             {
                 NPC.dontTakeDamage = false;
+                //登场揭幕拍点:天幕闪电齐发
+                CruiserSkyDrive.PushBurst(4);
             }
 
             if (noaitime < 0)
@@ -753,6 +761,9 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                             {
                                 ai = AIStyle.PhaseTransing;
                                 phaseTrans++;
+                                //二阶段转换拍点:一次性闪电爆发
+                                if (phaseTrans == 1)
+                                    CruiserSkyDrive.PushBurst(6);
                                 alpha *= 0.967f;
                                 aiRound = 0;
                                 if (phaseTrans <= 60)

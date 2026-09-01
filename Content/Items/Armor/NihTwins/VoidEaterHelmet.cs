@@ -25,7 +25,7 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
             Item.width = 40;
             Item.height = 40;
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
-            Item.defense = 24;
+            Item.defense = 34;
             Item.rare = ModContent.RarityType<NihilityBlue>();
         }
 
@@ -49,10 +49,14 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
             // 潜行体系退役:原潜行条(上限1.2)按容量×10%换算为大招充能速度
             player.GetModPlayer<CEChargePlayer>().ChargeRateMult += 0.12f;
             player.Entropy().NihilitySet = true;
+            // 修复:护盾吸收开关必须在装备阶段就打开。原先只在 PostUpdate 里从 NihilitySet
+            // 推导,而受伤结算发生在 PostUpdate 之前,受击时开关恒为 false,护盾从不生效。
+            player.Entropy().NihilityShieldEnabled = true;
             player.GetDamage(DamageClass.Generic) += 0.14f;
             player.GetCritChance(DamageClass.Generic) += 14;
             player.maxMinions += 2;
-            player.statManaMax2 += 100;
+            player.statManaMax2 += 60;
+            player.statLifeMax2 += 40;
             if (player.Entropy().NihilityShield <= 0)
                 player.lifeRegen += 2;
         }

@@ -1,4 +1,6 @@
 ﻿using CalamityEntropy.Content.Cooldowns;
+using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Items.Weapons.Chainsaw;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
 using CalamityEntropy.Core.Cooldowns;
@@ -38,9 +40,8 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.SDMG)
+                .AddIngredient<Pioneer>()
                 .AddIngredient<VoidBar>(5)
-                .AddIngredient<WraithSoulEssence>(2)
                 .AddTile<VoidWellTile>()
                 .Register();
         }

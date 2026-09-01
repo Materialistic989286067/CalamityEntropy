@@ -39,8 +39,8 @@ namespace CalamityEntropy.Content.Projectiles
                 oldPos.RemoveAt(0);
             if (Projectile.localAI[0]++ > 10 && Projectile.numHits == 0)
             {
-                Projectile.HomingToNPCNearby(1f, 0.93f);
-                Projectile.HomingToNPCNearby(1f, 0.93f);
+                Projectile.HomingToNPCNearby(0.7f, 0.651f);
+                Projectile.HomingToNPCNearby(0.7f, 0.651f);
             }
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)

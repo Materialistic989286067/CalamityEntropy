@@ -44,28 +44,12 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         }
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ItemID.CopperBar, 6)
-                .AddIngredient(ItemID.StoneBlock, 4)
-                .AddIngredient(ItemID.IronBar, 4)
-                .AddTile(TileID.Anvils)
-                .Register();
-
-            CreateRecipe().AddIngredient(ItemID.CopperBar, 6)
-                .AddIngredient(ItemID.StoneBlock, 4)
-                .AddIngredient(ItemID.LeadBar, 4)
-                .AddTile(TileID.Anvils)
-                .Register();
-
-            CreateRecipe().AddIngredient(ItemID.TinBar, 6)
-                .AddIngredient(ItemID.StoneBlock, 4)
-                .AddIngredient(ItemID.IronBar, 4)
-                .AddTile(TileID.Anvils)
-                .Register();
-
-            CreateRecipe().AddIngredient(ItemID.TinBar, 6)
-                .AddIngredient(ItemID.StoneBlock, 4)
-                .AddIngredient(ItemID.LeadBar, 4)
-                .AddTile(TileID.Anvils)
+            CreateRecipe()
+                .AddIngredient(ItemID.WoodenSword)
+                .AddIngredient(ItemID.RichMahoganySword)
+                .AddIngredient(ItemID.BorealWoodSword)
+                .AddIngredient(ItemID.PalmWoodSword)
+                .AddTile(TileID.WorkBenches)
                 .Register();
         }
     }

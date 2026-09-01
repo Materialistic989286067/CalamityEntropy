@@ -20,7 +20,6 @@ namespace CalamityEntropy.Content.Items.Accessories
         public float charge = 0;
         public static int MaxShield = 60;
         public static int ShieldRecharge = 20 * 60;
-        public static float CritDamage = 0.05f;
         public override void SetDefaults()
         {
             Item.width = 60;
@@ -37,7 +36,6 @@ namespace CalamityEntropy.Content.Items.Accessories
             player.Entropy().VoidCoreItem = Item;
             player.GetModPlayer<CEShieldDashPlayer>().ActiveDash = VoidCoreDash.Instance;
             player.dashType = 0;
-            player.AddCritDamage(DamageClass.Generic, CritDamage);
         }
         public override void UpdateVanity(Player player)
         {
@@ -46,8 +44,6 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             tooltips.Replace("[S]", MaxShield.ToString());
-            tooltips.Replace("[C]", CritDamage.ToPercent().ToString());
-
         }
         public override void AddRecipes()
         {

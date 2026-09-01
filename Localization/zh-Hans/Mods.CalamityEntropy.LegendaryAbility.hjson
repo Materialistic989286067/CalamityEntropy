@@ -218,30 +218,31 @@ SusiesBracelet: {
 			'''
 		l10:
 			'''
-			在这子夜，正义的钟声快要响尽。
-			而你选择了永恒。
-			'''
-		l11:
-			'''
 			不过，有一样东西可以改写黑暗。
 			那就是白色的笔，又名希望。
 			我相信...你手中握着的就是它。
 			'''
+		/* l11:
+			'''
+			But... there is one thing that can overwrite the dark
+			A white pen, known as hope
+			I believe... this is what you hold
+			''' */
 	}
 
 	Trials: {
 		Trial: 试炼
-		t0: 史莱姆王/克苏鲁之眼
-		t1: 任意邪恶Boss
-		t2: 骷髅王/蜂王
-		t3: 血肉墙
-		t4: 所有机械Boss
-		t5: 世纪之花
-		t6: 月球领主
-		t7: 虚无双子
-		t8: 虚无双子
-		t9: 深渊亡魂
-		t10: 巡游者
-		t11: 试炼 - 完成
+		t0: 史莱姆王
+		t1: 克苏鲁之眼
+		t2: 任意邪恶Boss
+		t3: 骷髅王
+		t4: 血肉墙
+		t5: 所有机械Boss
+		t6: 世纪之花
+		t7: 石巨人
+		t8: 先知
+		t9: 月球领主
+		t10: 试炼 - 完成
+		// t11: Trials - Done
 	}
 }

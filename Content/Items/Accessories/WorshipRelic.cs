@@ -27,9 +27,8 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<ShadowPact>(1)
-                .AddIngredient(ItemID.HallowedBar, 6)
-                .AddIngredient(ItemID.Ectoplasm, 4)
+                .AddIngredient<ShadowPact>()
+                .AddIngredient(ItemID.SunStone)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }

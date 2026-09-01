@@ -47,9 +47,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.DemonScythe)
-                .AddIngredient<HellIndustrialComponents>(4)
-                .AddIngredient(ItemID.MeteoriteBar, 5)
+                .AddIngredient(ItemID.MeteoriteBar, 20)
+                .AddIngredient<HellIndustrialComponents>(5)
                 .AddTile(TileID.Anvils)
                 .Register();
         }

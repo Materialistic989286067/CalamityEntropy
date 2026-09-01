@@ -1,6 +1,6 @@
 displayName = Call Of Void
 author = Polaris
-version = 3.33
+version = 4.0
 modReferences = InnoVault
 weakReferences = AlchemistNPCLite
 homepage = discord.gg/eAXVkq66

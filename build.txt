@@ -1,5 +1,5 @@
 displayName = Call Of Void
-author = Polaris
+author = Serrat Antler, HoCha113
 version = 4.0
 modReferences = InnoVault
 weakReferences = AlchemistNPCLite

@@ -6,7 +6,6 @@ Items: {
 		Tooltip: Perform broad, fast slashes in quick succession that inflicts [cebuff:CalamityEntropy/VoidTouch]
 	}
 
-
 	PrisonOfPermafrost: {
 		DisplayName: Prison of Permafrost
 		Tooltip:

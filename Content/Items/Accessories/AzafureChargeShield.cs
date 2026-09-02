@@ -84,7 +84,8 @@ namespace CalamityEntropy.Content.Items.Accessories
             Time = 0;
             PostHit = false;
             player.Entropy().AzDash = 3;
-            (player.Entropy().AzafureChargeShieldItem.ModItem as AzafureChargeShield).charge -= player.AzafureEnhance() ? 0.5f : 1;
+            if (player.Entropy().AzafureChargeShieldItem?.ModItem is AzafureChargeShield shield)
+                shield.charge -= player.AzafureEnhance() ? 0.5f : 1;
         }
 
         public override void MidDashEffects(Player player, ref float dashSpeed, ref float dashSpeedDecelerationFactor, ref float runSpeedDecelerationFactor)

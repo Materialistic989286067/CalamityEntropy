@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using CalamityEntropy.Common;
 using Terraria;
+using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -73,6 +74,13 @@ namespace CalamityEntropy.Content.Items.Accessories
         /// <summary>盾撞冲刺自有冷却计时（替代原版 dashDelay>0 的冷却语义）。</summary>
         private int slamCooldown;
 
+        /// <summary>上一帧是否按着左/右。PreUpdateMovement 里 releaseLeft/Right 已被原版清掉，只能自管边沿。</summary>
+        private bool heldLeft;
+        private bool heldRight;
+
+        /// <summary>自管双击窗：&gt;0 右向待第二下，&lt;0 左向待第二下。对齐原版 dashTime 的 15 帧。</summary>
+        private int dashTapWindow;
+
         public override void ResetEffects()
         {
             ActiveDash = null;
@@ -104,6 +112,13 @@ namespace CalamityEntropy.Content.Items.Accessories
                     slamCooldown = ShieldSlamCooldown;
                 }
                 usedDash = null;
+                // 充能未就绪时也要跟边沿，否则充能刚满会把「一直按着」误判成刚按下
+                heldRight = Player.controlRight;
+                heldLeft = Player.controlLeft;
+                if (dashTapWindow > 0)
+                    dashTapWindow--;
+                else if (dashTapWindow < 0)
+                    dashTapWindow++;
                 return;
             }
 
@@ -114,7 +129,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             }
 
             // 暗影披风排他:装备期间不允许盾冲刺(2026-08-31 平衡案)
-            if (slamCooldown == 0 && !Player.mount.Active && !Player.Entropy().shadeDashExclusive && TryGetHorizontalDashDirection(Player, out int direction))
+            if (slamCooldown == 0 && !Player.mount.Active && !Player.CCed && !Player.Entropy().shadeDashExclusive && TryGetHorizontalDashDirection(out int direction))
                 StartDash(direction);
         }
 
@@ -195,36 +210,92 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
 
         /// <summary>
-        /// 水平冲刺触发：冲刺键或双击方向键任一即可(与 EModPlayer 注释一致,不再互斥)。
-        /// 暗影披风与盾冲刺共用。
+        /// 水平冲刺输入。暗影披风与盾冲刺共用，同一帧只消费一次。
+        /// 不能读 releaseRight：原版在 DashMovement 之后、PreUpdateMovement 之前就把按住中的 release 清掉了。
+        /// 自管边沿 + 15 帧双击窗；冲刺键认本模组 F，以及突变模组等其它模组的 Dash 键。
         /// </summary>
-        public static bool TryGetHorizontalDashDirection(Player player, out int direction)
+        public bool TryGetHorizontalDashDirection(out int direction)
         {
             direction = 0;
-            var keys = EModPlayer.DashHotkey?.GetAssignedKeys();
-            bool hotkeyBound = keys != null && keys.Count > 0;
-            if (hotkeyBound && EModPlayer.DashHotkey.JustPressed)
+
+            bool justRight = Player.controlRight && !heldRight;
+            bool justLeft = Player.controlLeft && !heldLeft;
+            heldRight = Player.controlRight;
+            heldLeft = Player.controlLeft;
+
+            if (dashTapWindow > 0)
+                dashTapWindow--;
+            else if (dashTapWindow < 0)
+                dashTapWindow++;
+
+            if (AnyDashHotkeyJustPressed())
             {
-                if (player.controlRight && !player.controlLeft)
-                    direction = 1;
-                else if (player.controlLeft && !player.controlRight)
-                    direction = -1;
-                else
-                    direction = MathF.Abs(player.velocity.X) <= 0.01f ? player.direction : Math.Sign(player.velocity.X);
+                direction = ResolveHotkeyDashDirection(Player);
+                dashTapWindow = 0;
                 return true;
             }
 
-            if (player.controlRight && player.releaseRight && player.doubleTapCardinalTimer[2] < 15)
+            if (justRight)
             {
-                direction = 1;
-                return true;
+                if (dashTapWindow > 0)
+                {
+                    direction = 1;
+                    dashTapWindow = 0;
+                    return true;
+                }
+                dashTapWindow = 15;
+                return false;
             }
-            if (player.controlLeft && player.releaseLeft && player.doubleTapCardinalTimer[3] < 15)
+
+            if (justLeft)
             {
-                direction = -1;
-                return true;
+                if (dashTapWindow < 0)
+                {
+                    direction = -1;
+                    dashTapWindow = 0;
+                    return true;
+                }
+                dashTapWindow = -15;
+                return false;
+            }
+
+            return false;
+        }
+
+        private static int ResolveHotkeyDashDirection(Player player)
+        {
+            if (player.controlRight && !player.controlLeft)
+                return 1;
+            if (player.controlLeft && !player.controlRight)
+                return -1;
+            if (MathF.Abs(player.velocity.X) > 0.01f)
+                return Math.Sign(player.velocity.X);
+            return player.direction;
+        }
+
+        /// <summary>
+        /// 通用冲刺键：本模组 Dash，以及其它模组注册名为 Dash / DashHotkey / DashDoubleTapOverride 的键。
+        /// 突变模组把冲刺挂在原版 DoCommonDashHandle 上，而本模组饰品写 dashType=0，那条钩子根本不会跑。
+        /// </summary>
+        private static bool AnyDashHotkeyJustPressed()
+        {
+            var justPressed = PlayerInput.Triggers.JustPressed.KeyStatus;
+            foreach (var pair in justPressed)
+            {
+                if (pair.Value && IsGenericDashKeybind(pair.Key))
+                    return true;
             }
             return false;
+        }
+
+        private static bool IsGenericDashKeybind(string fullName)
+        {
+            int slash = fullName.LastIndexOf('/');
+            string name = slash >= 0 ? fullName.Substring(slash + 1) : fullName;
+            return name.Equals("Dash", StringComparison.OrdinalIgnoreCase)
+                || name.Equals("DashHotkey", StringComparison.OrdinalIgnoreCase)
+                || name.Equals("DashHotKey", StringComparison.OrdinalIgnoreCase)
+                || name.Equals("DashDoubleTapOverride", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

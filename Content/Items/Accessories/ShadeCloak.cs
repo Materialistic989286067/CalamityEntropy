@@ -68,11 +68,11 @@ namespace CalamityEntropy.Content.Items.Accessories
                 return;
             }
 
-            if (!equipped || Player.mount.Active)
+            if (!equipped || Player.mount.Active || Player.CCed)
                 return;
             if (Player.HasCooldown(ShadeCloakDashCD.ID))
                 return;
-            if (!CEShieldDashPlayer.TryGetHorizontalDashDirection(Player, out int direction))
+            if (!Player.GetModPlayer<CEShieldDashPlayer>().TryGetHorizontalDashDirection(out int direction))
                 return;
 
             StartDash(mp, direction, visual);

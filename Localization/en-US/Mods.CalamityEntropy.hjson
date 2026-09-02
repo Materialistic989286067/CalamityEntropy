@@ -6,351 +6,6 @@ Items: {
 		Tooltip: Perform broad, fast slashes in quick succession that inflicts [cebuff:CalamityEntropy/VoidTouch]
 	}
 
-	Weapons: {
-		Rogue: {
-			Revelation: {
-				DisplayName: Revelation
-				Tooltip:
-					'''
-					Throws a spinning scythe that rapidly slows in midair,
-					then explodes and fires two homing Revelation Beams before returning to the player
-					On return, it deals damage again if hitting an enemy
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: hurls 3 homing revelation scythes that relay-slash on hit
-					'''
-			}
-
-			Silence: {
-				DisplayName: Silence
-				Tooltip:
-					'''
-					Throw a [ceeffect/cruiser:void-chained frisbee] that pulls itself back to enemies on hit after a short delay before exploding on impact]
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: fires a specialized blade of silence that chains the target and unfolds a devouring vortex
-					'''
-			}
-
-			ShadewindLance: {
-				DisplayName: Shadewind Lance
-				Tooltip:
-					'''
-					Throws a void-infused javelin that creates a small burst on impact
-					Hitting enemies builds momentum; when full, your next attack becomes an ultimate
-					Ultimate: the lance pierces infinitely and flies faster
-					Inflicts [cebuff:CalamityEntropy/VoidTouch]
-					'''
-			}
-
-			Aquashard: {
-				DisplayName: Aquashard
-				Tooltip:
-					'''
-					Throws a javelin that spawns water bullets when hit
-					Hitting enemies builds momentum; when full, your next attack becomes an ultimate
-					Ultimate: an empowered throw that pierces up to 5 enemies
-					'''
-			}
-
-			SpearOfRadiance: {
-				DisplayName: Spear of Radiance
-				Tooltip:
-					'''
-					Throws a blessed javelin
-					Hitting enemies builds momentum; when full, your next attack becomes an ultimate
-					Ultimate: an empowered throw that pierces up to 5 enemies
-					'''
-			}
-
-			AbyssalPiercer: {
-				DisplayName: Abyssal Piercer
-				Tooltip:
-					'''
-					Throws a drowned javelin that erupts into homing abyssal water on impact and inflicts [cebuff:CalamityEntropy/CrushDepth]
-					Hitting enemies builds momentum; when full, your next attack becomes an ultimate
-					Ultimate: an empowered throw that pierces up to 5 enemies
-					'''
-			}
-
-			AzureOfFirmament: {
-				DisplayName: Azure of Firmament
-				Tooltip:
-					'''
-					Throws a light-infused javelin
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: launches a ring of 12 firmament feathers; the main bolt pierces up to 5 enemies
-					'''
-			}
-
-			ArbitratorII: {
-				DisplayName: Arbitrator II
-				Tooltip:
-					'''
-					Throws an exploding javelin
-					Usable only when the ultimate is ready; needs a moment to recharge after release
-					Ultimate: hurls an empowered arbitrator blade
-					'''
-			}
-
-			Voidseeker: {
-				DisplayName: Voidseeker
-				Tooltip:
-					'''
-					Swings a void-touched scythe
-					Hitting enemies builds momentum; when full, your next attack becomes an ultimate
-					Ultimate: fires an empowered void bolt dealing double damage
-					'''
-			}
-
-			TheBeginingAndTheEnd: {
-				DisplayName: The Beginning And The End
-				Tooltip:
-					'''
-					Left Click throws The Beginning, Right Click throws The End, both inflict the [cebuff:CalamityEntropy/LifeOppress] debuff
-					The Beginning inflicts the [cebuff:CalamityEntropy/EclipsedImprint] debuff
-					The End inflicts the [cebuff:CalamityEntropy/StareOfTheAbyss] debuff
-					These debuffs both stack up to 8 times, when the opposite debuff is applied, that amount of Eclipse or Echo souls are created
-					Eclipsed Souls return to you, restoring 4 life each and briefly granting the [cebuff:CalamityEntropy/ServiceBuff] buff
-					Echo Souls relentlessly assault enemies for a short time
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: throws both blades at once, each dealing full damage
-					'''
-			}
-
-			AmethystFrisbee: {
-				DisplayName: Amethyst Frisbee
-				Tooltip:
-					'''
-					Alternates between piercing and bouncing throws
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: throws an empowered frisbee with greatly increased damage and velocity
-					'''
-			}
-
-			ProphecyFlyingKnife: {
-				DisplayName: Prophetic Daggers
-				Tooltip:
-					'''
-					Flings 4 daggers in a random arc that fly towards enemies after a moment in the air
-					Hitting enemies builds momentum; when full, your next attack becomes an ultimate
-					Ultimate: the main dagger deals double damage, flanked by volleys of side daggers
-					'''
-			}
-
-			TheDeadCut: {
-				Tooltip:
-					'''
-					Swings a decaying scythe that leaves a dead slice on hit
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: the dead slice gains rapid hits and homing; on hit, teleports to relay-slash up to 10 times
-					'''
-				DisplayName: The Dead Cut
-			}
-
-			LunarPlank: {
-				DisplayName: Lunar Plank
-				Tooltip:
-					'''
-					Throws a lunar plank to strike enemies 
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: the plank grows larger; its impact triggers a starlight explosion and homing star bolts
-					'''
-			}
-
-			AzafureSurgeRod: {
-				DisplayName: Azafure Surge Rod
-				Tooltip:
-					'''
-					Throws a blade that lodges itself into enemies and bursts after a short delay
-					The blade inflicts [cebuff:CalamityEntropy/MechanicalTrauma] and bursts after a short time
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: fires a volley of 6 wall-piercing homing javelins that unleash red tesla chains on hit
-					'''
-			}
-
-			TlipocasScythe: {
-				DisplayName: Tlipoca's Scythe
-				Tooltip:
-					'''
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: the spinning scythe is fully empowered, with larger and heavier slashes
-					'''
-			}
-
-			AzafureLightMachineGun: {
-				DisplayName: Azafure Light Machine Gun
-				Tooltip:
-					'''
-					Fires a continuous laser
-					Hitting enemies builds momentum; when full, your next attack becomes an ultimate
-					Ultimate: the next shot fires a sniper round dealing 6x damage
-					Attacks inflict the [cebuff:CalamityEntropy/MechanicalTrauma] debuff
-					'''
-			}
-
-			AzafureAirReaper: {
-				DisplayName: Azafure Air Reaper
-				Tooltip:
-					'''
-					Throws a sickle that embeds itself into enemies and inficts [cebuff:CalamityEntropy/MechanicalTrauma]
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: the sickle latches on and drags around the enemy far longer
-					'''
-			}
-
-			CrystalSpike: {
-				DisplayName: Crystal Spike
-				Tooltip:
-					'''
-					Throws vile crystals that embed themselves into enemies, up to [S] per target
-					When [U] crystals are planted, your next throw recalls and empowers them all
-					Recalled crystals become empowered shots and are thrown again
-					Ignores 4 points of defense
-					'''
-			}
-
-			ScorchingChakram: {
-				DisplayName: Scorching Chakram
-				Tooltip:
-					'''
-					Throws a chakram that pierces and explodes into shards in midair
-					Chakrams inflict [cebuff:OnFire] on impact
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: the chakram lingers on enemies with continuous slicing, releasing a ring of homing tectonic shards on burst
-					'''
-			}
-
-			EmberSpike: {
-				DisplayName: Ember Spike
-				Tooltip:
-					'''
-					Throws hot embers that melt into targets and explode on hit
-					Hitting enemies builds momentum; when full, your next attack becomes an ultimate
-					Ultimate: spikes bounce up to 5 times and release homing tectonic shards on burst
-					Ignores 8 points of defense
-					'''
-			}
-
-			MewMewBomb: {
-				DisplayName: Mew Mew Bomb
-				Tooltip:
-					'''
-					[c/FF69B4:Throw a bomb that bounces off blocks]
-					[c/FF69B4:After hitting a target, it bounces to a position that can hit as many targets as possible and explodes in a cross pattern]
-					[c/FF69B4:Usable only when the ultimate is ready; needs a moment to recharge after release]
-					[c/FF69B4:Ultimate: a bigger, fiercer explosion with a wider and longer cross shockwave]
-					[c/FF69B4:Players who are hit by the explosion will receive 2.5 seconds of invincibility]
-					[c/FF69B4:"A detonator with cat ears, somehow it emits cat meows"]
-					'''
-			}
-
-			BrillianceSwirlblade: {
-				DisplayName: Brilliance Swirlblade
-				Tooltip:
-					'''
-					Throw a sawblade that on hit or after some time stops in place and starts spinning
-					The sawblade deals damage in a large area when spinning and will return after some time
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: a much larger spin that lasts longer
-					'''
-			}
-
-			FlamingSwirlblade: {
-				DisplayName: Flaming Swirlblade
-				Tooltip:
-					'''
-					Throw a sawblade that on hit or after some time stops in place, releasing a homing flame bolt before spinning
-					The sawblade deals damage in a large area when spinning and will return after some time
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: a larger spin, spewing flames in 8 directions on deployment
-					Attacks inflict [cebuff:OnFire3] on hit
-					'''
-			}
-
-			AzafureSwirlblade: {
-				DisplayName: Azafure Swirlblade
-				Tooltip:
-					'''
-					Throw a sawblade that on hit or after some time stops in place, releasing a pair of homing missiles before spinning
-					The sawblade deals damage in a large area when spinning and will return after some time
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: a larger spin, bursting a ring of homing fire bolts on deployment
-					Attacks inflict [cebuff:CalamityEntropy/MechanicalTrauma] on hit
-					'''
-			}
-
-			GlacierSwirlblade: {
-				DisplayName: Glacier Swirlblade
-				Tooltip:
-					'''
-					Throw a sawblade that on hit or after some time stops in place, releasing a pair of homing blades before spinning
-					The sawblade deals damage in a large area when spinning and will return after some time
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: a larger spin that homes onto enemies, firing extra ice blades on return
-					Attacks inflict [cebuff:CalamityEntropy/Deceive] on hit
-					'''
-			}
-
-			RunicSwirlblade: {
-				DisplayName: Runic Swirlblade
-				Tooltip:
-					'''
-					Throw a sawblade that on hit or after some time stops in place, releasing a swarm of homing rune bolts before spinning
-					The sawblade deals damage in a large area when spinning and will return after some time
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: unfolds a rotating ring of rune bolts around the spin, firing runes in all directions on return
-					Attacks inflict [cebuff:CalamityEntropy/SoulDisorder] on hit
-					'''
-			}
-
-			BlazingSwirlblade: {
-				DisplayName: Blazing Swirlblade
-				Tooltip:
-					'''
-					Throw a sawblade that on hit or after some time stops in place, releasing a holy heatwave before spinning
-					The sawblade deals damage in a large area when spinning and will return after some time
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: a much larger and longer spin, spewing holy fire in 8 directions
-					Attacks inflict [cebuff:CalamityEntropy/HolyFlames] on hit
-					'''
-			}
-
-			SawofMacrocosm: {
-				DisplayName: Saw of Macrocosm
-				Tooltip:
-					'''
-					Throw a sawblade that on hit or after some time stops in place, releasing 4 more smaller blades before spinning
-					The sawblades deals damage in a large area when spinning and will return after some time
-					Smaller blades on return release homing cosmic bolts at the closest enemy
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: locks a distant target and performs the Macrocosm Slash, a devastating strike dealing 8x damage
-					Attacks inflict [cebuff:CalamityEntropy/GodSlayerInferno] on hit
-					'''
-			}
-
-			ExergySwirlblade: {
-				DisplayName: Exergy Swirlblade
-				Tooltip:
-					'''
-					Flies for a while or hits an enemy, then deploys a multi-hit sawblade that shrinks over time
-					If deployed by enemy contact, the ringblade sticks to that enemy
-					As the sawblade shrinks, it fires smaller homing sawblades that stop tracking after one hit
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: a larger spin that keeps firing homing sawblades while deployed
-					'''
-			}
-
-			Apeirokyklos: {
-				DisplayName: Apeirokyklos
-				Tooltip:
-					'''
-					Deploys a multi-hit sawblade when flies for a while or hits an enemy 
-					Each hit of the sawblade summons an Abyss Spike from below to pierce the target
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: a much larger and longer spin; on hit, recoils to charge and re-enter, calling down a rain of spikes
-					'''
-			}
-		}
-	}
 
 	PrisonOfPermafrost: {
 		DisplayName: Prison of Permafrost
@@ -832,14 +487,12 @@ Items: {
 		DisplayName: Odin's Refuge
 		Tooltip:
 			'''
-			Grants immunity to knockback and fire-type burning debuffs, and lets you walk on fire blocks
-			5% increased damage reduction and +4 HP/s life regeneration
-			Blocks one attack dealing over 100 damage, with a 150 second cooldown
-			Double tap a horizontal direction or press the dash key to charge with your shield, ramming enemies for 1000 melee damage
-			The first impact of each dash blooms a holy shockwave, dealing 300 damage and igniting Holy Flames
-			For 1.5 seconds after ramming an enemy, gain an extra 15% damage reduction
-			Hold shift and Right Click to toggle [i:PanicNecklace] [c/aaaaaa:Panic Necklace's effect]
-			[TOGGLE]
+			Grants the same debuff immunities as the Ankh Charm
+			Grants immunity to knockback
+			Lets you walk on fire blocks
+			Grants the Holy Mantle's blocking effect
+			You and your teammates take 15% less damage (does not stack)
+			Enemies are more likely to target you
 			'''
 		ToggleEffectOn: "[c/00ff00:Panic enabled]"
 		ToggleEffectOff: "[c/808080:Panic disabled]"
@@ -4929,8 +4582,12 @@ Items: {
 	}
 
 	TlipocasScythe: {
-		DisplayName: Tlipocas Scythe
-		Tooltip: ""
+		DisplayName: Tlipoca's Scythe
+		Tooltip:
+			'''
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: the spinning scythe is fully empowered, with larger and heavier slashes
+			'''
 	}
 
 	CruiserLore: {
@@ -4980,152 +4637,335 @@ Items: {
 
 	AbyssalPiercer: {
 		DisplayName: Abyssal Piercer
-		Tooltip: ""
+		Tooltip:
+			'''
+			Throws a drowned javelin that erupts into homing abyssal water on impact and inflicts [cebuff:CalamityEntropy/CrushDepth]
+			Hitting enemies builds momentum; when full, your next attack becomes an ultimate
+			Ultimate: an empowered throw that pierces up to 5 enemies
+			'''
 	}
 
 	AmethystFrisbee: {
 		DisplayName: Amethyst Frisbee
-		Tooltip: ""
+		Tooltip:
+			'''
+			Alternates between piercing and bouncing throws
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: throws an empowered frisbee with greatly increased damage and velocity
+			'''
 	}
 
 	Aquashard: {
 		DisplayName: Aquashard
-		Tooltip: ""
+		Tooltip:
+			'''
+			Throws a javelin that spawns water bullets when hit
+			Hitting enemies builds momentum; when full, your next attack becomes an ultimate
+			Ultimate: an empowered throw that pierces up to 5 enemies
+			'''
 	}
 
 	ArbitratorII: {
-		DisplayName: Arbitrator I I
-		Tooltip: ""
+		DisplayName: Arbitrator II
+		Tooltip:
+			'''
+			Throws an exploding javelin
+			Usable only when the ultimate is ready; needs a moment to recharge after release
+			Ultimate: hurls an empowered arbitrator blade
+			'''
 	}
 
 	AzafureAirReaper: {
 		DisplayName: Azafure Air Reaper
-		Tooltip: ""
+		Tooltip:
+			'''
+			Throws a sickle that embeds itself into enemies and inficts [cebuff:CalamityEntropy/MechanicalTrauma]
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: the sickle latches on and drags around the enemy far longer
+			'''
 	}
 
 	AzafureLightMachineGun: {
 		DisplayName: Azafure Light Machine Gun
-		Tooltip: ""
+		Tooltip:
+			'''
+			Fires a continuous laser
+			Hitting enemies builds momentum; when full, your next attack becomes an ultimate
+			Ultimate: the next shot fires a sniper round dealing 6x damage
+			Attacks inflict the [cebuff:CalamityEntropy/MechanicalTrauma] debuff
+			'''
 	}
 
 	AzafureSurgeRod: {
 		DisplayName: Azafure Surge Rod
-		Tooltip: ""
+		Tooltip:
+			'''
+			Throws a blade that lodges itself into enemies and bursts after a short delay
+			The blade inflicts [cebuff:CalamityEntropy/MechanicalTrauma] and bursts after a short time
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: fires a volley of 6 wall-piercing homing javelins that unleash red tesla chains on hit
+			'''
 	}
 
 	AzureOfFirmament: {
-		DisplayName: Azure Of Firmament
-		Tooltip: ""
+		DisplayName: Azure of Firmament
+		Tooltip:
+			'''
+			Throws a light-infused javelin
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: launches a ring of 12 firmament feathers; the main bolt pierces up to 5 enemies
+			'''
 	}
 
 	CrystalSpike: {
 		DisplayName: Crystal Spike
-		Tooltip: ""
+		Tooltip:
+			'''
+			Throws vile crystals that embed themselves into enemies, up to [S] per target
+			When [U] crystals are planted, your next throw recalls and empowers them all
+			Recalled crystals become empowered shots and are thrown again
+			Ignores 4 points of defense
+			'''
 	}
 
 	EmberSpike: {
 		DisplayName: Ember Spike
-		Tooltip: ""
+		Tooltip:
+			'''
+			Throws hot embers that melt into targets and explode on hit
+			Hitting enemies builds momentum; when full, your next attack becomes an ultimate
+			Ultimate: spikes bounce up to 5 times and release homing tectonic shards on burst
+			Ignores 8 points of defense
+			'''
 	}
 
 	LunarPlank: {
 		DisplayName: Lunar Plank
-		Tooltip: ""
+		Tooltip:
+			'''
+			Throws a lunar plank to strike enemies 
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: the plank grows larger; its impact triggers a starlight explosion and homing star bolts
+			'''
 	}
 
 	MewMewBomb: {
 		DisplayName: Mew Mew Bomb
-		Tooltip: ""
+		Tooltip:
+			'''
+			[c/FF69B4:Throw a bomb that bounces off blocks]
+			[c/FF69B4:After hitting a target, it bounces to a position that can hit as many targets as possible and explodes in a cross pattern]
+			[c/FF69B4:Usable only when the ultimate is ready; needs a moment to recharge after release]
+			[c/FF69B4:Ultimate: a bigger, fiercer explosion with a wider and longer cross shockwave]
+			[c/FF69B4:Players who are hit by the explosion will receive 2.5 seconds of invincibility]
+			[c/FF69B4:"A detonator with cat ears, somehow it emits cat meows"]
+			'''
 	}
 
 	ProphecyFlyingKnife: {
-		DisplayName: Prophecy Flying Knife
-		Tooltip: ""
+		DisplayName: Prophetic Daggers
+		Tooltip:
+			'''
+			Flings 4 daggers in a random arc that fly towards enemies after a moment in the air
+			Hitting enemies builds momentum; when full, your next attack becomes an ultimate
+			Ultimate: the main dagger deals double damage, flanked by volleys of side daggers
+			'''
 	}
 
 	Revelation: {
 		DisplayName: Revelation
-		Tooltip: ""
+		Tooltip:
+			'''
+			Throws a spinning scythe that rapidly slows in midair,
+			then explodes and fires two homing Revelation Beams before returning to the player
+			On return, it deals damage again if hitting an enemy
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: hurls 3 homing revelation scythes that relay-slash on hit
+			'''
 	}
 
 	ScorchingChakram: {
 		DisplayName: Scorching Chakram
-		Tooltip: ""
+		Tooltip:
+			'''
+			Throws a chakram that pierces and explodes into shards in midair
+			Chakrams inflict [cebuff:OnFire] on impact
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: the chakram lingers on enemies with continuous slicing, releasing a ring of homing tectonic shards on burst
+			'''
 	}
 
 	ShadewindLance: {
 		DisplayName: Shadewind Lance
-		Tooltip: ""
+		Tooltip:
+			'''
+			Throws a void-infused javelin that creates a small burst on impact
+			Hitting enemies builds momentum; when full, your next attack becomes an ultimate
+			Ultimate: the lance pierces infinitely and flies faster
+			Inflicts [cebuff:CalamityEntropy/VoidTouch]
+			'''
 	}
 
 	Silence: {
 		DisplayName: Silence
-		Tooltip: ""
+		Tooltip:
+			'''
+			Throw a [ceeffect/cruiser:void-chained frisbee] that pulls itself back to enemies on hit after a short delay before exploding on impact]
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: fires a specialized blade of silence that chains the target and unfolds a devouring vortex
+			'''
 	}
 
 	SpearOfRadiance: {
-		DisplayName: Spear Of Radiance
-		Tooltip: ""
+		DisplayName: Spear of Radiance
+		Tooltip:
+			'''
+			Throws a blessed javelin
+			Hitting enemies builds momentum; when full, your next attack becomes an ultimate
+			Ultimate: an empowered throw that pierces up to 5 enemies
+			'''
 	}
 
 	Apeirokyklos: {
 		DisplayName: Apeirokyklos
-		Tooltip: ""
+		Tooltip:
+			'''
+			Deploys a multi-hit sawblade when flies for a while or hits an enemy 
+			Each hit of the sawblade summons an Abyss Spike from below to pierce the target
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: a much larger and longer spin; on hit, recoils to charge and re-enter, calling down a rain of spikes
+			'''
 	}
 
 	AzafureSwirlblade: {
 		DisplayName: Azafure Swirlblade
-		Tooltip: ""
+		Tooltip:
+			'''
+			Throw a sawblade that on hit or after some time stops in place, releasing a pair of homing missiles before spinning
+			The sawblade deals damage in a large area when spinning and will return after some time
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: a larger spin, bursting a ring of homing fire bolts on deployment
+			Attacks inflict [cebuff:CalamityEntropy/MechanicalTrauma] on hit
+			'''
 	}
 
 	BlazingSwirlblade: {
 		DisplayName: Blazing Swirlblade
-		Tooltip: ""
+		Tooltip:
+			'''
+			Throw a sawblade that on hit or after some time stops in place, releasing a holy heatwave before spinning
+			The sawblade deals damage in a large area when spinning and will return after some time
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: a much larger and longer spin, spewing holy fire in 8 directions
+			Attacks inflict [cebuff:CalamityEntropy/HolyFlames] on hit
+			'''
 	}
 
 	BrillianceSwirlblade: {
 		DisplayName: Brilliance Swirlblade
-		Tooltip: ""
+		Tooltip:
+			'''
+			Throw a sawblade that on hit or after some time stops in place and starts spinning
+			The sawblade deals damage in a large area when spinning and will return after some time
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: a much larger spin that lasts longer
+			'''
 	}
 
 	ExergySwirlblade: {
 		DisplayName: Exergy Swirlblade
-		Tooltip: ""
+		Tooltip:
+			'''
+			Flies for a while or hits an enemy, then deploys a multi-hit sawblade that shrinks over time
+			If deployed by enemy contact, the ringblade sticks to that enemy
+			As the sawblade shrinks, it fires smaller homing sawblades that stop tracking after one hit
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: a larger spin that keeps firing homing sawblades while deployed
+			'''
 	}
 
 	FlamingSwirlblade: {
 		DisplayName: Flaming Swirlblade
-		Tooltip: ""
+		Tooltip:
+			'''
+			Throw a sawblade that on hit or after some time stops in place, releasing a homing flame bolt before spinning
+			The sawblade deals damage in a large area when spinning and will return after some time
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: a larger spin, spewing flames in 8 directions on deployment
+			Attacks inflict [cebuff:OnFire3] on hit
+			'''
 	}
 
 	GlacierSwirlblade: {
 		DisplayName: Glacier Swirlblade
-		Tooltip: ""
+		Tooltip:
+			'''
+			Throw a sawblade that on hit or after some time stops in place, releasing a pair of homing blades before spinning
+			The sawblade deals damage in a large area when spinning and will return after some time
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: a larger spin that homes onto enemies, firing extra ice blades on return
+			Attacks inflict [cebuff:CalamityEntropy/Deceive] on hit
+			'''
 	}
 
 	RunicSwirlblade: {
 		DisplayName: Runic Swirlblade
-		Tooltip: ""
+		Tooltip:
+			'''
+			Throw a sawblade that on hit or after some time stops in place, releasing a swarm of homing rune bolts before spinning
+			The sawblade deals damage in a large area when spinning and will return after some time
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: unfolds a rotating ring of rune bolts around the spin, firing runes in all directions on return
+			Attacks inflict [cebuff:CalamityEntropy/SoulDisorder] on hit
+			'''
 	}
 
 	SawofMacrocosm: {
-		DisplayName: Sawof Macrocosm
-		Tooltip: ""
+		DisplayName: Saw of Macrocosm
+		Tooltip:
+			'''
+			Throw a sawblade that on hit or after some time stops in place, releasing 4 more smaller blades before spinning
+			The sawblades deals damage in a large area when spinning and will return after some time
+			Smaller blades on return release homing cosmic bolts at the closest enemy
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: locks a distant target and performs the Macrocosm Slash, a devastating strike dealing 8x damage
+			Attacks inflict [cebuff:CalamityEntropy/GodSlayerInferno] on hit
+			'''
 	}
 
 	TheBeginingAndTheEnd: {
-		DisplayName: The Begining And The End
-		Tooltip: ""
+		DisplayName: The Beginning And The End
+		Tooltip:
+			'''
+			Left Click throws The Beginning, Right Click throws The End, both inflict the [cebuff:CalamityEntropy/LifeOppress] debuff
+			The Beginning inflicts the [cebuff:CalamityEntropy/EclipsedImprint] debuff
+			The End inflicts the [cebuff:CalamityEntropy/StareOfTheAbyss] debuff
+			These debuffs both stack up to 8 times, when the opposite debuff is applied, that amount of Eclipse or Echo souls are created
+			Eclipsed Souls return to you, restoring 4 life each and briefly granting the [cebuff:CalamityEntropy/ServiceBuff] buff
+			Echo Souls relentlessly assault enemies for a short time
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: throws both blades at once, each dealing full damage
+			'''
 	}
 
 	TheDeadCut: {
+		Tooltip:
+			'''
+			Swings a decaying scythe that leaves a dead slice on hit
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: the dead slice gains rapid hits and homing; on hit, teleports to relay-slash up to 10 times
+			'''
 		DisplayName: The Dead Cut
-		Tooltip: ""
 	}
 
 	Voidseeker: {
 		DisplayName: Voidseeker
-		Tooltip: ""
+		Tooltip:
+			'''
+			Swings a void-touched scythe
+			Hitting enemies builds momentum; when full, your next attack becomes an ultimate
+			Ultimate: fires an empowered void bolt dealing double damage
+			'''
 	}
 }
 
@@ -7311,6 +7151,7 @@ DeltaruneCH5ShadowCrystal: Get shadow crystal in Deltarune chapter5
 Donor: Donor:
 Owner: Owner:
 ShadowDashCD: Shadow Dash Cooldown
+ShadeCloakDashCD: Shadow Dash Cooldown
 RPDonorName: 冷级
 Acropolis: ""
 OblivionThretherCooldown: Oblivion Thresher Dash Cooldown

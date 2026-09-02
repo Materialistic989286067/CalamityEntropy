@@ -6,342 +6,6 @@ Items: {
 		Tooltip: 快速，连续的进行斩击
 	}
 
-	Weapons: {
-		Rogue: {
-			Revelation: {
-				DisplayName: 启示录
-				Tooltip:
-					'''
-					扔出一把旋转的镰刀，在空中会快速减速，随后爆炸并发射两发追踪的启示光束并返回玩家
-					返回时如果命中敌怪能再次造成一次伤害
-					手持蓄势，充满后下一次攻击化为大招
-					大招：连掷 3 柄追踪启示刃，命中后原地接力续斩
-					'''
-			}
-
-			Silence: {
-				DisplayName: 沉默
-				Tooltip:
-					'''
-					丢出一个飞盘，击中敌人后一段时间会使用[ceeffect/cruiser:虚空锁链]将自身拉向该敌人，并在与其接触时爆炸
-					手持蓄势，充满后下一次攻击化为大招
-					大招：射出特化的沉默之刃，锁链缠绕并展开吞噬漩涡
-					'''
-			}
-
-			ShadewindLance: {
-				DisplayName: 苍穹坠影
-				Tooltip:
-					'''
-					扔出一把被虚空赋能的标枪
-					命中敌人积攒势头，攒满后下一次攻击化为大招
-					大招：风枪无限穿透，飞行更快
-					'''
-			}
-
-			Aquashard: {
-				DisplayName: 蓝晶破浪
-				Tooltip:
-					'''
-					丢出一把击中敌人会抛射水弹的标枪
-					命中敌人积攒势头，攒满后下一次攻击化为大招
-					大招：强化投掷，可穿透 5 个敌人
-					'''
-			}
-
-			SpearOfRadiance: {
-				DisplayName: 圣辉之枪
-				Tooltip:
-					'''
-					投出一把神圣标枪
-					命中敌人积攒势头，攒满后下一次攻击化为大招
-					大招：强化投掷，可穿透 5 个敌人
-					'''
-			}
-
-			AbyssalPiercer: {
-				DisplayName: 冥海穿刺
-				Tooltip:
-					'''
-					丢出一把击中后迸发出追踪水流的标枪
-					命中敌人积攒势头，攒满后下一次攻击化为大招
-					大招：强化投掷，可穿透 5 个敌人
-					'''
-			}
-
-			AzureOfFirmament: {
-				DisplayName: 天穹之澈
-				Tooltip:
-					'''
-					丢出一把苍穹标枪
-					手持蓄势，充满后下一次攻击化为大招
-					大招：环射 12 根天穹之羽，主弹可穿透 5 个敌人
-					'''
-			}
-
-			ArbitratorII: {
-				DisplayName: 仲裁者II
-				Tooltip:
-					'''
-					丢出一把会爆炸的标枪
-					大招就绪后才能出手，释放后需要片刻重新蓄势
-					大招：掷出强化仲裁之刃
-					'''
-			}
-
-			Voidseeker: {
-				DisplayName: 苍茫长镰
-				Tooltip:
-					'''
-					从下往上挥砍的镰刀
-					命中敌人积攒势头，攒满后下一次攻击化为大招
-					大招：射出强化虚空弹，伤害翻倍
-					'''
-			}
-
-			TheBeginingAndTheEnd: {
-				DisplayName: 始与末
-				Tooltip:
-					'''
-					使用左右键射出不同的飞刀
-					终会造成虚渊凝视减益
-					始会造成冥煌烙印减益
-					当另一种飞刀击中后清除该减益并根据减益的层数生成回音之魂或冥煌之魂
-					回音之魂会持续攻击敌怪，数秒后消失
-					冥煌之魂会飞向你并治疗你，同时暂时提升攻击速度、攻击伤害和暴击率
-					手持蓄势，充满后下一次攻击化为大招
-					大招：同时掷出「始」与「终」双刃，各造成完整伤害
-					'''
-			}
-
-			AmethystFrisbee: {
-				DisplayName: 紫晶飞盘
-				Tooltip:
-					'''
-					扔出一个击中会自动返回的飞盘
-					返回的瞬间再次投出无视重力并造成高频伤害
-					手持蓄势，充满后下一次攻击化为大招
-					大招：掷出强化飞盘，伤害与弹速大幅提升
-					'''
-			}
-
-			ProphecyFlyingKnife: {
-				DisplayName: 预言飞刀
-				Tooltip:
-					'''
-					发射一些旋转的飞刀，在目标周围短暂停滞后高速飞向并穿刺目标
-					旋转时的飞刀不会造成伤害
-					命中敌人积攒势头，攒满后下一次攻击化为大招
-					大招：主刀造成双倍伤害，两侧齐射副刀
-					'''
-			}
-
-			TheDeadCut: {
-				Tooltip:
-					'''
-					丢出一把飞镰，命中后生成虚妄斩切
-					手持蓄势，充满后下一次攻击化为大招
-					大招：死斩高频判定并追踪敌人，命中后瞬移接力续斩，最多 10 次
-					'''
-				DisplayName: 虚妄切裂者
-			}
-
-			LunarPlank: {
-				DisplayName: 幻光石板
-				Tooltip:
-					'''
-					扔出并砸向你的敌人
-					手持蓄势，充满后下一次攻击化为大招
-					大招：木牌体积增大，落点引发星光爆炸并迸出追踪星弹
-					'''
-			}
-
-			AzafureSurgeRod: {
-				DisplayName: 阿萨福勒电涌钎
-				Tooltip:
-					'''
-					击中后插在目标上，一段时间后朝附近的其他目标迸发出闪电
-					手持蓄势，充满后下一次攻击化为大招
-					大招：连射 6 根穿墙追踪的标枪，命中时放出红色特斯拉链电
-					'''
-			}
-
-			TlipocasScythe: {
-				DisplayName: 特莉波卡的镰刀
-				Tooltip:
-					'''
-					手持蓄势，充满后下一次攻击化为大招
-					大招：旋转镰刃全面强化，斩击更大更重
-					'''
-			}
-
-			AzafureLightMachineGun: {
-				DisplayName: 阿萨福勒轻机枪
-				Tooltip:
-					'''
-					快速发射激光
-					命中敌人积攒势头，攒满后下一次攻击化为大招
-					大招：下次开火射出 6 倍伤害的狙击弹
-					'''
-			}
-
-			AzafureAirReaper: {
-				DisplayName: 阿萨福勒压力统镰
-				Tooltip:
-					'''
-					扔出一把镰刀，击中后黏附在目标上造成多次伤害
-					手持蓄势，充满后下一次攻击化为大招
-					大招：镰刀会黏附敌人持续环绕拉扯，黏附时间大幅延长
-					'''
-			}
-
-			CrystalSpike: {
-				DisplayName: 魔晶刺
-				Tooltip:
-					'''
-					丢出并扎在目标身上，单个目标最多黏附[S]根
-					场上布置的晶刺达到 [U] 根时，下次投掷召回全部晶刺并强化
-					召回的晶刺化作强化弹再度掷出
-					无视4点护甲
-					'''
-			}
-
-			ScorchingChakram: {
-				DisplayName: 焦灼旋刃
-				Tooltip:
-					'''
-					丢出一个焦灼旋刃，并在飞行一段时间后炸成追踪的板块碎片
-					手持蓄势，充满后下一次攻击化为大招
-					大招：环刃驻留在敌人身上连续切割，爆裂时放出一圈追踪地壳碎片
-					'''
-			}
-
-			EmberSpike: {
-				DisplayName: 余烬石锥
-				Tooltip:
-					'''
-					丢出会在物块上反弹最多2次的余烬石锥
-					命中敌怪后产生爆炸并扎在其身上，单个目标最多黏附[S]根
-					命中敌人积攒势头，攒满后下一次攻击化为大招
-					大招：尖刺可弹跳 5 次，爆裂时放出追踪地壳碎片
-					无视8点护甲
-					'''
-			}
-
-			MewMewBomb: {
-				DisplayName: 喵喵炸弹
-				Tooltip:
-					'''
-					[c/FF69B4:丢出一个会在物块上反弹的炸弹]
-					[c/FF69B4:击中目标后会弹到一个能尽可能命中最多目标的位置并爆炸成十字]
-					[c/FF69B4:大招就绪后才能出手，释放后需要片刻重新蓄势]
-					[c/FF69B4:大招：爆炸更大更猛，十字冲击波更宽更远]
-					[c/FF69B4:爆炸将对你造成20点伤害并给与你2.5秒的无敌时间]
-					[c/FF69B4:"一个带有猫耳的雷管，不知为何它会发出猫叫"]
-					'''
-			}
-
-			BrillianceSwirlblade: {
-				DisplayName: 光耀轮刃
-				Tooltip:
-					'''
-					飞行一段时间或触碰到敌怪时展开锯片，造成多次伤害
-					手持蓄势，充满后下一次攻击化为大招
-					大招：飞锯范围大增且驻留更久
-					'''
-			}
-
-			FlamingSwirlblade: {
-				DisplayName: 炙炎轮刃
-				Tooltip:
-					'''
-					飞行一段时间或触碰到敌怪时展开锯片，造成多次伤害
-					锯片展开时会释放一束追踪的火焰
-					手持蓄势，充满后下一次攻击化为大招
-					大招：飞锯范围增大，展开时向 8 个方向爆散烈焰
-					'''
-			}
-
-			AzafureSwirlblade: {
-				DisplayName: 阿萨福勒轮刃
-				Tooltip:
-					'''
-					飞行一段时间或触碰到敌怪时展开锯片，造成多次伤害
-					锯片展开时会发射两枚追踪的导弹
-					手持蓄势，充满后下一次攻击化为大招
-					大招：飞锯范围增大，展开时爆散一圈追踪火弹
-					'''
-			}
-
-			GlacierSwirlblade: {
-				DisplayName: 霜蓝轮刃
-				Tooltip:
-					'''
-					飞行一段时间或触碰到敌怪时展开锯片，造成多次伤害
-					随后释放一些追踪的小型锯片并返回
-					手持蓄势，充满后下一次攻击化为大招
-					大招：飞锯范围增大并追踪敌人，收回时射出更多冰锯
-					所有攻击都能短暂使目标减速
-					'''
-			}
-
-			RunicSwirlblade: {
-				DisplayName: 符文轮刃
-				Tooltip:
-					'''
-					飞行一段时间或触碰到敌怪时展开锯片，造成多次伤害
-					展开时释放一些追逐的符文导弹
-					手持蓄势，充满后下一次攻击化为大招
-					大招：飞锯外圈展开旋转符文弹幕环，收回时向八方射出符文弹
-					'''
-			}
-
-			BlazingSwirlblade: {
-				DisplayName: 耀目轮刃
-				Tooltip:
-					'''
-					飞行一段时间或触碰到敌怪时释放强大的火焰冲击并展开能造成多次伤害的锯片
-					命中时会产生大范围的爆炸
-					手持蓄势，充满后下一次攻击化为大招
-					大招：飞锯范围大增且驻留更久，向 8 个方向喷吐圣火
-					'''
-			}
-
-			SawofMacrocosm: {
-				DisplayName: 噬宙轮刃
-				Tooltip:
-					'''
-					飞行一段时间后弹出4个较小的轮刃并展开大范围锯片
-					小轮刃也会弹出锯片，并在收回时发射一道追踪的[ceffect/dog:虚空破裂束]
-					手持蓄势，充满后下一次攻击化为大招
-					大招：锁定远处目标发动宏观冲斩，造成 8 倍伤害的毁灭一击
-					'''
-			}
-
-			ExergySwirlblade: {
-				DisplayName: 裂界轮刃
-				Tooltip:
-					'''
-					飞行一段时间或触碰到敌怪时展开能造成多次伤害的锯片，锯片会随时间缩小
-					如果是触碰敌怪触发的锯片，则轮刃会黏附在该敌怪身上
-					锯片缩小时会发射较小的追踪锯片，命中一次后停止追踪
-					手持蓄势，充满后下一次攻击化为大招
-					大招：飞锯范围增大，展开期间不断射出追踪飞锯
-					'''
-			}
-
-			Apeirokyklos: {
-				DisplayName: 永渊环葬
-				Tooltip:
-					'''
-					飞行一段时间或触碰到敌怪时展开能造成多次伤害的锯片
-					锯片每次命中都会从下方召唤一根深渊尖刺刺穿目标
-					手持蓄势，充满后下一次攻击化为大招
-					大招：环刃范围大增且驻留更久，命中后蓄力反冲再入并召下尖刺雨
-					'''
-			}
-		}
-	}
 
 	PrisonOfPermafrost: {
 		DisplayName: 至臻极冰之樊寒神像
@@ -799,7 +463,8 @@ Items: {
 		DisplayName: 上神之佑
 		Tooltip:
 			'''
-			免疫大多数减益和击退
+			免疫与十字章护身符相同的减益
+			免疫击退
 			免疫火块，可在火块上安全行走
 			拥有神圣屏障的格挡效果
 			给予你和所有队友15%伤害减免(不可叠加)
@@ -4981,8 +4646,12 @@ Items: {
 	}
 
 	TlipocasScythe: {
-		// DisplayName: Tlipocas Scythe
-		// Tooltip: ""
+		DisplayName: 特莉波卡的镰刀
+		Tooltip:
+			'''
+			手持蓄势，充满后下一次攻击化为大招
+			大招：旋转镰刃全面强化，斩击更大更重
+			'''
 	}
 
 	CruiserLore: {
@@ -5031,153 +4700,327 @@ Items: {
 	}
 
 	AbyssalPiercer: {
-		// DisplayName: Abyssal Piercer
-		// Tooltip: ""
+		DisplayName: 冥海穿刺
+		Tooltip:
+			'''
+			丢出一把击中后迸发出追踪水流的标枪
+			命中敌人积攒势头，攒满后下一次攻击化为大招
+			大招：强化投掷，可穿透 5 个敌人
+			'''
 	}
 
 	AmethystFrisbee: {
-		// DisplayName: Amethyst Frisbee
-		// Tooltip: ""
+		DisplayName: 紫晶飞盘
+		Tooltip:
+			'''
+			扔出一个击中会自动返回的飞盘
+			返回的瞬间再次投出无视重力并造成高频伤害
+			手持蓄势，充满后下一次攻击化为大招
+			大招：掷出强化飞盘，伤害与弹速大幅提升
+			'''
 	}
 
 	Aquashard: {
-		// DisplayName: Aquashard
-		// Tooltip: ""
+		DisplayName: 蓝晶破浪
+		Tooltip:
+			'''
+			丢出一把击中敌人会抛射水弹的标枪
+			命中敌人积攒势头，攒满后下一次攻击化为大招
+			大招：强化投掷，可穿透 5 个敌人
+			'''
 	}
 
 	ArbitratorII: {
-		// DisplayName: Arbitrator I I
-		// Tooltip: ""
+		DisplayName: 仲裁者II
+		Tooltip:
+			'''
+			丢出一把会爆炸的标枪
+			大招就绪后才能出手，释放后需要片刻重新蓄势
+			大招：掷出强化仲裁之刃
+			'''
 	}
 
 	AzafureAirReaper: {
-		// DisplayName: Azafure Air Reaper
-		// Tooltip: ""
+		DisplayName: 阿萨福勒压力统镰
+		Tooltip:
+			'''
+			扔出一把镰刀，击中后黏附在目标上造成多次伤害
+			手持蓄势，充满后下一次攻击化为大招
+			大招：镰刀会黏附敌人持续环绕拉扯，黏附时间大幅延长
+			'''
 	}
 
 	AzafureLightMachineGun: {
-		// DisplayName: Azafure Light Machine Gun
-		// Tooltip: ""
+		DisplayName: 阿萨福勒轻机枪
+		Tooltip:
+			'''
+			快速发射激光
+			命中敌人积攒势头，攒满后下一次攻击化为大招
+			大招：下次开火射出 6 倍伤害的狙击弹
+			'''
 	}
 
 	AzafureSurgeRod: {
-		// DisplayName: Azafure Surge Rod
-		// Tooltip: ""
+		DisplayName: 阿萨福勒电涌钎
+		Tooltip:
+			'''
+			击中后插在目标上，一段时间后朝附近的其他目标迸发出闪电
+			手持蓄势，充满后下一次攻击化为大招
+			大招：连射 6 根穿墙追踪的标枪，命中时放出红色特斯拉链电
+			'''
 	}
 
 	AzureOfFirmament: {
-		// DisplayName: Azure Of Firmament
-		// Tooltip: ""
+		DisplayName: 天穹之澈
+		Tooltip:
+			'''
+			丢出一把苍穹标枪
+			手持蓄势，充满后下一次攻击化为大招
+			大招：环射 12 根天穹之羽，主弹可穿透 5 个敌人
+			'''
 	}
 
 	CrystalSpike: {
-		// DisplayName: Crystal Spike
-		// Tooltip: ""
+		DisplayName: 魔晶刺
+		Tooltip:
+			'''
+			丢出并扎在目标身上，单个目标最多黏附[S]根
+			场上布置的晶刺达到 [U] 根时，下次投掷召回全部晶刺并强化
+			召回的晶刺化作强化弹再度掷出
+			无视4点护甲
+			'''
 	}
 
 	EmberSpike: {
-		// DisplayName: Ember Spike
-		// Tooltip: ""
+		DisplayName: 余烬石锥
+		Tooltip:
+			'''
+			丢出会在物块上反弹最多2次的余烬石锥
+			命中敌怪后产生爆炸并扎在其身上，单个目标最多黏附[S]根
+			命中敌人积攒势头，攒满后下一次攻击化为大招
+			大招：尖刺可弹跳 5 次，爆裂时放出追踪地壳碎片
+			无视8点护甲
+			'''
 	}
 
 	LunarPlank: {
-		// DisplayName: Lunar Plank
-		// Tooltip: ""
+		DisplayName: 幻光石板
+		Tooltip:
+			'''
+			扔出并砸向你的敌人
+			手持蓄势，充满后下一次攻击化为大招
+			大招：木牌体积增大，落点引发星光爆炸并迸出追踪星弹
+			'''
 	}
 
 	MewMewBomb: {
-		// DisplayName: Mew Mew Bomb
-		// Tooltip: ""
+		DisplayName: 喵喵炸弹
+		Tooltip:
+			'''
+			[c/FF69B4:丢出一个会在物块上反弹的炸弹]
+			[c/FF69B4:击中目标后会弹到一个能尽可能命中最多目标的位置并爆炸成十字]
+			[c/FF69B4:大招就绪后才能出手，释放后需要片刻重新蓄势]
+			[c/FF69B4:大招：爆炸更大更猛，十字冲击波更宽更远]
+			[c/FF69B4:爆炸将对你造成20点伤害并给与你2.5秒的无敌时间]
+			[c/FF69B4:"一个带有猫耳的雷管，不知为何它会发出猫叫"]
+			'''
 	}
 
 	ProphecyFlyingKnife: {
-		// DisplayName: Prophecy Flying Knife
-		// Tooltip: ""
+		DisplayName: 预言飞刀
+		Tooltip:
+			'''
+			发射一些旋转的飞刀，在目标周围短暂停滞后高速飞向并穿刺目标
+			旋转时的飞刀不会造成伤害
+			命中敌人积攒势头，攒满后下一次攻击化为大招
+			大招：主刀造成双倍伤害，两侧齐射副刀
+			'''
 	}
 
 	Revelation: {
-		// DisplayName: Revelation
-		// Tooltip: ""
+		DisplayName: 启示录
+		Tooltip:
+			'''
+			扔出一把旋转的镰刀，在空中会快速减速，随后爆炸并发射两发追踪的启示光束并返回玩家
+			返回时如果命中敌怪能再次造成一次伤害
+			手持蓄势，充满后下一次攻击化为大招
+			大招：连掷 3 柄追踪启示刃，命中后原地接力续斩
+			'''
 	}
 
 	ScorchingChakram: {
-		// DisplayName: Scorching Chakram
-		// Tooltip: ""
+		DisplayName: 焦灼旋刃
+		Tooltip:
+			'''
+			丢出一个焦灼旋刃，并在飞行一段时间后炸成追踪的板块碎片
+			手持蓄势，充满后下一次攻击化为大招
+			大招：环刃驻留在敌人身上连续切割，爆裂时放出一圈追踪地壳碎片
+			'''
 	}
 
 	ShadewindLance: {
-		// DisplayName: Shadewind Lance
-		// Tooltip: ""
+		DisplayName: 苍穹坠影
+		Tooltip:
+			'''
+			扔出一把被虚空赋能的标枪
+			命中敌人积攒势头，攒满后下一次攻击化为大招
+			大招：风枪无限穿透，飞行更快
+			'''
 	}
 
 	Silence: {
-		// DisplayName: Silence
-		// Tooltip: ""
+		DisplayName: 沉默
+		Tooltip:
+			'''
+			丢出一个飞盘，击中敌人后一段时间会使用[ceeffect/cruiser:虚空锁链]将自身拉向该敌人，并在与其接触时爆炸
+			手持蓄势，充满后下一次攻击化为大招
+			大招：射出特化的沉默之刃，锁链缠绕并展开吞噬漩涡
+			'''
 	}
 
 	SpearOfRadiance: {
-		// DisplayName: Spear Of Radiance
-		// Tooltip: ""
+		DisplayName: 圣辉之枪
+		Tooltip:
+			'''
+			投出一把神圣标枪
+			命中敌人积攒势头，攒满后下一次攻击化为大招
+			大招：强化投掷，可穿透 5 个敌人
+			'''
 	}
 
 	Apeirokyklos: {
-		// DisplayName: Apeirokyklos
-		// Tooltip: ""
+		DisplayName: 永渊环葬
+		Tooltip:
+			'''
+			飞行一段时间或触碰到敌怪时展开能造成多次伤害的锯片
+			锯片每次命中都会从下方召唤一根深渊尖刺刺穿目标
+			手持蓄势，充满后下一次攻击化为大招
+			大招：环刃范围大增且驻留更久，命中后蓄力反冲再入并召下尖刺雨
+			'''
 	}
 
 	AzafureSwirlblade: {
-		// DisplayName: Azafure Swirlblade
-		// Tooltip: ""
+		DisplayName: 阿萨福勒轮刃
+		Tooltip:
+			'''
+			飞行一段时间或触碰到敌怪时展开锯片，造成多次伤害
+			锯片展开时会发射两枚追踪的导弹
+			手持蓄势，充满后下一次攻击化为大招
+			大招：飞锯范围增大，展开时爆散一圈追踪火弹
+			'''
 	}
 
 	BlazingSwirlblade: {
-		// DisplayName: Blazing Swirlblade
-		// Tooltip: ""
+		DisplayName: 耀目轮刃
+		Tooltip:
+			'''
+			飞行一段时间或触碰到敌怪时释放强大的火焰冲击并展开能造成多次伤害的锯片
+			命中时会产生大范围的爆炸
+			手持蓄势，充满后下一次攻击化为大招
+			大招：飞锯范围大增且驻留更久，向 8 个方向喷吐圣火
+			'''
 	}
 
 	BrillianceSwirlblade: {
-		// DisplayName: Brilliance Swirlblade
-		// Tooltip: ""
+		DisplayName: 光耀轮刃
+		Tooltip:
+			'''
+			飞行一段时间或触碰到敌怪时展开锯片，造成多次伤害
+			手持蓄势，充满后下一次攻击化为大招
+			大招：飞锯范围大增且驻留更久
+			'''
 	}
 
 	ExergySwirlblade: {
-		// DisplayName: Exergy Swirlblade
-		// Tooltip: ""
+		DisplayName: 裂界轮刃
+		Tooltip:
+			'''
+			飞行一段时间或触碰到敌怪时展开能造成多次伤害的锯片，锯片会随时间缩小
+			如果是触碰敌怪触发的锯片，则轮刃会黏附在该敌怪身上
+			锯片缩小时会发射较小的追踪锯片，命中一次后停止追踪
+			手持蓄势，充满后下一次攻击化为大招
+			大招：飞锯范围增大，展开期间不断射出追踪飞锯
+			'''
 	}
 
 	FlamingSwirlblade: {
-		// DisplayName: Flaming Swirlblade
-		// Tooltip: ""
+		DisplayName: 炙炎轮刃
+		Tooltip:
+			'''
+			飞行一段时间或触碰到敌怪时展开锯片，造成多次伤害
+			锯片展开时会释放一束追踪的火焰
+			手持蓄势，充满后下一次攻击化为大招
+			大招：飞锯范围增大，展开时向 8 个方向爆散烈焰
+			'''
 	}
 
 	GlacierSwirlblade: {
-		// DisplayName: Glacier Swirlblade
-		// Tooltip: ""
+		DisplayName: 霜蓝轮刃
+		Tooltip:
+			'''
+			飞行一段时间或触碰到敌怪时展开锯片，造成多次伤害
+			随后释放一些追踪的小型锯片并返回
+			手持蓄势，充满后下一次攻击化为大招
+			大招：飞锯范围增大并追踪敌人，收回时射出更多冰锯
+			所有攻击都能短暂使目标减速
+			'''
 	}
 
 	RunicSwirlblade: {
-		// DisplayName: Runic Swirlblade
-		// Tooltip: ""
+		DisplayName: 符文轮刃
+		Tooltip:
+			'''
+			飞行一段时间或触碰到敌怪时展开锯片，造成多次伤害
+			展开时释放一些追逐的符文导弹
+			手持蓄势，充满后下一次攻击化为大招
+			大招：飞锯外圈展开旋转符文弹幕环，收回时向八方射出符文弹
+			'''
 	}
 
 	SawofMacrocosm: {
-		// DisplayName: Sawof Macrocosm
-		// Tooltip: ""
+		DisplayName: 噬宙轮刃
+		Tooltip:
+			'''
+			飞行一段时间后弹出4个较小的轮刃并展开大范围锯片
+			小轮刃也会弹出锯片，并在收回时发射一道追踪的[ceffect/dog:虚空破裂束]
+			手持蓄势，充满后下一次攻击化为大招
+			大招：锁定远处目标发动宏观冲斩，造成 8 倍伤害的毁灭一击
+			'''
 	}
 
 	TheBeginingAndTheEnd: {
-		// DisplayName: The Begining And The End
-		// Tooltip: ""
+		DisplayName: 始与末
+		Tooltip:
+			'''
+			使用左右键射出不同的飞刀
+			终会造成虚渊凝视减益
+			始会造成冥煌烙印减益
+			当另一种飞刀击中后清除该减益并根据减益的层数生成回音之魂或冥煌之魂
+			回音之魂会持续攻击敌怪，数秒后消失
+			冥煌之魂会飞向你并治疗你，同时暂时提升攻击速度、攻击伤害和暴击率
+			手持蓄势，充满后下一次攻击化为大招
+			大招：同时掷出「始」与「终」双刃，各造成完整伤害
+			'''
 	}
 
 	TheDeadCut: {
-		// DisplayName: The Dead Cut
-		// Tooltip: ""
+		Tooltip:
+			'''
+			丢出一把飞镰，命中后生成虚妄斩切
+			手持蓄势，充满后下一次攻击化为大招
+			大招：死斩高频判定并追踪敌人，命中后瞬移接力续斩，最多 10 次
+			'''
+		DisplayName: 虚妄切裂者
 	}
 
 	Voidseeker: {
-		// DisplayName: Voidseeker
-		// Tooltip: ""
+		DisplayName: 苍茫长镰
+		Tooltip:
+			'''
+			从下往上挥砍的镰刀
+			命中敌人积攒势头，攒满后下一次攻击化为大招
+			大招：射出强化虚空弹，伤害翻倍
+			'''
 	}
 }
 
@@ -7406,6 +7249,7 @@ DeltaruneCH5ShadowCrystal: 获取Deltarune第五章的暗影水晶
 Donor: 捐赠者：
 Owner: 所有者：
 ShadowDashCD: 暗影突进冷却
+ShadeCloakDashCD: 暗影冲刺冷却
 RPDonorName: 冷级
 Acropolis: 阿萨福勒量产的攻击型机甲，曾被用于大规模战争
 OblivionThretherCooldown: 虚漩巡锯突进冷却

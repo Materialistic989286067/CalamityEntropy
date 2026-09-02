@@ -2175,7 +2175,7 @@ namespace CalamityEntropy.Common
             //脱离灾厄:血肉巢穴Lore受击回血随灾厄Lore下线删除
         }
         public bool JustHit = false;
-        // 2026-08-31 平衡案:瘟疫内燃机/苍溟护符的命中派生统一挂在此处
+        // 瘟疫内燃机命中派生挂在此处;苍溟漩涡改走 OnHitNPCWithItem/WithProj,避免自触发
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Player.whoAmI != Main.myPlayer)
@@ -2189,19 +2189,34 @@ namespace CalamityEntropy.Common
                     ModContent.ProjectileType<PlagueEnergy>(), dmg, 2f, Player.whoAmI, target.whoAmI);
                 CEUtils.SyncProj(p);
             }
-            // 苍溟护符:武器命中时不断召唤追踪的深渊漩涡(0.5秒内置节流)
-            if (accAzureAbyss && CECooldowns.CheckBMProc("AzureVortexOnHit", 30))
-            {
-                int vp = Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center,
-                    (target.Center - Player.Center).SafeNormalize(Vector2.UnitX) * 16,
-                    ModContent.ProjectileType<AzureVortex>(), (int)(Player.GetBestClassDamage().ApplyTo(TalismanOfTheAzureAbyss.VortexBaseDamage.ApplyAccArmorDamageBonus())), 0, Player.whoAmI);
-                CEUtils.SyncProj(vp);
-            }
             // 无垠:魔法暴击给予目标3秒灵魂紊乱
             if (hasAcc("Vast") && hit.Crit && hit.DamageType.CountsAsClass(DamageClass.Magic))
             {
                 target.AddBuff(ModContent.BuffType<SoulDisorder>(), 180);
             }
+        }
+        public override void OnHitNPCWithItem(Item item, NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (Player.whoAmI != Main.myPlayer)
+                return;
+            TrySpawnAzureVortexOnHit(target);
+        }
+        public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (Player.whoAmI != Main.myPlayer)
+                return;
+            if (proj.type == ModContent.ProjectileType<AzureVortex>())
+                return;
+            TrySpawnAzureVortexOnHit(target);
+        }
+        private void TrySpawnAzureVortexOnHit(NPC target)
+        {
+            if (!accAzureAbyss || !CECooldowns.CheckBMProc("AzureVortexOnHit", 30))
+                return;
+            int vp = Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center,
+                (target.Center - Player.Center).SafeNormalize(Vector2.UnitX) * 16,
+                ModContent.ProjectileType<AzureVortex>(), (int)(Player.GetBestClassDamage().ApplyTo(TalismanOfTheAzureAbyss.VortexBaseDamage.ApplyAccArmorDamageBonus())), 0, Player.whoAmI);
+            CEUtils.SyncProj(vp);
         }
         public override bool FreeDodge(Player.HurtInfo info)
         {
@@ -3002,62 +3017,9 @@ namespace CalamityEntropy.Common
             {
                 dashing = false;
             }
-            // 2026-08-31 平衡案:暗影披风重做——自带暗影冲刺,冲刺期间无敌,固定5秒冷却。
-            // 冲刺本体走原版 dashType=1(忍者大师足具同源),此处只管无敌窗口/冷却/演出。
-            SCDashMP scDash = Player.GetModPlayer<SCDashMP>();
-            if (hasAcc(ShadeCloak.ID) || hasAccVisual(ShadeCloak.ID))
-            {
-                if (Player.timeSinceLastDashStarted <= 1 && scDash.flag)
-                {
-                    scDash.flag = false;
-                    scDash.Cooldown = ShadeCloak.CooldownTicks;
-                    if (hasAccVisual(ShadeCloak.ID))
-                    {
-                        CEUtils.PlaySound("Dash2", 1, Player.Center);
-                        avTrail = PRTLoader.NewParticle<PRT_DashBeam>(Player.Center, Vector2.Zero, new Color(0, 0, 0, 210), 1f)
-                            .Configure(1, true, PRTDrawModeEnum.NonPremultiplied);
-                        avTrail.maxLength = 30;
-                        for (int i = 0; i < 12; i++)
-                        {
-                            var __prt = PRTLoader.NewParticle<PRT_ShadeCloakOrb>(Vector2.Zero, CEUtils.randomPointInCircle(4), Color.Black, 1).Configure(1, true, PRTDrawModeEnum.NonPremultiplied, -1, ShadeCloak.CooldownTicks);
-                            __prt.PlayerIndex = Player.whoAmI;
-                        }
-                    }
-                }
-                if (!scDash.flag && Player.timeSinceLastDashStarted < 24)
-                {
-                    // 冲刺无敌窗口
-                    if (hasAcc(ShadeCloak.ID))
-                    {
-                        Player.RemoveAllGrapplingHooks();
-                        if (Player.Entropy().immune < 4)
-                            Player.Entropy().immune = 4;
-                    }
-                    if (hasAccVisual(ShadeCloak.ID) && Player.velocity.Length() > 2)
-                    {
-                        for (int i = 0; i < 2; i++)
-                        {
-                            PRTLoader.NewParticle<PRT_ShadeDashParticle>(Player.Center + Player.velocity * 6
-                                + CEUtils.randomPointInCircle(26), -(Player.velocity.normalize().RotatedByRandom(0.12f)) * 40, Color.White, 1).Configure(1, true, PRTDrawModeEnum.NonPremultiplied, 0, 16);
-                        }
-                    }
-                }
-                if (Player.timeSinceLastDashStarted > 30)
-                {
-                    if (!scDash.flag && avTrail != null)
-                    {
-                        avTrail.Lifetime = avTrail.Time + 30;
-                    }
-                    scDash.flag = true;
-                }
-            }
             if (avTrail != null)
             {
                 avTrail.AddPoint(Player.Center + Player.velocity * 2);
-            }
-            if (scDash.Cooldown > 0)
-            {
-                scDash.Cooldown--;
             }
 
             float mhrot = (Player.legs == EquipLoader.GetEquipSlot(Mod, "MariviniumLeggings", EquipType.Legs) ? 0f : 0.64f) + (float)Math.Cos(Main.GameUpdateCount * 0.04f) * 0.16f;
@@ -4107,14 +4069,6 @@ namespace CalamityEntropy.Common
             if (Player.pickSpeed < 0)
             {
                 Player.pickSpeed = 0;
-            }
-            if (Player.HeldItem.ModItem is HorizonssKey)
-            {
-                Player.maxMinions -= 6;
-                if (Player.maxMinions < 1)
-                {
-                    Player.maxMinions = 1;
-                }
             }
             if (holyGroundTime > 0)
             {

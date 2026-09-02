@@ -785,3 +785,70 @@
 [Mods.CalamityEntropy.Projectiles.PiscesWhirlwind.DisplayName] - added // 克苏鲁旋风
 [Mods.CalamityEntropy.Projectiles.ProfanedFireball.DisplayName] - added // 祭祀火球
 [Mods.CalamityEntropy.Projectiles.PillarShardProj.DisplayName] - added // 四柱碎片
+
+[4.0-Changes]
+[Mods.CalamityEntropy.Items.OdinsRefuge.Tooltip] - changed // 减益免疫改为与十字章护身符相同
+[Mods.CalamityEntropy.ShadeCloakDashCD] - added
+[Mods.CalamityEntropy.Items.Weapons.Rogue] - removed // 原盗贼武器文案迁到 Items.*,对齐 tML 默认键
+[Mods.CalamityEntropy.Items.Revelation.DisplayName] - changed
+[Mods.CalamityEntropy.Items.Revelation.Tooltip] - changed
+[Mods.CalamityEntropy.Items.Silence.DisplayName] - changed
+[Mods.CalamityEntropy.Items.Silence.Tooltip] - changed
+[Mods.CalamityEntropy.Items.ShadewindLance.DisplayName] - changed
+[Mods.CalamityEntropy.Items.ShadewindLance.Tooltip] - changed
+[Mods.CalamityEntropy.Items.Aquashard.DisplayName] - changed
+[Mods.CalamityEntropy.Items.Aquashard.Tooltip] - changed
+[Mods.CalamityEntropy.Items.SpearOfRadiance.DisplayName] - changed
+[Mods.CalamityEntropy.Items.SpearOfRadiance.Tooltip] - changed
+[Mods.CalamityEntropy.Items.AbyssalPiercer.DisplayName] - changed
+[Mods.CalamityEntropy.Items.AbyssalPiercer.Tooltip] - changed
+[Mods.CalamityEntropy.Items.AzureOfFirmament.DisplayName] - changed
+[Mods.CalamityEntropy.Items.AzureOfFirmament.Tooltip] - changed
+[Mods.CalamityEntropy.Items.ArbitratorII.DisplayName] - changed
+[Mods.CalamityEntropy.Items.ArbitratorII.Tooltip] - changed
+[Mods.CalamityEntropy.Items.Voidseeker.DisplayName] - changed
+[Mods.CalamityEntropy.Items.Voidseeker.Tooltip] - changed
+[Mods.CalamityEntropy.Items.TheBeginingAndTheEnd.DisplayName] - changed
+[Mods.CalamityEntropy.Items.TheBeginingAndTheEnd.Tooltip] - changed
+[Mods.CalamityEntropy.Items.AmethystFrisbee.DisplayName] - changed
+[Mods.CalamityEntropy.Items.AmethystFrisbee.Tooltip] - changed
+[Mods.CalamityEntropy.Items.ProphecyFlyingKnife.DisplayName] - changed
+[Mods.CalamityEntropy.Items.ProphecyFlyingKnife.Tooltip] - changed
+[Mods.CalamityEntropy.Items.TheDeadCut.DisplayName] - changed
+[Mods.CalamityEntropy.Items.TheDeadCut.Tooltip] - changed
+[Mods.CalamityEntropy.Items.LunarPlank.DisplayName] - changed
+[Mods.CalamityEntropy.Items.LunarPlank.Tooltip] - changed
+[Mods.CalamityEntropy.Items.AzafureSurgeRod.DisplayName] - changed
+[Mods.CalamityEntropy.Items.AzafureSurgeRod.Tooltip] - changed
+[Mods.CalamityEntropy.Items.TlipocasScythe.DisplayName] - changed
+[Mods.CalamityEntropy.Items.TlipocasScythe.Tooltip] - changed
+[Mods.CalamityEntropy.Items.AzafureLightMachineGun.DisplayName] - changed
+[Mods.CalamityEntropy.Items.AzafureLightMachineGun.Tooltip] - changed
+[Mods.CalamityEntropy.Items.AzafureAirReaper.DisplayName] - changed
+[Mods.CalamityEntropy.Items.AzafureAirReaper.Tooltip] - changed
+[Mods.CalamityEntropy.Items.CrystalSpike.DisplayName] - changed
+[Mods.CalamityEntropy.Items.CrystalSpike.Tooltip] - changed
+[Mods.CalamityEntropy.Items.ScorchingChakram.DisplayName] - changed
+[Mods.CalamityEntropy.Items.ScorchingChakram.Tooltip] - changed
+[Mods.CalamityEntropy.Items.EmberSpike.DisplayName] - changed
+[Mods.CalamityEntropy.Items.EmberSpike.Tooltip] - changed
+[Mods.CalamityEntropy.Items.MewMewBomb.DisplayName] - changed
+[Mods.CalamityEntropy.Items.MewMewBomb.Tooltip] - changed
+[Mods.CalamityEntropy.Items.BrillianceSwirlblade.DisplayName] - changed
+[Mods.CalamityEntropy.Items.BrillianceSwirlblade.Tooltip] - changed
+[Mods.CalamityEntropy.Items.FlamingSwirlblade.DisplayName] - changed
+[Mods.CalamityEntropy.Items.FlamingSwirlblade.Tooltip] - changed
+[Mods.CalamityEntropy.Items.AzafureSwirlblade.DisplayName] - changed
+[Mods.CalamityEntropy.Items.AzafureSwirlblade.Tooltip] - changed
+[Mods.CalamityEntropy.Items.GlacierSwirlblade.DisplayName] - changed
+[Mods.CalamityEntropy.Items.GlacierSwirlblade.Tooltip] - changed
+[Mods.CalamityEntropy.Items.RunicSwirlblade.DisplayName] - changed
+[Mods.CalamityEntropy.Items.RunicSwirlblade.Tooltip] - changed
+[Mods.CalamityEntropy.Items.BlazingSwirlblade.DisplayName] - changed
+[Mods.CalamityEntropy.Items.BlazingSwirlblade.Tooltip] - changed
+[Mods.CalamityEntropy.Items.SawofMacrocosm.DisplayName] - changed
+[Mods.CalamityEntropy.Items.SawofMacrocosm.Tooltip] - changed
+[Mods.CalamityEntropy.Items.ExergySwirlblade.DisplayName] - changed
+[Mods.CalamityEntropy.Items.ExergySwirlblade.Tooltip] - changed
+[Mods.CalamityEntropy.Items.Apeirokyklos.DisplayName] - changed
+[Mods.CalamityEntropy.Items.Apeirokyklos.Tooltip] - changed

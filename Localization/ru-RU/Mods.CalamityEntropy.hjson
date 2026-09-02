@@ -6,291 +6,6 @@ Items: {
 		Tooltip: Быстрое исполнение непрерывной резни..
 	}
 
-	Weapons: {
-		Rogue: {
-			Revelation: {
-				DisplayName: Откровение
-				Tooltip:
-					'''
-					Бросает вращающуюся косу, которая быстро замедляется в воздухе,
-					затем взрывается и выпускает два самонаводящихся Луча Откровения перед возвратом к игроку
-					При возврате она наносит урон повторно при попадании по врагу
-					Скрытая атака бросает три косы, которые наводятся на ближайшего врага;
-					при попадании они сливаются в гигантскую косу, которая многократно бьёт этого врага
-					Каждый удар гигантской косы создаёт крупный взрыв
-					'''
-			}
-
-			Silence: {
-				DisplayName: Тишина
-				Tooltip:
-					'''
-					[c/9387ff:Бросьте диск]
-					[c/9387ff:После попадания во врага через некоторое время он использует цепь пустоты, чтобы притянуть вас к этому врагу, ]
-					[c/9387ff:и взорвётся при контакте с ним]
-					[c/9387ff:Скрытые атаки заставляют диск закрепиться на поражённом враге и развернуть обширный вихрь, ]
-					[c/9387ff:который наносит постоянный урон целям в радиусе его действия]
-					'''
-			}
-
-			ShadewindLance: {
-				DisplayName: Копьё теневого ветра
-				Tooltip:
-					'''
-					Бросает копье, содержащее пустоту
-					Скрытые атаки наносят больший урон и могут проникать бесконечно
-					'''
-			}
-
-			Aquashard: {
-				DisplayName: Акватический осколок
-				Tooltip: ""
-			}
-
-			SpearOfRadiance: {
-				DisplayName: Копьё сияния
-				Tooltip: ""
-			}
-
-			AbyssalPiercer: {
-				DisplayName: Пронзатель бездны
-				Tooltip: ""
-			}
-
-			AzureOfFirmament: {
-				DisplayName: Лазурь небесного свода
-				Tooltip: ""
-			}
-
-			ArbitratorII: {
-				DisplayName: Арбитр II
-				Tooltip: ""
-			}
-
-			Voidseeker: {
-				DisplayName: Искатель пустоты
-				Tooltip: Скрытый удар телепортирует вас к курсору и нанесет значительный урон.
-			}
-
-			TheBeginingAndTheEnd: {
-				DisplayName: Начало и Конец
-				Tooltip:
-					'''
-					Переключите Начало и Конец с помощью левой или правой кнопки
-					Конец применит дебафф Взгляд Бездны
-					Начало применит дебафф Отпечаток Затмения
-					При попадании другого типа ножа снимайте дебафф и генерируйте Душу Эхо или Душу Затмения в зависимости от количества слоев дебаффа
-					Душа Эхо продолжит атаковать вражеских монстров и исчезнет через несколько секунд.
-					Душа Затмения полетит к вам и исцелит вас, временно увеличивая скорость атаки, урон от атаки и шанс крита.
-					Скрытая атака одновременно бросит два ножа и будет отслеживать цель, высвобождая большое количество двух типов душ при ударе
-					'''
-			}
-
-			AmethystFrisbee: {
-				DisplayName: Аметистовый фрисби
-				Tooltip: ""
-			}
-
-			ProphecyFlyingKnife: {
-				DisplayName: Пророчество летающего ножа
-				Tooltip:
-					'''
-					Выпускает несколько самонаводящихся метательных ножей.
-					Скрытая атака призывает 6 вращающихся рунических сфер, которые атакуют врагов через короткое время.
-					'''
-			}
-
-			TheDeadCut: {
-				Tooltip: Восстанавливает немного скрытности после удара
-				DisplayName: Мёртвая доля
-			}
-
-			LunarPlank: {
-				DisplayName: Лунная плита
-				Tooltip: ""
-			}
-
-			AzafureSurgeRod: {
-				DisplayName: пайка Асафора
-				Tooltip:
-					'''
-					Попал в цель и через некоторое время ударил молнией по другим близлежащим целям.
-					Скрытые атаки выбрасывают больше метательных предметов, зависают в воздухе и отслеживают близлежащие цели.
-					'''
-			}
-
-			TlipocasScythe: {
-				DisplayName: Серп Трипоки.
-				Tooltip: ""
-			}
-
-			AzafureLightMachineGun: {
-				DisplayName: Легкие пулеметы & lt; & lt; Асафор & gt; & gt;
-				Tooltip:
-					'''
-					Лазер быстрого излучения
-					После попадания лазера вы получите небольшое количество скрытых значений.
-					Скрытая атака приведет к взрывающейся гранате, которая нанесет ущерб диапазону.
-					'''
-			}
-
-			AzafureAirReaper: {
-				DisplayName: Серп Асафора
-				Tooltip:
-					'''
-					Выбросил серп, попал и прилип к цели, причинив несколько повреждений.
-					Скрытая атака бросает серп, который продолжает преследовать цель после удара и резать ее взад и вперед.
-					'''
-			}
-
-			CrystalSpike: {
-				DisplayName: Магический шип
-				Tooltip:
-					'''
-					Выбросить и привязать к цели, одна цель больше всего прилипает к корню [S]
-					Скрытая атака отзовет все адгезивные шипы и выпустит кристаллическую бурю на курсор.
-					Игнорируйте броню 4.
-					'''
-			}
-
-			ScorchingChakram: {
-				DisplayName: Зажженный клинок
-				Tooltip:
-					'''
-					Выбросить горящее лезвие и взорвать его в отслеженные фрагменты плиты через некоторое время после полета
-					Скрытая атака может заставить клинок выстрелить огненным шаром после остановки, а затем преследовать ближайшую цель и взорваться на большее количество осколков
-					'''
-			}
-
-			EmberSpike: {
-				DisplayName: Пепельный конус
-				Tooltip:
-					'''
-					Выбросьте пепельный конус, который отскакивает от предмета до двух раз.
-					Попав в монстра, он производит взрыв и врезается в него, и одна цель прилипает к корням максимум [S]
-					Подводная атака отзовет все липкие конусы пепла и выпустит пепельный шторм в положение курсора, который может отскочить на блок до 5 раз.
-					Подходящий удар создает отслеженные фрагменты плиты.
-					Игнорировать броню 8.
-					'''
-			}
-
-			MewMewBomb: {
-				DisplayName: Mew Mew Bomb
-				Tooltip:
-					'''
-					[c/FF69B4:Бросает бомбу, которая отскакивает от блоков]
-					[c/FF69B4:После попадания в цель она отскакивает в позицию, которая поражает максимальное количество целей, и взрывается крестом]
-					[c/FF69B4:Скрытые атаки увеличивают радиус взрыва]
-					'''
-			}
-
-			BrillianceSwirlblade: {
-				// DisplayName: Brilliance Swirlblade
-				/* Tooltip:
-					'''
-					Throw a sawblade that on hit or after some time stops in place and starts spinning
-					The sawblade deals damage in a large area when spinning and will return after some time
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: a much larger spin that lasts longer
-					''' */
-			}
-
-			FlamingSwirlblade: {
-				DisplayName: Flaming Swirlblade
-				Tooltip:
-					'''
-					Летит некоторое время или при попадании во врага
-					Разворачивает лезвие, нанося многократный урон
-					При развертывании выпускает самонаводящееся пламя
-					Скрытая атака увеличивает радиус и длительность
-					И выпускает 8 языков пламени
-					'''
-			}
-
-			AzafureSwirlblade: {
-				DisplayName: Azafure Swirlblade
-				Tooltip:
-					'''
-					Летит некоторое время или при попадании во врага
-					Разворачивает лезвие, нанося многократный урон
-					При развертывании выпускает две самонаводящиеся ракеты
-					Скрытая атака выпускает 8 ракет при развертывании
-					И бросает лезвие в ближайшую цель при возврате
-					'''
-			}
-
-			GlacierSwirlblade: {
-				// DisplayName: Glacier Swirlblade
-				Tooltip:
-					'''
-					Летит некоторое время или при попадании во врага
-					Разворачивает лезвие, нанося многократный урон
-					Затем выпускает самонаводящиеся малые лезвия и возвращается
-					Скрытая атака: преследует ближайшую цель при развертывании
-					Выпускает больше и крупнее лезвий перед возвратом
-					'''
-			}
-
-			RunicSwirlblade: {
-				// DisplayName: Runic Swirlblade
-				/* Tooltip:
-					'''
-					Throw a sawblade that on hit or after some time stops in place, releasing a swarm of homing rune bolts before spinning
-					The sawblade deals damage in a large area when spinning and will return after some time
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: unfolds a rotating ring of rune bolts around the spin, firing runes in all directions on return
-					Attacks inflict [cebuff:CalamityEntropy/SoulDisorder] on hit
-					''' */
-			}
-
-			BlazingSwirlblade: {
-				// DisplayName: Blazing Swirlblade
-				/* Tooltip:
-					'''
-					Throw a sawblade that on hit or after some time stops in place, releasing a holy heatwave before spinning
-					The sawblade deals damage in a large area when spinning and will return after some time
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: a much larger and longer spin, spewing holy fire in 8 directions
-					Attacks inflict [cebuff:CalamityEntropy/HolyFlames] on hit
-					''' */
-			}
-
-			SawofMacrocosm: {
-				// DisplayName: Saw of Macrocosm
-				Tooltip:
-					'''
-					Летит некоторое время
-					Выпускает 4 малых кольцевых лезвия и разворачивает широкое лезвие
-					Малые лезвия тоже разворачивают лезвия
-					При возврате выпускают самонаводящийся Разрывной луч
-					Скрытая атака: малые лезвия отбрасываются дальше
-					Поглощает их Разрывные лучи и устремляется к ближайшей цели
-					'''
-			}
-
-			ExergySwirlblade: {
-				// DisplayName: Exergy Swirlblade
-				Tooltip:
-					'''
-					Летит некоторое время или при попадании по врагу, затем разворачивает многоударное лезвие, которое со временем уменьшается
-					Если развёрнуто от соприкосновения с врагом, кольцевое лезвие прилипает к этому врагу
-					При уменьшении лезвие выпускает малые самонаводящиеся лезвия, которые перестают наводиться после одного попадания
-					Скрытая атака увеличивает радиус и длительность развёртывания, а в конце выпускает большое самонаводящееся лезвие, постоянно преследующее цель
-					'''
-			}
-
-			Apeirokyklos: {
-				// DisplayName: Apeirokyklos
-				/* Tooltip:
-					'''
-					Deploys a multi-hit sawblade when flies for a while or hits an enemy 
-					Each hit of the sawblade summons an Abyss Spike from below to pierce the target
-					Charges while held; when full, your next attack becomes an ultimate
-					Ultimate: a much larger and longer spin; on hit, recoils to charge and re-enter, calling down a rain of spikes
-					''' */
-			}
-		}
-	}
 
 	PrisonOfPermafrost: {
 		DisplayName: Тюрьма Пермафроста
@@ -4626,8 +4341,8 @@ Items: {
 	}
 
 	TlipocasScythe: {
-		// DisplayName: Tlipocas Scythe
-		// Tooltip: ""
+		DisplayName: Серп Трипоки.
+		Tooltip: ""
 	}
 
 	CruiserLore: {
@@ -4676,153 +4391,280 @@ Items: {
 	}
 
 	AbyssalPiercer: {
-		// DisplayName: Abyssal Piercer
-		// Tooltip: ""
+		DisplayName: Пронзатель бездны
+		Tooltip: ""
 	}
 
 	AmethystFrisbee: {
-		// DisplayName: Amethyst Frisbee
-		// Tooltip: ""
+		DisplayName: Аметистовый фрисби
+		Tooltip: ""
 	}
 
 	Aquashard: {
-		// DisplayName: Aquashard
-		// Tooltip: ""
+		DisplayName: Акватический осколок
+		Tooltip: ""
 	}
 
 	ArbitratorII: {
-		// DisplayName: Arbitrator I I
-		// Tooltip: ""
+		DisplayName: Арбитр II
+		Tooltip: ""
 	}
 
 	AzafureAirReaper: {
-		// DisplayName: Azafure Air Reaper
-		// Tooltip: ""
+		DisplayName: Серп Асафора
+		Tooltip:
+			'''
+			Выбросил серп, попал и прилип к цели, причинив несколько повреждений.
+			Скрытая атака бросает серп, который продолжает преследовать цель после удара и резать ее взад и вперед.
+			'''
 	}
 
 	AzafureLightMachineGun: {
-		// DisplayName: Azafure Light Machine Gun
-		// Tooltip: ""
+		DisplayName: Легкие пулеметы & lt; & lt; Асафор & gt; & gt;
+		Tooltip:
+			'''
+			Лазер быстрого излучения
+			После попадания лазера вы получите небольшое количество скрытых значений.
+			Скрытая атака приведет к взрывающейся гранате, которая нанесет ущерб диапазону.
+			'''
 	}
 
 	AzafureSurgeRod: {
-		// DisplayName: Azafure Surge Rod
-		// Tooltip: ""
+		DisplayName: пайка Асафора
+		Tooltip:
+			'''
+			Попал в цель и через некоторое время ударил молнией по другим близлежащим целям.
+			Скрытые атаки выбрасывают больше метательных предметов, зависают в воздухе и отслеживают близлежащие цели.
+			'''
 	}
 
 	AzureOfFirmament: {
-		// DisplayName: Azure Of Firmament
-		// Tooltip: ""
+		DisplayName: Лазурь небесного свода
+		Tooltip: ""
 	}
 
 	CrystalSpike: {
-		// DisplayName: Crystal Spike
-		// Tooltip: ""
+		DisplayName: Магический шип
+		Tooltip:
+			'''
+			Выбросить и привязать к цели, одна цель больше всего прилипает к корню [S]
+			Скрытая атака отзовет все адгезивные шипы и выпустит кристаллическую бурю на курсор.
+			Игнорируйте броню 4.
+			'''
 	}
 
 	EmberSpike: {
-		// DisplayName: Ember Spike
-		// Tooltip: ""
+		DisplayName: Пепельный конус
+		Tooltip:
+			'''
+			Выбросьте пепельный конус, который отскакивает от предмета до двух раз.
+			Попав в монстра, он производит взрыв и врезается в него, и одна цель прилипает к корням максимум [S]
+			Подводная атака отзовет все липкие конусы пепла и выпустит пепельный шторм в положение курсора, который может отскочить на блок до 5 раз.
+			Подходящий удар создает отслеженные фрагменты плиты.
+			Игнорировать броню 8.
+			'''
 	}
 
 	LunarPlank: {
-		// DisplayName: Lunar Plank
-		// Tooltip: ""
+		DisplayName: Лунная плита
+		Tooltip: ""
 	}
 
 	MewMewBomb: {
-		// DisplayName: Mew Mew Bomb
-		// Tooltip: ""
+		DisplayName: Mew Mew Bomb
+		Tooltip:
+			'''
+			[c/FF69B4:Бросает бомбу, которая отскакивает от блоков]
+			[c/FF69B4:После попадания в цель она отскакивает в позицию, которая поражает максимальное количество целей, и взрывается крестом]
+			[c/FF69B4:Скрытые атаки увеличивают радиус взрыва]
+			'''
 	}
 
 	ProphecyFlyingKnife: {
-		// DisplayName: Prophecy Flying Knife
-		// Tooltip: ""
+		DisplayName: Пророчество летающего ножа
+		Tooltip:
+			'''
+			Выпускает несколько самонаводящихся метательных ножей.
+			Скрытая атака призывает 6 вращающихся рунических сфер, которые атакуют врагов через короткое время.
+			'''
 	}
 
 	Revelation: {
-		// DisplayName: Revelation
-		// Tooltip: ""
+		DisplayName: Откровение
+		Tooltip:
+			'''
+			Бросает вращающуюся косу, которая быстро замедляется в воздухе,
+			затем взрывается и выпускает два самонаводящихся Луча Откровения перед возвратом к игроку
+			При возврате она наносит урон повторно при попадании по врагу
+			Скрытая атака бросает три косы, которые наводятся на ближайшего врага;
+			при попадании они сливаются в гигантскую косу, которая многократно бьёт этого врага
+			Каждый удар гигантской косы создаёт крупный взрыв
+			'''
 	}
 
 	ScorchingChakram: {
-		// DisplayName: Scorching Chakram
-		// Tooltip: ""
+		DisplayName: Зажженный клинок
+		Tooltip:
+			'''
+			Выбросить горящее лезвие и взорвать его в отслеженные фрагменты плиты через некоторое время после полета
+			Скрытая атака может заставить клинок выстрелить огненным шаром после остановки, а затем преследовать ближайшую цель и взорваться на большее количество осколков
+			'''
 	}
 
 	ShadewindLance: {
-		// DisplayName: Shadewind Lance
-		// Tooltip: ""
+		DisplayName: Копьё теневого ветра
+		Tooltip:
+			'''
+			Бросает копье, содержащее пустоту
+			Скрытые атаки наносят больший урон и могут проникать бесконечно
+			'''
 	}
 
 	Silence: {
-		// DisplayName: Silence
-		// Tooltip: ""
+		DisplayName: Тишина
+		Tooltip:
+			'''
+			[c/9387ff:Бросьте диск]
+			[c/9387ff:После попадания во врага через некоторое время он использует цепь пустоты, чтобы притянуть вас к этому врагу, ]
+			[c/9387ff:и взорвётся при контакте с ним]
+			[c/9387ff:Скрытые атаки заставляют диск закрепиться на поражённом враге и развернуть обширный вихрь, ]
+			[c/9387ff:который наносит постоянный урон целям в радиусе его действия]
+			'''
 	}
 
 	SpearOfRadiance: {
-		// DisplayName: Spear Of Radiance
-		// Tooltip: ""
+		DisplayName: Копьё сияния
+		Tooltip: ""
 	}
 
 	Apeirokyklos: {
 		// DisplayName: Apeirokyklos
-		// Tooltip: ""
+		/* Tooltip:
+			'''
+			Deploys a multi-hit sawblade when flies for a while or hits an enemy 
+			Each hit of the sawblade summons an Abyss Spike from below to pierce the target
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: a much larger and longer spin; on hit, recoils to charge and re-enter, calling down a rain of spikes
+			''' */
 	}
 
 	AzafureSwirlblade: {
-		// DisplayName: Azafure Swirlblade
-		// Tooltip: ""
+		DisplayName: Azafure Swirlblade
+		Tooltip:
+			'''
+			Летит некоторое время или при попадании во врага
+			Разворачивает лезвие, нанося многократный урон
+			При развертывании выпускает две самонаводящиеся ракеты
+			Скрытая атака выпускает 8 ракет при развертывании
+			И бросает лезвие в ближайшую цель при возврате
+			'''
 	}
 
 	BlazingSwirlblade: {
 		// DisplayName: Blazing Swirlblade
-		// Tooltip: ""
+		/* Tooltip:
+			'''
+			Throw a sawblade that on hit or after some time stops in place, releasing a holy heatwave before spinning
+			The sawblade deals damage in a large area when spinning and will return after some time
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: a much larger and longer spin, spewing holy fire in 8 directions
+			Attacks inflict [cebuff:CalamityEntropy/HolyFlames] on hit
+			''' */
 	}
 
 	BrillianceSwirlblade: {
 		// DisplayName: Brilliance Swirlblade
-		// Tooltip: ""
+		/* Tooltip:
+			'''
+			Throw a sawblade that on hit or after some time stops in place and starts spinning
+			The sawblade deals damage in a large area when spinning and will return after some time
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: a much larger spin that lasts longer
+			''' */
 	}
 
 	ExergySwirlblade: {
 		// DisplayName: Exergy Swirlblade
-		// Tooltip: ""
+		Tooltip:
+			'''
+			Летит некоторое время или при попадании по врагу, затем разворачивает многоударное лезвие, которое со временем уменьшается
+			Если развёрнуто от соприкосновения с врагом, кольцевое лезвие прилипает к этому врагу
+			При уменьшении лезвие выпускает малые самонаводящиеся лезвия, которые перестают наводиться после одного попадания
+			Скрытая атака увеличивает радиус и длительность развёртывания, а в конце выпускает большое самонаводящееся лезвие, постоянно преследующее цель
+			'''
 	}
 
 	FlamingSwirlblade: {
-		// DisplayName: Flaming Swirlblade
-		// Tooltip: ""
+		DisplayName: Flaming Swirlblade
+		Tooltip:
+			'''
+			Летит некоторое время или при попадании во врага
+			Разворачивает лезвие, нанося многократный урон
+			При развертывании выпускает самонаводящееся пламя
+			Скрытая атака увеличивает радиус и длительность
+			И выпускает 8 языков пламени
+			'''
 	}
 
 	GlacierSwirlblade: {
 		// DisplayName: Glacier Swirlblade
-		// Tooltip: ""
+		Tooltip:
+			'''
+			Летит некоторое время или при попадании во врага
+			Разворачивает лезвие, нанося многократный урон
+			Затем выпускает самонаводящиеся малые лезвия и возвращается
+			Скрытая атака: преследует ближайшую цель при развертывании
+			Выпускает больше и крупнее лезвий перед возвратом
+			'''
 	}
 
 	RunicSwirlblade: {
 		// DisplayName: Runic Swirlblade
-		// Tooltip: ""
+		/* Tooltip:
+			'''
+			Throw a sawblade that on hit or after some time stops in place, releasing a swarm of homing rune bolts before spinning
+			The sawblade deals damage in a large area when spinning and will return after some time
+			Charges while held; when full, your next attack becomes an ultimate
+			Ultimate: unfolds a rotating ring of rune bolts around the spin, firing runes in all directions on return
+			Attacks inflict [cebuff:CalamityEntropy/SoulDisorder] on hit
+			''' */
 	}
 
 	SawofMacrocosm: {
-		// DisplayName: Sawof Macrocosm
-		// Tooltip: ""
+		// DisplayName: Saw of Macrocosm
+		Tooltip:
+			'''
+			Летит некоторое время
+			Выпускает 4 малых кольцевых лезвия и разворачивает широкое лезвие
+			Малые лезвия тоже разворачивают лезвия
+			При возврате выпускают самонаводящийся Разрывной луч
+			Скрытая атака: малые лезвия отбрасываются дальше
+			Поглощает их Разрывные лучи и устремляется к ближайшей цели
+			'''
 	}
 
 	TheBeginingAndTheEnd: {
-		// DisplayName: The Begining And The End
-		// Tooltip: ""
+		DisplayName: Начало и Конец
+		Tooltip:
+			'''
+			Переключите Начало и Конец с помощью левой или правой кнопки
+			Конец применит дебафф Взгляд Бездны
+			Начало применит дебафф Отпечаток Затмения
+			При попадании другого типа ножа снимайте дебафф и генерируйте Душу Эхо или Душу Затмения в зависимости от количества слоев дебаффа
+			Душа Эхо продолжит атаковать вражеских монстров и исчезнет через несколько секунд.
+			Душа Затмения полетит к вам и исцелит вас, временно увеличивая скорость атаки, урон от атаки и шанс крита.
+			Скрытая атака одновременно бросит два ножа и будет отслеживать цель, высвобождая большое количество двух типов душ при ударе
+			'''
 	}
 
 	TheDeadCut: {
-		// DisplayName: The Dead Cut
-		// Tooltip: ""
+		Tooltip: Восстанавливает немного скрытности после удара
+		DisplayName: Мёртвая доля
 	}
 
 	Voidseeker: {
-		// DisplayName: Voidseeker
-		// Tooltip: ""
+		DisplayName: Искатель пустоты
+		Tooltip: Скрытый удар телепортирует вас к курсору и нанесет значительный урон.
 	}
 }
 
@@ -7062,6 +6904,7 @@ DamageReduceCD: Охлаждение от повреждений
 Donor: Донор:
 Owner: Владелец:
 ShadowDashCD: Теневое внезапное охлаждение
+ShadeCloakDashCD: Shadow Dash Cooldown
 RPDonorName: Холодный уровень
 Acropolis: Атакующие машины Asaffoler, которые использовались в крупномасштабных войнах
 OblivionThretherCooldown: Внезапное охлаждение винтовой пилы

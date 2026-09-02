@@ -1,4 +1,3 @@
-using CalamityEntropy.Content.Items.Armor.Marivinium;
 using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.ID;
@@ -9,9 +8,9 @@ namespace CalamityEntropy.Content.Items.Accessories
     [AutoloadEquip(EquipType.Shield)]
     public class OdinsRefuge : ModItem
     {
-        // 2026-08-31 平衡案重做:18防,免疫大多数减益和击退,免疫火块,
+        // 2026-08-31 平衡案重做:18防,免疫击退,免疫火块,
         // 拥有神圣屏障格挡,给自己与所有队友15%免伤(不叠加),+600仇恨。
-        // 原盾冲/圣佑窗口/恐慌项链切换均退役。
+        // 减益免疫与原版十字章护身符同一组,不含渊洋神迹那张额外表。
         public const float TeamWardDR = 0.15f;
 
         public override void SetDefaults()
@@ -33,18 +32,29 @@ namespace CalamityEntropy.Content.Items.Accessories
             player.Entropy().odinAura = true;
             player.noKnockback = true;
             player.fireWalk = true;
-            player.buffImmune[BuffID.OnFire] = true;
-            player.buffImmune[BuffID.OnFire3] = true;
-            // 免疫大多数减益(与渊洋神迹共用免疫表)
-            MariviniumHelmet.ApplyBuffImmune(player);
+            ApplyAnkhCharmImmune(player);
             player.aggro += 600;
+        }
+
+        /// <summary>与原版十字章护身符(ItemID.AnkhCharm, Player.cs type 1612)同一组减益。</summary>
+        public static void ApplyAnkhCharmImmune(Player player)
+        {
+            player.buffImmune[BuffID.Weak] = true;
+            player.buffImmune[BuffID.BrokenArmor] = true;
+            player.buffImmune[BuffID.Bleeding] = true;
+            player.buffImmune[BuffID.Poisoned] = true;
+            player.buffImmune[BuffID.Slow] = true;
+            player.buffImmune[BuffID.Confused] = true;
+            player.buffImmune[BuffID.Silenced] = true;
+            player.buffImmune[BuffID.Cursed] = true;
+            player.buffImmune[BuffID.Darkness] = true;
+            player.buffImmune[BuffID.Stoned] = true;
         }
 
         public override void AddRecipes()
         {
-            // "十字章护盾"按最接近的原版物品裁定为十字章项链
             CreateRecipe().
-                AddIngredient(ItemID.CrossNecklace, 1).
+                AddIngredient(ItemID.AnkhShield, 1).
                 AddIngredient(ItemID.HeroShield, 1).
                 AddIngredient(ModContent.ItemType<HolyMantle>(), 1).
                 AddIngredient(ModContent.ItemType<ChaoticPiece>(), 15).

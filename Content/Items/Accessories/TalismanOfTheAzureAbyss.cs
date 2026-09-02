@@ -18,7 +18,7 @@ namespace CalamityEntropy.Content.Items.Accessories
     {
         // 2026-08-31 平衡案重做:增加玩家无敌帧;武器命中目标时不断召唤追踪的深渊漩涡
         // (0.5秒内置节流);受击时召唤3个漩涡,5秒效果冷却。水下机动风味保留。
-        public const int VortexBaseDamage = 1200;
+        public const int VortexBaseDamage = 50;
 
         public override void SetDefaults()
         {
@@ -34,6 +34,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             player.Entropy().accAzureAbyss = true;
             // 增加无敌帧(与十字章项链同源)
             player.longInvince = true;
+            ApplyBuffImmune(player);
         }
 
         public static void ApplyBuffImmune(Player player)

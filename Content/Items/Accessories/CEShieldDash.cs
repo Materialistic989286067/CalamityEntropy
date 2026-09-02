@@ -46,8 +46,8 @@ namespace CalamityEntropy.Content.Items.Accessories
 
     /// <summary>
     /// 盾冲刺驱动器（自研，承接灾厄 ModDashMovement 的本模组使用面）。
-    /// 饰品每帧在 UpdateAccessory 里设置 ActiveDash；驱动器负责双击/冲刺键触发、
-    /// 冲刺移动衰减、冲撞判定与冷却（复用原版 Player.dashDelay 语义：-1 冲刺中、>0 冷却中）。
+    /// 饰品每帧在 UpdateAccessory 里设置 ActiveDash；驱动器负责冲刺键或双击触发、
+    /// 冲刺移动衰减、冲撞判定与冷却。冲刺中状态自管，不借用原版 dashDelay。
     /// </summary>
     public class CEShieldDashPlayer : ModPlayer
     {
@@ -114,7 +114,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             }
 
             // 暗影披风排他:装备期间不允许盾冲刺(2026-08-31 平衡案)
-            if (slamCooldown == 0 && !Player.mount.Active && !Player.Entropy().shadeDashExclusive && TryGetDashDirection(out int direction))
+            if (slamCooldown == 0 && !Player.mount.Active && !Player.Entropy().shadeDashExclusive && TryGetHorizontalDashDirection(Player, out int direction))
                 StartDash(direction);
         }
 
@@ -195,33 +195,31 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
 
         /// <summary>
-        /// 触发检测：绑定了冲刺键则只认冲刺键（方向取按键/移动/朝向），
-        /// 否则走原版双击方向键（与 EPlayerDash 相同的 doubleTapCardinalTimer 判定）。
+        /// 水平冲刺触发：冲刺键或双击方向键任一即可(与 EModPlayer 注释一致,不再互斥)。
+        /// 暗影披风与盾冲刺共用。
         /// </summary>
-        private bool TryGetDashDirection(out int direction)
+        public static bool TryGetHorizontalDashDirection(Player player, out int direction)
         {
             direction = 0;
             var keys = EModPlayer.DashHotkey?.GetAssignedKeys();
             bool hotkeyBound = keys != null && keys.Count > 0;
-            if (hotkeyBound)
+            if (hotkeyBound && EModPlayer.DashHotkey.JustPressed)
             {
-                if (!EModPlayer.DashHotkey.JustPressed)
-                    return false;
-                if (Player.controlRight && !Player.controlLeft)
+                if (player.controlRight && !player.controlLeft)
                     direction = 1;
-                else if (Player.controlLeft && !Player.controlRight)
+                else if (player.controlLeft && !player.controlRight)
                     direction = -1;
                 else
-                    direction = MathF.Abs(Player.velocity.X) <= 0.01f ? Player.direction : Math.Sign(Player.velocity.X);
+                    direction = MathF.Abs(player.velocity.X) <= 0.01f ? player.direction : Math.Sign(player.velocity.X);
                 return true;
             }
 
-            if (Player.controlRight && Player.releaseRight && Player.doubleTapCardinalTimer[2] < 15)
+            if (player.controlRight && player.releaseRight && player.doubleTapCardinalTimer[2] < 15)
             {
                 direction = 1;
                 return true;
             }
-            if (Player.controlLeft && Player.releaseLeft && Player.doubleTapCardinalTimer[3] < 15)
+            if (player.controlLeft && player.releaseLeft && player.doubleTapCardinalTimer[3] < 15)
             {
                 direction = -1;
                 return true;

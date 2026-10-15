@@ -7,7 +7,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
-    /// <summary>形状弹在龙头穿过平面那拍放,节拍钉在角速度上</summary>
+    /// <summary>小白龙绕本体的椭圆围栏,玩家关在圈里躲形状弹;形状弹在龙头每走半圈(到达椭圆左右端点)那拍放,节拍钉在角速度上</summary>
     [VaultState((int)VDStateIndex.BlueSky, typeof(VDStateContext))]
     public class VDBlueSkyState : VDStateBase
     {
@@ -23,7 +23,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             base.OnEnter(ctx);
             bursts = 0;
             if (IsServer) {
-                //龙的起始角与状态同一颗骰子:形状弹要在龙头穿过平面那一帧释放,两边都得算得出 θ
+                //龙的起始角与状态同一颗骰子:形状弹要在龙头到达端点那一帧释放,两边都得算得出 θ
                 ctx.RolledAngles[0] = Main.rand.NextFloat(MathHelper.TwoPi);
                 MarkNetUpdate(ctx);
             }
@@ -52,7 +52,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             }
             int burstEnd = VDDirector.SkyBurstStart + VDDirector.SkyBurstDuration;
             if (Timer >= VDDirector.SkyBurstStart && Timer < burstEnd) {
-                //龙头穿过平面(sinθ 变号)那一帧放形状弹
+                //龙头越过左右端点(sinθ 变号)那一帧放形状弹
                 int prevHalf = (int)Math.Floor(WyvernAngle(ctx, Timer - 1) / MathHelper.Pi);
                 int curHalf = (int)Math.Floor(WyvernAngle(ctx, Timer) / MathHelper.Pi);
                 if (curHalf != prevHalf) {
@@ -74,7 +74,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             return null;
         }
 
-        /// <summary>形状序列:三角 → 圆 → 方 → 圆 → 五角星 → 圆。60 发按周长布点,速度与半径向量成比例,外扩时形状不变</summary>
+        /// <summary>形状序列:三角 → 圆 → 方 → 圆 → 五角星 → 圆。按周长均匀布点,速度与半径向量成比例,外扩时形状不变</summary>
         private static void FireShapeBurst(VDStateContext ctx, int shapeIndex, int burstIndex) {
             ctx.WingPulse = Math.Max(ctx.WingPulse, 0.7f);
             ctx.CoreGlow = 1f;

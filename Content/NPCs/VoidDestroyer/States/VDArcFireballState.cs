@@ -6,7 +6,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
-    /// <summary>中弹平面直射,两侧抛入深处,只在穿平面那几帧有判定</summary>
+    /// <summary>每轮中弹直射玩家,两侧弧弹朝出手那一刻的锁定点包抄;P2 起再加一对外弧。站着不动被夹,横移就让开</summary>
     [VaultState((int)VDStateIndex.ArcFireball, typeof(VDStateContext))]
     public class VDArcFireballState : VDStateBase
     {
@@ -57,7 +57,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 case Beat.Fire: {
                         DeclareHoverTo(ctx, dest, VDDirector.ArcHoldSpeed, VDDirector.ArcHoldAccel, VDDirector.ArcHoldSlow);
                         //第 k 轮在 Timer = 1 + Interval*k 出手,前 6 帧核心再亮一次
-                        int fireAt = 1 + VDDirector.ArcVolleyInterval * volleys;
+                        int fireAt = 1 + VDDirector.ArcVolleyInterval(ctx.Phase) * volleys;
                         int untilFire = fireAt - Timer;
                         if (untilFire > 0 && untilFire <= 6) {
                             ctx.CoreGlow = Math.Max(ctx.CoreGlow, 1f - untilFire / 6f);
@@ -83,16 +83,18 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             return null;
         }
 
-        /// <summary>一轮:中弹平面直射;两侧四发沿抛物线抛入深处(顶点 ArcBoomerangApex),回程收敛到锁定点(玩家出手时的位置)</summary>
+        private static readonly float[] SideDegs = { -VDDirector.ArcOuterDeg, -VDDirector.ArcInnerDeg, VDDirector.ArcInnerDeg, VDDirector.ArcOuterDeg };
+        private static readonly float[] SideDegsWide = { -VDDirector.ArcWideDeg, -VDDirector.ArcOuterDeg, -VDDirector.ArcInnerDeg, VDDirector.ArcInnerDeg, VDDirector.ArcOuterDeg, VDDirector.ArcWideDeg };
+
+        /// <summary>一轮:中弹直射;两侧弧弹斜着射出,再按限速转向朝锁定点(出手时的玩家位置)收拢</summary>
         private static void FireVolley(VDStateContext ctx) {
             Vector2 core = ctx.Owner.CorePos;
             Vector2 dir = (ctx.Target.Center - core).SafeNormalize(Vector2.UnitY);
             Vector2 lockPos = ctx.Target.Center;
             MuzzleCue(ctx, dir, 3f, "CruiserSpit", 0.9f);
             Shoot<VDVoidBolt>(ctx, core, dir * VDDirector.ArcBoltSpeed, VDDirector.DmgVoidBolt, VDVoidBolt.ModeStraight);
-            (float zVel, float zAccel) = VDDepth.Parabola(VDDirector.ArcBoomerangApex, VDDirector.ArcBoomerangFrames);
-            foreach (float deg in new[] { -VDDirector.ArcOuterDeg, -VDDirector.ArcInnerDeg, VDDirector.ArcInnerDeg, VDDirector.ArcOuterDeg }) {
-                ShootDepth<VDVoidBolt>(ctx, core, dir.RotatedBy(MathHelper.ToRadians(deg)) * VDDirector.ArcBoltSpeed, VDDirector.DmgVoidBolt, 0f, zVel, zAccel, VDVoidBolt.ModeZBoomerang, lockPos.X, lockPos.Y);
+            foreach (float deg in ctx.Phase >= 2 ? SideDegsWide : SideDegs) {
+                Shoot<VDVoidBolt>(ctx, core, dir.RotatedBy(MathHelper.ToRadians(deg)) * VDDirector.ArcBoltSpeed, VDDirector.DmgVoidBolt, VDVoidBolt.ModeArcWrap, lockPos.X, lockPos.Y);
             }
         }
 

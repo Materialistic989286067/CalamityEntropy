@@ -20,7 +20,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             DeclareHoldRelative(ctx, VDDirector.ReinforceHoverOffset, VDDirector.ReinforceHoldStiffness, VDDirector.ReinforceHoldLerp, VDDirector.ReinforceHoldMaxSpeed);
             ctx.CoreGlow = Math.Max(ctx.CoreGlow, MathHelper.Clamp(Timer / (float)VDDirector.ReinforceSpawnFrame, 0f, 1f));
             ctx.RimCharge = MathHelper.Clamp(Timer / (float)VDDirector.ReinforceSpawnFrame, 0f, 1f);
-            //开门 + 放舱(14 帧),舱坠落 30 帧到门上(44 帧):门在地上亮着、舱在背景里越来越大,两样都是预告
+            //开门 + 放舱(14 帧),舱从门正上方坠落 30 帧到门上(44 帧):门与落点环在地上亮着,舱拖着尾焰砸下来
             if (Timer == VDDirector.ReinforcePortalFrame) {
                 VDVfx.Sound("VoidAnticipation", 0.9f, ctx.Target.Center, 3, 0.8f);
                 ctx.WingPulse = Math.Max(ctx.WingPulse, 0.7f);
@@ -45,21 +45,21 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             return null;
         }
 
-        /// <summary>服务端掷落点、开门、放舱:RolledPoints[i] 为第 i 个落点,RandCount 为数量;舱的 Z 速度按坠落帧数配好,落地帧 = 开门帧 + 30</summary>
+        /// <summary>服务端掷落点、开门、放舱:RolledPoints[i] 为第 i 个落点,RandCount 为数量;舱生成在落点正上方,ai[2] 带落点 y,落地帧 = 开门帧 + 30</summary>
         private static void RollDropPoints(VDStateContext ctx) {
             int type = ModContent.NPCType<VoidVanguardCultist>();
             int alive = NPC.CountNPCS(type);
             int count = Math.Clamp(Math.Min(VDDirector.ReinforceCount(), VDDirector.MaxVanguards - alive), 0, ctx.RolledPoints.Length);
             ctx.RandCount = count;
             int portalLife = VDDirector.ReinforcePortalLife + (VDDirector.ReinforceSpawnFrame - VDDirector.ReinforcePortalFrame);
-            float zVel = -VDDirector.ReinforcePodDepth / VDDirector.ReinforcePodFrames;
             for (int i = 0; i < count; i++) {
                 float xOff = Main.rand.NextFloat(-VDDirector.ReinforceSpreadX, VDDirector.ReinforceSpreadX);
                 Vector2 spawn = VDVfx.FindGround(ctx.Target.Center + new Vector2(xOff, 0f), ctx.Target.Bottom.Y);
                 ctx.RolledPoints[i] = spawn;
                 SpawnVisual<VDPortal>(ctx, spawn + new Vector2(0, -44f), Vector2.UnitX, VDPortal.ModeReinforce, portalLife);
-                //舱的平面坐标就是落点(略抬高让教徒落在地面上而不是嵌进去),从 Z 2.5 只沿 Z 坠落
-                ShootDepth<VDDropPod>(ctx, spawn + new Vector2(0, -30f), Vector2.Zero, VDDirector.DmgDropPod, VDDirector.ReinforcePodDepth, zVel, 0f, ctx.Npc.target, ctx.Npc.whoAmI);
+                //落点略抬高,教徒落在地面上而不是嵌进去
+                Vector2 landing = spawn + new Vector2(0, -30f);
+                Shoot<VDDropPod>(ctx, landing - new Vector2(0f, VDDirector.ReinforcePodFallHeight), Vector2.Zero, VDDirector.DmgDropPod, ctx.Npc.target, ctx.Npc.whoAmI, landing.Y);
             }
         }
     }

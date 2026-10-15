@@ -13,16 +13,14 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 {
     /// <summary>
     /// 3 秒引信,半径 ai[1],伤害在 VDNukeExplosion,本体不撞人;ai[0] 目标玩家
-    /// 带深度时抛物线抛到 Z 4 再落回,落地帧就是引信走完
-    /// 范围圈画在平面标记层,读的是炸点不是当前位置
+    /// 爆炸范围圈跟着弹体画在标记层(平面上、物块之后),最后一秒闪烁
     /// </summary>
     public class VDVoidNuke : VDDepthProjectile
     {
         public const int FuseTime = 180;
-        public const float DefaultRadius = 50f * 16f;
         public static readonly Color GlowColor = new Color(200, 70, 255);
 
-        public float Radius => Projectile.ai[1] > 0 ? Projectile.ai[1] : DefaultRadius;
+        public float Radius => Projectile.ai[1] > 0 ? Projectile.ai[1] : VDDirector.NukeRadius;
         public override int DefaultTimeLeft => FuseTime;
         /// <summary>范围圈自己画,不用基类的收缩小环;但要走标记层(平面上、物块之后)所以恒为真</summary>
         public override bool WantsMarker => true;
@@ -43,13 +41,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 Projectile.velocity = (cur + turn).ToRotationVector2() * Math.Max(Projectile.velocity.Length(), 6f);
             }
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            //引信末段深度钉回平面:抛物线的积分误差不许让它在爆炸那一帧还悬在带外
-            if (HasDepth && Projectile.timeLeft <= 2) {
-                Z = 0f;
-                ZVel = 0f;
-                ZAccel = 0f;
-            }
-            Lighting.AddLight(Projectile.Center, GlowColor.ToVector3() * 0.6f * (HasDepth ? VDDepth.Scale(Math.Max(Z, 0f)) : 1f));
+            Lighting.AddLight(Projectile.Center, GlowColor.ToVector3() * 0.6f);
 
             if (Main.dedServ) {
                 return;
@@ -57,10 +49,6 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             //最后 60 帧闪烁加快,并给一声警报
             if (Projectile.timeLeft == 60 || Projectile.timeLeft == 30 || Projectile.timeLeft == 12) {
                 CEUtils.PlaySound("VoidAnticipation", 1.4f, Projectile.Center, 4, 0.7f);
-            }
-            //尾烟只在平面附近放(粒子系统不分层;在背景里它就是一颗安静的星)
-            if (HasDepth && Z > 0.4f) {
-                return;
             }
             Vector2 back = -Projectile.velocity.SafeNormalize(Vector2.UnitY);
             Dust d = Dust.NewDustPerfect(Projectile.Center + back * 24f, DustID.Smoke, back * Main.rand.NextFloat(1f, 2f), 140, default, Main.rand.NextFloat(1.2f, 1.8f));
@@ -98,39 +86,24 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Texture2D ring = CEUtils.getExtraTex("BloomRing");
             float ringAlpha = 0.35f + 0.45f * blink;
             spriteBatch.Draw(ring, drawPos, null, new Color(230, 150, 255) * ringAlpha, 0f, ring.Size() / 2f, radius * 2f / 140f, SpriteEffects.None, 0f);
-            //落点心:弹体在深处时平面上留一枚小光点,告诉你它会落回这里
-            if (HasDepth && Z > 0.3f) {
-                Texture2D glow = CEUtils.getExtraTex("Glow");
-                spriteBatch.Draw(glow, drawPos, null, GlowColor * (0.4f + 0.4f * blink), 0f, glow.Size() / 2f, 0.22f, SpriteEffects.None, 0f);
-                //从落点到弹体投影位置的细线:它就是从这里抛上去的
-                CEUtils.drawLine(Projectile.Center, ProjectedCenter, GlowColor * 0.25f, 1.5f, 1);
-            }
             CEUtils.ReSetToEndShader();
         }
 
         protected override void DrawDepth(SpriteBatch spriteBatch) {
             Texture2D tex = TextureAssets.Projectile[Type].Value;
-            Vector2 drawPos = ProjectedCenter - Main.screenPosition;
+            Vector2 drawPos = Projectile.Center - Main.screenPosition;
             float blink = Blink();
-            float scale = DrawScale;
-            float depthAlpha = VDDepth.Alpha(Z);
+            float scale = Projectile.scale * 1.3f;
             Texture2D glow = CEUtils.getExtraTex("Glow");
 
             spriteBatch.UseAdditive();
-            //弹体光:平面附近是引信在闪,深处是一颗星
-            spriteBatch.Draw(glow, drawPos, null, VDDepth.Fog(GlowColor, Z) * ((0.5f + 0.5f * blink) * depthAlpha), 0f, glow.Size() / 2f, (0.3f + 0.1f * blink) * Math.Max(scale, 0.45f), SpriteEffects.None, 0f);
-            if (HasDepth && Z > 1f) {
-                spriteBatch.Draw(glow, drawPos, null, Color.White * (0.6f * depthAlpha), 0f, glow.Size() / 2f, 0.1f, SpriteEffects.None, 0f);
-            }
+            //弹体光:引信在闪,越到最后闪得越快
+            spriteBatch.Draw(glow, drawPos, null, GlowColor * (0.5f + 0.5f * blink), 0f, glow.Size() / 2f, (0.34f + 0.12f * blink) * scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(glow, drawPos, null, Color.White * (0.3f + 0.4f * blink), 0f, glow.Size() / 2f, 0.1f * scale, SpriteEffects.None, 0f);
             CEUtils.ReSetToEndShader();
 
-            Color body = Color.White;
-            if (HasDepth) {
-                VDDepthDraw.Draw(tex, drawPos, null, body, 1f, Projectile.rotation, tex.Size() / 2f, scale, SpriteEffects.None, Z);
-            }
-            else {
-                spriteBatch.Draw(tex, drawPos, null, body, Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0f);
-            }
+            spriteBatch.Draw(tex, drawPos, null, VDVoidBolt.RimDark * 0.8f, Projectile.rotation, tex.Size() / 2f, scale * 1.15f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(tex, drawPos, null, Color.White, Projectile.rotation, tex.Size() / 2f, scale, SpriteEffects.None, 0f);
         }
     }
 

@@ -172,6 +172,43 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             }
         }
 
+        /// <summary>
+        /// 冲刺航道预告(所有冲刺与横冲的公平阀):一条软光带 + 两侧细边 + 中线 + 沿航向流动的箭标;strength 0..1 随前摇爬升,末段闪烁。
+        /// 只能加法画;<paramref name="ownBatch"/> 为假时调用方已开加法批次
+        /// </summary>
+        public static void DrawLane(Vector2 start, Vector2 dir, float length, float width, Color color, float strength, bool ownBatch = true) {
+            if (Main.dedServ || strength <= 0.01f || length <= 1f) {
+                return;
+            }
+            dir = dir.SafeNormalize(Vector2.UnitX);
+            Vector2 end = start + dir * length;
+            Vector2 normal = dir.RotatedBy(MathHelper.PiOver2);
+            Vector2 side = normal * (width * 0.5f);
+            float flicker = strength > 0.85f ? 0.65f + 0.35f * MathF.Sin(Main.GlobalTimeWrappedHourly * 48f) : 1f;
+            Color c = color * flicker;
+            if (ownBatch) {
+                Main.spriteBatch.UseAdditive();
+            }
+            CEUtils.drawLineBetter(start, end, c * (0.08f + 0.16f * strength), width);
+            CEUtils.drawLine(start + side, end + side, c * (0.3f + 0.5f * strength), 2f);
+            CEUtils.drawLine(start - side, end - side, c * (0.3f + 0.5f * strength), 2f);
+            CEUtils.drawLine(start, end, Color.White * ((0.15f + 0.35f * strength) * flicker), 1.5f);
+            //箭标间距 120px,流速随强度加快,两端 160px 内渐隐
+            const float spacing = 120f;
+            float scroll = Main.GlobalTimeWrappedHourly * (120f + 360f * strength) % spacing;
+            Vector2 back = -dir * (width * 0.22f);
+            Vector2 wing = normal * (width * 0.22f);
+            for (float d = scroll; d < length; d += spacing) {
+                Vector2 tip = start + dir * d;
+                float a = MathHelper.Clamp(Math.Min(d, length - d) / 160f, 0f, 1f) * (0.25f + 0.6f * strength);
+                CEUtils.drawLine(tip + back + wing, tip, c * a, 2.5f);
+                CEUtils.drawLine(tip + back - wing, tip, c * a, 2.5f);
+            }
+            if (ownBatch) {
+                CEUtils.ReSetToEndShader();
+            }
+        }
+
         /// <summary>一次性震屏(带距离衰减)</summary>
         public static void Shake(Vector2 center, float strength, float maxDist = 4000f) {
             if (Main.dedServ) {

@@ -4,110 +4,135 @@ using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
-using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 {
     /// <summary>
-    /// 环弹的平面坐标固定,只沿 Z 逼近,到达那几帧才有判定
-    /// ai[0] 角度,ai[1] 序号,0 号画整环,ai[2] 半径;整环同一 Z
+    /// 收缩环门的一环:以 Center 为心、带一个缺口的连续能量环。先在起始半径停 GatePreviewFrames 帧亮出缺口(无判定),
+    /// 再匀速收到 GateEndRadius 消散。ai[0] 缺口中心角,ai[1] 起始半径。
+    /// 判定与绘制共用同一组几何(半径、环带半宽、缺口半角):画出来的缺口就是安全口
     /// </summary>
-    public class VDGateBolt : VDDepthProjectile
+    public class VDGateBolt : VDHostileProjectile
     {
-        public override string Texture => "CalamityEntropy/Content/Projectiles/VoidDestroyer/VDVoidBolt";
+        public override string Texture => "CalamityEntropy/Assets/Extra/Empty";
         public override int DebuffType => ModContent.BuffType<VoidFire>();
-        public override int DefaultTimeLeft => 200;
+        public override int DefaultTimeLeft => VDDirector.GatePreviewFrames + VDDirector.GateCloseFrames;
 
-        public float Angle => Projectile.ai[0];
-        public int Index => (int)Projectile.ai[1];
-        public float Radius => Projectile.ai[2];
-        /// <summary>环心(平面坐标)</summary>
-        public Vector2 RingCenter => Projectile.Center - Angle.ToRotationVector2() * Radius;
+        public static readonly Color RingColor = new Color(170, 110, 255);
 
-        public override float MarkerRadius => 22f;
-        /// <summary>整环的脚印由 0 号成员画,其余成员不画各自的小标记(14 个小环叠在一起是噪声)</summary>
-        public override bool WantsMarker => Index == 0 && base.WantsMarker;
-        protected override float WhooshStrength => 0.25f;
+        public float GapAngle => Projectile.ai[0];
+        public float StartRadius => Projectile.ai[1] > 0f ? Projectile.ai[1] : VDDirector.GateStartRadius;
+        public int Age => (int)Projectile.localAI[1];
+        public bool Closing => Age > VDDirector.GatePreviewFrames;
+        private static float GapHalf => MathHelper.ToRadians(VDDirector.GateGapHalfDeg);
+
+        /// <summary>当前半径:预告期停在起始半径,之后匀速收拢</summary>
+        public float Radius {
+            get {
+                float t = MathHelper.Clamp((Age - VDDirector.GatePreviewFrames) / (float)VDDirector.GateCloseFrames, 0f, 1f);
+                return MathHelper.Lerp(StartRadius, VDDirector.GateEndRadius, t);
+            }
+        }
+
+        public override void SetStaticDefaults() {
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 1600;
+        }
 
         public override void SetExtraDefaults() {
-            Projectile.width = 22;
-            Projectile.height = 22;
+            Projectile.width = 20;
+            Projectile.height = 20;
         }
 
-        protected override void DepthAI() {
-            Projectile.velocity = Vector2.Zero;
-            //环上的弹切向朝向
-            Projectile.rotation = Angle + MathHelper.PiOver2 + MathHelper.PiOver2;
-            if (Math.Abs(Z) < 0.5f) {
-                Lighting.AddLight(Projectile.Center, VDVoidBolt.GlowColor.ToVector3() * 0.4f);
-            }
-            if (OutOfSight) {
-                Projectile.Kill();
-            }
-        }
+        public override bool ShouldUpdatePosition() => false;
 
-        public override void OnKill(int timeLeft) {
-            if (Main.dedServ || Math.Abs(Z) > 0.5f) {
-                return;
-            }
-            for (int i = 0; i < 4; i++) {
-                Vector2 v = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(2f, 5f);
-                VDVfx.Spark(Projectile.Center, v, VDVoidBolt.GlowColor, Main.rand.NextFloat(0.5f, 0.8f), 1f, 18, gravity: true);
-            }
-        }
-
-        protected override void DrawDepth(SpriteBatch spriteBatch) {
-            Texture2D tex = TextureAssets.Projectile[Type].Value;
-            Vector2 origin = tex.Size() / 2f;
-            Vector2 drawPos = ProjectedCenter - Main.screenPosition;
-            float scale = DrawScale;
-            float depthAlpha = VDDepth.Alpha(Z);
-            Color glow = VDDepth.Fog(VDVoidBolt.GlowColor, Z);
-
-            spriteBatch.UseAdditive();
-            if (Index == 0) {
-                //整环的连线:环在当前深度下的投影圆,越近越亮
-                Vector2 c = VDDepth.Project(RingCenter, Z);
-                float r = Radius * VDDepth.Scale(Z);
-                float near = MathHelper.Clamp(1f - Z / VDDirector.GateStartDepth, 0f, 1f);
-                DrawRing(c, r, glow * (0.18f + 0.3f * near) * depthAlpha, 2f + 2f * near);
-            }
-            Texture2D glowTex = CEUtils.getExtraTex("Glow");
-            spriteBatch.Draw(glowTex, drawPos, null, glow * (0.55f * depthAlpha), 0f, glowTex.Size() / 2f, 0.15f * scale, SpriteEffects.None, 0f);
-            CEUtils.ReSetToEndShader();
-
-            VDDepthDraw.Draw(tex, drawPos, null, Color.White, 1f, Projectile.rotation, origin, scale, SpriteEffects.None, Z);
-        }
-
-        protected override void DrawMarker(SpriteBatch spriteBatch) {
-            float p = MarkerProgress();
-            if (p <= 0f) {
-                return;
-            }
-            Color c = Color.Lerp(VDVfx.DepthMarker, Color.White, p * p) * (0.25f + 0.55f * p);
-            spriteBatch.UseAdditive();
-            //脚印按成员位置逐点画短弧:缺口自然空出
-            foreach (Projectile other in Main.ActiveProjectiles) {
-                if (other.type != Type || other.ModProjectile is not VDGateBolt gb || gb.RingCenter.DistanceSQ(RingCenter) > 64f) {
-                    continue;
+        public override void AI() {
+            if (Projectile.localAI[0] == 0f) {
+                Projectile.localAI[0] = 1f;
+                Projectile.timeLeft = DefaultTimeLeft;
+                if (!Main.dedServ) {
+                    CEUtils.PlaySound("vbapear", 1.2f, Projectile.Center, 4, 0.55f);
                 }
-                Vector2 tangent = (gb.Angle + MathHelper.PiOver2).ToRotationVector2();
-                float half = Radius * MathHelper.TwoPi / VDDirector.GateBolts * 0.42f;
-                CEUtils.drawLine(other.Center - tangent * half, other.Center + tangent * half, c, 3f + 3f * p);
             }
-            CEUtils.ReSetToEndShader();
+            Projectile.localAI[1]++;
+            if (Age == VDDirector.GatePreviewFrames + 1 && !Main.dedServ) {
+                CEUtils.PlaySound("VoidAnticipation", 1.5f, Projectile.Center, 4, 0.5f);
+            }
+            Lighting.AddLight(Projectile.Center, RingColor.ToVector3() * 0.5f);
         }
 
-        private static void DrawRing(Vector2 center, float radius, Color color, float width) {
-            const int segments = 36;
-            Vector2 prev = center + new Vector2(radius, 0f);
-            for (int i = 1; i <= segments; i++) {
-                float a = MathHelper.TwoPi * i / segments;
-                Vector2 next = center + a.ToRotationVector2() * radius;
-                CEUtils.drawLine(prev, next, color, width, 1);
-                prev = next;
+        /// <summary>点是否压在环带上(不在缺口里)</summary>
+        private bool OnRing(Vector2 p, float radius) {
+            Vector2 rel = p - Projectile.Center;
+            if (Math.Abs(rel.Length() - radius) > VDDirector.GateThickness) {
+                return false;
             }
+            return Math.Abs(MathHelper.WrapAngle(rel.ToRotation() - GapAngle)) > GapHalf;
         }
+
+        /// <summary>玩家盒按 3×3 取样:环带全宽 28px,比玩家盒窄边还细,只测中心会漏</summary>
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
+            if (!Closing) {
+                return false;
+            }
+            float radius = Radius;
+            for (int ix = 0; ix < 3; ix++) {
+                for (int iy = 0; iy < 3; iy++) {
+                    Vector2 p = new Vector2(targetHitbox.X + targetHitbox.Width * ix * 0.5f, targetHitbox.Y + targetHitbox.Height * iy * 0.5f);
+                    if (OnRing(p, radius)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public override bool PreDraw(ref Color lightColor) {
+            float radius = Radius;
+            float appear = MathHelper.Clamp(Age / 8f, 0f, 1f);
+            float vanish = MathHelper.Clamp(Projectile.timeLeft / 6f, 0f, 1f);
+            float a = appear * vanish;
+            if (a <= 0.01f) {
+                return false;
+            }
+            float heat = Closing ? 1f : 0.35f + 0.25f * MathF.Sin(Age * 0.8f);
+            Vector2 c = Projectile.Center;
+            //弧段按约 22px 一段铺,缺口两侧各留到缺口边
+            float arc = MathHelper.TwoPi - GapHalf * 2f;
+            int segs = Math.Max(16, (int)(radius * arc / 22f));
+            float start = GapAngle + GapHalf;
+            SpriteBatch sb = Main.spriteBatch;
+
+            //暗底:真透明度,亮背景上也剩一道环
+            if (Closing) {
+                for (int i = 0; i < segs; i++) {
+                    CEUtils.drawLine(ArcPoint(c, start + arc * i / segs, radius), ArcPoint(c, start + arc * (i + 1) / segs, radius), VDVoidBolt.RimDark * (0.7f * a), 12f, 1);
+                }
+            }
+            //发光两遍各一种贴图,延迟批次里各自合成一批(立即模式每段都是一次绘制调用)
+            sb.End();
+            sb.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+            for (int i = 0; i < segs; i++) {
+                CEUtils.drawLineBetter(ArcPoint(c, start + arc * i / segs, radius), ArcPoint(c, start + arc * (i + 1) / segs, radius), RingColor * (0.45f * heat * a), 30f, 1);
+            }
+            Color core = Color.Lerp(RingColor, Color.White, 0.6f) * (0.85f * heat * a);
+            for (int i = 0; i < segs; i++) {
+                CEUtils.drawLine(ArcPoint(c, start + arc * i / segs, radius), ArcPoint(c, start + arc * (i + 1) / segs, radius), core, Closing ? 4f : 2f, 1);
+            }
+            //缺口两端的亮帽:安全口的门框,预告期更亮
+            Texture2D glow = CEUtils.getExtraTex("Glow");
+            Color cap = Color.Lerp(VDDirector.RimZoneCyan, Color.White, 0.4f) * (Closing ? 0.9f : 1f) * a;
+            for (int s = -1; s <= 1; s += 2) {
+                Vector2 outward = (GapAngle + s * GapHalf).ToRotationVector2();
+                Vector2 edge = c + outward * radius;
+                sb.Draw(glow, edge - Main.screenPosition, null, cap, 0f, glow.Size() / 2f, 0.22f, SpriteEffects.None, 0f);
+                CEUtils.drawLine(edge - outward * 20f, edge + outward * 20f, cap, 3f);
+            }
+            CEUtils.ReSetToEndShader();
+            return false;
+        }
+
+        private static Vector2 ArcPoint(Vector2 center, float angle, float radius) => center + angle.ToRotationVector2() * radius;
     }
 }

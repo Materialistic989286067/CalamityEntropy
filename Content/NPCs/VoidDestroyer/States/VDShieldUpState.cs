@@ -15,12 +15,16 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         public override bool RunsDuringBlink => true;
         public override int TimeoutFrames => int.MaxValue;
 
+        private float surfaceDepth;
+        private Vector2 surfacePoint;
+
         public override void OnEnter(VDStateContext ctx) {
             base.OnEnter(ctx);
             ctx.BlinkTimer = 0;
             ctx.QueuedChainState = -1;
             ctx.Phase = 3;
             ctx.DamageReduction = VDDirector.DRPhase3;
+            (surfaceDepth, surfacePoint) = CaptureSurface(ctx);
             VDVfx.ClearOwnProjectiles();
             MarkNetUpdate(ctx);
         }
@@ -28,7 +32,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         public override IVDState OnUpdate(VDStateContext ctx) {
             Timer++;
             NPC npc = ctx.Npc;
-            if (ctx.TargetValid) {
+            if (!SurfaceBeat(ctx, surfaceDepth, surfacePoint, Timer) && ctx.TargetValid) {
                 DeclareHoldRelative(ctx, new Vector2(0f, -300f), 0.06f, 0.2f, 18f);
             }
             float progress = MathHelper.Clamp(Timer / (float)VDDirector.ShieldUpDuration, 0f, 1f);

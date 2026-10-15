@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
 {
-    /// <summary>状态索引,写入 npc.ai[3] 网络同步。0~9 演出/连接段,10~19 既有招式,20~24 第二批,25+ 纵深招</summary>
+    /// <summary>状态索引,写入 npc.ai[3] 网络同步。0~9 演出/连接段,10~19 既有招式,20~26 第二批</summary>
     public enum VDStateIndex
     {
         /// <summary>传送门出场</summary>
@@ -23,15 +23,15 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         /// <summary>脱战撤离</summary>
         Despawn = 5,
 
-        /// <summary>弧形火球:斜上逼近,三轮五发扇形包裹</summary>
+        /// <summary>弧形火球:斜上逼近,三轮直射 + 弧弹包抄</summary>
         ArcFireball = 10,
         /// <summary>追踪导弹:核心激光流 + 导弹环 + 核弹</summary>
         HomingMissiles = 11,
-        /// <summary>幻影冲刺:传送门后五连冲</summary>
+        /// <summary>幻影冲刺:传送门后沿锁死的航道连冲</summary>
         PhantomDash = 12,
         /// <summary>虚空火焰:压到玩家下方向下扇散再转向上加速</summary>
         VoidFlame = 13,
-        /// <summary>相位激光:孢子无人机纵列 + 井字网</summary>
+        /// <summary>相位激光:带安全口的无人机纵列 + 井字网</summary>
         PhaseLaser = 14,
         /// <summary>传送火弹:四角依次闪现扇射</summary>
         TeleportFire = 15,
@@ -55,10 +55,10 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         /// <summary>湮灭主炮:P3 压轴蓄力扫射</summary>
         AnnihilationCannon = 24,
 
-        /// <summary>纵深环门:退到深处逐个推出带缺口的弹环,环从背景逼近平面</summary>
-        DepthGates = 25,
-        /// <summary>深空掠袭:在背景里带两艘幻影舰横越,一路朝平面射纵深贯穿弹</summary>
-        DeepStrafe = 26,
+        /// <summary>收缩环门:带缺口的能量环逐个以玩家为心收拢,缺口逐环转向</summary>
+        ClosingGates = 25,
+        /// <summary>轰炸掠袭:带两艘幻影护航从一侧低空横越,一路投弹</summary>
+        BombingRun = 26,
     }
 
     /// <summary>招式家族:轮换表的防复读按家族判同类相邻</summary>
@@ -222,30 +222,6 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         }
 
         #region 纵深小件
-        /// <summary>Z 在 OnSpawn 就位,生成包 ExtraAI 已是正确深度,客户端返回 -1</summary>
-        protected static int ShootDepth<T>(VDStateContext ctx, Vector2 pos, Vector2 vel, int masterShown, float z, float zVel, float zAccel = 0f, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile {
-            if (!IsServer) {
-                return -1;
-            }
-            var source = new Projectiles.VoidDestroyer.VDDepthSource(ctx.Npc, z, zVel, zAccel);
-            return Projectile.NewProjectile(source, pos, vel, ModContent.ProjectileType<T>(), ctx.Owner.ProjDamage(masterShown), 0f, Main.myPlayer, ai0, ai1, ai2);
-        }
-
-        /// <summary>纯演出的深度弹幕(远处的门、坠落舱壳等),伤害 0</summary>
-        protected static int SpawnVisualDepth<T>(VDStateContext ctx, Vector2 pos, Vector2 vel, float z, float zVel, float zAccel = 0f, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile {
-            if (!IsServer) {
-                return -1;
-            }
-            var source = new Projectiles.VoidDestroyer.VDDepthSource(ctx.Npc, z, zVel, zAccel);
-            return Projectile.NewProjectile(source, pos, vel, ModContent.ProjectileType<T>(), 0, 0f, Main.myPlayer, ai0, ai1, ai2);
-        }
-
-        /// <summary>frames 帧后在 landing 到平面,返回平面速度与 Z 速度,无加速度</summary>
-        protected static (Vector2 vel, float zVel) AimThroughPlane(Vector2 from, float z, Vector2 landing, int frames) {
-            frames = Math.Max(frames, 1);
-            return ((landing - from) / frames, -z / frames);
-        }
-
         /// <summary>深度锚点:相对目标玩家的表观偏移 + Z → 世界坐标(服务端以目标玩家中心做相机代理)</summary>
         protected static Vector2 DepthAnchor(VDStateContext ctx, Vector2 apparentOffset, float z)
             => VDDepth.WorldFromApparent(ctx.Target.Center, apparentOffset, z);
@@ -253,6 +229,42 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         /// <summary>声明:与目标保持相对静止,偏移按深度换算成世界偏移(表观上就是 apparentOffset)</summary>
         protected static void DeclareHoldRelativeDepth(VDStateContext ctx, Vector2 apparentOffset, float z, float stiffness = 0.12f, float lerp = 0.35f, float maxSpeed = 40f) {
             DeclareHoldRelative(ctx, VDDepth.WorldOffset(apparentOffset, z), stiffness, lerp, maxSpeed);
+        }
+
+        /// <summary>
+        /// 直写位置:Z 处的本体从代理相机看正好压在平面点 planePoint 上,即沿视线退远 / 逼近,原地缩放不滑向屏幕中心。
+        /// 只用于带外(Z 改变中)的演出拍,写完速度归零
+        /// </summary>
+        protected static void PlaceOverPlanePoint(VDStateContext ctx, Vector2 planePoint, float z, Vector2 proxyCamera) {
+            DeclareDirect(ctx);
+            ctx.Npc.velocity = Vector2.Zero;
+            ctx.Npc.Center = proxyCamera + (planePoint - proxyCamera) / VDDepth.Scale(z);
+        }
+
+        protected static void PlaceOverPlanePoint(VDStateContext ctx, Vector2 planePoint, float z)
+            => PlaceOverPlanePoint(ctx, planePoint, z, ctx.Target.Center);
+
+        /// <summary>本体此刻(在深度 z 上)从目标视角看压着的平面点</summary>
+        protected static Vector2 PlanePointOf(VDStateContext ctx, float z) {
+            Vector2 proxy = ctx.Target.Center;
+            return proxy + (ctx.Npc.Center - proxy) * VDDepth.Scale(z);
+        }
+
+        /// <summary>演出起手时记下本体的深度与它压着的平面点;已在平面上返回 0 深度</summary>
+        protected static (float depth, Vector2 point) CaptureSurface(VDStateContext ctx) {
+            float z = ctx.Owner.Depth;
+            return z > 0.05f ? (z, PlanePointOf(ctx, z)) : (0f, ctx.Npc.Center);
+        }
+
+        /// <summary>前 SurfaceFrames 帧沿视线浮回平面(被打断的轨道轰炸接演出);返回 true 表示这一帧还在浮</summary>
+        protected static bool SurfaceBeat(VDStateContext ctx, float fromDepth, Vector2 point, int timer) {
+            if (fromDepth <= 0f || timer > VDDirector.SurfaceFrames) {
+                return false;
+            }
+            float z = fromDepth * (1f - VDVfx.EaseOut(timer / (float)VDDirector.SurfaceFrames));
+            ctx.Depth = z;
+            PlaceOverPlanePoint(ctx, point, z);
+            return true;
         }
 
         /// <summary>深度按立方缓入归零,落地前 2 帧到落地后 DiveContactFrames 开接触窗,返回是否在接触窗</summary>
@@ -318,6 +330,16 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         /// <summary>声明:状态自管速度(冲刺/演出),宿主不再碰 velocity</summary>
         protected static void DeclareDirect(VDStateContext ctx) {
             ctx.Mode = VDMoveMode.Direct;
+        }
+
+        /// <summary>声明本帧的冲刺航道预告(宿主画在平面层,本体隐身时照画)</summary>
+        protected static void DeclareLane(VDStateContext ctx, Vector2 start, Vector2 dir, float length, float width, float strength, Color color) {
+            ctx.LaneStart = start;
+            ctx.LaneDir = dir;
+            ctx.LaneLength = length;
+            ctx.LaneWidth = width;
+            ctx.LaneStrength = MathHelper.Clamp(strength, 0f, 1f);
+            ctx.LaneColor = color;
         }
 
         /// <summary>声明本帧透明度与绘制缩放(不声明则宿主自动拉回 1)</summary>

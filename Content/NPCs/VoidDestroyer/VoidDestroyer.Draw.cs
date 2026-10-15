@@ -102,14 +102,16 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             return false;
         }
 
-        /// <summary>平面装饰:传送门(画在锚点,按门的深度投影缩小)、限制圈(圆心是钉住的 ArenaCenter)</summary>
+        /// <summary>平面装饰:传送门(画在锚点)、限制圈(圆心是钉住的 ArenaCenter)、冲刺航道预告(本体在门后隐身时照画)</summary>
         private void DrawPlaneDecor(Vector2 screenPos) {
             if (Context.PortalOpenness > 0.01f) {
-                float portalScale = VDDepth.Scale(Context.PortalDepth);
-                DrawPortalAt(VDDepth.Project(Context.AnchorPos, Context.PortalDepth), Context.PortalOpenness, 0f, 190f * portalScale, screenPos);
+                DrawPortalAt(Context.AnchorPos, Context.PortalOpenness, 0f, 190f, screenPos);
             }
             if (Context.ArenaActive && !Context.Dying) {
                 DrawArenaRing(screenPos);
+            }
+            if (Context.LaneStrength > 0.01f) {
+                VDVfx.DrawLane(Context.LaneStart, Context.LaneDir, Context.LaneLength, Context.LaneWidth, Context.LaneColor, Context.LaneStrength);
             }
         }
 
@@ -552,10 +554,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         #endregion
 
         #region 核心光与护盾
-        /// <summary>
-        /// 导引线:主炮扫射起点的预告,越近出手越亮、越粗,末尾闪烁。本体在平面时从核心沿方向直画;
-        /// 本体在镜头后(越肩主炮)时先从投影核心拉一段收敛的透视光锥到它在平面上的枢(NPC.Center),再从枢沿方向画
-        /// </summary>
+        /// <summary>导引线:主炮扫射起点的预告,从核心沿方向直画,越近出手越亮、越粗,末尾闪烁</summary>
         private void DrawAimLine(Vector2 center, Vector2 screenPos, float scale, float alpha) {
             float s = Context.AimLineStrength;
             if (s <= 0f || Context.AimLineDir == Vector2.Zero) {
@@ -563,19 +562,12 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             }
             Vector2 dir = Context.AimLineDir.SafeNormalize(Vector2.UnitY);
             Vector2 core = center + CoreOffset.RotatedBy(NPC.rotation) * scale;
-            Vector2 pivot = Depth < -0.05f ? NPC.Center : core;
-            Vector2 end = pivot + dir * VDDirector.CannonBeamLength;
+            Vector2 end = core + dir * VDDirector.CannonBeamLength;
             float flicker = s > 0.75f ? 0.75f + 0.25f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 60f) : 1f;
-            //光锥的亮度不随近景剪影衰减:它是打进画面里的光,不是剪影的一部分
-            float lineAlpha = Depth < -0.05f ? 1f : alpha;
-            Color c = Context.AimLineColor * ((0.25f + 0.65f * s) * flicker * lineAlpha);
-            if (pivot != core) {
-                //传本体的 Z(镜头前,近端不衰减),枢端端帽 0 直接接上平面导引线
-                VDBeamDraw.DrawTapered(core, pivot, (6f + 14f * s) * scale, 4f + 10f * s, Context.AimLineColor, Color.White, 1f, (0.3f + 0.6f * s) * flicker, 0.61f, endGlow: false, zStart: Depth, zEnd: 0f, capEnd: 0f);
-            }
+            Color c = Context.AimLineColor * ((0.25f + 0.65f * s) * flicker * alpha);
             Main.spriteBatch.UseAdditive();
-            CEUtils.drawLineBetter(pivot, end, c, 4f + 10f * s);
-            CEUtils.drawLine(pivot, end, Color.White * (0.6f * s * flicker * lineAlpha), 1.5f + s);
+            CEUtils.drawLineBetter(core, end, c, 4f + 10f * s);
+            CEUtils.drawLine(core, end, Color.White * (0.6f * s * flicker * alpha), 1.5f + s);
             CEUtils.ReSetToEndShader();
         }
 

@@ -6,7 +6,10 @@ using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
-    /// <summary>本体留在平面,三叉戟只在穿平面有判定,出手前 6 帧保持静默</summary>
+    /// <summary>
+    /// 本体在玩家头顶指挥,全息红恶魔每轮换到玩家另一侧上方现身(平面,无判定):
+    /// 探照光盘追脚下 → 两排三叉戟扇从红恶魔朝玩家预测点射出,第二排错半格补缝。射线出手前 6 帧保持静默
+    /// </summary>
     [VaultState((int)VDStateIndex.RedHell, typeof(VDStateContext))]
     public class VDRedHellState : VDStateBase
     {
@@ -22,10 +25,6 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             round = 0;
             wrapUp = false;
         }
-
-        /// <summary>红魔的平面位置:表观「玩家侧上方」按红魔深度换算</summary>
-        private static Vector2 DevilAnchor(VDStateContext ctx, int side)
-            => DepthAnchor(ctx, new Vector2(side * VDDirector.RedDevilApparent.X, VDDirector.RedDevilApparent.Y), VDDirector.RedDevilDepth);
 
         public override IVDState OnUpdate(VDStateContext ctx) {
             Timer++;
@@ -44,12 +43,13 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             int t = Timer;
             if (t == 1) {
                 if (IsServer) {
-                    ctx.SideDir = Main.rand.NextBool() ? -1 : 1;
-                    ctx.AnchorPos = DevilAnchor(ctx, ctx.SideDir);
+                    //首轮随机侧,之后每轮换边
+                    ctx.SideDir = round == 0 ? (Main.rand.NextBool() ? -1 : 1) : -ctx.SideDir;
+                    ctx.AnchorPos = ctx.Target.Center + new Vector2(ctx.SideDir * VDDirector.RedDevilOffset.X, VDDirector.RedDevilOffset.Y);
                     if (round == 0) {
                         SpawnVisual<VDHoloRedDevil>(ctx, ctx.AnchorPos, Vector2.Zero, npc.whoAmI);
                     }
-                    //探照光盘:预警 30 帧后从红魔射向镜头
+                    //探照光盘:预警 30 帧后从红恶魔打下来
                     Shoot<VDRedRay>(ctx, ctx.Target.Center, Vector2.Zero, VDDirector.DmgRedRay, VDDirector.RedHellRayDuration, VDDirector.RedHellRayWarn, npc.whoAmI + 1);
                     npc.netUpdate = true;
                 }
@@ -83,21 +83,21 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             }
 
             if (t == VDDirector.RedHellRayWarn) {
-                //红魔开火那一帧,本体也「下令」:反冲 + 爆闪(射线本身由光盘弹幕画)
+                //红恶魔开火那一帧,本体也「下令」:反冲 + 爆闪(射线本身由光盘弹幕画)
                 MuzzleCue(ctx, Vector2.UnitY, 5f, null);
             }
 
-            //三叉戟:两排交错,三阶段各 +1 并把张角提到 140°;FTW 追加第三排 5 根
+            //三叉戟:两排交错,三阶段各 +1 并把扇面张开;FTW 追加第三排 5 根
             int n1 = VDDirector.RedHellTridents(ctx.Phase);
-            float arc = VDDirector.RedHellArcDeg(ctx.Phase);
+            float fan = VDDirector.RedHellFanDeg(ctx.Phase);
             if (t == VDDirector.RedHellTridentFrame1) {
-                FireTridentRow(ctx, n1, arc, n1 - 1, 0f);
+                FireTridentRow(ctx, n1, fan, n1 - 1, 0f);
             }
             if (t == VDDirector.RedHellTridentFrame2) {
-                FireTridentRow(ctx, n1 - 1, arc, n1 - 1, 0.5f);
+                FireTridentRow(ctx, n1 - 1, fan, n1 - 1, 0.5f);
             }
             if (Main.getGoodWorld && t == VDDirector.RedHellTridentFrameFTW) {
-                FireTridentRow(ctx, 5, arc, 4, 0f);
+                FireTridentRow(ctx, 5, fan, 4, 0f);
             }
 
             if (t >= VDDirector.RedHellCycle) {
@@ -111,22 +111,19 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             return null;
         }
 
-        /// <summary>落点在预测点为心的弧上,弧心是红魔投影到玩家</summary>
-        private static void FireTridentRow(VDStateContext ctx, int count, float arcDeg, int divisions, float offset) {
+        /// <summary>一排三叉戟:从红恶魔处按扇面均布射向玩家预测点,第 i 根在 -fan/2 + fan*(i+offset)/divisions 上</summary>
+        private static void FireTridentRow(VDStateContext ctx, int count, float fanDeg, int divisions, float offset) {
             Vector2 from = ctx.AnchorPos;
-            float z = VDDirector.RedDevilDepth;
-            VDVfx.Sound("VoidAttack", 1.2f * VDDepth.DopplerPitch(z), VDDepth.Project(from, z), 4, 0.9f);
+            VDVfx.Sound("VoidAttack", 1.2f, from, 4, 0.9f);
             if (!IsServer) {
                 return;
             }
             Vector2 predicted = PredictTarget(ctx, VDDirector.RedHellTridentLead);
-            Vector2 dir = (predicted - VDDepth.Project(from, z, ctx.Target.Center)).SafeNormalize(Vector2.UnitX);
-            float arc = MathHelper.ToRadians(arcDeg);
+            Vector2 dir = (predicted - from).SafeNormalize(Vector2.UnitX);
+            float fan = MathHelper.ToRadians(fanDeg);
             for (int i = 0; i < count; i++) {
-                float ang = -arc / 2f + arc * (i + offset) / Math.Max(1, divisions);
-                Vector2 landing = predicted + dir.RotatedBy(ang) * VDDirector.RedHellLandRadius;
-                (Vector2 vel, float zVel) = AimThroughPlane(from, z, landing, VDDirector.RedHellTridentFrames);
-                ShootDepth<VDHoloTrident>(ctx, from, vel, VDDirector.DmgTrident, z, zVel, 0f);
+                float ang = -fan / 2f + fan * (i + offset) / Math.Max(1, divisions);
+                Shoot<VDHoloTrident>(ctx, from, dir.RotatedBy(ang) * VDDirector.RedHellTridentSpeed, VDDirector.DmgTrident);
             }
         }
     }

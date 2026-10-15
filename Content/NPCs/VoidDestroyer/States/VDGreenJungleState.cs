@@ -6,7 +6,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
-    /// <summary>偶数平面横冲,奇数从 Z 1.5 穿平面,毒刺在穿平面那帧,节拍由陆龟弹幕自管</summary>
+    /// <summary>全息陆龟左右交替横冲:屏内现身、整条水平航道亮 36 帧、沿航道直冲不修正;节拍由陆龟弹幕自管</summary>
     [VaultState((int)VDStateIndex.GreenJungle, typeof(VDStateContext))]
     public class VDGreenJungleState : VDStateBase
     {
@@ -19,10 +19,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             ctx.CoreColorTarget = VDVfx.JungleGreen;
             DeclareHoldRelative(ctx, VDDirector.JungleHoverOffset, 0.1f, 0.3f, 36f);
             int dashes = VDDirector.JungleDashes(ctx.Phase);
-            int duration = VDDirector.JungleSpawnFrame + VDDirector.JungleTail;
-            for (int k = 0; k < dashes; k++) {
-                duration += VDDirector.TortoiseCycleFrames(k);
-            }
+            int duration = VDDirector.JungleSpawnFrame + VDDirector.JungleTail + dashes * VDDirector.TortoiseCycleFrames;
 
             ctx.CoreGlow = Math.Max(ctx.CoreGlow, MathHelper.Clamp(Timer / (float)VDDirector.JungleSpawnFrame, 0f, 1f));
             if (Timer < VDDirector.JungleSpawnFrame && Timer % 3 == 0) {

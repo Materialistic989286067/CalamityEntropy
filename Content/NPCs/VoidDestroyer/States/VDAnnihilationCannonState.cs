@@ -6,14 +6,17 @@ using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
-    /// <summary>扫射仍绕平面枢转,离枢越近越慢</summary>
+    /// <summary>
+    /// P3 压轴:闪到玩家头顶蓄力(导引线标出扫射起点,在玩家对侧)→ 出手后本体钉死,主炮从对侧扫过正下方到玩家一侧 →
+    /// 过热下沉冒烟。解法是躲到炮口水平线以上,或者沿扫射方向跑出射线尾;过热期间减伤清零,是整场最大的输出窗
+    /// </summary>
     [VaultState((int)VDStateIndex.AnnihilationCannon, typeof(VDStateContext))]
     public class VDAnnihilationCannonState : VDStateBase
     {
         public override string StateName => "AnnihilationCannon";
         public override VDStateIndex StateIndex => VDStateIndex.AnnihilationCannon;
-        public override float StartDepth(VDStateContext ctx) => VDDirector.CannonNearDepth;
-        public override Vector2 AnchorFor(VDStateContext ctx) => DepthAnchor(ctx, VDDirector.CannonNearApparent, VDDirector.CannonNearDepth);
+        public override bool NeedsRepositionBlink => true;
+        public override Vector2 AnchorFor(VDStateContext ctx) => ctx.Target.Center + VDDirector.CannonHoverOffset;
 
         private enum Beat { Charge, Fire, Overheat }
         private Beat beat;
@@ -21,9 +24,6 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         public override void OnEnter(VDStateContext ctx) {
             base.OnEnter(ctx);
             beat = Beat.Charge;
-            if (IsServer) {
-                ctx.Owner.StartBlink(AnchorFor(ctx));
-            }
         }
 
         public override IVDState OnUpdate(VDStateContext ctx) {
@@ -34,8 +34,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     UpdateCharge(ctx, npc);
                     break;
                 case Beat.Fire:
-                    ctx.Depth = VDDirector.CannonNearDepth;
-                    DeclareHoldRelativeDepth(ctx, VDDirector.CannonNearApparent, VDDirector.CannonNearDepth, 0.03f, 0.15f, 10f);
+                    //出手后钉死:炮口不跟人,玩家才能绕到它的水平线以上
+                    DeclareDirect(ctx);
+                    npc.velocity *= 0.85f;
                     ctx.WingPulse = 1f;
                     ctx.CoreGlow = 1f;
                     //扫射全程描边保持过热白炽(过热风格自带高频闪)
@@ -43,29 +44,23 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     ctx.RimColorTarget = VDVfx.CannonCore;
                     ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, 0.3f);
                     VDScreenFx.ReportVignette(VDDirector.CannonVignette);
-                    //扫射期间天幕力场保持在被花掉的能量读数上
                     VDSkyDrive.ReportCharge(VDDirector.SkyCannonSweepCharge);
                     if (Timer >= VDDirector.CannonSweepFrames) {
                         SwitchBeat(Beat.Overheat);
-                        VDVfx.Sound("VoidBomb", 0.6f, ctx.Owner.ProjectedCenter, 2, 1f);
-                        VDVfx.SparkBurst(ctx.Owner.ProjectedCorePos, VDVfx.VoidPink, 40, 3f, 12f, 40);
+                        VDVfx.Sound("VoidBomb", 0.6f, npc.Center, 2, 1f);
+                        VDVfx.SparkBurst(ctx.Owner.CorePos, VDVfx.VoidPink, 40, 3f, 12f, 40);
                         MarkNetUpdate(ctx);
                     }
                     break;
                 default: {
-                    //过热:先从镜头后俯冲回平面(落点就是自己在平面上的位置),再冒火花冷却;全程无接触(俯冲落地那一记除外)
+                    //过热:下沉冒烟,无接触,减伤清零(破绽窗)
                     DeclareDirect(ctx);
                     ctx.ContactWindow = false;
+                    ctx.Vulnerable = true;
                     float p = MathHelper.Clamp(Timer / (float)VDDirector.CannonOverheatFrames, 0f, 1f);
-                    if (Timer <= VDDirector.CannonOverheatDive + VDDirector.DiveContactFrames) {
-                        DeclareDive(ctx, VDDirector.CannonNearDepth, Timer, VDDirector.CannonOverheatDive, npc.Center + new Vector2(0f, VDDirector.CannonOverheatDrop));
-                    }
-                    else {
-                        ctx.Depth = 0f;
-                    }
-                    float drop = Timer < VDDirector.CannonOverheatDive ? 3f : 0f;
-                    npc.velocity = Vector2.Lerp(npc.velocity, new Vector2(0f, drop), 0.15f);
-                    ctx.CoreGlow = Timer <= VDDirector.CannonOverheatDive ? ctx.CoreGlow : 0f;
+                    float sink = VDDirector.CannonOverheatSink * (1f - p);
+                    npc.velocity = Vector2.Lerp(npc.velocity, new Vector2(0f, sink), 0.15f);
+                    ctx.CoreGlow = 0.25f + 0.25f * MathF.Sin(Timer * 0.6f);
                     //过热的舰壳从烧红慢慢冷回虚空紫,描边跟着淡回去
                     ctx.RimCharge = Math.Max(ctx.RimCharge, 0.6f * (1f - p));
                     ctx.RimColorTarget = Color.Lerp(VDDirector.RimHeatRed, VDVfx.VoidPurple, p);
@@ -73,7 +68,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     VDScreenFx.ReportVignette(VDDirector.CannonVignette * (1f - p));
                     VDSkyDrive.ReportCharge(VDDirector.SkyCannonSweepCharge * (1f - p));
                     if (!Main.dedServ && Timer % 3 == 0) {
-                        Vector2 pos = ctx.Owner.ProjectedCorePos + CEUtils.randomPointInCircle(30f);
+                        Vector2 pos = ctx.Owner.CorePos + CEUtils.randomPointInCircle(40f);
                         VDVfx.SparkBurst(pos, VDVfx.VoidPink, 2, 2f, 6f, 24, 0.4f, 0.9f);
                         VDVfx.VoidPuff(pos, new Vector2(Main.rand.NextFloat(-1f, 1f), -Main.rand.NextFloat(1f, 3f)), 1.3f, 0.6f);
                     }
@@ -87,8 +82,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         }
 
         private void UpdateCharge(VDStateContext ctx, NPC npc) {
-            ctx.Depth = VDDirector.CannonNearDepth;
-            DeclareHoldRelativeDepth(ctx, VDDirector.CannonNearApparent, VDDirector.CannonNearDepth, 0.08f, 0.25f, 24f);
+            DeclareHoldRelative(ctx, VDDirector.CannonHoverOffset, 0.08f, 0.25f, 24f);
             float progress = MathHelper.Clamp(Timer / (float)VDDirector.CannonChargeFrames, 0f, 1f);
             ctx.WingPulse = Math.Max(ctx.WingPulse, progress);
             ctx.CoreGlow = Math.Max(ctx.CoreGlow, progress);
@@ -101,9 +95,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             VDSkyDrive.ReportCharge(progress);
 
             if (Timer == 1) {
-                VDVfx.Sound("VoidAnticipation", 0.55f, ctx.Owner.ProjectedCenter, 2, 1.2f);
+                VDVfx.Sound("VoidAnticipation", 0.55f, npc.Center, 2, 1.2f);
             }
-            //导引线拍:出手前 40 帧掷扫射起点(玩家对侧,相对平面枢),之后死向
+            //导引线拍:出手前 40 帧掷扫射起点(玩家对侧),之后死向
             int guideStart = VDDirector.CannonChargeFrames - VDDirector.CannonGuideLead;
             if (Timer == guideStart && IsServer) {
                 ctx.SideDir = ctx.Target.Center.X >= npc.Center.X ? 1 : -1;
@@ -116,7 +110,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 ctx.AimLineStrength = MathHelper.Clamp(g, 0f, 1f);
                 ctx.AimLineColor = VDVfx.CannonCore;
             }
-            //汇聚流:密度随蓄力升,72% 处硬切成静默(汇聚点是巨影的投影核心,半径按近景放大)
+            //汇聚流:密度随蓄力升,72% 处硬切成静默
             if (progress < VDDirector.CannonSilenceAt) {
                 int every = progress < 0.4f ? 3 : 1;
                 if (Timer % every == 0) {
@@ -134,19 +128,18 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             }
         }
 
-        /// <summary>出手:光锥从镜头后的巨影打进画面,枢在本体的平面位置;射线弹幕自己每帧钉在枢上、画锥段</summary>
+        /// <summary>出手:射线弹幕自己每帧钉在核心上</summary>
         private void Fire(VDStateContext ctx, NPC npc) {
             float start = ctx.RolledAngles[0];
             float sweepSign = -ctx.SideDir;
-            Vector2 dir = start.ToRotationVector2();
-            MuzzleCue(ctx, Vector2.UnitY, VDDirector.CannonRecoil, "VoidAttack", 0.5f, 1.2f);
+            MuzzleCue(ctx, start.ToRotationVector2(), VDDirector.CannonRecoil, "VoidAttack", 0.5f, 1.2f);
             VDVfx.Shake(npc.Center, 14f, 4000f);
-            Vector2 pivot = npc.Center;
-            VDVfx.Explosion(pivot, 1.3f, 20);
-            VDVfx.SparkBurst(pivot, VDVfx.CannonCore, 50, 6f, 22f, 40);
+            Vector2 core = ctx.Owner.CorePos;
+            VDVfx.Explosion(core, 1.3f, 20);
+            VDVfx.SparkBurst(core, VDVfx.CannonCore, 50, 6f, 22f, 40);
             //天幕:出手一帧力场整面亮起,冲击环从本体扩散
             VDSkyDrive.PushFlash(VDDirector.SkyFlashBeat);
-            Shoot<VDAnnihilationBeam>(ctx, pivot, dir, VDDirector.DmgAnnihilationBeam, npc.whoAmI, VDDirector.CannonSweepFrames * sweepSign, start);
+            Shoot<VDAnnihilationBeam>(ctx, core, start.ToRotationVector2(), VDDirector.DmgAnnihilationBeam, npc.whoAmI, VDDirector.CannonSweepFrames * sweepSign, start);
         }
 
         private void SwitchBeat(Beat next) {

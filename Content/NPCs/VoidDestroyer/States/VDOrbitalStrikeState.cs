@@ -6,7 +6,10 @@ using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
-    /// <summary>退远时世界位置上飞,投影基本不动</summary>
+    /// <summary>
+    /// 全场唯一的远景招:沿视线退入背景(表观位置从原处滑到玩家头顶,同时缩小、雾化、压到物块后)→ 落点准星 + 透视瞄准线 → 光柱错拍砸落 → 俯冲归位。
+    /// 退远与归位两拍直写位置(PlaceOverPlanePoint),不让世界坐标的追赶在投影里读成「朝屏幕中心滑」
+    /// </summary>
     [VaultState((int)VDStateIndex.OrbitalStrike, typeof(VDStateContext))]
     public class VDOrbitalStrikeState : VDStateBase
     {
@@ -16,12 +19,20 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         private enum Beat { Ascend, Mark, Fire, Return }
         private Beat beat;
         private int pillarsFired;
+        /// <summary>退远起手时本体相对目标的偏移(平面上)</summary>
+        private Vector2 ascendFrom;
+        /// <summary>归位起手时本体从目标视角压着的表观偏移</summary>
+        private Vector2 returnFrom;
 
         public override void OnEnter(VDStateContext ctx) {
             base.OnEnter(ctx);
             beat = Beat.Ascend;
             pillarsFired = 0;
+            ascendFrom = ctx.Npc.Center - ctx.Target.Center;
         }
+
+        private static Vector2 LandOffset(VDStateContext ctx)
+            => new Vector2(ctx.SideDir * VDDirector.OrbitalLandOffset.X, VDDirector.OrbitalLandOffset.Y);
 
         public override IVDState OnUpdate(VDStateContext ctx) {
             Timer++;
@@ -31,14 +42,11 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 case Beat.Ascend: {
                     float p = MathHelper.Clamp(Timer / (float)VDDirector.OrbitalAscendFrames, 0f, 1f);
                     ctx.Depth = VDDirector.OrbitalFarDepth * VDDepth.RetreatCurve(p);
-                    //世界坐标追着「表观 380px 头顶」在当前深度下的位置飞,越远越高
-                    DeclareHoverTo(ctx, ctx.Target.Center + VDDepth.WorldOffset(VDDirector.OrbitalHoverOffset, ctx.Depth), 40f, 0.15f, 160f);
+                    Vector2 apparent = Vector2.Lerp(ascendFrom, VDDirector.OrbitalHoverOffset, VDVfx.EaseOut(p));
+                    PlaceOverPlanePoint(ctx, ctx.Target.Center + apparent, ctx.Depth);
                     if (Timer == 1) {
-                        //起手后仰:朝远离玩家的方向一记反冲,再退入纵深
                         VDVfx.Sound("vbdisapear", 0.7f, npc.Center, 3, 0.9f);
                         ctx.WingPulse = 1f;
-                        Vector2 away = (npc.Center - ctx.Target.Center).SafeNormalize(-Vector2.UnitY);
-                        npc.velocity += away * VDDirector.OrbitalAscendRecoil;
                         ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, 0.4f);
                     }
                     ctx.CoreGlow = Math.Max(ctx.CoreGlow, p * 0.6f);
@@ -79,25 +87,26 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                         ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, 0.5f);
                         pillarsFired++;
                     }
-                    //P3:柱子的错拍空档里从背景朝玩家预测点射纵深贯穿炮弹(越来越大地飞来,自带落点标记)
-                    int shells = VDDirector.OrbitalShells(ctx.Phase);
-                    if (shells > 0 && Timer % VDDirector.OrbitalPillarStagger == VDDirector.OrbitalPillarStagger / 2 && Timer < 1 + VDDirector.OrbitalPillarStagger * shells) {
-                        Vector2 landing = PredictTarget(ctx, VDDirector.OrbitalShellLead);
-                        (Vector2 vel, float zVel) = AimThroughPlane(npc.Center, VDDirector.OrbitalFarDepth, landing, VDDirector.OrbitalShellFrames);
-                        ShootDepth<VDVoidBolt>(ctx, npc.Center, vel, VDDirector.DmgVoidBolt, VDDirector.OrbitalFarDepth, zVel, 0f, VDVoidBolt.ModeZPierce);
-                        MuzzleCue(ctx, Vector2.UnitY, 2f, "CruiserSpit", 1.1f, 0.7f);
-                    }
                     if (pillarsFired >= count && Timer >= 1 + VDDirector.OrbitalPillarStagger * count + 10) {
+                        returnFrom = PlanePointOf(ctx, VDDirector.OrbitalFarDepth) - ctx.Target.Center;
                         SwitchBeat(Beat.Return);
                         MarkNetUpdate(ctx);
                     }
                     break;
                 }
                 default: {
-                    //俯冲归位:立方曲线朝镜头飞来,落点大环 + 落地震屏 + 接触窗都在 DeclareDive 里
-                    Vector2 dest = ctx.Target.Center + new Vector2(ctx.SideDir * 200f, -300f);
-                    DeclareHoverTo(ctx, dest, 50f, 0.2f, 100f);
-                    DeclareDive(ctx, VDDirector.OrbitalFarDepth, Timer, VDDirector.OrbitalReturnFrames, dest);
+                    //俯冲归位:表观位置从头顶滑到落点,深度按立方曲线归零;落点大环 + 落地震屏 + 接触窗都在 DeclareDive 里
+                    //先落位置再声明俯冲:落地那一帧的冲击要打在落点上
+                    Vector2 land = ctx.Target.Center + LandOffset(ctx);
+                    if (Timer <= VDDirector.OrbitalReturnFrames) {
+                        float p = Timer / (float)VDDirector.OrbitalReturnFrames;
+                        float z = VDDirector.OrbitalFarDepth * (1f - VDDepth.DiveCurve(p));
+                        PlaceOverPlanePoint(ctx, ctx.Target.Center + Vector2.Lerp(returnFrom, LandOffset(ctx), VDDepth.DiveCurve(p)), z);
+                    }
+                    else {
+                        DeclareHoverTo(ctx, land, 12f, 0.2f, 100f);
+                    }
+                    DeclareDive(ctx, VDDirector.OrbitalFarDepth, Timer, VDDirector.OrbitalReturnFrames, land);
                     if (Timer >= VDDirector.OrbitalReturnFrames + VDDirector.DiveContactFrames) {
                         return EndAttack(ctx);
                     }

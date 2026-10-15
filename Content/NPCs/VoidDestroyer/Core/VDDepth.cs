@@ -118,13 +118,6 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
             return !(tile.HasTile && Main.tileSolid[tile.TileType] && !Main.tileSolidTop[tile.TileType]);
         }
 
-        /// <summary>frames 帧正中到顶、走完回 0,半隐式积分早约一帧,不要把 Z 等于 0 当成时钟</summary>
-        public static (float zVel, float zAccel) Parabola(float apex, int frames) {
-            float half = frames * 0.5f;
-            float accel = -2f * apex / (half * half);
-            return (-accel * half, accel);
-        }
-
         /// <summary>立方缓入:俯冲/入场的「朝镜头飞来」曲线(慢起、猛到)</summary>
         public static float DiveCurve(float t) {
             t = MathHelper.Clamp(t, 0f, 1f);

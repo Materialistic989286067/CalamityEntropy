@@ -65,10 +65,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public int RandCount { get; set; }
         /// <summary>掷骰角度槽(裂隙方向等)</summary>
         public float[] RolledAngles { get; } = new float[4];
-        /// <summary>掷骰落点槽(轨道轰炸目标等)</summary>
+        /// <summary>掷骰落点槽(轨道轰炸目标、舰队门位与交汇点、死亡沉入的代理相机等)</summary>
         public Vector2[] RolledPoints { get; } = new Vector2[6];
-        /// <summary>掷骰深度槽(立体舰队门位深度、立体四角的角位深度等)</summary>
-        public float[] RolledDepths { get; } = new float[4];
         /// <summary>切技闪现计时,>0 正在闪现:前半淡出,过半换位,后半淡入</summary>
         public int BlinkTimer { get; set; }
         /// <summary>传送后的无接触伤害窗口</summary>
@@ -92,6 +90,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         #region 声明:判定
         /// <summary>本帧接触伤害窗(每帧回落 false,由状态或 ContactByDefault 打开)</summary>
         public bool ContactWindow { get; set; }
+        /// <summary>破绽窗(每帧回落 false):承伤减免清零,各端按本地状态推导,打中本体的那一端据此结算</summary>
+        public bool Vulnerable { get; set; }
         #endregion
 
         #region 声明:表现(每帧重声明或自衰减,纯本地推导,不过线)
@@ -120,10 +120,15 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public bool ShieldVisible { get; set; }
         /// <summary>能量翼可见(P2 起,变形/死亡时收起)</summary>
         public bool WingsVisible { get; set; }
-        /// <summary>传送门开合 0..1(出场/死亡演出每帧声明,画在 AnchorPos)</summary>
+        /// <summary>传送门开合 0..1(出场演出每帧声明,画在平面上的 AnchorPos)</summary>
         public float PortalOpenness { get; set; }
-        /// <summary>传送门所在深度(每帧回落 0):出场的跃迁门开在 Z 6 的深空里,画时按深度投影缩小</summary>
-        public float PortalDepth { get; set; }
+        /// <summary>冲刺航道预告(每帧回落 0 = 不画):起点、方向、长、宽、强度 0..1;画在平面层,本体隐身时也画</summary>
+        public Vector2 LaneStart { get; set; }
+        public Vector2 LaneDir { get; set; }
+        public float LaneLength { get; set; }
+        public float LaneWidth { get; set; }
+        public float LaneStrength { get; set; }
+        public Color LaneColor { get; set; } = VDVfx.VoidWhite;
         /// <summary>变形动画帧(-1 = 不在变形)</summary>
         public int TransformFrame { get; set; } = -1;
         /// <summary>导引线(主炮扫射起点预告):方向,零向量 = 无</summary>
@@ -155,6 +160,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
             TiltOverride = float.NaN;
 
             ContactWindow = false;
+            Vulnerable = false;
 
             AlphaDeclared = float.NaN;
             DrawScaleDeclared = 1f;
@@ -166,7 +172,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
             ShieldVisible = Phase >= 3 && !Dying;
             WingsVisible = Phase >= 2 && !Dying;
             PortalOpenness = 0f;
-            PortalDepth = 0f;
+            LaneStrength = 0f;
+            LaneColor = VDVfx.VoidWhite;
             TransformFrame = -1;
             AimLineDir = Vector2.Zero;
             AimLineStrength = 0f;

@@ -5,7 +5,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
-    /// <summary>收尾写阶段 2,签名首招钉为轨道轰炸</summary>
+    /// <summary>全程在平面:颤抖蓄能 → 逐帧变形 → 爆闪展翼;收尾写阶段 2,签名首招钉为轨道轰炸</summary>
     [VaultState((int)VDStateIndex.Transform, typeof(VDStateContext))]
     public class VDTransformState : VDStateBase
     {
@@ -15,11 +15,15 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         public override bool RunsDuringBlink => true;
         public override int TimeoutFrames => int.MaxValue;
 
+        private float surfaceDepth;
+        private Vector2 surfacePoint;
+
         public override void OnEnter(VDStateContext ctx) {
             base.OnEnter(ctx);
             ctx.BlinkTimer = 0;
             ctx.QueuedChainState = -1;
             ctx.Npc.velocity = Vector2.Zero;
+            (surfaceDepth, surfacePoint) = CaptureSurface(ctx);
             VDVfx.ClearOwnProjectiles();
             MarkNetUpdate(ctx);
         }
@@ -28,30 +32,35 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             Timer++;
             NPC npc = ctx.Npc;
             int t = Timer;
-            DeclareDirect(ctx);
-            npc.velocity *= 0.8f;
+            bool surfacing = SurfaceBeat(ctx, surfaceDepth, surfacePoint, t);
+            if (!surfacing) {
+                DeclareDirect(ctx);
+                npc.velocity *= 0.8f;
+            }
             DeclareAlpha(ctx, 1f, 1f);
-            ctx.WingsVisible = t > VDDirector.TransformDiveEnd;
+            ctx.WingsVisible = t > VDDirector.TransformBurstFrame;
+            Vector2 shown = ctx.Owner.ProjectedCenter;
 
-            if (t <= VDDirector.TransformRetreatEnd) {
-                //后撤:颤抖加剧、核心亮起、退入深处
-                float p = t / (float)VDDirector.TransformRetreatEnd;
-                ctx.Depth = VDDirector.TransformRetreatDepth * VDDepth.RetreatCurve(p);
+            if (t <= VDDirector.TransformShudderEnd) {
+                //蓄能:颤抖加剧、核心亮起,起手一记后仰
+                float p = t / (float)VDDirector.TransformShudderEnd;
                 ctx.TransformFrame = 0;
-                ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, p * p * 0.6f);
+                ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, p * p * 0.7f);
                 ctx.CoreGlow = Math.Max(ctx.CoreGlow, p * 0.6f);
                 ctx.RimCharge = p * 0.6f;
                 if (t == 1) {
-                    VDVfx.Sound("VoidAnticipation", 0.9f, ctx.Owner.ProjectedCenter, 2);
-                    if (ctx.TargetValid) {
-                        npc.velocity += (npc.Center - ctx.Target.Center).SafeNormalize(-Vector2.UnitY) * 5f;
+                    VDVfx.Sound("VoidAnticipation", 0.9f, shown, 2);
+                    if (!surfacing && ctx.TargetValid) {
+                        npc.velocity += (npc.Center - ctx.Target.Center).SafeNormalize(-Vector2.UnitY) * 4f;
                     }
+                }
+                if (t % 3 == 0) {
+                    ConvergeSparks(ctx, VDVfx.VoidPurple, 90f, 200f, 0.08f);
                 }
             }
             else if (t <= VDDirector.TransformBurstFrame) {
-                //远处重构:六帧变形图在 34 帧里推完,汇聚流越来越密
-                ctx.Depth = VDDirector.TransformRetreatDepth;
-                float p = (t - VDDirector.TransformRetreatEnd) / (float)(VDDirector.TransformBurstFrame - VDDirector.TransformRetreatEnd);
+                //重构:六帧变形图推完,汇聚流越来越密,外壳往外冒烟
+                float p = (t - VDDirector.TransformShudderEnd) / (float)(VDDirector.TransformBurstFrame - VDDirector.TransformShudderEnd);
                 ctx.TransformFrame = (int)MathHelper.Clamp(p * 6f, 0, 5);
                 ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, 0.4f + p * p * 0.5f);
                 ctx.CoreGlow = Math.Max(ctx.CoreGlow, 0.6f + 0.4f * p);
@@ -59,35 +68,28 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 if (!Main.dedServ && t % 3 == 0) {
                     ConvergeSparks(ctx, VDVfx.VoidPurple, 90f, 200f, 0.08f);
                     Vector2 v = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(1f, 3f);
-                    VDVfx.VoidPuff(ctx.Owner.ProjectedCenter + CEUtils.randomPointInCircle(30f), v, 0.8f, 0.6f);
+                    VDVfx.VoidPuff(shown + CEUtils.randomPointInCircle(50f), v, 1f, 0.6f);
                 }
                 if (t == VDDirector.TransformBurstFrame) {
                     ctx.RimFlash = 1f;
+                    ctx.WingPulse = 1f;
+                    ctx.CoreGlow = 1f;
                     if (!Main.dedServ) {
-                        Vector2 shown = ctx.Owner.ProjectedCenter;
                         VDVfx.Sound("VoidAttack", 1f, shown, 2);
                         VDVfx.Shake(npc.Center, 10f);
                         VDVfx.SparkBurst(shown, VDVfx.VoidPurple, 40, 3f, 10f, 36, 0.5f, 1f);
-                        VDVfx.Explosion(shown, 0.7f, 26);
-                        //天幕:封锁力场整面亮起,冲击环从本体扩散
+                        VDVfx.Explosion(shown, 0.9f, 26);
                         VDSkyDrive.PushFlash(VDDirector.SkyFlashBeat);
                     }
                 }
             }
-            else if (t <= VDDirector.TransformDiveEnd) {
-                //以新形态俯冲回平面:落点就是自己现在的位置(变形期间不追玩家)
-                ctx.TransformFrame = 5;
-                DeclareDive(ctx, VDDirector.TransformRetreatDepth, t - VDDirector.TransformBurstFrame, VDDirector.TransformDiveEnd - VDDirector.TransformBurstFrame, npc.Center);
-                ctx.RimCharge = 1f;
-            }
             else {
-                //落地展翼(阶段号要到收尾才写 2,这里继续钉在变形图末帧,免得闪回一阶段贴图)
+                //展翼:阶段号要到收尾才写 2,这里继续钉在变形图末帧,免得闪回一阶段贴图
                 ctx.TransformFrame = 5;
-                ctx.Depth = 0f;
-                ctx.WingPulse = Math.Max(ctx.WingPulse, 1f);
+                ctx.WingPulse = Math.Max(ctx.WingPulse, 0.8f);
                 ctx.CoreGlow = Math.Max(ctx.CoreGlow, 0.8f);
-                if (t == VDDirector.TransformDiveEnd + 1) {
-                    VDVfx.Sound("VoidAnticipation", 1.3f, npc.Center, 2, 0.8f);
+                if (t == VDDirector.TransformBurstFrame + 1) {
+                    VDVfx.Sound("VoidAnticipation", 1.3f, shown, 2, 0.8f);
                 }
             }
 

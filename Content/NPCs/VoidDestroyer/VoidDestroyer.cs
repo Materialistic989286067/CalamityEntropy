@@ -182,6 +182,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
 
         #region 承伤
         public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers) {
+            if (Context != null && Context.Vulnerable) {
+                return;
+            }
             modifiers.FinalDamage *= 1f - (Context?.DamageReduction ?? VDDirector.DRPhase12);
         }
 
@@ -708,9 +711,6 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             for (int i = 0; i < Context.RolledPoints.Length; i++) {
                 writer.WriteVector2(Context.RolledPoints[i]);
             }
-            for (int i = 0; i < Context.RolledDepths.Length; i++) {
-                writer.Write(Context.RolledDepths[i]);
-            }
             writer.Write(Context.BlinkTimer);
             writer.Write(Context.NoContactTimer);
             writer.Write(Context.AttackIndex);
@@ -748,9 +748,6 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             }
             for (int i = 0; i < Context.RolledPoints.Length; i++) {
                 Context.RolledPoints[i] = reader.ReadVector2();
-            }
-            for (int i = 0; i < Context.RolledDepths.Length; i++) {
-                Context.RolledDepths[i] = reader.ReadSingle();
             }
             int packetBlink = reader.ReadInt32();
             Context.NoContactTimer = reader.ReadInt32();

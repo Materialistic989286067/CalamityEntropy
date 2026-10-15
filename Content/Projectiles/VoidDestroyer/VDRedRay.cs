@@ -36,14 +36,14 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
         }
 
-        /// <summary>射线源:红魔的投影位置(没有本体时从光盘正上方远处打下来)</summary>
+        /// <summary>射线源:红恶魔胸口(没有本体时从光盘正上方远处打下来)</summary>
         private Vector2 SourceShown {
             get {
                 VoidDestroyerNPC boss = OwnerBoss;
                 if (boss == null) {
                     return Projectile.Center + new Vector2(0f, -600f);
                 }
-                return VDDepth.Project(boss.AnchorPos, VDDirector.RedDevilDepth);
+                return boss.AnchorPos + new Vector2(0f, -12f);
             }
         }
 
@@ -126,12 +126,11 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Vector2 from = SourceShown;
             Vector2 spot = Projectile.Center;
             float radius = Radius;
-            float zDevil = VDDirector.RedDevilDepth;
             if (Age < WarnFrames) {
-                //预警锥:红魔(Z 2.5)→ 光盘(平面),随进度变粗变亮;传两端 Z 让噪声向红魔那端压缩、远端吃雾,读成一根从深处打过来的锥;光盘处一枚收紧的标记环
+                //预警锥:红恶魔 → 光盘,随进度变粗变亮;光盘处一枚收紧的标记环
                 float p = Age / (float)WarnFrames;
                 float flicker = WarnFrames - Age <= 8 ? 0.6f + 0.4f * MathF.Sin(Age * 1.4f) : 1f;
-                VDBeamDraw.DrawTapered(from, spot, 2f + 2f * p, 10f + 40f * p, RayColor, RayCore, 1f, (0.25f + 0.45f * p) * flicker, Projectile.whoAmI * 0.37f, endGlow: false, zStart: zDevil, zEnd: 0f);
+                VDBeamDraw.DrawTapered(from, spot, 2f + 2f * p, 10f + 40f * p, RayColor, RayCore, 1f, (0.25f + 0.45f * p) * flicker, Projectile.whoAmI * 0.37f, endGlow: false);
                 DrawSourceGlow(from, p * 0.6f);
                 VDVfx.DrawDepthMarker(spot, p, radius, RayColor, 0.9f);
                 return false;
@@ -140,8 +139,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             if (env <= 0.01f) {
                 return false;
             }
-            //射线主体:从背景里的红魔打到脚下,近端粗(光盘直径),VDBeamTapered 着色器的红色板;远端按红魔深度雾化变暗
-            VDBeamDraw.DrawTapered(from, spot, 10f * env, radius * 2f * env, RayColor, RayCore, 1f, 1f, Projectile.whoAmI * 0.37f, endGlow: false, zStart: zDevil, zEnd: 0f);
+            //探照光锥:从红恶魔打到脚下,光盘端粗(光盘直径);锥本身没有判定,压暗一档让光盘读成危险区
+            VDBeamDraw.DrawTapered(from, spot, 10f * env, radius * 2f * env, RayColor, RayCore, 1f, 0.7f, Projectile.whoAmI * 0.37f, endGlow: false);
             DrawSourceGlow(from, env);
             Texture2D glow = CEUtils.getExtraTex("Glow");
             Texture2D ring = CEUtils.getExtraTex("BloomRing");
@@ -154,21 +153,16 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             return false;
         }
 
-        /// <summary>
-        /// 射线源光:红魔枪口处一枚按红魔深度缩放、吃同样雾色的红光球,射线可见地从红魔身上发出,而不是从天上某点冒出来。
-        /// 红魔本体画在远景层(物块后),这枚光球画在平面层,把两层接起来
-        /// </summary>
+        /// <summary>射线源光:红恶魔胸口一枚红光球,射线可见地从它身上发出,而不是从天上某点冒出来</summary>
         private static void DrawSourceGlow(Vector2 from, float strength) {
             if (strength <= 0.01f) {
                 return;
             }
             Texture2D glow = CEUtils.getExtraTex("Glow");
-            float z = VDDirector.RedDevilDepth;
-            float scale = VDDirector.RedRaySourceGlow * VDDepth.Scale(z);
-            Color c = VDDepth.Fog(RayColor, z);
+            float scale = VDDirector.RedRaySourceGlow;
             Vector2 pos = from - Main.screenPosition;
             Main.spriteBatch.UseAdditive();
-            Main.spriteBatch.Draw(glow, pos, null, c * (0.8f * strength), 0f, glow.Size() / 2f, scale * (1f + 0.4f * strength), SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(glow, pos, null, RayColor * (0.8f * strength), 0f, glow.Size() / 2f, scale * (1f + 0.4f * strength), SpriteEffects.None, 0f);
             Main.spriteBatch.Draw(glow, pos, null, RayCore * (0.6f * strength), 0f, glow.Size() / 2f, scale * 0.5f, SpriteEffects.None, 0f);
             CEUtils.ReSetToEndShader();
         }

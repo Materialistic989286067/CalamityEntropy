@@ -12,13 +12,12 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 {
     /// <summary>
     /// 全息弹幕公共部分:通过 ai[0] 找到本体,本体不在对应状态时自行消散;节拍读本体 Context 的表现通道,不读状态私有量。
-    /// 全息体建在深度基类上,可以停在深处或穿过平面,深度雾化对自发光只混入 35%,红魔在背景里仍然是红的
+    /// 全部留在平面
     /// </summary>
     public abstract class VDHoloProjectile : VDDepthProjectile
     {
         public abstract VDStateIndex OwnerMode { get; }
         public abstract Color HoloColor { get; }
-        /// <summary>全息体默认自己管标记(或不需要)</summary>
         public override bool WantsMarker => false;
 
         /// <summary>本体引用,无效时为 null</summary>
@@ -58,13 +57,17 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
         }
 
-        /// <summary>全息体着色时,自发光只混入 35% 的远处雾</summary>
-        protected static Color HoloTint(Color color, float z) => Color.Lerp(color, VDVfx.FarFog, VDDepth.FogAmount(z) * 0.35f);
+        public static void SpawnHoloBurst(Vector2 pos, Color color) {
+            for (int i = 0; i < 14; i++) {
+                Vector2 v = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(3f, 9f);
+                VDVfx.Spark(pos, v, color, Main.rand.NextFloat(0.5f, 1f), 1f, 22, gravity: true);
+            }
+        }
     }
 
     /// <summary>
-    /// 红魔全息没有伤害,只做演出,深度停在 RedDevilDepth,平面位置用本体的 AnchorPos,亮度按 HoloCharge 走
-    /// 红射线从它射向镜头,三叉戟由本体状态从它的位置生成
+    /// 红恶魔全息:没有伤害,只做演出,平面位置跟着本体的 AnchorPos(每轮换边),缩放 RedDevilScale,亮度按 HoloCharge 走。
+    /// 红射线从它打到脚下的光盘,三叉戟由本体状态从它的位置射出
     /// </summary>
     public class VDHoloRedDevil : VDHoloProjectile
     {
@@ -88,10 +91,6 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 
         protected override void DepthAI() {
             Projectile.localAI[1]++;
-            //这层全息的深度固定,不再做积分
-            Z = VDDirector.RedDevilDepth;
-            ZVel = 0f;
-            ZAccel = 0f;
             FadeOutIfOrphaned();
             VoidDestroyerNPC boss = Owner;
             if (boss == null) {
@@ -107,32 +106,24 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 Projectile.Center = anchor;
             }
             if (Vector2.DistanceSquared(anchor, lastAnchor) > 16f) {
-                //锚点换了 = 红恶魔传送:旧位置爆一圈全息碎片,新位置弹一下(粒子放在投影位置)
+                //锚点换了 = 红恶魔传送:旧位置爆一圈全息碎片,新位置弹一下
                 if (!Main.dedServ) {
-                    SpawnHoloBurst(ProjectedCenter, HoloColor);
-                    SpawnHoloBurst(VDDepth.Project(anchor, Z), HoloColor);
+                    SpawnHoloBurst(Projectile.Center, HoloColor);
+                    SpawnHoloBurst(anchor, HoloColor);
+                    CEUtils.PlaySound("vbapear", 0.9f, anchor, 4, 0.8f);
                 }
                 lastAnchor = anchor;
                 blinkPop = 1f;
             }
-            //浮动量按深度放大,表观上仍是 8px
-            Projectile.Center = anchor + new Vector2(0, MathF.Sin(Projectile.localAI[1] * 0.06f) * 8f / VDDepth.Scale(Z));
+            Projectile.Center = anchor + new Vector2(0, MathF.Sin(Projectile.localAI[1] * 0.06f) * 8f);
             blinkPop *= 0.85f;
-            Projectile.direction = boss.Target.Center.X > VDDepth.Project(Projectile.Center, Z).X ? 1 : -1;
+            Projectile.direction = boss.Target.Center.X > Projectile.Center.X ? 1 : -1;
 
-            //蓄力粒子:跟本体声明的蓄力读数走,放在投影位置
+            //蓄力粒子:跟本体声明的蓄力读数走
             if (!Main.dedServ && !boss.Context.HoloWrapUp && boss.Context.HoloCharge > 0.02f && Main.rand.NextBool(2)) {
-                Vector2 shown = ProjectedCenter;
-                Vector2 from = shown + CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(70f, 160f);
-                Vector2 v = (shown - from) * 0.08f;
+                Vector2 from = Projectile.Center + CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(70f, 160f);
+                Vector2 v = (Projectile.Center - from) * 0.08f;
                 VDVfx.Spark(from, v, HoloColor, Main.rand.NextFloat(0.4f, 0.8f), 0.9f, 13);
-            }
-        }
-
-        public static void SpawnHoloBurst(Vector2 pos, Color color) {
-            for (int i = 0; i < 14; i++) {
-                Vector2 v = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(3f, 9f);
-                VDVfx.Spark(pos, v, color, Main.rand.NextFloat(0.5f, 1f), 1f, 22, gravity: true);
             }
         }
 
@@ -145,10 +136,9 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Rectangle src = new Rectangle(0, frame * frameH, tex.Width, frameH);
             Vector2 origin = new Vector2(tex.Width / 2f, frameH / 2f);
             SpriteEffects fx = Projectile.direction > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            float opacity = HoloOpacity() * MathHelper.Lerp(1f, VDDepth.Alpha(Z), 0.5f);
-            float scale = (VDDirector.RedDevilPlaneScale + blinkPop * 1.5f) * VDDepth.Scale(Z);
-            Vector2 drawPos = ProjectedCenter - Main.screenPosition;
-            Color tint = HoloTint(HoloColor, Z);
+            float opacity = HoloOpacity();
+            float scale = VDDirector.RedDevilScale + blinkPop * 0.6f;
+            Vector2 drawPos = Projectile.Center - Main.screenPosition;
 
             VoidDestroyerNPC boss = Owner;
             float charge = 0f;
@@ -158,122 +148,96 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 
             spriteBatch.UseAdditive();
             Texture2D glow = CEUtils.getExtraTex("Glow");
-            spriteBatch.Draw(glow, drawPos, null, tint * (0.35f * opacity), 0f, glow.Size() / 2f, (1.4f + blinkPop * 0.5f) * scale / VDDirector.RedDevilPlaneScale * 4f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(glow, drawPos, null, HoloColor * (0.35f * opacity), 0f, glow.Size() / 2f, (0.9f + blinkPop * 0.3f) * scale / VDDirector.RedDevilScale, SpriteEffects.None, 0f);
             if (charge > 0f) {
-                spriteBatch.Draw(glow, drawPos, null, new Color(255, 160, 120) * (0.8f * charge * opacity), 0f, glow.Size() / 2f, (0.6f + 0.8f * charge) * scale / VDDirector.RedDevilPlaneScale * 4f, SpriteEffects.None, 0f);
+                spriteBatch.Draw(glow, drawPos, null, new Color(255, 160, 120) * (0.8f * charge * opacity), 0f, glow.Size() / 2f, (0.35f + 0.45f * charge) * scale / VDDirector.RedDevilScale, SpriteEffects.None, 0f);
             }
             CEUtils.ReSetToEndShader();
 
-            VDHologramDraw.Draw(tex, drawPos, src, tint, opacity, 0f, origin, scale, fx);
+            VDHologramDraw.Draw(tex, drawPos, src, HoloColor, opacity, 0f, origin, scale, fx);
         }
     }
 
-    /// <summary>
-    /// 全息邪恶三叉戟:带深度生成时从背景里的红魔处沿三维直线收敛到平面落点(纵深贯穿,只在穿过平面那几帧有判定,再掠过镜头);
-    /// 不带深度时直飞持续加速(旧行为)。命中 450
-    /// </summary>
+    /// <summary>全息邪恶三叉戟:从红恶魔处直飞、逐帧加速;画大 1.4 倍,拖尾是同一张贴图的全息残影。命中 450</summary>
     public class VDHoloTrident : VDDepthProjectile
     {
+        public const float BodyScale = 1.4f;
+
         public override string Texture => "CalamityEntropy/Assets/Extra/Empty";
         public override int DefaultTimeLeft => 150;
-        public override float MarkerRadius => 26f;
-        public override Color MarkerColor => VDHologramDraw.HellRed;
-        protected override float WhooshStrength => Projectile.identity % 3 == 0 ? 0.25f : 0f;
 
         public override void SetExtraDefaults() {
-            Projectile.width = 20;
-            Projectile.height = 20;
+            Projectile.width = 24;
+            Projectile.height = 24;
         }
 
         protected override void DepthAI() {
             Projectile.localAI[1]++;
-            if (!HasDepth) {
-                float speed = Math.Min(Projectile.velocity.Length() * 1.03f + 0.05f, 30f);
-                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * speed;
-            }
-            else if (OutOfSight) {
-                Projectile.Kill();
-                return;
-            }
-            //朝向按表观运动方向:三维直线在屏幕上是向消失点收敛 / 发散的
-            Vector2 dir = ApparentDirection();
-            Projectile.rotation = dir.ToRotation() + MathHelper.PiOver4;
-            if (!HasDepth || Math.Abs(Z) < 0.5f) {
-                Lighting.AddLight(Projectile.Center, VDHologramDraw.HellRed.ToVector3() * 0.4f);
-            }
-        }
-
-        private Vector2 ApparentDirection() {
-            if (!HasDepth || trailCount < 2) {
-                return Projectile.velocity.SafeNormalize(Vector2.UnitX);
-            }
-            Vector2 prev = VDDepth.Project(trailPos[1], trailZ[1]);
-            Vector2 d = ProjectedCenter - prev;
-            return d.LengthSquared() < 0.01f ? Projectile.velocity.SafeNormalize(Vector2.UnitX) : d.SafeNormalize(Vector2.UnitX);
+            float speed = Math.Min(Projectile.velocity.Length() * 1.03f + 0.05f, 30f);
+            Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * speed;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
+            Lighting.AddLight(Projectile.Center, VDHologramDraw.HellRed.ToVector3() * 0.45f);
         }
 
         protected override void DrawDepth(SpriteBatch spriteBatch) {
             Main.instance.LoadProjectile(ProjectileID.UnholyTridentHostile);
             Texture2D tex = TextureAssets.Projectile[ProjectileID.UnholyTridentHostile].Value;
             Vector2 origin = tex.Size() / 2f;
-            float opacity = MathHelper.Clamp(Projectile.localAI[1] / 8f, 0f, 1f) * 0.9f * VDDepth.Alpha(Z);
+            float opacity = MathHelper.Clamp(Projectile.localAI[1] / 8f, 0f, 1f) * 0.95f;
             if (opacity <= 0.01f) {
                 return;
             }
-            float scale = 1.1f * VDDepth.Scale(Z);
-            Color tint = HoloTintStatic(Z);
+            Vector2 drawPos = Projectile.Center - Main.screenPosition;
+            spriteBatch.UseAdditive();
+            Texture2D glow = CEUtils.getExtraTex("Glow");
+            spriteBatch.Draw(glow, drawPos, null, VDHologramDraw.HellRed * (0.4f * opacity), 0f, glow.Size() / 2f, 0.32f, SpriteEffects.None, 0f);
+            CEUtils.ReSetToEndShader();
             VDHologramDraw.Begin();
             for (int i = trailCount - 1; i >= 1; i--) {
-                float a = (1f - i / (float)TrailLength) * 0.35f;
-                Vector2 pos = VDDepth.Project(trailPos[i], trailZ[i]) - Main.screenPosition;
-                VDHologramDraw.DrawPart(tex, pos, null, tint, opacity * a, Projectile.rotation, origin, 1.1f * VDDepth.Scale(trailZ[i]), SpriteEffects.None);
+                float a = (1f - i / (float)TrailLength) * 0.45f;
+                VDHologramDraw.DrawPart(tex, trailPos[i] - Main.screenPosition, null, VDHologramDraw.HellRed, opacity * a, Projectile.rotation, origin, BodyScale * (1f - i * 0.04f), SpriteEffects.None);
             }
-            VDHologramDraw.DrawPart(tex, ProjectedCenter - Main.screenPosition, null, tint, opacity, Projectile.rotation, origin, scale, SpriteEffects.None);
+            VDHologramDraw.DrawPart(tex, drawPos, null, VDHologramDraw.HellRed, opacity, Projectile.rotation, origin, BodyScale, SpriteEffects.None);
             VDHologramDraw.End();
         }
-
-        private static Color HoloTintStatic(float z) => Color.Lerp(VDHologramDraw.HellRed, VDVfx.FarFog, VDDepth.FogAmount(z) * 0.35f);
     }
 
     /// <summary>
-    /// 偶数冲是平面横冲,起冲扇形 4 发毒刺;奇数冲穿层,第 30 帧穿过平面那几帧才有判定
-    /// ai[0] 本体,ai[1] 目标玩家,ai[2] 预设侧向,0 表示首冲自选;之后回同一侧,共 JungleDashes 次
-    /// 命中 432
+    /// 全息陆龟:每次冲锋在玩家左右 TortoiseStartOffset 处现身(屏内),待机期画出整条水平航道,y 在现身那一刻锁死,
+    /// 起冲时扇形 4 发毒刺,沿航道直冲不修正;下一冲换到另一侧。ai[0] 本体,ai[1] 目标玩家,ai[2] 首冲侧向(0 = 自选)。命中 432
     /// </summary>
     public class VDHoloTortoise : VDHoloProjectile
     {
-        public const int AppearFrames = VDDirector.TortoiseAppearFrames;
-        public const int DashFrames = VDDirector.TortoiseDashFrames;
-
         public override string Texture => "CalamityEntropy/Assets/Extra/Empty";
         public override VDStateIndex OwnerMode => VDStateIndex.GreenJungle;
         public override Color HoloColor => VDHologramDraw.JungleGreen;
         public override int DefaultTimeLeft => 1200;
-        public override float MarkerRadius => 70f;
-        public override Color MarkerColor => VDHologramDraw.JungleGreen;
-        /// <summary>穿层冲锋用基类的逼近标记(锁定点上的收缩环)</summary>
-        public override bool WantsMarker => HasDepth && Approaching && !VDDepth.InHitBand(Z, ZVel);
-        protected override float WhooshStrength => 0.6f;
+        protected override float WhooshStrength => 0f;
 
-        /// <summary>服务端状态机:0 出现待机,1 冲刺,2 收尾。客户端不跑状态机,只按同步来的速度判定是否在冲刺</summary>
+        /// <summary>服务端状态机:0 现身待机,1 冲刺,2 收尾。客户端不跑状态机,只按同步来的速度判定是否在冲刺</summary>
         private int phase;
         private int phaseTimer;
         private int dashesDone;
         private float spin;
         private Vector2 lastPos;
         private bool wasDashing;
+        /// <summary>本地的待机计时(客户端用它画航道渐亮;冲刺中归零)</summary>
+        private int idleAge;
 
         public override void SetExtraDefaults() {
             Projectile.width = 128;
             Projectile.height = 128;
         }
 
-        /// <summary>速度表示同步过来的是否在冲刺,待机期速度是零,门停在原地</summary>
+        /// <summary>速度表示同步过来的是否在冲刺,待机期速度是零</summary>
         public bool Dashing => Projectile.velocity.LengthSquared() > 1f;
 
         public override bool ShouldUpdatePosition() => Dashing;
 
         private int TotalDashes => VDDirector.JungleDashes(Owner != null ? Owner.Phase : 1);
+
+        /// <summary>下一冲的航向:从现身那一侧朝另一侧(ai[2] 记的是现身侧)</summary>
+        private float DashDir => -Math.Sign(Projectile.ai[2] == 0f ? 1f : Projectile.ai[2]);
 
         protected override void DepthAI() {
             Projectile.localAI[1]++;
@@ -292,39 +256,24 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
 
             bool dashing = Dashing;
+            idleAge = dashing ? 0 : idleAge + 1;
             spin += dashing ? 0.35f * Math.Sign(Projectile.velocity.X == 0f ? 1f : Projectile.velocity.X) : 0.08f;
             Projectile.rotation = spin;
-            if (Math.Abs(Z) < 0.5f) {
-                Lighting.AddLight(Projectile.Center, HoloColor.ToVector3() * 0.6f);
-            }
+            Lighting.AddLight(Projectile.Center, HoloColor.ToVector3() * 0.6f);
 
-            //客户端演出靠"位置跳变 / 冲刺起落"这两个可观测量,不依赖服务端私有状态;粒子放在投影位置
+            //客户端演出靠「位置跳变 / 冲刺起落」这两个可观测量,不依赖服务端私有状态
             if (!Main.dedServ) {
-                Vector2 shown = ProjectedCenter;
                 if (Vector2.DistanceSquared(Projectile.Center, lastPos) > 300f * 300f) {
-                    VDHoloRedDevil.SpawnHoloBurst(VDDepth.Project(lastPos, Z), HoloColor);
-                    VDHoloRedDevil.SpawnHoloBurst(shown, HoloColor);
-                    CEUtils.PlaySound("vbapear", 0.8f * (HasDepth ? VDDepth.DopplerPitch(Math.Max(Z, 0f)) : 1f), shown, 4, 0.9f);
+                    SpawnHoloBurst(lastPos, HoloColor);
+                    SpawnHoloBurst(Projectile.Center, HoloColor);
+                    CEUtils.PlaySound("vbapear", 0.8f, Projectile.Center, 4, 0.9f);
                 }
                 if (dashing && !wasDashing) {
-                    CEUtils.PlaySound("CruiserDash", 0.8f, shown, 3, 0.9f);
+                    CEUtils.PlaySound("CruiserDash", 0.8f, Projectile.Center, 3, 0.9f);
                 }
-                if (dashing && Math.Abs(Z) < 0.6f && Main.rand.NextBool(2)) {
-                    float sc = VDDepth.Scale(Z);
-                    Vector2 v = -Projectile.velocity * 0.1f * sc + CEUtils.randomPointInCircle(2f);
-                    VDVfx.Spark(shown + CEUtils.randomPointInCircle(50f * sc), v, HoloColor, Main.rand.NextFloat(0.5f, 1f) * sc, 0.9f, 18);
-                }
-            }
-
-            //平面横冲中的纵向修正全端同算:尚未越过玩家时向玩家 y 轻微偏,越过后回直;穿层冲锋走定死的三维直线,不修正
-            if (dashing && !HasDepth) {
-                bool ahead = Math.Sign(target.Center.X - Projectile.Center.X) == Math.Sign(Projectile.velocity.X);
-                if (ahead) {
-                    float dy = target.Center.Y - Projectile.Center.Y;
-                    Projectile.velocity.Y = MathHelper.Clamp(Projectile.velocity.Y + Math.Sign(dy) * 0.4f, -6f, 6f);
-                }
-                else {
-                    Projectile.velocity.Y *= 0.9f;
+                if (dashing && Main.rand.NextBool(2)) {
+                    Vector2 v = -Projectile.velocity * 0.1f + CEUtils.randomPointInCircle(2f);
+                    VDVfx.Spark(Projectile.Center + CEUtils.randomPointInCircle(50f), v, HoloColor, Main.rand.NextFloat(0.5f, 1f), 0.9f, 18);
                 }
             }
             lastPos = Projectile.Center;
@@ -332,42 +281,24 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         }
 
         private void ServerStateMachine(Player target) {
-            bool depthDash = dashesDone % 2 == 1;
             if (phase == 0) {
                 if (phaseTimer == 0) {
-                    //首冲按玩家移动方向选侧,之后每次都回同一侧
+                    //首冲按玩家移动方向选侧,之后每冲换边
                     if (Projectile.ai[2] == 0) {
                         Projectile.ai[2] = Math.Abs(target.velocity.X) > 0.5f ? Math.Sign(target.velocity.X) : (Main.rand.NextBool() ? 1 : -1);
                     }
-                    if (depthDash) {
-                        //穿层:传送到背景里(表观在玩家侧上方),Z 钉在深处
-                        Vector2 apparent = new Vector2(Projectile.ai[2] * VDDirector.TortoiseZApparent.X, VDDirector.TortoiseZApparent.Y);
-                        Projectile.Center = VDDepth.WorldFromApparent(target.Center, apparent, VDDirector.TortoiseZDepth);
-                        Z = VDDirector.TortoiseZDepth;
+                    else if (dashesDone > 0) {
+                        Projectile.ai[2] = -Projectile.ai[2];
                     }
-                    else {
-                        Projectile.Center = target.Center + new Vector2(Projectile.ai[2] * VDDirector.TortoiseStartOffset, 0f);
-                        Z = 0f;
-                    }
-                    ZVel = 0f;
-                    ZAccel = 0f;
+                    Projectile.Center = target.Center + new Vector2(Projectile.ai[2] * VDDirector.TortoiseStartOffset, 0f);
                     Projectile.velocity = Vector2.Zero;
                     Projectile.netUpdate = true;
                 }
                 phaseTimer++;
-                if (phaseTimer >= AppearFrames) {
-                    if (depthDash) {
-                        //穿层起冲:三维直线,第 TortoiseZCrossFrame 帧在锁定点穿过平面
-                        Vector2 lock2 = target.Center + target.velocity * VDDirector.TortoiseZLead;
-                        Projectile.velocity = (lock2 - Projectile.Center) / VDDirector.TortoiseZCrossFrame;
-                        ZVel = -Z / VDDirector.TortoiseZCrossFrame;
-                    }
-                    else {
-                        //平面起冲:朝玩家方向横冲 200 格,同时扇形 4 发毒刺
-                        float dir = -Projectile.ai[2];
-                        Projectile.velocity = new Vector2(dir * VDDirector.TortoiseDashDistance / DashFrames, 0f);
-                        FireStingers(target);
-                    }
+                if (phaseTimer >= VDDirector.TortoiseAppearFrames) {
+                    //起冲:沿航道定速横冲,同时扇形 4 发毒刺
+                    Projectile.velocity = new Vector2(DashDir * VDDirector.TortoiseDashSpeed, 0f);
+                    FireStingers(target);
                     Projectile.netUpdate = true;
                     phase = 1;
                     phaseTimer = 0;
@@ -379,15 +310,9 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 if (phaseTimer % 30 == 0) {
                     Projectile.netUpdate = true;
                 }
-                if (depthDash && phaseTimer == VDDirector.TortoiseZCrossFrame) {
-                    //穿过平面那一帧放毒刺扇
-                    FireStingers(target);
-                }
-                int frames = depthDash ? VDDirector.TortoiseZDashFrames : DashFrames;
-                if (phaseTimer >= frames) {
+                if (phaseTimer >= VDDirector.TortoiseDashFrames) {
                     dashesDone++;
                     Projectile.velocity = Vector2.Zero;
-                    ZVel = 0f;
                     Projectile.netUpdate = true;
                     if (dashesDone >= TotalDashes) {
                         Projectile.timeLeft = Math.Min(Projectile.timeLeft, 20);
@@ -424,28 +349,31 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             int frameH = tex.Height / frames;
             Rectangle src = new Rectangle(0, 0, tex.Width, frameH);
             Vector2 origin = new Vector2(tex.Width / 2f, frameH / 2f);
-            float scale = 128f / Math.Max(tex.Width, frameH) * 1.15f * VDDepth.Scale(Z);
-            float opacity = HoloOpacity(0.9f) * VDDepth.Alpha(Z);
+            float scale = 128f / Math.Max(tex.Width, frameH) * 1.15f;
+            float opacity = HoloOpacity(0.9f);
             if (opacity <= 0.01f) {
                 return;
             }
-            Vector2 drawPos = ProjectedCenter - Main.screenPosition;
-            Color tint = HoloTint(HoloColor, Z);
+            Vector2 drawPos = Projectile.Center - Main.screenPosition;
+
+            //待机期的航道:从现身处朝冲刺方向横贯一屏,随待机计时渐亮
+            if (!Dashing && Projectile.timeLeft > 20) {
+                float lane = MathHelper.Clamp(idleAge / (float)VDDirector.TortoiseAppearFrames, 0f, 1f);
+                VDVfx.DrawLane(Projectile.Center, new Vector2(DashDir, 0f), VDDirector.TortoiseDashSpeed * VDDirector.TortoiseDashFrames, VDDirector.TortoiseLaneWidth, HoloColor, 0.25f + 0.75f * lane);
+            }
 
             spriteBatch.UseAdditive();
             Texture2D glow = CEUtils.getExtraTex("Glow");
-            spriteBatch.Draw(glow, drawPos, null, tint * (0.4f * opacity), 0f, glow.Size() / 2f, 0.9f * VDDepth.Scale(Z), SpriteEffects.None, 0f);
+            spriteBatch.Draw(glow, drawPos, null, HoloColor * (0.4f * opacity), 0f, glow.Size() / 2f, 0.9f, SpriteEffects.None, 0f);
             CEUtils.ReSetToEndShader();
 
             VDHologramDraw.Begin();
             if (Dashing) {
                 for (int i = 1; i < trailCount && i <= 4; i++) {
-                    Vector2 pos = VDDepth.Project(trailPos[i], trailZ[i]) - Main.screenPosition;
-                    float gs = 128f / Math.Max(tex.Width, frameH) * 1.15f * VDDepth.Scale(trailZ[i]);
-                    VDHologramDraw.DrawPart(tex, pos, src, tint, opacity * (0.3f - i * 0.06f), Projectile.rotation - i * 0.2f, origin, gs, SpriteEffects.None);
+                    VDHologramDraw.DrawPart(tex, trailPos[i] - Main.screenPosition, src, HoloColor, opacity * (0.3f - i * 0.06f), Projectile.rotation - i * 0.2f, origin, scale, SpriteEffects.None);
                 }
             }
-            VDHologramDraw.DrawPart(tex, drawPos, src, tint, opacity, Projectile.rotation, origin, scale, SpriteEffects.None);
+            VDHologramDraw.DrawPart(tex, drawPos, src, HoloColor, opacity, Projectile.rotation, origin, scale, SpriteEffects.None);
             VDHologramDraw.End();
         }
     }
@@ -457,8 +385,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public override int DefaultTimeLeft => 120;
 
         public override void SetExtraDefaults() {
-            Projectile.width = 12;
-            Projectile.height = 12;
+            Projectile.width = 14;
+            Projectile.height = 14;
         }
 
         public override void AI() {
@@ -469,20 +397,24 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public override bool PreDraw(ref Color lightColor) {
             Main.instance.LoadProjectile(ProjectileID.Stinger);
             Texture2D tex = TextureAssets.Projectile[ProjectileID.Stinger].Value;
-            float opacity = MathHelper.Clamp(Projectile.localAI[1] / 6f, 0f, 1f) * 0.9f;
-            VDHologramDraw.Draw(tex, Projectile.Center - Main.screenPosition, null, VDHologramDraw.JungleGreen, opacity, Projectile.rotation, tex.Size() / 2f, 1.6f, SpriteEffects.None);
+            float opacity = MathHelper.Clamp(Projectile.localAI[1] / 6f, 0f, 1f) * 0.95f;
+            Main.spriteBatch.UseAdditive();
+            Texture2D glow = CEUtils.getExtraTex("Glow");
+            Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition, null, VDHologramDraw.JungleGreen * (0.35f * opacity), 0f, glow.Size() / 2f, 0.2f, SpriteEffects.None, 0f);
+            CEUtils.ReSetToEndShader();
+            VDHologramDraw.Draw(tex, Projectile.Center - Main.screenPosition, null, VDHologramDraw.JungleGreen, opacity, Projectile.rotation, tex.Size() / 2f, 1.9f, SpriteEffects.None);
             return false;
         }
     }
 
     /// <summary>
-    /// 倾 55° 的三维椭圆,下半圈退到远处、上半圈压到镜头前,只有 |Z|≤WyvernHitBand 的节有判定
-    /// 玩家出圈时龙头脱轨直冲 40 帧;本弹幕 Z 恒 0,深度只在节级
-    /// ai[0] 本体,ai[1] 起始角,和状态同一颗骰子;命中 432
+    /// 全息小白龙:绕本体的平面椭圆围栏(横半轴 WyvernOrbitRx、纵半轴 WyvernOrbitRy,整圈在一屏之内),龙身铺掉约三分之二圈,
+    /// 剩下的缺口随龙一起转。玩家跑出椭圆时龙头脱轨直冲 40 帧再归位;所有龙节都有判定。
+    /// ai[0] 本体,ai[1] 起始角(与状态同一颗骰子);命中 432
     /// </summary>
     public class VDHoloWyvern : VDHoloProjectile
     {
-        public const int SegmentCount = 75;
+        public const int SegmentCount = 60;
         public const float SegmentLength = 44f;
         public const float SegmentScale = 2f;
 
@@ -493,18 +425,15 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         protected override float WhooshStrength => 0f;
 
         private readonly Vector2[] segments = new Vector2[SegmentCount];
-        private readonly float[] segDepth = new float[SegmentCount];
-        private readonly int[] drawOrder = new int[SegmentCount];
         private bool initialized;
         /// <summary>0 绕圈,1 出圈直冲,2 归位</summary>
         private int mode;
         private int modeTimer;
         private float orbitAngle;
-        /// <summary>追击期深度压回平面的混合量 0..1</summary>
-        private float chaseBlend;
 
-        public float OrbitRadius => VDDirector.WyvernOrbitRadius;
-        private static float TiltCos => MathF.Cos(MathHelper.ToRadians(VDDirector.WyvernTiltDeg));
+        public override void SetStaticDefaults() {
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 3600;
+        }
 
         public override void SetExtraDefaults() {
             Projectile.width = 60;
@@ -514,27 +443,19 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public override bool ShouldUpdatePosition() => false;
 
         /// <summary>轨道上角 θ 处的平面位置</summary>
-        private Vector2 OrbitPoint(Vector2 center, float theta) => center + new Vector2(MathF.Cos(theta), MathF.Sin(theta) * TiltCos) * OrbitRadius;
+        private static Vector2 OrbitPoint(Vector2 center, float theta)
+            => center + new Vector2(MathF.Cos(theta) * VDDirector.WyvernOrbitRx, MathF.Sin(theta) * VDDirector.WyvernOrbitRy);
 
-        /// <summary>轨道上角 θ 处的深度:下半圈远、上半圈近(近端振幅小,放大后仍留在屏内)</summary>
-        private static float OrbitDepth(float theta) {
-            float s = MathF.Sin(theta);
-            return s >= 0f ? s * VDDirector.WyvernFarAmp : s * VDDirector.WyvernNearAmp;
-        }
-
-        /// <summary>平面上任一点按轨道椭圆反推的深度(节级深度用它,不必逐节记历史)</summary>
-        private float DepthAt(Vector2 center, Vector2 pos) {
+        /// <summary>点相对椭圆的归一化半径(1 = 正好在圈上)</summary>
+        private static float EllipseRatio(Vector2 center, Vector2 pos) {
             Vector2 d = pos - center;
-            float theta = MathF.Atan2(d.Y / Math.Max(TiltCos, 0.05f), d.X);
-            return OrbitDepth(theta) * (1f - chaseBlend);
+            float x = d.X / VDDirector.WyvernOrbitRx;
+            float y = d.Y / VDDirector.WyvernOrbitRy;
+            return MathF.Sqrt(x * x + y * y);
         }
 
         protected override void DepthAI() {
             Projectile.localAI[1]++;
-            //整条龙的弹幕级 Z 恒 0:分层与判定都在节级
-            Z = 0f;
-            ZVel = 0f;
-            ZAccel = 0f;
             FadeOutIfOrphaned();
             VoidDestroyerNPC boss = Owner;
             if (boss == null) {
@@ -548,8 +469,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 orbitAngle = Projectile.ai[1];
                 Projectile.Center = OrbitPoint(center, orbitAngle);
                 for (int i = 0; i < SegmentCount; i++) {
-                    segments[i] = Projectile.Center;
-                    segDepth[i] = OrbitDepth(orbitAngle);
+                    segments[i] = OrbitPoint(center, orbitAngle - i * SegmentLength / VDDirector.WyvernOrbitRx);
                 }
             }
 
@@ -561,12 +481,11 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             switch (mode) {
                 case 0:
                     Projectile.Center = orbitPos;
-                    chaseBlend = Math.Max(0f, chaseBlend - 0.08f);
-                    if (target != null && Vector2.Distance(target.Center, center) > OrbitRadius + 60f && Projectile.timeLeft > 120) {
+                    if (target != null && EllipseRatio(center, target.Center) > VDDirector.WyvernLeaveRatio && Projectile.timeLeft > 120) {
                         mode = 1;
                         modeTimer = 0;
                         if (!Main.dedServ) {
-                            CEUtils.PlaySound("CruiserDash", 0.7f, ProjectedHead(), 3, 0.9f);
+                            CEUtils.PlaySound("CruiserDash", 0.7f, Projectile.Center, 3, 0.9f);
                         }
                         if (IsServer) {
                             Projectile.netUpdate = true;
@@ -575,7 +494,6 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                     break;
                 case 1:
                     modeTimer++;
-                    chaseBlend = Math.Min(1f, chaseBlend + 0.1f);
                     if (target != null) {
                         Vector2 toTarget = target.Center - Projectile.Center;
                         Projectile.Center += toTarget.SafeNormalize(Vector2.Zero) * Math.Min(42f, toTarget.Length());
@@ -591,7 +509,6 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                     break;
                 default:
                     modeTimer++;
-                    chaseBlend = Math.Max(0f, chaseBlend - 0.05f);
                     Projectile.Center = Vector2.Lerp(Projectile.Center, orbitPos, 0.12f);
                     if (modeTimer >= 30 || Vector2.Distance(Projectile.Center, orbitPos) < 30f) {
                         mode = 0;
@@ -599,42 +516,29 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                     break;
             }
 
-            //蠕虫跟随:每节钉在前一节后方定长处;深度按各节在轨道椭圆上的角反推
+            //蠕虫跟随:每节钉在前一节后方定长处
             segments[0] = Projectile.Center;
             for (int i = 1; i < SegmentCount; i++) {
                 Vector2 diff = segments[i] - segments[i - 1];
                 if (diff.LengthSquared() < 0.01f) {
-                    diff = -Projectile.velocity.SafeNormalize(Vector2.UnitX);
-                    if (diff == Vector2.Zero) {
-                        diff = Vector2.UnitX;
-                    }
+                    diff = Vector2.UnitX;
                 }
                 segments[i] = segments[i - 1] + diff.SafeNormalize(Vector2.UnitX) * SegmentLength;
             }
-            for (int i = 0; i < SegmentCount; i++) {
-                segDepth[i] = DepthAt(center, segments[i]);
-            }
-            Lighting.AddLight(Projectile.Center, HoloColor.ToVector3() * 0.7f * VDDepth.Scale(Math.Max(segDepth[0], 0f)));
+            Lighting.AddLight(Projectile.Center, HoloColor.ToVector3() * 0.7f);
             if (!Main.dedServ && Main.rand.NextBool(3)) {
                 int idx = Main.rand.Next(SegmentCount);
-                if (Math.Abs(segDepth[idx]) < 0.6f) {
-                    Vector2 v = CEUtils.randomPointInCircle(1.5f);
-                    VDVfx.Spark(VDDepth.Project(segments[idx], segDepth[idx]) + CEUtils.randomPointInCircle(20f), v, HoloColor, Main.rand.NextFloat(0.4f, 0.8f), 0.8f, 16);
-                }
+                VDVfx.Spark(segments[idx] + CEUtils.randomPointInCircle(20f), CEUtils.randomPointInCircle(1.5f), HoloColor, Main.rand.NextFloat(0.4f, 0.8f), 0.8f, 16);
             }
         }
-
-        private Vector2 ProjectedHead() => VDDepth.Project(segments[0], segDepth[0]);
 
         protected override bool? CollidingOnPlane(Rectangle projHitbox, Rectangle targetHitbox) {
             if (Projectile.localAI[1] < 12f) {
                 return false;
             }
-            int half = (int)(26f * SegmentScale);
+            //龙节贴图约 32px 宽,放大 2 倍后判定盒取 72,略宽于可见身体
+            int half = (int)(18f * SegmentScale);
             for (int i = 0; i < SegmentCount; i++) {
-                if (Math.Abs(segDepth[i]) > VDDirector.WyvernHitBand) {
-                    continue;
-                }
                 Rectangle seg = new Rectangle((int)segments[i].X - half, (int)segments[i].Y - half, half * 2, half * 2);
                 if (seg.Intersects(targetHitbox)) {
                     return true;
@@ -650,22 +554,14 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Main.instance.LoadNPC(NPCID.WyvernBody2);
             Main.instance.LoadNPC(NPCID.WyvernBody3);
             Main.instance.LoadNPC(NPCID.WyvernTail);
-            float opacity = HoloOpacity(0.8f);
-
-            //远的节先画,近的节压在上面
-            for (int i = 0; i < SegmentCount; i++) {
-                drawOrder[i] = i;
+            float opacity = HoloOpacity(0.85f);
+            if (opacity <= 0.01f) {
+                return;
             }
-            Array.Sort(drawOrder, (a, b) => segDepth[b].CompareTo(segDepth[a]));
 
+            //尾先画,头压在最上面
             VDHologramDraw.Begin();
-            for (int k = 0; k < SegmentCount; k++) {
-                int i = drawOrder[k];
-                float z = segDepth[i];
-                float a = opacity * VDDepth.Alpha(z);
-                if (a <= 0.01f) {
-                    continue;
-                }
+            for (int i = SegmentCount - 1; i >= 0; i--) {
                 int type;
                 if (i == 0) {
                     type = NPCID.WyvernHead;
@@ -684,11 +580,10 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 int frameH = tex.Height / frames;
                 Rectangle src = new Rectangle(0, 0, tex.Width, frameH);
                 Vector2 origin = new Vector2(tex.Width / 2f, frameH / 2f);
-                //朝向按投影后的前后节连线算,透视里身体是弯的
-                Vector2 here = VDDepth.Project(segments[i], z);
-                Vector2 ahead = i == 0 ? here + (here - VDDepth.Project(segments[1], segDepth[1])) : VDDepth.Project(segments[i - 1], segDepth[i - 1]);
+                Vector2 here = segments[i];
+                Vector2 ahead = i == 0 ? here + (here - segments[1]) : segments[i - 1];
                 float rot = (ahead - here).ToRotation() + MathHelper.PiOver2;
-                VDHologramDraw.DrawPart(tex, here - Main.screenPosition, src, HoloTint(HoloColor, z), a, rot, origin, SegmentScale * VDDepth.Scale(z), SpriteEffects.None);
+                VDHologramDraw.DrawPart(tex, here - Main.screenPosition, src, HoloColor, opacity, rot, origin, SegmentScale, SpriteEffects.None);
             }
             VDHologramDraw.End();
         }

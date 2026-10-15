@@ -7,34 +7,34 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
     /// <summary>
     /// 表是建议序,IsLegal 才是闸,最近三手或同家族就沿表后找,阶段切换不清历史
     /// 替补只有两处,舰队远距 → 幻影冲刺,支援无地面或满员 → 裂隙斩,风筝时 P1 冲刺最多 3 手
-    /// 带外时间 P1 约 22%、P2 28%、P3 26%,都在 FarTimeBudget 内,地下只改绘制层
+    /// 远景招只剩轨道轰炸(P2 表两次、P3 表一次),本体带外约 150 帧一次,占一轮不到 6%
     /// </summary>
     public static class VDRotation
     {
-        /// <summary>纵深环门是远景签名,第三手就亮</summary>
+        /// <summary>收缩环门是 P1 的区域招,第三手就亮</summary>
         private static readonly VDStateIndex[] Phase1 =
         {
-            VDStateIndex.ArcFireball, VDStateIndex.PhantomDash, VDStateIndex.DepthGates, VDStateIndex.HomingMissiles,
+            VDStateIndex.ArcFireball, VDStateIndex.PhantomDash, VDStateIndex.ClosingGates, VDStateIndex.HomingMissiles,
             VDStateIndex.PhantomFleet, VDStateIndex.VoidFlame, VDStateIndex.PhaseLaser, VDStateIndex.PhantomDash,
-            VDStateIndex.RiftCut, VDStateIndex.DepthGates, VDStateIndex.ArcFireball, VDStateIndex.PhantomFleet,
+            VDStateIndex.RiftCut, VDStateIndex.ClosingGates, VDStateIndex.ArcFireball, VDStateIndex.PhantomFleet,
         };
 
-        /// <summary>首手轨道轰炸是阶段签名,远景招不相邻</summary>
+        /// <summary>首手轨道轰炸是阶段签名</summary>
         private static readonly VDStateIndex[] Phase2 =
         {
             VDStateIndex.OrbitalStrike, VDStateIndex.PhantomDash, VDStateIndex.RedHell, VDStateIndex.HomingMissiles,
             VDStateIndex.Singularity, VDStateIndex.Reinforcement, VDStateIndex.PhantomFleet, VDStateIndex.GreenJungle,
-            VDStateIndex.RiftCut, VDStateIndex.TeleportFire, VDStateIndex.OrbitalStrike, VDStateIndex.DeepStrafe,
+            VDStateIndex.RiftCut, VDStateIndex.TeleportFire, VDStateIndex.OrbitalStrike, VDStateIndex.BombingRun,
             VDStateIndex.PhaseLaser, VDStateIndex.BlueSky,
         };
 
-        /// <summary>首手湮灭主炮,连段后手计入历史,舰队表里只一次,远景招至少隔两手</summary>
+        /// <summary>首手湮灭主炮,连段后手计入历史,舰队表里只一次</summary>
         private static readonly VDStateIndex[] Phase3 =
         {
             VDStateIndex.AnnihilationCannon, VDStateIndex.RedHell, VDStateIndex.RiftCut, VDStateIndex.Singularity,
-            VDStateIndex.DeepStrafe, VDStateIndex.OrbitalStrike, VDStateIndex.GreenJungle, VDStateIndex.TeleportFire,
+            VDStateIndex.BombingRun, VDStateIndex.OrbitalStrike, VDStateIndex.GreenJungle, VDStateIndex.TeleportFire,
             VDStateIndex.PhantomFleet, VDStateIndex.AnnihilationCannon, VDStateIndex.PhantomDash, VDStateIndex.BlueSky,
-            VDStateIndex.DepthGates, VDStateIndex.Reinforcement, VDStateIndex.PhaseLaser, VDStateIndex.HomingMissiles,
+            VDStateIndex.ClosingGates, VDStateIndex.Reinforcement, VDStateIndex.PhaseLaser, VDStateIndex.HomingMissiles,
         };
 
         public static VDStateIndex[] TableFor(int phase) => phase >= 3 ? Phase3 : phase >= 2 ? Phase2 : Phase1;
@@ -50,12 +50,12 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
                 case VDStateIndex.VoidFlame:
                 case VDStateIndex.TeleportFire:
                 case VDStateIndex.HomingMissiles:
-                case VDStateIndex.DeepStrafe:
+                case VDStateIndex.BombingRun:
                     return VDAttackFamily.Barrage;
                 case VDStateIndex.PhaseLaser:
                 case VDStateIndex.RiftCut:
                 case VDStateIndex.OrbitalStrike:
-                case VDStateIndex.DepthGates:
+                case VDStateIndex.ClosingGates:
                     return VDAttackFamily.Zone;
                 case VDStateIndex.Singularity:
                     return VDAttackFamily.Gravity;
@@ -99,7 +99,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
                 //缝刚合上舰队就从缝口的位置开门齐冲
                 case VDStateIndex.RiftCut:
                     return VDStateIndex.PhantomFleet;
-                //从背景俯冲归位直接接一记幻影冲刺
+                //从背景俯冲归位直接接幻影冲刺
                 case VDStateIndex.OrbitalStrike:
                     return VDStateIndex.PhantomDash;
                 default:

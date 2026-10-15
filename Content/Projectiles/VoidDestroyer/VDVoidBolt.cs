@@ -13,31 +13,30 @@ using Terraria.ModLoader;
 namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 {
     /// <summary>
-    /// ai[0]:0 直飞,1 弧形(ai[1]/ai[2] 目标点),2 延迟转向(ai[1]),3 沿初速加速,4 形状弹
-    /// 5 远处穿平面,6 镜头后落到平面,7 抛入深处再回头(ai[1]/ai[2] 锁定点),8 绕 ai[1]/ai[2] 螺旋,一圈两次穿平面才判定
-    /// 深度 Z 由 VDDepthSource 给,螺旋自己算;命中 348 + 虚空之火 3 秒
+    /// ai[0]:0 直飞,1 弧形包抄(ai[1]/ai[2] 锁定点),2 延迟转向上(ai[1] 延迟帧),3 沿初速加速,4 形状弹(乘法外扩),
+    /// 5 炸弹(重力下落),6 螺旋(绕 ai[1]/ai[2] 外旋)。全部留在平面;命中 + 虚空之火 3 秒
     /// </summary>
     public class VDVoidBolt : VDDepthProjectile
     {
         public const int ModeStraight = 0;
         public const int ModeArcWrap = 1;
         public const int ModeFanRise = 2;
-        public const int ModeDashTrail = 3;
+        public const int ModeAccelerate = 3;
         public const int ModeShapeBurst = 4;
-        public const int ModeZPierce = 5;
-        public const int ModeZFromNear = 6;
-        public const int ModeZBoomerang = 7;
-        public const int ModeZOrbit = 8;
-        /// <summary>螺旋弹寿命:约 1.7 圈、三四次穿越平面,奇点塌缩前基本散尽</summary>
-        public const int OrbitLife = 120;
+        public const int ModeBomb = 5;
+        public const int ModeSpiral = 6;
+        /// <summary>螺旋弹寿命:半径从吸积盘外沿长到约 530px</summary>
+        public const int SpiralLife = 150;
+        /// <summary>贴图里的菱形只有 14×30,画大 1.35 倍(约 19×40)才在亮背景和满屏弹幕里读得出来;判定盒同步放到 26</summary>
+        public const float BodyScale = 1.35f;
 
         public static readonly Color GlowColor = new Color(190, 60, 255);
+        /// <summary>暗描边色:真透明度画在弹体下,亮天空上也剩一圈轮廓</summary>
+        public static readonly Color RimDark = new Color(36, 8, 64);
 
         public int Mode => (int)Projectile.ai[0];
-        public bool IsDepthMode => Mode >= ModeZPierce;
-        /// <summary>螺旋弹的 Z 在正负之间来回,不要在「逼近」段画落点标记(一圈两次会闪两次),留给穿越那一瞬的判定说话</summary>
-        public override bool WantsMarker => Mode != ModeZOrbit && base.WantsMarker;
-        protected override float WhooshStrength => Mode == ModeZOrbit ? 0f : 0.35f;
+        /// <summary>螺旋弹的起始半径(首帧由生成位置反推)</summary>
+        private float spiralRadius0;
         public override int DebuffType => ModContent.BuffType<VoidFire>();
         public override int DefaultTimeLeft => 240;
 
@@ -47,27 +46,31 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         }
 
         public override void SetExtraDefaults() {
-            Projectile.width = 22;
-            Projectile.height = 22;
+            Projectile.width = 26;
+            Projectile.height = 26;
         }
 
         protected override void DepthAI() {
             //首帧按模式定寿命(生成后改 timeLeft 不走同步,放在全端都会跑的首帧里)
             if (Projectile.localAI[0] == 0f) {
                 Projectile.localAI[0] = 1f;
-                if (Mode == ModeShapeBurst) {
-                    Projectile.timeLeft = 120;
-                }
-                else if (Mode == ModeDashTrail) {
-                    Projectile.timeLeft = 180;
-                }
-                else if (Mode == ModeZOrbit) {
-                    Projectile.timeLeft = OrbitLife;
-                    //起始角由生成位置相对轨道心反推(各端同一生成包,算得一样)
-                    Projectile.localAI[2] = (Projectile.Center - new Vector2(Projectile.ai[1], Projectile.ai[2])).ToRotation();
-                }
-                else if (IsDepthMode) {
-                    Projectile.timeLeft = 360;
+                switch (Mode) {
+                    case ModeShapeBurst:
+                        Projectile.timeLeft = 120;
+                        break;
+                    case ModeAccelerate:
+                        Projectile.timeLeft = 180;
+                        break;
+                    case ModeBomb:
+                        Projectile.timeLeft = 200;
+                        break;
+                    case ModeSpiral:
+                        Projectile.timeLeft = SpiralLife;
+                        //起始角与半径由生成位置相对轨道心反推(各端同一生成包,算得一样)
+                        Vector2 rel = Projectile.Center - new Vector2(Projectile.ai[1], Projectile.ai[2]);
+                        Projectile.localAI[2] = rel.ToRotation();
+                        spiralRadius0 = rel.Length();
+                        break;
                 }
             }
             Projectile.localAI[1]++;
@@ -100,7 +103,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                     }
                     break;
                 }
-                case ModeDashTrail: {
+                case ModeAccelerate: {
                     float speed = Math.Min(Projectile.velocity.Length() * 1.045f + 0.05f, 30f);
                     Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * speed;
                     break;
@@ -110,76 +113,42 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                     Projectile.velocity *= 1.012f;
                     break;
                 }
-                case ModeZPierce:
-                case ModeZFromNear: {
-                    //弹幕穿过平面后继续沿原方向飞,离开视野后直接消失,不要在镜头前爆出一团火花
-                    if (OutOfSight) {
-                        Projectile.Kill();
-                    }
+                case ModeBomb: {
+                    Projectile.velocity.X *= 0.99f;
+                    Projectile.velocity.Y = Math.Min(Projectile.velocity.Y + VDDirector.BombGravity, VDDirector.BombMaxFall);
                     break;
                 }
-                case ModeZBoomerang: {
-                    Vector2 lock2 = new Vector2(Projectile.ai[1], Projectile.ai[2]);
-                    if (ZVel > 0f) {
-                        //去程:沿抛出方向减速,同时慢慢朝锁定点上空拐(远处绕行的小点)
-                        Vector2 toLock = lock2 - Projectile.Center;
-                        float cur = Projectile.velocity.ToRotation();
-                        float diff = MathHelper.WrapAngle(toLock.ToRotation() - cur);
-                        float turn = MathHelper.Clamp(diff, -0.05f, 0.05f);
-                        float speed = Math.Max(Projectile.velocity.Length() * 0.97f, 3f);
-                        Projectile.velocity = (cur + turn).ToRotationVector2() * speed;
-                    }
-                    else if (Z > 0f) {
-                        //回程:按剩余帧数精确收敛到锁定点,到达平面那一帧刚好压在锁点上
-                        float frames = Math.Max(FramesToPlane(), 1f);
-                        Projectile.velocity = (lock2 - Projectile.Center) / frames;
-                    }
-                    else if (OutOfSight) {
-                        Projectile.Kill();
-                    }
-                    break;
-                }
-                case ModeZOrbit: {
-                    //倾斜轨道螺旋:角按角速度推进、半径按帧数长;Z = 振幅 × sin 角,按差分写回 Z 速度(判定带按真实 Z 位移放宽)
+                case ModeSpiral: {
+                    //角按角速度推进、半径按帧数长,速度按差分写回(残影与朝向跟着弧线走)
                     Vector2 c = new Vector2(Projectile.ai[1], Projectile.ai[2]);
-                    float angle = Projectile.localAI[2] + VDDirector.SingOrbitAngular * age;
-                    float radius = VDDirector.SingDiskRadius + VDDirector.SingOrbitRadiusGrowth * age;
-                    float tiltCos = MathF.Cos(MathHelper.ToRadians(VDDirector.SingOrbitTiltDeg));
-                    Vector2 next = c + new Vector2(MathF.Cos(angle), MathF.Sin(angle) * tiltCos) * radius;
-                    Projectile.velocity = next - Projectile.Center;
-                    float wantZ = VDDirector.SingOrbitDepthAmp * MathF.Sin(angle);
-                    ZVel = wantZ - Z;
-                    ZAccel = 0f;
+                    float angle = Projectile.localAI[2] + VDDirector.SingSpiralAngular * age;
+                    float radius = spiralRadius0 + VDDirector.SingSpiralGrowth * age;
+                    Projectile.velocity = c + angle.ToRotationVector2() * radius - Projectile.Center;
                     break;
                 }
             }
 
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            if (!HasDepth || Math.Abs(Z) < 0.5f) {
-                Lighting.AddLight(Projectile.Center, GlowColor.ToVector3() * 0.5f);
-            }
+            Lighting.AddLight(Projectile.Center, GlowColor.ToVector3() * 0.55f);
 
             if (Main.dedServ || Mode == ModeShapeBurst) {
                 return;
             }
-            //火焰拖尾:虚空粒子走像素管线,发光火花保底;深度模式只在平面附近放粒子(粒子系统不分层,远处放了会飘在物块前)
-            if (HasDepth && Math.Abs(Z) > 0.35f) {
-                return;
-            }
+            //火焰拖尾:虚空粒子走像素管线,发光火花保底
             if (age % 2 == 0) {
                 Vector2 back = -Projectile.velocity.SafeNormalize(Vector2.Zero);
-                var p = PRTLoader.NewParticle<PRT_Void>(Projectile.Center + back * 10f + CEUtils.randomPointInCircle(5f), back * Main.rand.NextFloat(0.5f, 2f) + Projectile.velocity * 0.2f, Color.White, Main.rand.NextFloat(0.7f, 1.1f));
+                var p = PRTLoader.NewParticle<PRT_Void>(Projectile.Center + back * 12f + CEUtils.randomPointInCircle(5f), back * Main.rand.NextFloat(0.5f, 2f) + Projectile.velocity * 0.2f, Color.White, Main.rand.NextFloat(0.8f, 1.2f));
                 p.Opacity = 0.7f;
                 p.ad = 0.04f;
             }
             if (age % 5 == 0) {
                 Vector2 v = -Projectile.velocity * 0.15f + CEUtils.randomPointInCircle(1.5f);
-                VDVfx.Spark(Projectile.Center, v, GlowColor, Main.rand.NextFloat(0.4f, 0.8f), 0.9f, 18);
+                VDVfx.Spark(Projectile.Center, v, GlowColor, Main.rand.NextFloat(0.5f, 0.9f), 0.9f, 18);
             }
         }
 
         public override void OnKill(int timeLeft) {
-            if (Main.dedServ || (HasDepth && Math.Abs(Z) > 0.5f)) {
+            if (Main.dedServ) {
                 return;
             }
             for (int i = 0; i < 6; i++) {
@@ -188,58 +157,39 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
         }
 
+        /// <summary>
+        /// 四层:加法外晕 + 同贴图残影(拖尾与弹体同材质,横向宽度 ≥ 弹体一半)→ 真透明度暗描边 → 弹体 → 白热芯。
+        /// 形状弹太密,不画残影;所有层按 BodyScale 放大
+        /// </summary>
         protected override void DrawDepth(SpriteBatch spriteBatch) {
             Texture2D tex = TextureAssets.Projectile[Type].Value;
+            Texture2D glowTex = CEUtils.getExtraTex("Glow");
             Vector2 origin = tex.Size() / 2f;
-            Vector2 drawPos = ProjectedCenter - Main.screenPosition;
-            float scale = DrawScale;
+            Vector2 drawPos = Projectile.Center - Main.screenPosition;
+            float scale = Projectile.scale * BodyScale;
             float fade = Mode == ModeShapeBurst ? MathHelper.Clamp(Projectile.timeLeft / 30f, 0f, 1f) : 1f;
-            float depthAlpha = VDDepth.Alpha(Z);
-            Color glow = VDDepth.Fog(GlowColor, Z);
+            fade *= MathHelper.Clamp(Projectile.localAI[1] / 4f, 0f, 1f);
 
             spriteBatch.UseAdditive();
-            float speed = Projectile.velocity.Length();
-            //拖尾:细长速度线,只在真的飞得快时画(旧版 26px 高的实心药丸拖在每颗弹后,叠在亮背景上就是一串粉椭圆)
-            //深度模式的「速度」还包含 Z 向,按透视缩放后的表观位移估
-            float apparentSpeed = HasDepth ? speed * VDDepth.Scale(Z) + Math.Abs(ZVel) * 220f * VDDepth.Scale(Z) : speed;
-            if (Mode != ModeShapeBurst && apparentSpeed > 10f) {
-                Texture2D streak = CEUtils.getExtraTex("StreakSolid");
-                float len = MathHelper.Clamp(apparentSpeed * 3f, 24f, 60f) * Math.Max(scale, 0.35f);
-                Vector2 streakDir = HasDepth ? StreakDirection() : Projectile.velocity.SafeNormalize(Vector2.Zero);
-                Vector2 streakScale = new Vector2(len / streak.Width, 8f * Math.Max(scale, 0.4f) / streak.Height);
-                Vector2 tailPos = drawPos - streakDir * (len * 0.5f + 6f * scale);
-                spriteBatch.Draw(streak, tailPos, null, glow * (0.45f * depthAlpha), streakDir.ToRotation(), streak.Size() / 2f, streakScale, SpriteEffects.None, 0f);
-            }
-            if (HasDepth) {
-                DrawDepthTrail(tex, origin, GlowColor, 0.35f * fade);
-            }
-            else {
+            spriteBatch.Draw(glowTex, drawPos, null, GlowColor * (0.5f * fade), 0f, glowTex.Size() / 2f, 0.3f * scale, SpriteEffects.None, 0f);
+            if (Mode != ModeShapeBurst) {
                 for (int i = 1; i < Projectile.oldPos.Length; i++) {
-                    float a = (1f - i / (float)Projectile.oldPos.Length) * 0.35f * fade;
+                    if (Projectile.oldPos[i] == Vector2.Zero) {
+                        continue;
+                    }
+                    float k = i / (float)Projectile.oldPos.Length;
                     Vector2 pos = Projectile.oldPos[i] + Projectile.Size / 2f - Main.screenPosition;
-                    spriteBatch.Draw(tex, pos, null, GlowColor * a, Projectile.oldRot[i], origin, Projectile.scale * (1f - i * 0.04f), SpriteEffects.None, 0f);
+                    spriteBatch.Draw(tex, pos, null, GlowColor * ((1f - k) * 0.45f * fade), Projectile.oldRot[i], origin, scale * (1f - k * 0.45f), SpriteEffects.None, 0f);
                 }
             }
-            Texture2D glowTex = CEUtils.getExtraTex("Glow");
-            spriteBatch.Draw(glowTex, drawPos, null, glow * (0.6f * fade * depthAlpha), 0f, glowTex.Size() / 2f, 0.16f * scale, SpriteEffects.None, 0f);
             CEUtils.ReSetToEndShader();
 
-            if (HasDepth) {
-                VDDepthDraw.Draw(tex, drawPos, null, Color.White, fade, Projectile.rotation, origin, scale, SpriteEffects.None, Z);
-            }
-            else {
-                spriteBatch.Draw(tex, drawPos, null, Color.White * fade, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0f);
-            }
-        }
+            spriteBatch.Draw(tex, drawPos, null, RimDark * (0.85f * fade), Projectile.rotation, origin, scale * 1.22f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(tex, drawPos, null, Color.White * fade, Projectile.rotation, origin, scale, SpriteEffects.None, 0f);
 
-        /// <summary>深度模式的表观运动方向:上一帧投影点到本帧投影点(Z 向运动也会在屏幕上表现为向消失点收敛/发散)</summary>
-        private Vector2 StreakDirection() {
-            if (trailCount < 2) {
-                return Projectile.velocity.SafeNormalize(Vector2.UnitY);
-            }
-            Vector2 prev = VDDepth.Project(trailPos[1], trailZ[1]);
-            Vector2 dir = ProjectedCenter - prev;
-            return dir.LengthSquared() < 0.01f ? Projectile.velocity.SafeNormalize(Vector2.UnitY) : dir.SafeNormalize(Vector2.UnitY);
+            spriteBatch.UseAdditive();
+            spriteBatch.Draw(glowTex, drawPos, null, Color.White * (0.55f * fade), 0f, glowTex.Size() / 2f, 0.07f * scale, SpriteEffects.None, 0f);
+            CEUtils.ReSetToEndShader();
         }
     }
 }

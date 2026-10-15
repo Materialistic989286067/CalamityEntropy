@@ -134,10 +134,10 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 seamsSpawned = 6;
                 lastSeamAt = Timer;
             }
-            //笼开口那一帧补穿心一刀(它自己再预告 36 帧,开口时笼已合上);穿心刀的喷弹是从背景里飞来的纵深贯穿弹
+            //笼开口那一帧补穿心一刀(它自己再预告 36 帧,开口时笼已合上)
             if (seamsSpawned == 6 && Timer == 1 + raise + VDDirector.RiftAimFrames) {
                 float ang = ctx.RolledAngles[0] + MathHelper.PiOver4;
-                SpawnSeam(ctx, PredictTarget(ctx, VDDirector.RiftPredictLead * 0.5f), ang, VDDirector.RiftAimFrames, VDDirector.RiftHalfLength, false, pierce: true);
+                SpawnSeam(ctx, PredictTarget(ctx, VDDirector.RiftPredictLead * 0.5f), ang, VDDirector.RiftAimFrames, VDDirector.RiftHalfLength, false);
                 seamsSpawned = 7;
                 lastSeamAt = Timer;
             }
@@ -146,8 +146,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             }
         }
 
-        /// <summary>划一道缝:半长取负 = 穿心刀(喷弹改纵深贯穿),喷弹伤害取负 = 只向外喷(笼边)</summary>
-        private void SpawnSeam(VDStateContext ctx, Vector2 center, float angle, int aimFrames, float halfLength, bool outwardOnly, bool pierce = false) {
+        /// <summary>划一道缝:喷弹伤害取负 = 只向外喷(笼边)</summary>
+        private void SpawnSeam(VDStateContext ctx, Vector2 center, float angle, int aimFrames, float halfLength, bool outwardOnly) {
             //本体的挥砍演出:核心亮、翼张、描边爆闪、一记短反冲、划空音
             ctx.CoreGlow = 1f;
             ctx.WingPulse = 1f;
@@ -157,7 +157,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             ctx.Npc.velocity -= dir.RotatedBy(MathHelper.PiOver2) * 2f;
             VDVfx.Sound("CruiserSpit2", 1.3f, ctx.Owner.CorePos, 4, 0.8f);
             int boltDamage = ctx.Owner.ProjDamage(VDDirector.DmgVoidBolt) * (outwardOnly ? -1 : 1);
-            Shoot<VDRiftSeam>(ctx, center, dir, VDDirector.DmgRiftSeam, aimFrames, pierce ? -halfLength : halfLength, boltDamage);
+            Shoot<VDRiftSeam>(ctx, center, dir, VDDirector.DmgRiftSeam, aimFrames, halfLength, boltDamage);
         }
 
         private void SwitchBeat(Beat next) {

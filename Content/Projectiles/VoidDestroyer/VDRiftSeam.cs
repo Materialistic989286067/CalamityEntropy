@@ -8,9 +8,9 @@ using Terraria.ModLoader;
 namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 {
     /// <summary>
-    /// 中点 Center,方向 velocity,半长 |ai[1]|;ai[0] 预告帧,拉开 12 帧是判定窗
-    /// ai[2] 喷弹伤害,取负只向外喷;ai[1] 取负是穿心刀,喷弹从 Z 1 收敛到缝两侧 160px
-    /// 猛合时偶数位平面直飞,奇数位抛入深处再回头;缝可见后才开口,判定只在开口期
+    /// 中点 Center,方向 velocity,半长 ai[1];ai[0] 预告帧,拉开 12 帧是判定窗
+    /// ai[2] 喷弹伤害,取负只向外喷(笼边);猛合时两侧各一排直飞弹,偶数位快、奇数位慢,一排分成前后两层
+    /// 缝可见后才开口,判定只在开口期
     /// </summary>
     public class VDRiftSeam : VDHostileProjectile
     {
@@ -19,9 +19,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public override int DefaultTimeLeft => 120;
 
         public int AimFrames => (int)Math.Max(Projectile.ai[0], 6f);
-        public float HalfLength => Projectile.ai[1] != 0f ? Math.Abs(Projectile.ai[1]) : VDDirector.RiftHalfLength;
-        /// <summary>穿心刀:喷弹改纵深贯穿</summary>
-        public bool Pierce => Projectile.ai[1] < 0f;
+        public float HalfLength => Projectile.ai[1] > 0f ? Projectile.ai[1] : VDDirector.RiftHalfLength;
         public int BoltDamage => (int)Math.Abs(Projectile.ai[2]);
         public bool OutwardOnly => Projectile.ai[2] < 0f;
         public Vector2 Dir => Projectile.velocity.SafeNormalize(Vector2.UnitX);
@@ -107,10 +105,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
         }
 
-        /// <summary>
-        /// 两侧各一排垂直虚空弹,沿缝均布;OutwardOnly 时只向远离玩家的一侧(笼边)喷。
-        /// 偶数位平面直飞,奇数位纵深回旋(抛入深处 40 帧后回头收敛到最近玩家喷出时的位置);穿心刀全排改纵深贯穿(背景里生成、收敛到缝两侧的落点)
-        /// </summary>
+        /// <summary>两侧各一排垂直虚空弹,沿缝均布;OutwardOnly 时只向远离玩家的一侧(笼边)喷</summary>
         private void SpitBolts() {
             Vector2 normal = Dir.RotatedBy(MathHelper.PiOver2);
             int count = VDDirector.RiftBoltsPerSide;
@@ -120,29 +115,15 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 towardPlayer = Math.Sign(Vector2.Dot(closest.Center - Projectile.Center, normal));
             }
             int type = ModContent.ProjectileType<VDVoidBolt>();
-            (float boomVel, float boomAccel) = VDDepth.Parabola(VDDirector.RiftBoomerangApex, VDDirector.RiftBoomerangFrames);
             for (int i = 0; i < count; i++) {
                 float along = MathHelper.Lerp(-HalfLength * 0.85f, HalfLength * 0.85f, (i + 0.5f) / count);
                 Vector2 pos = Projectile.Center + Dir * along;
+                float speed = i % 2 == 0 ? VDDirector.RiftBoltSpeed : VDDirector.RiftBoltSlowSpeed;
                 for (int side = -1; side <= 1; side += 2) {
                     if (OutwardOnly && side == towardPlayer) {
                         continue;
                     }
-                    if (Pierce) {
-                        //穿心刀:从背景里收敛到缝两侧的落点,再掠过镜头
-                        Vector2 landing = pos + normal * side * VDDirector.RiftPierceLandOffset;
-                        Vector2 vel = (landing - pos) / VDDirector.RiftPierceFrames;
-                        float zVel = -VDDirector.RiftPierceDepth / VDDirector.RiftPierceFrames;
-                        Projectile.NewProjectile(new VDDepthSource(null, VDDirector.RiftPierceDepth, zVel, 0f), pos, vel, type, BoltDamage, 0f, Main.myPlayer, VDVoidBolt.ModeZPierce);
-                        continue;
-                    }
-                    Vector2 planeVel = normal * side * VDDirector.RiftBoltSpeed;
-                    if (i % 2 == 1) {
-                        Projectile.NewProjectile(new VDDepthSource(null, 0f, boomVel, boomAccel), pos, planeVel, type, BoltDamage, 0f, Main.myPlayer, VDVoidBolt.ModeZBoomerang, closest.Center.X, closest.Center.Y);
-                    }
-                    else {
-                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), pos, planeVel, type, BoltDamage, 0f, Main.myPlayer, VDVoidBolt.ModeStraight);
-                    }
+                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), pos, normal * side * speed, type, BoltDamage, 0f, Main.myPlayer, VDVoidBolt.ModeStraight);
                 }
             }
         }

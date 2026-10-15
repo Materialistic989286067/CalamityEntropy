@@ -6,7 +6,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
-    /// <summary>导弹环先退到深处再扑回,只在穿平面有判定,核弹出手前 6 帧静默</summary>
+    /// <summary>激光流贴身逼走位,导弹环径向飞出后只追一小段就直飞(躲过一次就甩掉),核弹出手前 6 帧静默</summary>
     [VaultState((int)VDStateIndex.HomingMissiles, typeof(VDStateContext))]
     public class VDHomingMissilesState : VDStateBase
     {
@@ -74,15 +74,13 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 Vector2 dir = (ctx.Target.Center - core).SafeNormalize(Vector2.UnitY);
                 MuzzleCue(ctx, dir, 6f, "VoidAttack", 0.8f);
                 VDVfx.Shake(ctx.Npc.Center, 5f, 2000f);
-                //核弹抛入深处再回落:抛物线顶点在引信正中,落地那一帧引信走完
-                (float zVel, float zAccel) = VDDepth.Parabola(VDDirector.NukeApexDepth, VDVoidNuke.FuseTime);
                 if (phase >= 2) {
                     //两发分别向左右射出,靠追踪弧线从两侧夹击
-                    ShootDepth<VDVoidNuke>(ctx, core, new Vector2(-VDDirector.MissileNukeSideSpeed, 0f), VDDirector.DmgNuke, 0f, zVel, zAccel, ctx.Npc.target, VDVoidNuke.DefaultRadius);
-                    ShootDepth<VDVoidNuke>(ctx, core, new Vector2(VDDirector.MissileNukeSideSpeed, 0f), VDDirector.DmgNuke, 0f, zVel, zAccel, ctx.Npc.target, VDVoidNuke.DefaultRadius);
+                    Shoot<VDVoidNuke>(ctx, core, new Vector2(-VDDirector.MissileNukeSideSpeed, 0f), VDDirector.DmgNuke, ctx.Npc.target, VDDirector.NukeRadius);
+                    Shoot<VDVoidNuke>(ctx, core, new Vector2(VDDirector.MissileNukeSideSpeed, 0f), VDDirector.DmgNuke, ctx.Npc.target, VDDirector.NukeRadius);
                 }
                 else {
-                    ShootDepth<VDVoidNuke>(ctx, core, dir * VDDirector.MissileNukeSpeed, VDDirector.DmgNuke, 0f, zVel, zAccel, ctx.Npc.target, VDVoidNuke.DefaultRadius);
+                    Shoot<VDVoidNuke>(ctx, core, dir * VDDirector.MissileNukeSpeed, VDDirector.DmgNuke, ctx.Npc.target, VDDirector.NukeRadius);
                 }
             }
 
@@ -92,16 +90,15 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             return null;
         }
 
-        /// <summary>导弹环:径向散开的同时射入深处(Z 速度按去程帧数配好,掉头由导弹自管)</summary>
+        /// <summary>导弹环:径向散开,飞出一段后由导弹自己转头</summary>
         private void FireMissileRing(VDStateContext ctx, int count) {
             ctx.WingPulse = 1f;
             VDVfx.Sound("CruiserSpit2", 0.9f, ctx.Npc.Center, 4, 0.9f);
             float offset = Timer * 0.1f;
-            float zVel = VDDirector.MissileDiveDepth / VDDirector.MissileOutFrames;
             for (int i = 0; i < count; i++) {
                 float ang = MathHelper.TwoPi * i / count + offset;
                 Vector2 dir = ang.ToRotationVector2();
-                ShootDepth<VDHomingMissile>(ctx, ctx.Npc.Center + dir * VDDirector.MissileRingRadius, dir * VDDirector.MissileRingSpeed, VDDirector.DmgMissile, 0f, zVel, 0f, ctx.Npc.target);
+                Shoot<VDHomingMissile>(ctx, ctx.Npc.Center + dir * VDDirector.MissileRingRadius, dir * VDDirector.MissileRingSpeed, VDDirector.DmgMissile, ctx.Npc.target);
             }
         }
     }

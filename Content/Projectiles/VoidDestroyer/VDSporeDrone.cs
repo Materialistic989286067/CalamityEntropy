@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.NPCs.VoidDestroyer;
-using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -10,14 +9,15 @@ using Terraria.ModLoader;
 namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 {
     /// <summary>
-    /// ai[1] 帧后放 VDSporeLaser,自身无伤害;ai[0]:0 向右,1 向下,2 绕 ai[2] 号 NPC 转
-    /// 装饰模式 ai[1] 是相位,从 Z 2 降入;射击模式 ai[2] 是激光长度,伤害由 damage 承接
+    /// ai[1] 帧后放 VDSporeLaser,自身无伤害;ai[0]:0 向右,1 向下,2 绕 ai[2] 号 NPC 转(装饰),3 向左
+    /// 装饰模式 ai[1] 是相位;射击模式 ai[2] 是激光长度,伤害由 damage 承接
     /// </summary>
     public class VDSporeDrone : ModProjectile, IVoidDestroyerProjectile
     {
         public const int ModeFireRight = 0;
         public const int ModeFireDown = 1;
         public const int ModeDecor = 2;
+        public const int ModeFireLeft = 3;
         public const int FadeOutTime = 12;
         public const int DecorLife = 40;
         public static readonly Color WarnColor = new Color(210, 140, 255);
@@ -25,7 +25,11 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public int Mode => (int)Projectile.ai[0];
         public int WarnTime => (int)Math.Max(Projectile.ai[1], 10f);
         public float BeamLength => Projectile.ai[2] > 0 ? Projectile.ai[2] : 2400f;
-        public float FireRotation => Mode == ModeFireDown ? MathHelper.PiOver2 : 0f;
+        public float FireRotation => Mode switch {
+            ModeFireDown => MathHelper.PiOver2,
+            ModeFireLeft => MathHelper.Pi,
+            _ => 0f,
+        };
         public int Age => (int)Projectile.localAI[1];
 
         public override void SetDefaults() {
@@ -92,13 +96,6 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Texture2D tex = TextureAssets.Projectile[Type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition;
             Texture2D glow = CEUtils.getExtraTex("Glow");
-            float drawScale = Projectile.scale;
-            if (Mode == ModeDecor) {
-                //装饰无人机从 Z 2 的背景降入环阵,这是只用于绘制的假深度,它本来就没有判定,这层装饰就是深度预告
-                float z = VDDirector.LaserDecorDepth * (1f - VDVfx.EaseOut(Age / (float)VDDirector.LaserDecorDescend));
-                drawPos = VDDepth.Project(Projectile.Center, z) - Main.screenPosition;
-                drawScale *= VDDepth.Scale(z);
-            }
 
             Main.spriteBatch.UseAdditive();
             if (Mode != ModeDecor && Age < WarnTime) {

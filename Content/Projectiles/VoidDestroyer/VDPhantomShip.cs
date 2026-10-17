@@ -129,13 +129,15 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 return;
             }
 
+            //全息体半透明垫不了实心描边,冲刺时染向警示暖白
+            Color holo = Dashing ? Color.Lerp(VDVfx.VoidPurple, VDVfx.HazardRim, 0.45f) : VDVfx.VoidPurple;
             VDHologramDraw.Begin();
             if (Dashing) {
                 for (int i = 1; i < trailCount && i <= 4; i++) {
                     VDHologramDraw.DrawPart(tex, trailPos[i] - Main.screenPosition, null, VDVfx.VoidPurple, opacity * (0.3f - i * 0.06f), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None);
                 }
             }
-            VDHologramDraw.DrawPart(tex, pos, null, VDVfx.VoidPurple, opacity, Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None);
+            VDHologramDraw.DrawPart(tex, pos, null, holo, opacity, Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None);
             VDHologramDraw.End();
         }
     }

@@ -116,6 +116,10 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
             CEUtils.ReSetToEndShader();
 
+            //炮台本体不判伤,描边压到六成
+            if (Mode != ModeDecor) {
+                VDVfx.DrawHazardRim(tex, drawPos, null, Projectile.rotation, tex.Size() / 2f, Projectile.scale, 0.6f);
+            }
             Main.spriteBatch.Draw(tex, drawPos, null, Color.White, Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0f);
             return false;
         }

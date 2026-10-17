@@ -854,5 +854,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public static float SkyGridBossRadius(int phase) => phase >= 3 ? 0.42f : phase >= 2 ? 0.32f : 0.24f;
         /// <summary>地表环境光向虚空暮色拉的比例(乘可见强度):白天压暗,夜里略提亮,始终看得见脚下</summary>
         public const float SkyTileTintAmount = 0.5f;
+        /// <summary>画面中心(玩家所在)底幕的压暗量与半径(屏高单位),紫弹在那里和天幕拉开明度</summary>
+        public const float SkyFocusDim = 0.3f;
+        public const float SkyFocusRadius = 0.45f;
     }
 }

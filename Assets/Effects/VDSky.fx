@@ -32,6 +32,8 @@ float3 uColorGrid;
 float3 uColorErosion;
 float3 uColorPlanetRim;
 float3 uColorRing;
+float uFocusDim;        //该值是画面中心(玩家所在)的压暗量,0 到 1
+float uFocusRadius;     //该值是压暗区半径,单位是屏高
 
 //hash21 先把输入压小,格 id 用 fmod 对 512 取模,乘数一大星星会排成格子
 float hash21(float2 p)
@@ -86,7 +88,7 @@ float4 PixelFunc(float2 uv : TEXCOORD0) : COLOR0
     float n1 = tex2D(uImage1, frac(nuv1)).r;
     float n2 = tex2D(uImage1, frac(nuv2)).r;
     float neb = n1 * n2;
-    col += uColorNebula * neb * 0.55;
+    col += uColorNebula * neb * 0.42;
 
     float2 starP = sp + (bp - sp) * uCharge * 0.05;
     float sFar = StarLayer(starP + uParallax * uStarParallax.x, 34.0, 0.35, 0.0);
@@ -132,7 +134,7 @@ float4 PixelFunc(float2 uv : TEXCOORD0) : COLOR0
     float crawl = 0.55 + 0.9 * flow;
     float pulse = 0.85 + 0.15 * sin(uTime * 2.7 + en * 12.0);
     float3 eatenCol = float3(0.01, 0.0, 0.03) + uColorErosion * (0.04 + 0.16 * flow * en);
-    float3 planetCol = lerp(planet, eatenCol, eaten) + uColorErosion * edge * crawl * pulse * (0.9 + uFlash * 1.2);
+    float3 planetCol = lerp(planet, eatenCol, eaten) + uColorErosion * edge * crawl * pulse * (0.7 + uFlash * 1.2);
     planetCol += uColorGrid * shock * 0.25;
     float2 q = float2(pp.x, pp.y * 3.2);
     float rr = length(q);
@@ -145,7 +147,7 @@ float4 PixelFunc(float2 uv : TEXCOORD0) : COLOR0
     float2 rcell = floor(float2(frac(rang) * 64.0, (rr - 1.3) * 12.0));
     float glint = step(0.93, hash21(rcell)) * band * (0.6 + 0.4 * sin(uTime * 5.0 + rcell.x));
     float ringVis = lerp(1.0 - disk, 1.0, step(0.0, pp.y));//近侧在 pp.y 大于 0 时压在盘前面,远侧被 disk 挡住
-    float3 ringCol = (uColorRing * ringDensity * 0.7 + uColorErosion * glint * 0.6) * ringVis;
+    float3 ringCol = (uColorRing * ringDensity * 0.5 + uColorErosion * glint * 0.5) * ringVis;
     col = lerp(col, planetCol, disk);
     col += ringCol;
     float halo = exp(-max(d - 1.0, 0.0) * 5.0) * (1.0 - disk);
@@ -161,6 +163,9 @@ float4 PixelFunc(float2 uv : TEXCOORD0) : COLOR0
     float cellFill = uCharge * exp(-bd * bd / 0.06) * (0.25 + 0.5 * cellHash) * 0.35;
     col += uColorGrid * (edgeLine * gridI + interior * cellFill);
     col += uColorGrid * uFlash * 0.04;
+
+    float2 fc = sp - float2(0.5 * asp, 0.5);
+    col *= 1.0 - uFocusDim * exp(-dot(fc, fc) / max(uFocusRadius * uFocusRadius, 0.0001));
 
     return float4(col * uOpacity, uOpacity);
 }

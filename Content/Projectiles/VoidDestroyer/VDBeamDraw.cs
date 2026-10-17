@@ -126,16 +126,17 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         }
 
         /// <summary>
-        /// 一批共用配色、不透明度和种子;返回 false 表示着色器缺失,改逐根 DrawTapered
+        /// 一批共用配色、不透明度和种子;返回 false 表示着色器缺失,改逐根 DrawTapered。
+        /// blend 缺省加法;传 AlphaBlend 配暗色就是垫在光束下的暗鞘(亮背景上光束不被冲成白线)
         /// </summary>
-        public static bool BeginTapered(Color color, Color coreColor, float opacity, float seed = 0f) {
+        public static bool BeginTapered(Color color, Color coreColor, float opacity, float seed = 0f, BlendState blend = null) {
             Effect shader = TaperedShader;
             if (shader == null) {
                 return false;
             }
             batchShader = shader;
             Main.spriteBatch.End();
-            BeginTaperedBatch(Main.spriteBatch, shader);
+            BeginTaperedBatch(Main.spriteBatch, shader, blend);
             ApplyShared(shader, color, coreColor, opacity, seed);
             return true;
         }
@@ -155,10 +156,10 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         }
 
         /// <summary>进入梯形着色器批次(调用方已 End):白条绑 s0 只为批次状态齐整,噪声绑 s1</summary>
-        private static void BeginTaperedBatch(SpriteBatch sb, Effect shader) {
+        private static void BeginTaperedBatch(SpriteBatch sb, Effect shader, BlendState blend = null) {
             Texture2D strip = CEExtraAssets.white ?? CEUtils.getExtraTex("white");
             Texture2D noise = CEExtraAssets.TurbulentNoise ?? CEUtils.getExtraTex("TurbulentNoise");
-            sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, shader, Main.GameViewMatrix.TransformationMatrix);
+            sb.Begin(SpriteSortMode.Immediate, blend ?? BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, shader, Main.GameViewMatrix.TransformationMatrix);
             GraphicsDevice gd = Main.instance.GraphicsDevice;
             gd.Textures[0] = strip;
             gd.Textures[1] = noise;

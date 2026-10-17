@@ -23,8 +23,8 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
     /// </summary>
     public class VoidMK2 : ModItem
     {
-        public const int DroneCharge = 60;
-        public const float DroneDamageMult = 2.5f;
+        public const int DroneCharge = 45;
+        public const float DroneDamageMult = 3f;
         /// <summary>无人机充能,只在拥有者本端维护;手持弹幕生成时经 ai[1] 带给各端,收枪时写回</summary>
         internal int droneCharge;
 
@@ -33,10 +33,10 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
         public override void SetDefaults() {
             Item.width = 102;
             Item.height = 30;
-            Item.damage = 105;
+            Item.damage = 175;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 6;
-            Item.useAnimation = 6;
+            Item.useTime = 5;
+            Item.useAnimation = 5;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -49,7 +49,7 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
             Item.shoot = ModContent.ProjectileType<VoidMK2Held>();
             Item.shootSpeed = 15f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.crit = 6;
+            Item.crit = 8;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
@@ -550,7 +550,7 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
     /// <summary>无人机爆炸:半径 <see cref="Radius"/> 的圆形判定,前 <see cref="DamageFrames"/> 帧有效,命中施加 3 秒虚空之火;首帧在各端放演出</summary>
     public class VoidMK2Explosion : ModProjectile
     {
-        public const float Radius = 90f;
+        public const float Radius = 110f;
         public const int Lifetime = 16;
         public const int DamageFrames = 4;
 
@@ -596,6 +596,8 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
             }
             CEUtils.PlaySound("VoidBomb", Main.rand.NextFloat(1.1f, 1.25f), Projectile.Center, 4, 0.55f);
             CEUtils.SetShake(Projectile.Center, 3f, 1600f);
+            PRTLoader.NewParticle<PRT_VDVoidBlast>(Projectile.Center, Vector2.Zero, Color.White, Radius * 0.85f)
+                .Configure(24, 0.55f, VDVfx.BlastHot, VDVfx.VoidPink, VDVfx.BlastCool);
             VDVfx.SparkBurst(Projectile.Center, VDVfx.VoidPink, 12, 4f, 11f, 22, 0.45f, 0.85f);
             VDVfx.SparkBurst(Projectile.Center, Color.White, 5, 3f, 7f, 14, 0.35f, 0.6f);
             for (int i = 0; i < 8; i++) {
@@ -608,18 +610,6 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
             }
         }
 
-        public override bool PreDraw(ref Color lightColor) {
-            float life = Age / (float)Lifetime;
-            VDWeaponFx.BeginAdditive();
-            if (Age < 6) {
-                float f = 1f - Age / 6f;
-                VDWeaponFx.Glow(Projectile.Center, Color.White * f, Radius * 0.7f * (0.6f + 0.4f * f));
-            }
-            VDWeaponFx.Glow(Projectile.Center, VDVfx.VoidPurple * (0.75f * (1f - life)), Radius * 1.4f);
-            float ring = MathHelper.Lerp(0.25f, 1.1f, VDVfx.EaseOut(life)) * Radius;
-            VDWeaponFx.Ring(Projectile.Center, Color.Lerp(VDVfx.VoidPink, VDVfx.VoidPurple, life) * (1f - life), ring);
-            VDWeaponFx.End();
-            return false;
-        }
+        public override bool PreDraw(ref Color lightColor) => false;
     }
 }

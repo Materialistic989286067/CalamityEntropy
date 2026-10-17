@@ -158,7 +158,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         }
 
         /// <summary>
-        /// 四层:加法外晕 + 同贴图残影(拖尾与弹体同材质,横向宽度 ≥ 弹体一半)→ 真透明度暗描边 → 弹体 → 白热芯。
+        /// 四层:加法外晕 + 同贴图残影(拖尾与弹体同材质,横向宽度 ≥ 弹体一半)→ 警示描边(暗底 + 暖白亮边)→ 弹体 → 白热芯。
         /// 形状弹太密,不画残影;所有层按 BodyScale 放大
         /// </summary>
         protected override void DrawDepth(SpriteBatch spriteBatch) {
@@ -184,7 +184,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
             CEUtils.ReSetToEndShader();
 
-            spriteBatch.Draw(tex, drawPos, null, RimDark * (0.85f * fade), Projectile.rotation, origin, scale * 1.22f, SpriteEffects.None, 0f);
+            VDVfx.DrawHazardRim(tex, drawPos, null, Projectile.rotation, origin, scale, fade);
             spriteBatch.Draw(tex, drawPos, null, Color.White * fade, Projectile.rotation, origin, scale, SpriteEffects.None, 0f);
 
             spriteBatch.UseAdditive();

@@ -201,5 +201,11 @@ namespace CalamityEntropy.Assets.Register
         //VDDepthFog 给远景做纵深雾,含噪声热闪、菱形模糊、去饱和和雾色,远景层里的本体和深度弹幕贴图都经过它,噪声图绑在 s1,输出预乘 alpha 并用 AlphaBlend 混合,调用处是 VDDepthDraw
         [VaultLoaden("CalamityEntropy/Assets/Effects/VDDepthFog", AssetMode.Effects, "DepthFogPass")]
         public static Asset<Effect> VDDepthFog;
+        //VDVoidBlast 画驱逐舰的虚空爆炸:点火白闪、等离子壳外扩、暗核张开啃壳、冲击环,s1 是 GradientNoise,s2 是 SwirlNoise,调用处是 PRT_VDVoidBlast
+        [VaultLoaden("CalamityEntropy/Assets/Effects/VDVoidBlast", AssetMode.Effects, "BlastPass")]
+        public static Asset<Effect> VDVoidBlast;
+        //VDPlasmaOrb 画虚空电场的等离子球:球面压缩取样的翻滚流、菲涅尔壳、随蓄力长大的白热芯,s1 是 SwirlNoise,s2 是 GradientNoise,调用处是 PlasmaBall
+        [VaultLoaden("CalamityEntropy/Assets/Effects/VDPlasmaOrb", AssetMode.Effects, "OrbPass")]
+        public static Asset<Effect> VDPlasmaOrb;
     }
 }

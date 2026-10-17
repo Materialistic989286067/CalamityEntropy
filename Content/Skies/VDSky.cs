@@ -99,6 +99,8 @@ namespace CalamityEntropy.Content.Skies
             fx.Parameters["uColorErosion"]?.SetValue(VDVfx.SkyErosion.ToVector3());
             fx.Parameters["uColorPlanetRim"]?.SetValue(VDVfx.SkyPlanetRim.ToVector3());
             fx.Parameters["uColorRing"]?.SetValue(VDVfx.SkyRing.ToVector3());
+            fx.Parameters["uFocusDim"]?.SetValue(VDDirector.SkyFocusDim);
+            fx.Parameters["uFocusRadius"]?.SetValue(VDDirector.SkyFocusRadius);
 
             //原始像素空间 + 预乘输出走 AlphaBlend:随 uOpacity 压过原版远景
             CESkyDrawing.BeginRawScreen(sb, BlendState.AlphaBlend, SamplerState.LinearClamp, SpriteSortMode.Immediate, fx);

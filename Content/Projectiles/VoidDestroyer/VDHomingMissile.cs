@@ -1,7 +1,6 @@
-﻿using CalamityEntropy.Content.NPCs.VoidDestroyer;
+﻿using CalamityEntropy.Content.Items.Weapons.VoidDestroyer;
+using CalamityEntropy.Content.NPCs.VoidDestroyer;
 using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
-using CalamityEntropy.Content.Particles;
-using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -23,11 +22,6 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public static readonly Color GlowColor = new Color(210, 90, 255);
 
         public override int DefaultTimeLeft => 240;
-
-        public override void SetStaticDefaults() {
-            ProjectileID.Sets.TrailCacheLength[Type] = 8;
-            ProjectileID.Sets.TrailingMode[Type] = 2;
-        }
 
         public override void SetExtraDefaults() {
             Projectile.width = 20;
@@ -57,16 +51,12 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Lighting.AddLight(Projectile.Center, GlowColor.ToVector3() * 0.4f);
 
-            if (Main.dedServ) {
+            if (Main.dedServ || !Main.rand.NextBool(3)) {
                 return;
             }
             Vector2 back = -Projectile.velocity.SafeNormalize(Vector2.UnitY);
-            Dust d = Dust.NewDustPerfect(Projectile.Center + back * 18f, DustID.Smoke, back * Main.rand.NextFloat(1f, 3f), 120, default, Main.rand.NextFloat(1f, 1.6f));
-            d.noGravity = true;
-            if (Main.rand.NextBool(2)) {
-                Vector2 v = back * Main.rand.NextFloat(2f, 5f) + CEUtils.randomPointInCircle(1f);
-                VDVfx.Spark(Projectile.Center + back * 16f, v, GlowColor, Main.rand.NextFloat(0.5f, 0.9f), 0.9f, 16);
-            }
+            Vector2 v = back * Main.rand.NextFloat(2f, 5f) + CEUtils.randomPointInCircle(1f);
+            VDVfx.Spark(Projectile.Center + back * 18f, v, ExhaustHot, Main.rand.NextFloat(0.5f, 0.85f), 0.9f, 14);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
@@ -79,14 +69,18 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 return;
             }
             CEUtils.PlaySound("VoidBomb", Main.rand.NextFloat(1.1f, 1.3f), Projectile.Center, 6, 0.45f);
-            PRTLoader.NewParticle<PRT_EXPLOSION>(Projectile.Center, Vector2.Zero, Color.White, 0.4f)
-                .Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, 0f, 24);
-            for (int i = 0; i < 10; i++) {
+            VDVfx.Explosion(Projectile.Center, 0.45f, 22, 0.55f);
+            for (int i = 0; i < 8; i++) {
                 Vector2 v = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(3f, 8f);
-                VDVfx.Spark(Projectile.Center, v, GlowColor, Main.rand.NextFloat(0.5f, 1f), 1f, 22, gravity: true);
+                VDVfx.Spark(Projectile.Center, v, i % 2 == 0 ? ExhaustHot : GlowColor, Main.rand.NextFloat(0.5f, 1f), 1f, 22, gravity: true);
             }
         }
 
+        /// <summary>尾焰热色:白里带粉,天幕上读得出的亮度</summary>
+        public static readonly Color ExhaustHot = new Color(255, 205, 250);
+        private static readonly Vector2[] exhaust = new Vector2[TrailLength];
+
+        /// <summary>尾焰带 → 喷口光 → 警示描边 → 弹体;追踪段尾焰更长更亮</summary>
         protected override void DrawDepth(SpriteBatch spriteBatch) {
             Texture2D tex = TextureAssets.Projectile[Type].Value;
             Texture2D glowTex = CEUtils.getExtraTex("Glow");
@@ -94,23 +88,23 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Vector2 drawPos = Projectile.Center - Main.screenPosition;
             float scale = Projectile.scale * BodyScale;
             Vector2 back = -Projectile.velocity.SafeNormalize(Vector2.UnitY);
+            float flame = Projectile.localAI[2] > 0f && Projectile.localAI[2] < VDDirector.MissileHomingFrames ? 1f : 0.7f;
+            Vector2 nozzle = back * 20f * scale;
 
             spriteBatch.UseAdditive();
-            for (int i = 1; i < Projectile.oldPos.Length; i++) {
-                if (Projectile.oldPos[i] == Vector2.Zero) {
-                    continue;
+            if (trailCount > 2) {
+                for (int i = 0; i < trailCount; i++) {
+                    exhaust[i] = (i == 0 ? Projectile.Center : trailPos[i]) + nozzle;
                 }
-                float k = i / (float)Projectile.oldPos.Length;
-                Vector2 pos = Projectile.oldPos[i] + Projectile.Size / 2f - Main.screenPosition;
-                spriteBatch.Draw(tex, pos, null, GlowColor * ((1f - k) * 0.35f), Projectile.oldRot[i], origin, scale * (1f - k * 0.3f), SpriteEffects.None, 0f);
+                var pts = new ArraySegment<Vector2>(exhaust, 0, trailCount);
+                VDWeaponFx.Ribbon(pts, t => (18f - 12f * t) * flame, t => Color.Lerp(VDVfx.VoidPink, GlowColor, t) * ((1f - t) * 0.55f * flame));
+                VDWeaponFx.Ribbon(pts, t => (6f - 4f * t) * flame, t => Color.Lerp(Color.White, ExhaustHot, t) * ((1f - t) * (1f - t) * 0.95f));
             }
-            //尾焰:追踪段里更亮,告诉玩家它还在拐
-            float flame = Projectile.localAI[2] > 0f && Projectile.localAI[2] < VDDirector.MissileHomingFrames ? 1f : 0.7f;
-            spriteBatch.Draw(glowTex, drawPos + back * 20f * scale, null, new Color(255, 140, 255) * (0.85f * flame), 0f, glowTex.Size() / 2f, 0.18f * scale, SpriteEffects.None, 0f);
-            spriteBatch.Draw(glowTex, drawPos, null, GlowColor * 0.35f, 0f, glowTex.Size() / 2f, 0.3f * scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(glowTex, drawPos + nozzle, null, VDVfx.VoidPink * (0.8f * flame), 0f, glowTex.Size() / 2f, 0.16f * scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(glowTex, drawPos + nozzle, null, Color.White * (0.75f * flame), 0f, glowTex.Size() / 2f, 0.06f * scale, SpriteEffects.None, 0f);
             CEUtils.ReSetToEndShader();
 
-            spriteBatch.Draw(tex, drawPos, null, VDVoidBolt.RimDark * 0.8f, Projectile.rotation, origin, scale * 1.18f, SpriteEffects.None, 0f);
+            VDVfx.DrawHazardRim(tex, drawPos, null, Projectile.rotation, origin, scale, 1f);
             spriteBatch.Draw(tex, drawPos, null, Color.White, Projectile.rotation, origin, scale, SpriteEffects.None, 0f);
         }
     }

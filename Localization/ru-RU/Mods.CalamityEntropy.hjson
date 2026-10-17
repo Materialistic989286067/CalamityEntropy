@@ -272,7 +272,7 @@ Items: {
 		/* Tooltip:
 			'''
 			Rapidly fires void rounds, 50% chance to not consume ammo
-			Every full second of firing launches a homing drone from the top of the gun. Ceasing fire keeps the progress
+			Every 0.75 seconds of firing launches a homing drone from the top of the gun. Ceasing fire keeps the progress
 			The drone explodes when it reaches an enemy, inflicting [cebuff:CalamityEntropy/VoidFire] for 3 seconds on enemies in the blast
 			''' */
 	}

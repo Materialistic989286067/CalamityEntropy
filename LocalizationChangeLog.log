@@ -1287,3 +1287,4 @@
 [Mods.CalamityEntropy.Items.VoidDroneRemote.Tooltip] - changed // 补写两侧吊舱轮流射击、红恶魔每 0.75 秒投掷
 [Mods.CalamityEntropy.Projectiles.VoidMK2Held.DisplayName] - added // 虚空MK2 手持弹幕
 [Mods.CalamityEntropy.Projectiles.VoidElectricArc.DisplayName] - added // 虚空电场爆炸的连锁电弧
+[Mods.CalamityEntropy.Items.VoidMK2.Tooltip] - changed // 无人机充能从 1 秒缩到 0.75 秒(驱逐舰武器数值上调)

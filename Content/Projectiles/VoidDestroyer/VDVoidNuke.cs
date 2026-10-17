@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Content.NPCs.VoidDestroyer;
+﻿using CalamityEntropy.Content.Items.Weapons.VoidDestroyer;
+using CalamityEntropy.Content.NPCs.VoidDestroyer;
 using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
@@ -50,12 +51,12 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             if (Projectile.timeLeft == 60 || Projectile.timeLeft == 30 || Projectile.timeLeft == 12) {
                 CEUtils.PlaySound("VoidAnticipation", 1.4f, Projectile.Center, 4, 0.7f);
             }
-            Vector2 back = -Projectile.velocity.SafeNormalize(Vector2.UnitY);
-            Dust d = Dust.NewDustPerfect(Projectile.Center + back * 24f, DustID.Smoke, back * Main.rand.NextFloat(1f, 2f), 140, default, Main.rand.NextFloat(1.2f, 1.8f));
-            d.noGravity = true;
-            var p = PRTLoader.NewParticle<PRT_Void>(Projectile.Center + back * 20f, back * Main.rand.NextFloat(1f, 3f), Color.White, 1.2f);
-            p.Opacity = 0.7f;
-            p.ad = 0.035f;
+            if (Main.rand.NextBool(2)) {
+                Vector2 back = -Projectile.velocity.SafeNormalize(Vector2.UnitY);
+                var p = PRTLoader.NewParticle<PRT_Void>(Projectile.Center + back * 30f, back * Main.rand.NextFloat(1f, 3f), Color.White, 1.1f);
+                p.Opacity = 0.6f;
+                p.ad = 0.035f;
+            }
         }
 
         protected override bool? CollidingOnPlane(Rectangle projHitbox, Rectangle targetHitbox) => false;
@@ -89,20 +90,33 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             CEUtils.ReSetToEndShader();
         }
 
+        private static readonly Vector2[] exhaust = new Vector2[TrailLength];
+
+        /// <summary>尾焰带 → 闪烁弹体光 → 警示描边(引信最后一秒随闪烁加亮)→ 弹体</summary>
         protected override void DrawDepth(SpriteBatch spriteBatch) {
             Texture2D tex = TextureAssets.Projectile[Type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition;
             float blink = Blink();
             float scale = Projectile.scale * 1.3f;
             Texture2D glow = CEUtils.getExtraTex("Glow");
+            Vector2 nozzle = -Projectile.velocity.SafeNormalize(Vector2.UnitY) * 30f * scale;
 
             spriteBatch.UseAdditive();
+            if (trailCount > 2) {
+                for (int i = 0; i < trailCount; i++) {
+                    exhaust[i] = (i == 0 ? Projectile.Center : trailPos[i]) + nozzle;
+                }
+                var pts = new ArraySegment<Vector2>(exhaust, 0, trailCount);
+                VDWeaponFx.Ribbon(pts, t => 24f - 16f * t, t => Color.Lerp(VDVfx.VoidPink, GlowColor, t) * ((1f - t) * 0.5f));
+                VDWeaponFx.Ribbon(pts, t => 8f - 5f * t, t => Color.Lerp(Color.White, VDHomingMissile.ExhaustHot, t) * ((1f - t) * (1f - t) * 0.9f));
+            }
             //弹体光:引信在闪,越到最后闪得越快
             spriteBatch.Draw(glow, drawPos, null, GlowColor * (0.5f + 0.5f * blink), 0f, glow.Size() / 2f, (0.34f + 0.12f * blink) * scale, SpriteEffects.None, 0f);
             spriteBatch.Draw(glow, drawPos, null, Color.White * (0.3f + 0.4f * blink), 0f, glow.Size() / 2f, 0.1f * scale, SpriteEffects.None, 0f);
             CEUtils.ReSetToEndShader();
 
-            spriteBatch.Draw(tex, drawPos, null, VDVoidBolt.RimDark * 0.8f, Projectile.rotation, tex.Size() / 2f, scale * 1.15f, SpriteEffects.None, 0f);
+            float rim = Projectile.timeLeft <= 60 ? 0.75f + 0.5f * blink : 1f;
+            VDVfx.DrawHazardRim(tex, drawPos, null, Projectile.rotation, tex.Size() / 2f, scale, rim, VDVfx.HazardRimWidth * 1.25f);
             spriteBatch.Draw(tex, drawPos, null, Color.White, Projectile.rotation, tex.Size() / 2f, scale, SpriteEffects.None, 0f);
         }
     }
@@ -130,8 +144,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 if (!Main.dedServ) {
                     CEUtils.PlaySound("VoidBomb", 0.8f, Projectile.Center, 3, 1.2f);
                     CEUtils.SetShake(Projectile.Center, 14f, 3000f);
-                    PRTLoader.NewParticle<PRT_EXPLOSION>(Projectile.Center, Vector2.Zero, Color.White, Radius / 260f)
-                        .Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, 0f, 40);
+                    VDVfx.Explosion(Projectile.Center, Radius / VDVfx.BlastRadiusUnit, 40, 0.85f);
                     for (int i = 0; i < 60; i++) {
                         Vector2 v = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(6f, 26f);
                         VDVfx.Spark(Projectile.Center, v, GlowColor, Main.rand.NextFloat(0.8f, 1.6f), 1f, 40, gravity: true);

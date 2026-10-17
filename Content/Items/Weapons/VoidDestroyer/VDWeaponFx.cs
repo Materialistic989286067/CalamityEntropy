@@ -1,5 +1,6 @@
 using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.NPCs.VoidDestroyer;
+using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -183,18 +184,21 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
     }
 
     /// <summary>
-    /// 等离子球(虚空电场的闪电球,杖尖与飞出后共用):暗色球体打底(AlphaBlend 真 alpha 的 Glow 着暗色),
-    /// 加法叠外晕、球壳环、从球心伸到球面的锯齿电丝与白热核。电丝每 3 帧重抖一次,端点角度缓慢游走,读作球里爬动的放电
+    /// 等离子球(杖尖与飞出后共用):球体走 VDPlasmaOrb(AlphaBlend 真遮挡,亮背景上也读得出),
+    /// 其上加法叠锯齿电丝与偶发外跃电弧;电丝每 3 帧重抖,端点角度缓慢游走
     /// </summary>
     public class PlasmaBall
     {
-        public const int MaxFilaments = 10;
-        public static readonly Color Deep = new Color(14, 4, 30);
+        public const int MaxFilaments = 6;
+        /// <summary>着色器里球壳的归一半径(uRadius),方块半边长 = 球半径 / 它;壳外到方块边是辉光</summary>
+        public const float OrbShellRadius = 0.6f;
+        public static readonly Color Deep = new Color(22, 6, 46);
 
         private readonly float[] endAngle = new float[MaxFilaments];
         private readonly float[] drift = new float[MaxFilaments];
         private readonly List<Vector2>[] filaments = new List<Vector2>[MaxFilaments];
         private readonly List<Vector2> leap = new List<Vector2>();
+        private readonly float seed;
         private float leapLife;
         private int frame;
 
@@ -204,6 +208,7 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
                 endAngle[i] = i * MathHelper.TwoPi / MaxFilaments + Main.rand.NextFloat(-0.3f, 0.3f);
                 drift[i] = Main.rand.NextFloat(-0.08f, 0.08f);
             }
+            seed = Main.rand.NextFloat(10f);
         }
 
         /// <summary>每帧调一次(纯表现,只在客户端);charge 0..1 决定电丝数量与外跃电弧频率</summary>
@@ -239,15 +244,11 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
                 return;
             }
             float flicker = 0.92f + 0.08f * MathF.Sin(frame * 0.9f) * MathF.Sin(frame * 0.37f);
-            Texture2D glow = VDWeaponFx.GlowTex;
-            //暗色球体:真 alpha 的 Glow 在 AlphaBlend 里压暗背景,电丝才有底
-            Main.spriteBatch.Draw(glow, center - Main.screenPosition, null, Deep * (0.75f * opacity), 0f, glow.Size() / 2f, radius * 2.5f / glow.Width, SpriteEffects.None, 0f);
+            DrawBody(center, radius, charge, opacity, main, core);
 
             VDWeaponFx.BeginAdditive();
-            VDWeaponFx.Glow(center, main * (0.32f * opacity * flicker), radius * 2.3f);
-            VDWeaponFx.Glow(center, main * (0.35f * opacity), radius * 1.15f);
-            int count = 3 + (int)((MaxFilaments - 3) * charge);
-            float w = MathHelper.Clamp(radius * 0.06f, 1.2f, 2.6f);
+            int count = 2 + (int)((MaxFilaments - 2) * charge);
+            float w = MathHelper.Clamp(radius * 0.045f, 1f, 2f);
             for (int i = 0; i < count; i++) {
                 var f = filaments[i];
                 if (f.Count < 2) {
@@ -257,8 +258,8 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
                 foreach (Vector2 p in f) {
                     scratchList.Add(center + p * radius);
                 }
-                VDWeaponFx.DrawArc(scratchList, main, core, w, opacity * (0.7f + 0.3f * flicker));
-                VDWeaponFx.Glow(scratchList[^1], core * (0.6f * opacity), w * 4f);
+                VDWeaponFx.DrawArc(scratchList, main, core, w, opacity * (0.55f + 0.35f * flicker));
+                VDWeaponFx.Glow(scratchList[^1], core * (0.5f * opacity), w * 3.5f);
             }
             if (leapLife > 0f && leap.Count > 1) {
                 scratchList.Clear();
@@ -267,11 +268,43 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
                 }
                 VDWeaponFx.DrawArc(scratchList, main, core, w * 0.9f, opacity * (leapLife / 4f));
             }
-            VDWeaponFx.Ring(center, main * (0.65f * opacity), radius);
-            VDWeaponFx.Ring(center, core * (0.25f * opacity * flicker), radius * 0.96f);
-            VDWeaponFx.Glow(center, core * (0.85f * opacity * flicker), radius * (0.42f + 0.1f * charge));
-            VDWeaponFx.Glow(center, Color.White * (0.7f * opacity), radius * 0.18f);
             VDWeaponFx.End();
+        }
+
+        /// <summary>球体:VDPlasmaOrb 着色器;缺失时退回真 alpha 暗底 Glow + 加法晕与核</summary>
+        private void DrawBody(Vector2 center, float radius, float charge, float opacity, Color main, Color core) {
+            Effect fx = CEEffectAssets.VDPlasmaOrb?.Value;
+            Texture2D glow = VDWeaponFx.GlowTex;
+            if (fx == null) {
+                Main.spriteBatch.Draw(glow, center - Main.screenPosition, null, Deep * (0.75f * opacity), 0f, glow.Size() / 2f, radius * 2.5f / glow.Width, SpriteEffects.None, 0f);
+                VDWeaponFx.BeginAdditive();
+                VDWeaponFx.Glow(center, main * (0.35f * opacity), radius * 2.2f);
+                VDWeaponFx.Ring(center, main * (0.65f * opacity), radius);
+                VDWeaponFx.Glow(center, core * (0.85f * opacity), radius * (0.42f + 0.1f * charge));
+                VDWeaponFx.End();
+                return;
+            }
+            Main.spriteBatch.EnterShaderRegion(BlendState.AlphaBlend, fx);
+            GraphicsDevice gd = Main.instance.GraphicsDevice;
+            gd.Textures[1] = CEUtils.getExtraTex("SwirlNoise");
+            gd.SamplerStates[1] = SamplerState.LinearWrap;
+            gd.Textures[2] = CEUtils.getExtraTex("GradientNoise");
+            gd.SamplerStates[2] = SamplerState.LinearWrap;
+            fx.Parameters["uTime"]?.SetValue(Main.GlobalTimeWrappedHourly);
+            fx.Parameters["uCharge"]?.SetValue(charge);
+            fx.Parameters["uOpacity"]?.SetValue(opacity);
+            fx.Parameters["uRadius"]?.SetValue(OrbShellRadius);
+            fx.Parameters["uSeed"]?.SetValue(seed);
+            fx.Parameters["uColorMain"]?.SetValue(main.ToVector3());
+            fx.Parameters["uColorCore"]?.SetValue(core.ToVector3());
+            fx.Parameters["uColorDeep"]?.SetValue(Deep.ToVector3());
+            fx.CurrentTechnique.Passes[0].Apply();
+            Texture2D white = CEExtraAssets.white ?? CEUtils.getExtraTex("white");
+            float half = radius / OrbShellRadius;
+            Main.spriteBatch.Draw(white, center - Main.screenPosition, null, Color.White, 0f, white.Size() / 2f, half * 2f / white.Width, SpriteEffects.None, 0f);
+            Main.spriteBatch.ExitShaderRegion();
+            gd.Textures[1] = null;
+            gd.Textures[2] = null;
         }
 
         private readonly List<Vector2> scratchList = new List<Vector2>(16);

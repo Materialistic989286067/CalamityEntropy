@@ -23,7 +23,7 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
         public override void SetDefaults() {
             Item.width = 56;
             Item.height = 56;
-            Item.damage = 160;
+            Item.damage = 280;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 12;
             Item.useTime = 20;
@@ -56,14 +56,27 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
         public const int MinReleaseCharge = 15;
         public const int LaserCount = 5;
         public const float LaserRange = 1100f;
-        public const int LaserHitCooldown = 10;
+        public const int LaserHitCooldown = 8;
         public const int ManaInterval = 10;
         public const int ReleaseFrames = 14;
         public const float BallMinMult = 1.5f;
-        public const float BallMaxMult = 8f;
+        public const float BallMaxMult = 10f;
+        /// <summary>光束可见宽度(像素):基础 + 满蓄力增量,再乘出现包络</summary>
+        public const float BeamWidthBase = 10f;
+        public const float BeamWidthCharge = 9f;
+        /// <summary>打空的束末端收窄到起点宽度的比例,和末端渐隐占全长的比例</summary>
+        public const float OpenEndTaper = 0.3f;
+        public const float OpenEndFade = 0.24f;
+        /// <summary>暗鞘相对光束的宽度倍数与不透明度</summary>
+        public const float UnderlayWidthMult = 1.9f;
+        public const float UnderlayOpacity = 0.45f;
         public static readonly Color BeamColor = new Color(170, 80, 255);
         public static readonly Color CoreColor = new Color(235, 215, 255);
         public static readonly Color ArcColor = new Color(200, 160, 255);
+        public static readonly Color UnderlayColor = new Color(18, 4, 36);
+        /// <summary>电弧爆炸(放球闪光、闪电球爆炸)的热色与冷却色,主色用 BeamColor</summary>
+        public static readonly Color ElectricHot = new Color(245, 235, 255);
+        public static readonly Color ElectricCool = new Color(80, 50, 160);
 
         //贴图几何(110×110,杖头朝右上):柄端、握点、轴角
         public static readonly Vector2 Butt = new Vector2(0f, 97f);
@@ -356,6 +369,9 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
             }
             PRTLoader.NewParticle<PRT_ShineParticle>(center, Vector2.Zero, BeamColor, 0.5f + 0.6f * releasedRatio).Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, 0f, 12);
             PRTLoader.NewParticle<PRT_ShineParticle>(center, Vector2.Zero, Color.White, 0.3f + 0.4f * releasedRatio).Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, 0f, 10);
+            //放球闪光:不带暗核的电浆团
+            PRTLoader.NewParticle<PRT_VDVoidBlast>(center, Vector2.Zero, Color.White, BallRadius * 1.5f)
+                .Configure(12 + (int)(6 * releasedRatio), 0f, ElectricHot, BeamColor, ElectricCool);
         }
 
         public override void OnKill(int timeLeft) {
@@ -407,49 +423,93 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
 
             float env = Envelope;
             float ratio = Ratio;
-            DrawBeams(back: true, env, ratio);
-            ball?.Draw(BallPos(owner), BallRadius, ratio, MathHelper.Clamp(Age / 6f, 0f, 1f), BeamColor, CoreColor);
-            DrawBeams(back: false, env, ratio);
-
-            if (env > 0.05f) {
-                VDWeaponFx.BeginAdditive();
-                for (int i = 0; i < LaserCount; i++) {
-                    float depth = (beamDepth[i] + 1f) * 0.5f;
-                    float a = (0.35f + 0.65f * depth) * env;
-                    VDWeaponFx.Glow(beamEnd[i], BeamColor * ((beamBlocked[i] ? 0.8f : 0.3f) * a), beamBlocked[i] ? 22f : 14f);
-                    if (beamBlocked[i]) {
-                        VDWeaponFx.Glow(beamEnd[i], Color.White * (0.6f * a), 7f);
-                    }
-                }
-                VDWeaponFx.End();
-            }
+            Vector2 center = BallPos(owner);
+            float r = BallRadius;
+            DrawBeams(BeamLayer.Underlay, env, ratio, center, r);
+            DrawBeams(BeamLayer.Back, env, ratio, center, r);
+            ball?.Draw(center, r, ratio, MathHelper.Clamp(Age / 6f, 0f, 1f), BeamColor, CoreColor);
+            DrawBeams(BeamLayer.Front, env, ratio, center, r);
+            DrawBeamFlares(env, ratio, center, r);
             return false;
         }
 
-        /// <summary>按纵深分两批画激光:背面一批更暗(批次透明度 0.55)且整体更细,正面一批压在球上</summary>
-        private void DrawBeams(bool back, float env, float ratio) {
+        private enum BeamLayer
+        {
+            Underlay,
+            Back,
+            Front
+        }
+
+        /// <summary>背面束从球心出发(球体盖住起点),正面束从球壳出发;打空收窄并渐隐,打墙平收在墙面</summary>
+        private void BeamShape(int i, Vector2 center, float r, float baseWidth, out Vector2 start, out Vector2 dir, out float wStart, out float wEnd, out float capStart, out float capEnd) {
+            dir = (beamEnd[i] - beamStart[i]).SafeNormalize(aim.ToRotationVector2());
+            bool back = beamDepth[i] < 0f;
+            start = back ? center : center + dir * r * 0.92f;
+            wStart = baseWidth * (0.75f + 0.25f * beamDepth[i]);
+            wEnd = beamBlocked[i] ? wStart * 0.85f : wStart * OpenEndTaper;
+            capStart = back ? 0f : 0.02f;
+            capEnd = beamBlocked[i] ? 0.015f : OpenEndFade;
+        }
+
+        /// <summary>暗鞘层是 AlphaBlend 深紫宽束,亮背景上先压暗底,加法束才不被冲成白线;着色器缺失时不画</summary>
+        private void DrawBeams(BeamLayer layer, float env, float ratio, Vector2 center, float r) {
             if (env <= 0.01f) {
                 return;
             }
-            float baseWidth = (8f + 6f * ratio) * env;
-            float opacity = back ? 0.55f : 1f;
-            bool batched = VDBeamDraw.BeginTapered(BeamColor, CoreColor, opacity, Projectile.whoAmI * 0.37f);
+            float baseWidth = (BeamWidthBase + BeamWidthCharge * ratio) * env;
+            bool under = layer == BeamLayer.Underlay;
+            Color main = under ? UnderlayColor : BeamColor;
+            Color core = under ? UnderlayColor : CoreColor;
+            float opacity = under ? UnderlayOpacity : layer == BeamLayer.Back ? 0.55f : 1f;
+            float seed = Projectile.whoAmI * 0.37f;
+            bool batched = VDBeamDraw.BeginTapered(main, core, opacity, seed, under ? BlendState.AlphaBlend : null);
+            if (!batched && under) {
+                return;
+            }
+            float widthMult = under ? UnderlayWidthMult : 1f;
             for (int i = 0; i < LaserCount; i++) {
                 bool isBack = beamDepth[i] < 0f;
-                if (isBack != back) {
+                if ((layer == BeamLayer.Back && !isBack) || (layer == BeamLayer.Front && isBack)) {
                     continue;
                 }
-                float w = baseWidth * (0.75f + 0.25f * beamDepth[i]);
+                BeamShape(i, center, r, baseWidth, out Vector2 start, out _, out float wS, out float wE, out float capS, out float capE);
                 if (batched) {
-                    VDBeamDraw.TaperedQuad(beamStart[i], beamEnd[i], w, w * 0.7f, 1f, capStart: 0f, capEnd: 0.05f);
+                    VDBeamDraw.TaperedQuad(start, beamEnd[i], wS * widthMult, wE * widthMult, 1f, capStart: capS, capEnd: capE);
                 }
                 else {
-                    VDBeamDraw.DrawTapered(beamStart[i], beamEnd[i], w, w * 0.7f, BeamColor, CoreColor, 1f, opacity, Projectile.whoAmI * 0.37f + i, endGlow: false, capStart: 0f, capEnd: 0.05f);
+                    VDBeamDraw.DrawTapered(start, beamEnd[i], wS, wE, BeamColor, CoreColor, 1f, opacity, seed + i, endGlow: false, capStart: capS, capEnd: capE);
                 }
             }
             if (batched) {
                 VDBeamDraw.EndTapered();
             }
+        }
+
+        /// <summary>正面束的出射光与打墙束的撞击光</summary>
+        private void DrawBeamFlares(float env, float ratio, Vector2 center, float r) {
+            if (env <= 0.05f) {
+                return;
+            }
+            float baseWidth = (BeamWidthBase + BeamWidthCharge * ratio) * env;
+            float flick = 0.85f + 0.15f * MathF.Sin(Age * 1.7f);
+            VDWeaponFx.BeginAdditive();
+            for (int i = 0; i < LaserCount; i++) {
+                BeamShape(i, center, r, baseWidth, out Vector2 start, out Vector2 dir, out float w, out _, out _, out _);
+                float depth = (beamDepth[i] + 1f) * 0.5f;
+                float a = (0.35f + 0.65f * depth) * env;
+                float rot = dir.ToRotation();
+                if (beamDepth[i] >= 0f) {
+                    VDWeaponFx.GlowStretched(start + dir * w * 0.6f, CoreColor * (0.8f * a), rot, w * 4f, w * 1.7f);
+                    VDWeaponFx.Glow(start, Color.White * (0.5f * a), w * 0.9f);
+                }
+                if (beamBlocked[i]) {
+                    Vector2 end = beamEnd[i];
+                    VDWeaponFx.GlowStretched(end, BeamColor * (0.85f * a * flick), rot + MathHelper.PiOver2, w * 5.5f, w * 1.6f);
+                    VDWeaponFx.Glow(end, CoreColor * (0.7f * a), w * 1.6f);
+                    VDWeaponFx.Glow(end, Color.White * (0.6f * a * flick), w * 0.7f);
+                }
+            }
+            VDWeaponFx.End();
         }
     }
 
@@ -539,7 +599,7 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
 
     /// <summary>
     /// 闪电球爆炸:半径随蓄力比 100 → 180 的圆形判定,前 <see cref="DamageFrames"/> 帧有效,命中带电。
-    /// 拥有者在首帧向爆炸圈边缘及以外的敌人(最多 2 + 4 × 蓄力比 个)甩出连锁电弧 <see cref="VoidElectricArc"/>;演出是白闪、扩散电环与十余道向外爬的电弧
+    /// 拥有者在首帧向爆炸圈边缘及以外的敌人(最多 2 + 4 × 蓄力比 个)甩出连锁电弧 <see cref="VoidElectricArc"/>;演出是电浆配色的 PRT_VDVoidBlast(暗核压低)与十余道向外爬的电弧
     /// </summary>
     public class VoidElectricBurst : ModProjectile
     {
@@ -597,6 +657,8 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
                     CEUtils.PlaySound("shockBlast", 1.1f - 0.25f * ratio, Projectile.Center, 4, 0.6f + 0.4f * ratio);
                     CEUtils.PlaySound("light_bolt", Main.rand.NextFloat(0.95f, 1.1f), Projectile.Center, 3, 0.35f);
                     CEUtils.SetShake(Projectile.Center, 3f + 6f * ratio, 1800f);
+                    PRTLoader.NewParticle<PRT_VDVoidBlast>(Projectile.Center, Vector2.Zero, Color.White, Radius * 0.9f)
+                        .Configure(22 + (int)(10 * ratio), 0.3f, VoidElectricFieldHoldout.ElectricHot, VoidElectricFieldHoldout.BeamColor, VoidElectricFieldHoldout.ElectricCool);
                     VDVfx.SparkBurst(Projectile.Center, VoidElectricFieldHoldout.CoreColor, 14 + (int)(18 * ratio), 4f, 14f, 24, 0.5f, 1f);
                     VDVfx.SparkBurst(Projectile.Center, VoidElectricFieldHoldout.BeamColor, 10 + (int)(12 * ratio), 2f, 8f, 22, 0.45f, 0.9f);
                     for (int i = 0; i < 8; i++) {
@@ -642,16 +704,7 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
 
         public override bool PreDraw(ref Color lightColor) {
             float life = Age / (float)Lifetime;
-            float r = Radius;
-            Vector2 c = Projectile.Center;
             VDWeaponFx.BeginAdditive();
-            if (Age < 5) {
-                float f = 1f - Age / 5f;
-                VDWeaponFx.Glow(c, Color.White * f, r * 0.75f);
-            }
-            VDWeaponFx.Glow(c, VoidElectricFieldHoldout.BeamColor * (0.7f * (1f - life)), r * 1.3f);
-            VDWeaponFx.Ring(c, VoidElectricFieldHoldout.ArcColor * (1f - life), MathHelper.Lerp(0.3f, 1.05f, VDVfx.EaseOut(life)) * r);
-            VDWeaponFx.Ring(c, Color.White * (0.5f * (1f - life) * (1f - life)), MathHelper.Lerp(0.2f, 0.8f, VDVfx.EaseOut(life)) * r);
             float arcOpacity = 1f - life;
             foreach (var arc in arcs) {
                 if (arc.Count > 1) {

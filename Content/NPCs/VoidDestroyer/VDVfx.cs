@@ -1,6 +1,9 @@
-﻿using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles.VoidDestroyer;
+using CalamityEntropy.Core.Graphics;
 using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -34,16 +37,16 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         /// <summary>纵深落点标记的基色:比虚空紫冷,与平面弹幕拉开</summary>
         public static readonly Color DepthMarker = new Color(150, 200, 255);
 
-        //天幕「轨道封锁」配色:底幕暗、饱和度低,弹幕永远比天亮
-        public static readonly Color SkyTop = new Color(8, 4, 18);
-        public static readonly Color SkyHorizon = new Color(34, 16, 62);
-        public static readonly Color SkyNebula = new Color(70, 30, 120);
+        //天幕配色:底幕暗且饱和度约 0.6,高饱和紫只留给网格与侵蚀热边
+        public static readonly Color SkyTop = new Color(7, 5, 15);
+        public static readonly Color SkyHorizon = new Color(24, 17, 42);
+        public static readonly Color SkyNebula = new Color(52, 40, 88);
         /// <summary>被侵蚀星球的挖口热边与外圈微晕</summary>
         public static readonly Color SkyErosion = new Color(190, 90, 255);
         /// <summary>星球边缘的冷紫背光</summary>
-        public static readonly Color SkyPlanetRim = new Color(120, 80, 200);
+        public static readonly Color SkyPlanetRim = new Color(104, 84, 170);
         /// <summary>星球碎屑环的物质色(比背光暗、比底幕亮)</summary>
-        public static readonly Color SkyRing = new Color(120, 60, 170);
+        public static readonly Color SkyRing = new Color(96, 70, 134);
         /// <summary>地表环境光被拉向的虚空暮色</summary>
         public static readonly Color SkyTileTint = new Color(90, 70, 130);
 
@@ -103,13 +106,95 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             p.ad = 0.03f;
         }
 
-        /// <summary>爆炸闪光(加法)</summary>
-        public static void Explosion(Vector2 pos, float scale, int life = 30) {
+        /// <summary>虚空爆炸的壳半径换算:scale 1 ≈ 110px,与旧序列帧爆炸的可见大小对齐</summary>
+        public const float BlastRadiusUnit = 110f;
+        /// <summary>壳要走完外扩和暗核啃食,寿命按调用方给的帧数拉长到这个倍数</summary>
+        public const float BlastLifeMult = 1.5f;
+        public static readonly Color BlastHot = new Color(255, 220, 255);
+        public static readonly Color BlastCool = new Color(92, 36, 158);
+
+        /// <summary>虚空爆炸(<see cref="PRT_VDVoidBlast"/> + 余烟):scale 以 <see cref="BlastRadiusUnit"/> 计壳半径,darkness 是暗核强度</summary>
+        public static void Explosion(Vector2 pos, float scale, int life = 30, float darkness = 0.75f) {
             if (Main.dedServ) {
                 return;
             }
-            PRTLoader.NewParticle<PRT_EXPLOSION>(pos, Vector2.Zero, Color.White, scale)
-                .Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, 0f, life);
+            int frames = Math.Max(24, (int)(life * BlastLifeMult));
+            PRTLoader.NewParticle<PRT_VDVoidBlast>(pos, Vector2.Zero, Color.White, BlastRadiusUnit * scale)
+                .Configure(frames, darkness, BlastHot, VoidPurple, BlastCool);
+            int puffs = 2 + (int)(4 * Math.Min(scale, 2f));
+            for (int i = 0; i < puffs; i++) {
+                Vector2 v = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(1.5f, 4f) * Math.Min(scale, 2f);
+                PRTLoader.NewParticle<PRT_HeavySmokeCal>(pos + v * 8f, v, new Color(40, 16, 66), Main.rand.NextFloat(0.5f, 0.9f) * Math.Min(scale, 2.5f))
+                    .Configure(0.75f, frames + 20, Main.rand.NextFloat(-0.03f, 0.03f));
+            }
+        }
+
+        /// <summary>敌对弹幕警示描边色:暖白,和紫色弹体、紫色天幕同时拉开明度与色相</summary>
+        public static readonly Color HazardRim = new Color(255, 214, 246);
+        /// <summary>描边暗底色,亮云上也压得出边</summary>
+        public static readonly Color HazardRimDark = new Color(18, 4, 34);
+        /// <summary>亮边宽(屏幕像素);暗底在它外面再宽一倍</summary>
+        public const float HazardRimWidth = 2f;
+        public const int HazardRimTaps = 8;
+
+        /// <summary>
+        /// 敌对弹幕警示描边:VDRimHalo 涂成实心剪影,8 向错开 2 倍宽画暗底、1 倍宽画亮边,调用方随后把弹体压在上面。
+        /// 进出都是 Deferred/AlphaBlend;着色器缺失退回 WhiteTrans 加法亮边
+        /// </summary>
+        public static void DrawHazardRim(Texture2D tex, Vector2 screenPos, Rectangle? frame, float rotation, Vector2 origin, float scale, float opacity,
+            float width = HazardRimWidth, SpriteEffects fx = SpriteEffects.None) {
+            if (Main.dedServ || opacity <= 0.01f) {
+                return;
+            }
+            SpriteBatch sb = Main.spriteBatch;
+            float pulse = 0.88f + 0.12f * MathF.Sin(Main.GlobalTimeWrappedHourly * 8f);
+            Effect halo = CEEffectAssets.VDRimHalo?.Value;
+            if (halo != null) {
+                sb.EnterShaderRegion(BlendState.AlphaBlend, halo);
+                Main.instance.GraphicsDevice.Textures[1] = CEExtraAssets.TurbulentNoise ?? CEUtils.getExtraTex("TurbulentNoise");
+                Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
+                ApplySolidHalo(halo, tex, HazardRimDark, 0.8f * opacity);
+                for (int i = 0; i < HazardRimTaps; i++) {
+                    Vector2 off = (MathHelper.TwoPi * (i + 0.5f) / HazardRimTaps).ToRotationVector2() * width * 2f;
+                    sb.Draw(tex, screenPos + off, frame, Color.White, rotation, origin, scale, fx, 0f);
+                }
+                ApplySolidHalo(halo, tex, HazardRim, pulse * opacity);
+                for (int i = 0; i < HazardRimTaps; i++) {
+                    Vector2 off = (MathHelper.TwoPi * i / HazardRimTaps).ToRotationVector2() * width;
+                    sb.Draw(tex, screenPos + off, frame, Color.White, rotation, origin, scale, fx, 0f);
+                }
+                sb.ExitShaderRegion();
+                return;
+            }
+            Effect white = CEEffectAssets.WhiteTrans;
+            if (white == null) {
+                return;
+            }
+            white.Parameters["strength"]?.SetValue(1f);
+            sb.EnterShaderRegion(BlendState.Additive, white);
+            white.CurrentTechnique.Passes[0].Apply();
+            for (int i = 0; i < HazardRimTaps; i++) {
+                Vector2 off = (MathHelper.TwoPi * i / HazardRimTaps).ToRotationVector2() * width;
+                sb.Draw(tex, screenPos + off, frame, HazardRim * (0.5f * pulse * opacity), rotation, origin, scale, fx, 0f);
+            }
+            sb.ExitShaderRegion();
+        }
+
+        /// <summary>VDRimHalo 当纯色剪影用:关掉侵蚀、热色与闪光,只留 uColor × alpha</summary>
+        private static void ApplySolidHalo(Effect halo, Texture2D tex, Color color, float opacity) {
+            halo.Parameters["uTime"]?.SetValue(Main.GlobalTimeWrappedHourly);
+            halo.Parameters["uOpacity"]?.SetValue(opacity);
+            halo.Parameters["uColor"]?.SetValue(color.ToVector3());
+            halo.Parameters["uHotColor"]?.SetValue(color.ToVector3());
+            halo.Parameters["uHeat"]?.SetValue(0f);
+            halo.Parameters["uFlash"]?.SetValue(0f);
+            halo.Parameters["uErode"]?.SetValue(0f);
+            halo.Parameters["uNoiseScroll"]?.SetValue(Vector2.Zero);
+            halo.Parameters["uRadialScroll"]?.SetValue(0f);
+            halo.Parameters["uRadialMix"]?.SetValue(0f);
+            halo.Parameters["uFrameCenter"]?.SetValue(new Vector2(0.5f));
+            halo.Parameters["uImageSize"]?.SetValue(tex.Size());
+            halo.CurrentTechnique.Passes[0].Apply();
         }
 
         /// <summary>全息碎片爆闪(全息生物出现/传送/消散)</summary>

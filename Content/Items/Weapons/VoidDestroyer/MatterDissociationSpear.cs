@@ -19,16 +19,16 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
 {
     public class MatterDissociationSpear : ModItem
     {
-        public const float BoltMult = 0.10f;
-        public const float BurstMult = 0.75f;
-        public const float TridentMult = 0.25f;
+        public const float BoltMult = 0.15f;
+        public const float BurstMult = 0.8f;
+        public const float TridentMult = 0.3f;
         public const int StabUseTime = 24;
         public const int ThrowUseTime = 32;
 
         public override void SetDefaults() {
             Item.width = 64;
             Item.height = 64;
-            Item.damage = 500;
+            Item.damage = 600;
             Item.DamageType = DamageClass.Melee;
             Item.useTime = StabUseTime;
             Item.useAnimation = StabUseTime;
@@ -685,7 +685,7 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
         }
     }
 
-    /// <summary>暗核 AlphaBlend 真 alpha,其余加法</summary>
+    /// <summary>塌缩段自画(暗核真 alpha + 收缩环加法),爆发段交给塌缩末帧放出的 PRT_VDVoidBlast</summary>
     public class MatterDissociationBurst : ModProjectile
     {
         public const int CollapseFrames = 7;
@@ -737,6 +737,8 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
             if (Age == CollapseFrames + 1) {
                 CEUtils.PlaySound("VoidBomb", Main.rand.NextFloat(0.75f, 0.85f), Projectile.Center, 4, 0.75f);
                 CEUtils.SetShake(Projectile.Center, 6f, 1800f);
+                PRTLoader.NewParticle<PRT_VDVoidBlast>(Projectile.Center, Vector2.Zero, Color.White, Radius)
+                    .Configure(Lifetime - CollapseFrames, 0.85f, VDVfx.BlastHot, SpearGeometry.Blade, VDVfx.BlastCool);
                 VDVfx.SparkBurst(Projectile.Center, VDVfx.VoidPurple, 16, 4f, 12f, 26, 0.55f, 1f);
                 VDVfx.SparkBurst(Projectile.Center, VDVfx.VoidPink, 8, 2f, 7f, 20, 0.4f, 0.75f);
                 for (int i = 0; i < 12; i++) {
@@ -767,27 +769,14 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
             int a = Age;
             Vector2 c = Projectile.Center;
             Texture2D glow = VDWeaponFx.GlowTex;
-            if (a <= CollapseFrames) {
-                float k = a / (float)CollapseFrames;
-                Main.spriteBatch.Draw(glow, c - Main.screenPosition, null, Dark * (0.85f * k), 0f, glow.Size() / 2f, (24f + 40f * k) * 2f / glow.Width, SpriteEffects.None, 0f);
-                VDWeaponFx.BeginAdditive();
-                VDWeaponFx.Ring(c, VDVfx.VoidPurple * (0.3f + 0.6f * k), MathHelper.Lerp(110f, 30f, k * k));
-                VDWeaponFx.Glow(c, VDVfx.VoidPink * (0.25f * k), 30f);
-                VDWeaponFx.End();
+            if (a > CollapseFrames) {
                 return false;
             }
-            float d = (a - CollapseFrames) / (float)(Lifetime - CollapseFrames);
-            float ease = VDVfx.EaseOut(d);
-            float darkR = MathHelper.Lerp(50f, 125f, ease);
-            Main.spriteBatch.Draw(glow, c - Main.screenPosition, null, Dark * (0.9f * MathF.Pow(1f - d, 1.5f)), 0f, glow.Size() / 2f, darkR * 2f / glow.Width, SpriteEffects.None, 0f);
+            float k = a / (float)CollapseFrames;
+            Main.spriteBatch.Draw(glow, c - Main.screenPosition, null, Dark * (0.85f * k), 0f, glow.Size() / 2f, (24f + 40f * k) * 2f / glow.Width, SpriteEffects.None, 0f);
             VDWeaponFx.BeginAdditive();
-            if (a <= CollapseFrames + 3) {
-                float f = 1f - (a - CollapseFrames) / 3f;
-                VDWeaponFx.Glow(c, Color.White * f, 70f);
-            }
-            VDWeaponFx.Ring(c, Color.Lerp(VDVfx.VoidPink, VDVfx.VoidPurple, d) * (1f - d), MathHelper.Lerp(30f, Radius * 1.2f, ease));
-            VDWeaponFx.Ring(c, VDVfx.VoidDeep * (0.8f * (1f - d)), MathHelper.Lerp(20f, Radius * 0.85f, ease));
-            VDWeaponFx.Glow(c, VDVfx.VoidPurple * (0.4f * (1f - d)), darkR * 1.1f);
+            VDWeaponFx.Ring(c, VDVfx.VoidPurple * (0.3f + 0.6f * k), MathHelper.Lerp(110f, 30f, k * k));
+            VDWeaponFx.Glow(c, VDVfx.VoidPink * (0.25f * k), 30f);
             VDWeaponFx.End();
             return false;
         }

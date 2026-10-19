@@ -139,7 +139,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
                 .AddIngredient<Zeal>()
                 .AddIngredient<OsseousRemains>(20)
                 .AddIngredient<VoidBar>(5)
-                .AddIngredient(ItemID.HallowedBar, 25)
+                .AddIngredient<BlazingSunlight>(10)
                 .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();
         }

@@ -5,36 +5,34 @@ using Terraria.ModLoader;
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
 {
     /// <summary>
-    /// 表是建议序,IsLegal 才是闸,最近三手或同家族就沿表后找,阶段切换不清历史
-    /// 替补只有两处,舰队远距 → 幻影冲刺,支援无地面或满员 → 裂隙斩,风筝时 P1 冲刺最多 3 手
-    /// 远景招只剩轨道轰炸(P2 表两次、P3 表一次),本体带外约 150 帧一次,占一轮不到 6%
+    /// 技能表按序循环,每阶段一张固定表,相邻两手家族互异,出招顺序可背
+    /// 只有两处替补:舰队远距 → 幻影冲刺,支援无地面或满员 → 裂隙斩;替补撞上上一手就顺延一格
+    /// 远景招只有轨道轰炸,招与招之间不连段,一律走 hub 的连接段
     /// </summary>
     public static class VDRotation
     {
-        /// <summary>收缩环门是 P1 的区域招,第三手就亮</summary>
+        /// <summary>弹幕、冲刺、区域交替,首手弹幕最轻</summary>
         private static readonly VDStateIndex[] Phase1 =
         {
-            VDStateIndex.ArcFireball, VDStateIndex.PhantomDash, VDStateIndex.ClosingGates, VDStateIndex.HomingMissiles,
-            VDStateIndex.PhantomFleet, VDStateIndex.VoidFlame, VDStateIndex.PhaseLaser, VDStateIndex.PhantomDash,
-            VDStateIndex.RiftCut, VDStateIndex.ClosingGates, VDStateIndex.ArcFireball, VDStateIndex.PhantomFleet,
+            VDStateIndex.ArcFireball, VDStateIndex.PhantomDash, VDStateIndex.ClosingGates, VDStateIndex.VoidFlame,
+            VDStateIndex.PhantomFleet, VDStateIndex.PhaseLaser, VDStateIndex.HomingMissiles, VDStateIndex.RiftCut,
         };
 
         /// <summary>首手轨道轰炸是阶段签名</summary>
         private static readonly VDStateIndex[] Phase2 =
         {
             VDStateIndex.OrbitalStrike, VDStateIndex.PhantomDash, VDStateIndex.RedHell, VDStateIndex.HomingMissiles,
-            VDStateIndex.Singularity, VDStateIndex.Reinforcement, VDStateIndex.PhantomFleet, VDStateIndex.GreenJungle,
-            VDStateIndex.RiftCut, VDStateIndex.TeleportFire, VDStateIndex.OrbitalStrike, VDStateIndex.BombingRun,
-            VDStateIndex.PhaseLaser, VDStateIndex.BlueSky,
+            VDStateIndex.Singularity, VDStateIndex.Reinforcement, VDStateIndex.PhantomFleet, VDStateIndex.BlueSky,
+            VDStateIndex.BombingRun, VDStateIndex.GreenJungle, VDStateIndex.PhaseLaser, VDStateIndex.TeleportFire,
         };
 
-        /// <summary>首手湮灭主炮,连段后手计入历史,舰队表里只一次</summary>
+        /// <summary>首手湮灭主炮,中段再来一次</summary>
         private static readonly VDStateIndex[] Phase3 =
         {
-            VDStateIndex.AnnihilationCannon, VDStateIndex.RedHell, VDStateIndex.RiftCut, VDStateIndex.Singularity,
-            VDStateIndex.BombingRun, VDStateIndex.OrbitalStrike, VDStateIndex.GreenJungle, VDStateIndex.TeleportFire,
-            VDStateIndex.PhantomFleet, VDStateIndex.AnnihilationCannon, VDStateIndex.PhantomDash, VDStateIndex.BlueSky,
-            VDStateIndex.ClosingGates, VDStateIndex.Reinforcement, VDStateIndex.PhaseLaser, VDStateIndex.HomingMissiles,
+            VDStateIndex.AnnihilationCannon, VDStateIndex.RedHell, VDStateIndex.RiftCut, VDStateIndex.HomingMissiles,
+            VDStateIndex.Singularity, VDStateIndex.PhantomFleet, VDStateIndex.GreenJungle, VDStateIndex.PhaseLaser,
+            VDStateIndex.BombingRun, VDStateIndex.AnnihilationCannon, VDStateIndex.BlueSky, VDStateIndex.OrbitalStrike,
+            VDStateIndex.TeleportFire, VDStateIndex.PhantomDash,
         };
 
         public static VDStateIndex[] TableFor(int phase) => phase >= 3 ? Phase3 : phase >= 2 ? Phase2 : Phase1;
@@ -72,39 +70,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
             }
         }
 
-        /// <summary>硬性防复读判据:不在最近三手里,且与上一手不同家族</summary>
-        public static bool IsLegal(VDStateContext ctx, VDStateIndex candidate) {
-            if (!IsAttack(candidate)) {
-                return false;
-            }
-            if (ctx.InHistory(candidate)) {
-                return false;
-            }
-            return FamilyOf(candidate) != ctx.LastFamily;
-        }
-
         public static IVDState Create(VDStateIndex state) {
             return VaultStateRegistry<VDStateContext>.Create((int)state) as IVDState;
-        }
-
-        /// <summary>P3 连段:头招收招直接接的后手(None = 无)</summary>
-        public static VDStateIndex ChainFollow(int phase, VDStateIndex head) {
-            if (phase < 3) {
-                return VDStateIndex.Hub;
-            }
-            switch (head) {
-                //奇点还在牵引时导弹环从四周扑来:引力把导弹的弧线也拉弯
-                case VDStateIndex.Singularity:
-                    return VDStateIndex.HomingMissiles;
-                //缝刚合上舰队就从缝口的位置开门齐冲
-                case VDStateIndex.RiftCut:
-                    return VDStateIndex.PhantomFleet;
-                //从背景俯冲归位直接接幻影冲刺
-                case VDStateIndex.OrbitalStrike:
-                    return VDStateIndex.PhantomDash;
-                default:
-                    return VDStateIndex.Hub;
-            }
         }
 
         /// <summary>舰队远距 → 幻影冲刺,支援无地面或满员 → 裂隙斩,唯一跨家族</summary>
@@ -125,10 +92,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
             }
         }
 
-        /// <summary>签名首招优先,否则沿表找第一个合法的,无解退到家族互异的安全对</summary>
+        /// <summary>签名首招优先,否则取表里当前一格,替补撞上上一手顺延一格</summary>
         public static VDStateIndex Pick(VDStateContext ctx) {
-            ctx.QueuedChainState = -1;
-
             if (ctx.ForcedNextState >= 0) {
                 VDStateIndex forced = (VDStateIndex)ctx.ForcedNextState;
                 ctx.ForcedNextState = -1;
@@ -139,36 +104,15 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
             }
 
             VDStateIndex[] table = TableFor(ctx.Phase);
-            for (int step = 0; step < VDDirector.RotationSearchSteps; step++) {
-                int slot = (ctx.AttackIndex + step) % table.Length;
-                VDStateIndex candidate = Substitute(ctx, table[slot]);
-                if (!IsLegal(ctx, candidate)) {
-                    continue;
-                }
-                ctx.AttackIndex = (ctx.AttackIndex + step + 1) % table.Length;
-                QueueChain(ctx, candidate);
-                Commit(ctx, candidate);
-                return candidate;
+            int slot = ctx.AttackIndex % table.Length;
+            VDStateIndex candidate = Substitute(ctx, table[slot]);
+            if (ctx.RecentHistory[0] == (int)candidate) {
+                slot = (slot + 1) % table.Length;
+                candidate = Substitute(ctx, table[slot]);
             }
-
-            //极端兜底:表里找不到合法招时(正常到不了),状态机也不能停在这里
-            ctx.AttackIndex = (ctx.AttackIndex + 1) % table.Length;
-            VDStateIndex fallback = IsLegal(ctx, VDStateIndex.PhantomDash) ? VDStateIndex.PhantomDash
-                : IsLegal(ctx, VDStateIndex.ArcFireball) ? VDStateIndex.ArcFireball : VDStateIndex.PhantomDash;
-            Commit(ctx, fallback);
-            return fallback;
-        }
-
-        /// <summary>连段入队:后手在当下就要合法(不与头招同家族、不在历史里),否则不排</summary>
-        private static void QueueChain(VDStateContext ctx, VDStateIndex head) {
-            VDStateIndex follow = ChainFollow(ctx.Phase, head);
-            if (!IsAttack(follow) || follow == head) {
-                return;
-            }
-            if (ctx.InHistory(follow) || FamilyOf(follow) == FamilyOf(head)) {
-                return;
-            }
-            ctx.QueuedChainState = (int)follow;
+            ctx.AttackIndex = (slot + 1) % table.Length;
+            Commit(ctx, candidate);
+            return candidate;
         }
 
         /// <summary>记账:写历史环与上一手家族</summary>

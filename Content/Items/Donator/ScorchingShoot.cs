@@ -120,8 +120,7 @@ namespace CalamityEntropy.Content.Items.Donator
             }
             CreateRecipe()
                 .AddIngredient<BuriedSun>()
-                .AddIngredient<ChaoticPiece>(5)
-                .AddIngredient(ItemID.HallowedBar, 25)
+                .AddIngredient<BlazingSunlight>(10)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

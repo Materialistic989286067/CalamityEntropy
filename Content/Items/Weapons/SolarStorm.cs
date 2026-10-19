@@ -54,8 +54,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             }
             CreateRecipe()
                 .AddIngredient<Prominence>()
-                .AddIngredient(ItemID.Uzi)
-                .AddIngredient<NihilityFragments>(10)
+                .AddIngredient(ItemID.FairyQueenRangedItem)
+                .AddIngredient<BlazingSunlight>(10)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

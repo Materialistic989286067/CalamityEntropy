@@ -31,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
         }
 
         public override void SetDefaults() {
-            Item.damage = 220;
+            Item.damage = 250;
             Item.DamageType = DamageClass.Summon;
             Item.width = 50;
             Item.height = 44;
@@ -1170,7 +1170,7 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
 
     /// <summary>
     /// 节距按原版 42px 折算,朝左水平翻转,腿不翻到背上
-    /// 任一已出镜的节都算命中,每目标 20 帧一次
+    /// 任一已出镜的节都算命中,每目标 10 帧一次
     /// 拥有者每 30 帧同步头部位置和速度
     /// </summary>
     public class ProjectionWyvern : ProjectionHoloBase
@@ -1213,7 +1213,7 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
             Projectile.timeLeft = Life;
             Projectile.aiStyle = -1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            Projectile.localNPCHitCooldown = 10;
         }
 
         public override void AI() {

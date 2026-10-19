@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Common;
-using CalamityEntropy.Content.Items.Donator;
 using CalamityEntropy.Content.Tiles;
 using CalamityEntropy.Core.CalamityRef;
 using Terraria;
@@ -61,8 +60,16 @@ namespace CalamityEntropy.Content.Items.Weapons.Nemesis
         }
 
         public override void AddRecipes() {
-            CreateRecipe().AddCalOrOwn(CEID.Item_GalactusBlade, ModContent.ItemType<FlowingLight>())
-                .AddCalOrOwn(CEID.Item_TheBurningSky, ItemID.StarWrath)
+            if (CECal.CalChainReady(CEID.Item_GalactusBlade, CEID.Item_TheBurningSky)) {
+                CreateRecipe().AddIngredient(CEID.Item_GalactusBlade)
+                    .AddIngredient(CEID.Item_TheBurningSky)
+                    .AddIngredient<FadingRunestone>()
+                    .AddTile<VoidWellTile>()
+                    .Register();
+                return;
+            }
+            CreateRecipe().AddIngredient<BlazingSunlight>(5)
+                .AddIngredient(ItemID.StarWrath)
                 .AddIngredient<FadingRunestone>()
                 .AddTile<VoidWellTile>()
                 .Register();

@@ -8,7 +8,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
     /// <summary>
     /// 玩家四周开四扇门,真身占其中一扇(门环更亮、核心与描边烧起),其余是幻影舰。
-    /// 四舰的航道跟着玩家预测点瞄,出手前 12 帧把交汇点锁进 RolledPoints[4],之后四条航道不再动;第二波门位转 45°
+    /// 四舰齐冲四扇门的圆心(开门那一刻的玩家位置,记进 RolledPoints[4]),航道全程不跟人,冲刺沿途不留弹;第二波门位转 45°
     /// 门位在 RolledPoints[0..3],真身门号在 RandCount
     /// </summary>
     [VaultState((int)VDStateIndex.PhantomFleet, typeof(VDStateContext))]
@@ -27,9 +27,6 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             beat = Beat.FadeOut;
             wave = 0;
         }
-
-        /// <summary>交汇点是否已锁(出手前 FleetLockLead 帧起)</summary>
-        public static bool CrossLocked(int aimTimer) => aimTimer >= VDDirector.FleetAimFrames - VDDirector.FleetLockLead;
 
         public override IVDState OnUpdate(VDStateContext ctx) {
             Timer++;
@@ -61,16 +58,11 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     if (Timer % 3 == 0) {
                         ConvergeSparks(ctx, VDVfx.VoidWhite, 50f, 120f, 0.14f);
                     }
-                    if (Timer == VDDirector.FleetAimFrames - VDDirector.FleetLockLead && IsServer) {
-                        ctx.RolledPoints[4] = PredictTarget(ctx, VDDirector.FleetCrossLead);
-                        MarkNetUpdate(ctx);
-                    }
-                    bool locked = CrossLocked(Timer);
-                    Vector2 cross = locked ? ctx.RolledPoints[4] : PredictTarget(ctx, VDDirector.FleetCrossLead);
+                    Vector2 cross = ctx.RolledPoints[4];
                     ctx.DiveMarkerPos = cross;
                     ctx.DiveMarkerProgress = aimP;
                     Vector2 toCross = cross - npc.Center;
-                    DeclareLane(ctx, npc.Center, toCross, toCross.Length() + 500f, VDDirector.FleetLaneWidth, locked ? 1f : 0.2f + 0.5f * aimP, VDDirector.RimDashIce);
+                    DeclareLane(ctx, npc.Center, toCross, toCross.Length() + 500f, VDDirector.FleetLaneWidth, 0.3f + 0.7f * aimP, VDDirector.RimDashIce);
                     if (Timer >= VDDirector.FleetAimFrames) {
                         npc.velocity = (ctx.RolledPoints[4] - npc.Center) / VDDirector.FleetCrossFrame;
                         ctx.WingPulse = 1f;
@@ -95,9 +87,6 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                         VDVfx.Shake(npc.Center, 6f, 1800f);
                         VDVfx.SparkBurst(npc.Center, VDVfx.VoidWhite, 20, 4f, 12f, 22, 0.5f, 1f);
                         VDVfx.Sound("VoidAttack", 1.1f, npc.Center, 3, 0.7f);
-                    }
-                    if (ctx.Phase >= 3 && Timer % VDDirector.FleetTrailInterval == 3) {
-                        Shoot<VDVoidBolt>(ctx, npc.Center, npc.velocity.SafeNormalize(Vector2.UnitY) * VDDirector.PhantomTrailSpeed, VDDirector.DmgVoidBolt, VDVoidBolt.ModeAccelerate);
                     }
                     if (Timer >= VDDirector.FleetDashFrames) {
                         wave++;
@@ -129,7 +118,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             return null;
         }
 
-        /// <summary>四门均布在玩家周围 520px 的圆上,第二波转 45°;真身门号服务端掷</summary>
+        /// <summary>四门均布在玩家周围 520px 的圆上,第二波转 45°;真身门号服务端掷;交汇点是圆心</summary>
         private void RollFormation(VDStateContext ctx) {
             float baseAng = (wave % 2 == 0 ? 0f : MathHelper.PiOver4) + MathHelper.PiOver4 * 0.5f;
             ctx.RandCount = Main.rand.Next(VDDirector.FleetShipCount);
@@ -137,7 +126,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 float ang = baseAng + MathHelper.TwoPi * i / VDDirector.FleetShipCount;
                 ctx.RolledPoints[i] = ctx.Target.Center + ang.ToRotationVector2() * VDDirector.FleetPortalRadius;
             }
-            ctx.RolledPoints[4] = PredictTarget(ctx, VDDirector.FleetCrossLead);
+            ctx.RolledPoints[4] = ctx.Target.Center;
         }
 
         /// <summary>开门 + 放幻影:门朝玩家,真身门带更亮的环(ai[2] 亮度倍率)</summary>

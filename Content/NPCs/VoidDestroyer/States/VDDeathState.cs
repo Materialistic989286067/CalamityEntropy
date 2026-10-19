@@ -25,7 +25,6 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             base.OnEnter(ctx);
             ctx.Dying = true;
             ctx.BlinkTimer = 0;
-            ctx.QueuedChainState = -1;
             (surfaceDepth, surfacePoint) = CaptureSurface(ctx);
             VDVfx.ClearOwnProjectiles();
             VDVfx.Sound("VoidAnticipation", 0.8f, ctx.Npc.Center, 2, 1.2f);

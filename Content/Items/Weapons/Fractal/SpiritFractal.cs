@@ -66,8 +66,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 return;
             }
             CreateRecipe().AddIngredient<RuneSong>()
-                .AddIngredient<NihilityFragments>(10)
-                .AddIngredient(ItemID.LunarBar, 10)
+                .AddIngredient<WraithSoulEssence>(10)
                 .AddTile(TileID.LunarCraftingStation).Register();
         }
     }

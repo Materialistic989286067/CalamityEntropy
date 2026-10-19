@@ -174,22 +174,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         #region 公共小件
         protected static bool IsServer => !VaultUtils.isClient;
 
-        /// <summary>结束攻击:有连击队列且合法直接接招(连段刻意跳过连接段),否则回 hub 走连接段三拍</summary>
-        protected static IVDState EndAttack(VDStateContext ctx) {
-            if (ctx.QueuedChainState >= 0 && ctx.TargetValid) {
-                VDStateIndex next = (VDStateIndex)ctx.QueuedChainState;
-                ctx.QueuedChainState = -1;
-                if (VDRotation.IsLegal(ctx, next)) {
-                    IVDState chained = VDRotation.Create(next);
-                    if (chained != null) {
-                        VDRotation.Commit(ctx, next);
-                        return chained;
-                    }
-                }
-            }
-            ctx.QueuedChainState = -1;
-            return new States.VDHubState();
-        }
+        /// <summary>结束攻击:回 hub 走连接段三拍,招与招之间不连段</summary>
+        protected static IVDState EndAttack(VDStateContext ctx) => new States.VDHubState();
 
         /// <summary>本 Boss 存活的敌对弹幕数(不计演出弹幕):杂波阀的判据</summary>
         protected static int CountHostileProjectiles() {
@@ -205,12 +191,12 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         protected static Vector2 PredictTarget(VDStateContext ctx, float leadFrames)
             => ctx.Target.Center + ctx.Target.velocity * leadFrames;
 
-        /// <summary>服务端生成敌对弹幕,伤害按大师显示值折算;客户端返回 -1</summary>
-        protected static int Shoot<T>(VDStateContext ctx, Vector2 pos, Vector2 vel, int masterShown, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile {
+        /// <summary>服务端生成敌对弹幕,伤害传普通档基值(经 ProjDamage);客户端返回 -1</summary>
+        protected static int Shoot<T>(VDStateContext ctx, Vector2 pos, Vector2 vel, int normalBase, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile {
             if (!IsServer) {
                 return -1;
             }
-            return Projectile.NewProjectile(ctx.Npc.GetSource_FromAI(), pos, vel, ModContent.ProjectileType<T>(), ctx.Owner.ProjDamage(masterShown), 0f, Main.myPlayer, ai0, ai1, ai2);
+            return Projectile.NewProjectile(ctx.Npc.GetSource_FromAI(), pos, vel, ModContent.ProjectileType<T>(), ctx.Owner.ProjDamage(normalBase), 0f, Main.myPlayer, ai0, ai1, ai2);
         }
 
         /// <summary>纯演出弹幕(传送门/无人机装饰/预警),伤害 0;客户端返回 -1</summary>

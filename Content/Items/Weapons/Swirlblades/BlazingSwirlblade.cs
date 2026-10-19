@@ -71,7 +71,12 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                     .AddIngredient(CEID.Item_UnholyEssence, 8)
                     .AddTile(TileID.MythrilAnvil)
                     .Register();
+                return;
             }
+            CreateRecipe()
+                .AddIngredient<BlazingSunlight>(16)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
         }
     }
     public class BlazingSwirlbladeProj : BaseSwirlblade

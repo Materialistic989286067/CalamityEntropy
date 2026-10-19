@@ -6,7 +6,7 @@ using Terraria;
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
     /// <summary>
-    /// 开头权威端选招,结果写 PendingState,要换位或离锚点太远就在落定拍闪,否则飞
+    /// 开头权威端按技能表选招,结果写 PendingState,要换位或离锚点太远就在落定拍闪,否则飞
     /// 末尾弹幕仍多再等最多 60 帧。签名首招走 ForcedNextState
     /// </summary>
     [VaultState((int)VDStateIndex.Hub, typeof(VDStateContext))]
@@ -113,8 +113,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         /// <summary>权威端:选招,写 PendingState,按新招的锚点决定闪现或飞行</summary>
         private void PickAndPosition(VDStateContext ctx) {
             VDStateIndex pick = VDRotation.Pick(ctx);
-            //每手换一次侧向:同一招左右出场不同
-            ctx.SideDir = Main.rand.NextBool() ? -1 : 1;
+            //每手左右轮换:同一招左右出场不同,顺序可读
+            ctx.SideDir = -ctx.SideDir;
             ctx.RandCount = 0;
             ctx.PendingState = (int)pick;
 

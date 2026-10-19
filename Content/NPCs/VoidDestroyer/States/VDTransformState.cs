@@ -21,7 +21,6 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         public override void OnEnter(VDStateContext ctx) {
             base.OnEnter(ctx);
             ctx.BlinkTimer = 0;
-            ctx.QueuedChainState = -1;
             ctx.Npc.velocity = Vector2.Zero;
             (surfaceDepth, surfacePoint) = CaptureSurface(ctx);
             VDVfx.ClearOwnProjectiles();

@@ -2,6 +2,7 @@
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.DamageClasses;
+using CalamityEntropy.Content.Events.VoidDestroyerAftermath;
 using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Accessories.Cards;
@@ -16,7 +17,6 @@ using CalamityEntropy.Content.Items.Pets;
 using CalamityEntropy.Content.Items.Vanity;
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Items.Weapons.Bait;
-using CalamityEntropy.Content.Items.Weapons.Swirlblades;
 using CalamityEntropy.Content.Items.Weapons.Whips;
 using CalamityEntropy.Content.NPCs;
 using CalamityEntropy.Content.NPCs.FriendFinderNPC;
@@ -717,7 +717,7 @@ namespace CalamityEntropy.Common
             if (npc.type == NPCID.Paladin) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<DevouringCard>(), 2));
                 if (!CERef.Has) {
-                    npcLoot.Add(ItemDropRule.ByCondition(new PostMoonLord(), ModContent.ItemType<AnimaSola>(), 20));
+                    npcLoot.Add(ItemDropRule.ByCondition(new PostVoidDestroyerCondition(), ModContent.ItemType<AnimaSola>(), 20));
                 }
             }
             if (npc.type == NPCID.Golem) {
@@ -775,13 +775,12 @@ namespace CalamityEntropy.Common
             if (npc.type == NPCID.CultistBoss) {
                 if (!CERef.Has) {
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacrificalMask>()));
-                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacredStone>(), 3));
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkProfaned>()));
-                    // 这三件 3.33 是配方产物,2026-08-31 平衡案删配方改挂拜月。
+                    //这两件 3.33 是配方产物,2026-08-31 平衡案删配方改挂拜月
                     // 装灾厄时各自的 3.33 配方会重新注册(见各自的 AddRecipes),这里加门消除双来源
+                    //圣火流石的掉落在 VDAftermathGlobalNPC
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Content.Items.Weapons.BuriedSun>(), 3));
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Revelation>(), 3));
-                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BlazingSwirlblade>(), 3));
                 }
             }
             if (!CERef.Has && npc.type == NPCID.Crab) {

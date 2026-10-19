@@ -1,7 +1,6 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.NPCs.VoidDestroyer;
 using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
-using CalamityEntropy.Content.NPCs.VoidDestroyer.States;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
@@ -13,8 +12,8 @@ using VoidDestroyerNPC = CalamityEntropy.Content.NPCs.VoidDestroyer.VoidDestroye
 namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 {
     /// <summary>
-    /// 幻影舰队的幻影:门口待机 ai[1] 帧,航道跟着玩家预测点瞄,本体锁交汇点(RolledPoints[4])之后航道定死;
-    /// 与真身同帧出手,第 FleetCrossFrame 帧穿过交汇点。ai[0] 本体,ai[2] 目标玩家;伤害是真身接触的 60%
+    /// 幻影舰队的幻影:门口待机 ai[1] 帧,航道指向交汇点(四扇门的圆心,本体记在 RolledPoints[4],全程不跟人);
+    /// 与真身同帧出手,第 FleetCrossFrame 帧穿过交汇点。ai[0] 本体,ai[2] 目标玩家;伤害低于真身接触一档
     /// </summary>
     public class VDPhantomShip : VDDepthProjectile
     {
@@ -41,15 +40,14 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
         }
 
-        /// <summary>交汇点:本体锁定后读 RolledPoints[4],之前跟着玩家预测点</summary>
-        private Vector2 CrossPoint(out bool locked) {
+        /// <summary>交汇点:本体在开门那一刻记下的圆心;本体失效时退回玩家当前位置</summary>
+        private Vector2 CrossPoint() {
             VoidDestroyerNPC boss = Owner;
-            locked = VDPhantomFleetState.CrossLocked(Age - 1);
-            if (boss != null && locked) {
+            if (boss != null) {
                 return boss.Context.RolledPoints[4];
             }
             Player target = TargetPlayer(2);
-            return target != null ? target.Center + target.velocity * VDDirector.FleetCrossLead : Projectile.Center + Vector2.UnitY * 200f;
+            return target != null ? target.Center : Projectile.Center + Vector2.UnitY * 200f;
         }
 
         public override void SetExtraDefaults() {
@@ -71,7 +69,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
             if (age == LaunchAge) {
                 //齐冲:各端按同一交汇点定速(服务端的速度随包覆盖)
-                Vector2 cross = CrossPoint(out _);
+                Vector2 cross = CrossPoint();
                 Projectile.velocity = (cross - Projectile.Center) / VDDirector.FleetCrossFrame;
                 if (IsServer) {
                     Projectile.netUpdate = true;
@@ -87,11 +85,6 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Projectile.rotation = MathHelper.Lerp(Projectile.rotation, MathHelper.Clamp(Projectile.velocity.X * 0.012f, -0.25f, 0.25f), 0.2f);
             Lighting.AddLight(Projectile.Center, VDVfx.VoidPurple.ToVector3() * 0.7f);
 
-            VoidDestroyerNPC boss = Owner;
-            if (Dashing && boss != null && boss.Phase >= 3 && IsServer && age % VDDirector.FleetTrailInterval == 3) {
-                int dmg = boss.ProjDamage(VDDirector.DmgVoidBolt);
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.UnitY) * VDDirector.PhantomTrailSpeed, ModContent.ProjectileType<VDVoidBolt>(), dmg, 0f, Main.myPlayer, VDVoidBolt.ModeAccelerate);
-            }
             if (!Main.dedServ && Dashing && Main.rand.NextBool(2)) {
                 Vector2 v = -Projectile.velocity * 0.1f + CEUtils.randomPointInCircle(2f);
                 VDVfx.SparkBurst(Projectile.Center + CEUtils.randomPointInCircle(40f), VDVfx.VoidPurple, 1, v.Length(), v.Length(), 18, 0.5f, 1f);
@@ -121,9 +114,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             if (Age < LaunchAge) {
                 float p = Age / (float)LaunchAge;
                 opacity *= 0.6f + 0.4f * p;
-                Vector2 cross = CrossPoint(out bool locked);
-                Vector2 toCross = cross - Projectile.Center;
-                VDVfx.DrawLane(Projectile.Center, toCross, toCross.Length() + 500f, VDDirector.FleetLaneWidth, VDVfx.VoidPurple, locked ? 1f : 0.2f + 0.5f * p);
+                Vector2 toCross = CrossPoint() - Projectile.Center;
+                VDVfx.DrawLane(Projectile.Center, toCross, toCross.Length() + 500f, VDDirector.FleetLaneWidth, VDVfx.VoidPurple, 0.3f + 0.7f * p);
             }
             if (opacity <= 0.01f) {
                 return;

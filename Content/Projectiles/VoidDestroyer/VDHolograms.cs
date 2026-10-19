@@ -158,7 +158,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         }
     }
 
-    /// <summary>全息邪恶三叉戟:从红恶魔处直飞、逐帧加速;画大 1.4 倍,拖尾是同一张贴图的全息残影。命中 450</summary>
+    /// <summary>全息邪恶三叉戟:从红恶魔处匀速直飞;画大 1.4 倍,拖尾是同一张贴图的全息残影。弹幕档伤害</summary>
     public class VDHoloTrident : VDDepthProjectile
     {
         public const float BodyScale = 1.4f;
@@ -173,8 +173,6 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 
         protected override void DepthAI() {
             Projectile.localAI[1]++;
-            float speed = Math.Min(Projectile.velocity.Length() * 1.03f + 0.05f, 30f);
-            Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * speed;
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
             Lighting.AddLight(Projectile.Center, VDHologramDraw.HellRed.ToVector3() * 0.45f);
         }
@@ -204,7 +202,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 
     /// <summary>
     /// 全息陆龟:每次冲锋在玩家左右 TortoiseStartOffset 处现身(屏内),待机期画出整条水平航道,y 在现身那一刻锁死,
-    /// 起冲时扇形 4 发毒刺,沿航道直冲不修正;下一冲换到另一侧。ai[0] 本体,ai[1] 目标玩家,ai[2] 首冲侧向(0 = 自选)。命中 432
+    /// 起冲时扇形 StingerCount 发毒刺,沿航道直冲不修正;下一冲换到另一侧。ai[0] 本体,ai[1] 目标玩家,ai[2] 首冲侧向(0 = 自选)。体术档伤害
     /// </summary>
     public class VDHoloTortoise : VDHoloProjectile
     {
@@ -283,9 +281,9 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         private void ServerStateMachine(Player target) {
             if (phase == 0) {
                 if (phaseTimer == 0) {
-                    //首冲按玩家移动方向选侧,之后每冲换边
+                    //首冲按玩家移动方向选侧(站着不动取本体当前侧向),之后每冲换边
                     if (Projectile.ai[2] == 0) {
-                        Projectile.ai[2] = Math.Abs(target.velocity.X) > 0.5f ? Math.Sign(target.velocity.X) : (Main.rand.NextBool() ? 1 : -1);
+                        Projectile.ai[2] = Math.Abs(target.velocity.X) > 0.5f ? Math.Sign(target.velocity.X) : (Owner != null ? Owner.Context.SideDir : 1);
                     }
                     else if (dashesDone > 0) {
                         Projectile.ai[2] = -Projectile.ai[2];
@@ -326,12 +324,13 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
         }
 
-        /// <summary>扇形 4 发全息毒刺,朝玩家</summary>
+        /// <summary>扇形全息毒刺,朝玩家,匀速</summary>
         private void FireStingers(Player target) {
             Vector2 aim = (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-            for (int i = 0; i < 4; i++) {
-                float ang = MathHelper.ToRadians(-30f + 20f * i);
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, aim.RotatedBy(ang) * 12f, ModContent.ProjectileType<VDHoloStinger>(), Owner != null ? Owner.ProjDamage(VDDirector.DmgStinger) : Projectile.damage / 2, 0f, Main.myPlayer);
+            int n = VDDirector.StingerCount;
+            for (int i = 0; i < n; i++) {
+                float ang = MathHelper.ToRadians(VDDirector.StingerSpreadDeg * (n == 1 ? 0f : -1f + 2f * i / (n - 1)));
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, aim.RotatedBy(ang) * VDDirector.StingerSpeed, ModContent.ProjectileType<VDHoloStinger>(), Owner != null ? Owner.ProjDamage(VDDirector.DmgStinger) : VDDirector.DmgStinger, 0f, Main.myPlayer);
             }
         }
 
@@ -378,7 +377,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         }
     }
 
-    /// <summary>全息青苔黄蜂毒刺:直飞,命中 276</summary>
+    /// <summary>全息青苔黄蜂毒刺:匀速直飞,弹幕档伤害</summary>
     public class VDHoloStinger : VDHostileProjectile
     {
         public override string Texture => "CalamityEntropy/Assets/Extra/Empty";
@@ -408,28 +407,29 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
     }
 
     /// <summary>
-    /// 全息小白龙:绕本体的平面椭圆围栏(横半轴 WyvernOrbitRx、纵半轴 WyvernOrbitRy,整圈在一屏之内),龙身铺掉约三分之二圈,
-    /// 剩下的缺口随龙一起转。玩家跑出椭圆时龙头脱轨直冲 40 帧再归位;所有龙节都有判定。
-    /// ai[0] 本体,ai[1] 起始角(与状态同一颗骰子);命中 432
+    /// 全息小白龙:在玩家上方 SkyPassHeight 处横越两程,中心与高度在放出那一刻锁死,不跟人也不脱轨;
+    /// 龙头每越过一个格点就落一朵雪花,第二程反向且格点错半格。所有龙节都有判定。
+    /// ai[0] 本体,ai[1] 横越中心 x,ai[2] 龙头高度 y,首程方向取本体 SideDir;体术档伤害
     /// </summary>
     public class VDHoloWyvern : VDHoloProjectile
     {
-        public const int SegmentCount = 60;
+        public const int SegmentCount = VDDirector.SkyWyvernSegments;
         public const float SegmentLength = 44f;
         public const float SegmentScale = 2f;
+        /// <summary>龙头横越时的上下摆幅与频率(rad/帧)</summary>
+        private const float BobAmp = 28f;
+        private const float BobFreq = 0.1f;
 
         public override string Texture => "CalamityEntropy/Assets/Extra/Empty";
         public override VDStateIndex OwnerMode => VDStateIndex.BlueSky;
         public override Color HoloColor => VDHologramDraw.SkyBlue;
-        public override int DefaultTimeLeft => 900;
+        public override int DefaultTimeLeft => VDDirector.SkyWyvernLife;
         protected override float WhooshStrength => 0f;
 
         private readonly Vector2[] segments = new Vector2[SegmentCount];
-        private bool initialized;
-        /// <summary>0 绕圈,1 出圈直冲,2 归位</summary>
-        private int mode;
-        private int modeTimer;
-        private float orbitAngle;
+        /// <summary>当前所在程,换程时龙身在屏外另一侧重排</summary>
+        private int pass = -1;
+        private Vector2 lastHead;
 
         public override void SetStaticDefaults() {
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 3600;
@@ -442,18 +442,6 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 
         public override bool ShouldUpdatePosition() => false;
 
-        /// <summary>轨道上角 θ 处的平面位置</summary>
-        private static Vector2 OrbitPoint(Vector2 center, float theta)
-            => center + new Vector2(MathF.Cos(theta) * VDDirector.WyvernOrbitRx, MathF.Sin(theta) * VDDirector.WyvernOrbitRy);
-
-        /// <summary>点相对椭圆的归一化半径(1 = 正好在圈上)</summary>
-        private static float EllipseRatio(Vector2 center, Vector2 pos) {
-            Vector2 d = pos - center;
-            float x = d.X / VDDirector.WyvernOrbitRx;
-            float y = d.Y / VDDirector.WyvernOrbitRy;
-            return MathF.Sqrt(x * x + y * y);
-        }
-
         protected override void DepthAI() {
             Projectile.localAI[1]++;
             FadeOutIfOrphaned();
@@ -462,62 +450,30 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 Projectile.Kill();
                 return;
             }
-            Vector2 center = boss.NPC.Center;
-            float angular = VDDirector.WyvernAngularSpeed(boss.Phase);
-            if (!initialized) {
-                initialized = true;
-                orbitAngle = Projectile.ai[1];
-                Projectile.Center = OrbitPoint(center, orbitAngle);
+            int age = (int)Projectile.localAI[1];
+            int k = Math.Min(age / VDDirector.SkyPassStride, VDDirector.SkyPasses - 1);
+            int local = age - k * VDDirector.SkyPassStride;
+            int side = boss.Context.SideDir >= 0 ? 1 : -1;
+            float dir = k % 2 == 0 ? side : -side;
+            float speed = 2f * VDDirector.SkyPassHalfSpan / VDDirector.SkyPassFrames;
+            float startX = Projectile.ai[1] - dir * VDDirector.SkyPassHalfSpan;
+            Vector2 head = new Vector2(startX + dir * speed * local, Projectile.ai[2] + MathF.Sin(local * BobFreq) * BobAmp);
+
+            if (pass != k) {
+                pass = k;
+                lastHead = head;
                 for (int i = 0; i < SegmentCount; i++) {
-                    segments[i] = OrbitPoint(center, orbitAngle - i * SegmentLength / VDDirector.WyvernOrbitRx);
+                    segments[i] = new Vector2(head.X - dir * i * SegmentLength, head.Y);
                 }
             }
-
-            //圈上目标点始终按角度推进,离轨期间也在走,归位时接回
-            orbitAngle += angular;
-            Vector2 orbitPos = OrbitPoint(center, orbitAngle);
-            Player target = boss.NPC.HasValidTarget ? boss.Target : null;
-
-            switch (mode) {
-                case 0:
-                    Projectile.Center = orbitPos;
-                    if (target != null && EllipseRatio(center, target.Center) > VDDirector.WyvernLeaveRatio && Projectile.timeLeft > 120) {
-                        mode = 1;
-                        modeTimer = 0;
-                        if (!Main.dedServ) {
-                            CEUtils.PlaySound("CruiserDash", 0.7f, Projectile.Center, 3, 0.9f);
-                        }
-                        if (IsServer) {
-                            Projectile.netUpdate = true;
-                        }
-                    }
-                    break;
-                case 1:
-                    modeTimer++;
-                    if (target != null) {
-                        Vector2 toTarget = target.Center - Projectile.Center;
-                        Projectile.Center += toTarget.SafeNormalize(Vector2.Zero) * Math.Min(42f, toTarget.Length());
-                        if (toTarget.Length() < 50f || modeTimer >= 40) {
-                            mode = 2;
-                            modeTimer = 0;
-                        }
-                    }
-                    else {
-                        mode = 2;
-                        modeTimer = 0;
-                    }
-                    break;
-                default:
-                    modeTimer++;
-                    Projectile.Center = Vector2.Lerp(Projectile.Center, orbitPos, 0.12f);
-                    if (modeTimer >= 30 || Vector2.Distance(Projectile.Center, orbitPos) < 30f) {
-                        mode = 0;
-                    }
-                    break;
+            if (IsServer) {
+                DropFlakes(boss, k, dir, startX, lastHead.X, head);
             }
+            lastHead = head;
+            Projectile.Center = head;
 
             //蠕虫跟随:每节钉在前一节后方定长处
-            segments[0] = Projectile.Center;
+            segments[0] = head;
             for (int i = 1; i < SegmentCount; i++) {
                 Vector2 diff = segments[i] - segments[i - 1];
                 if (diff.LengthSquared() < 0.01f) {
@@ -529,6 +485,25 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             if (!Main.dedServ && Main.rand.NextBool(3)) {
                 int idx = Main.rand.Next(SegmentCount);
                 VDVfx.Spark(segments[idx] + CEUtils.randomPointInCircle(20f), CEUtils.randomPointInCircle(1.5f), HoloColor, Main.rand.NextFloat(0.4f, 0.8f), 0.8f, 16);
+            }
+        }
+
+        /// <summary>龙头本帧从 prevX 走到 head.X,每越过一个格点(沿航向距离 = 错位 + j × 间距)就在该处落一朵雪花;第二程错半格</summary>
+        private void DropFlakes(VoidDestroyerNPC boss, int k, float dir, float startX, float prevX, Vector2 head) {
+            float spacing = VDDirector.SkyFlakeSpacing;
+            float offset = k % 2 == 0 ? 0f : spacing * 0.5f;
+            float span = 2f * VDDirector.SkyPassHalfSpan;
+            float along0 = dir * (prevX - startX);
+            float along1 = dir * (head.X - startX);
+            int damage = boss.ProjDamage(VDDirector.DmgSnowflake);
+            int type = ModContent.ProjectileType<VDHoloSnowflake>();
+            for (int j = Math.Max(0, (int)MathF.Floor((along0 - offset) / spacing) + 1); ; j++) {
+                float d = offset + j * spacing;
+                if (d > along1 || d > span) {
+                    break;
+                }
+                Vector2 pos = new Vector2(startX + dir * d, head.Y + 24f);
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), pos, new Vector2(0f, VDDirector.SkyFlakeFall), type, damage, 0f, Main.myPlayer);
             }
         }
 
@@ -588,4 +563,39 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             VDHologramDraw.End();
         }
     }
+
+    /// <summary>全息雪花:小白龙横越时从龙身落下,匀速直落,不摆不加速;弹幕档伤害</summary>
+    public class VDHoloSnowflake : VDHostileProjectile
+    {
+        public override string Texture => "CalamityEntropy/Assets/Extra/Empty";
+        public override int DefaultTimeLeft => VDDirector.SkyFlakeFallFrames + 60;
+
+        public override void SetExtraDefaults() {
+            Projectile.width = 28;
+            Projectile.height = 28;
+        }
+
+        public override void AI() {
+            Projectile.localAI[1]++;
+            Projectile.rotation += 0.06f;
+            Lighting.AddLight(Projectile.Center, VDHologramDraw.SkyBlue.ToVector3() * 0.35f);
+        }
+
+        public override bool PreDraw(ref Color lightColor) {
+            Main.instance.LoadProjectile(ProjectileID.NorthPoleSnowflake);
+            Texture2D tex = TextureAssets.Projectile[ProjectileID.NorthPoleSnowflake].Value;
+            float opacity = MathHelper.Clamp(Projectile.localAI[1] / 6f, 0f, 1f) * MathHelper.Clamp(Projectile.timeLeft / 20f, 0f, 1f) * 0.95f;
+            if (opacity <= 0.01f) {
+                return false;
+            }
+            Vector2 pos = Projectile.Center - Main.screenPosition;
+            Main.spriteBatch.UseAdditive();
+            Texture2D glow = CEUtils.getExtraTex("Glow");
+            Main.spriteBatch.Draw(glow, pos, null, VDHologramDraw.SkyBlue * (0.35f * opacity), 0f, glow.Size() / 2f, 0.22f, SpriteEffects.None, 0f);
+            CEUtils.ReSetToEndShader();
+            VDHologramDraw.Draw(tex, pos, null, VDHologramDraw.SkyBlue, opacity, Projectile.rotation, tex.Size() / 2f, 1.6f, SpriteEffects.None);
+            return false;
+        }
+    }
+
 }

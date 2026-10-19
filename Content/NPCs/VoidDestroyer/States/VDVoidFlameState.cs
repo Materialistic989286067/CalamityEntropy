@@ -7,7 +7,7 @@ using Terraria;
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
     /// <summary>
-    /// 闪到玩家脚下,每轮向下扇散一把火,火随即转头向上加速穿过玩家所在高度。
+    /// 闪到玩家脚下,每轮向下扇散一把火,火随即转头向上匀速穿过玩家所在高度。
     /// P2 起喷口逐轮左右换边,P3 每轮三成火晚转向,升起两层火幕
     /// </summary>
     [VaultState((int)VDStateIndex.VoidFlame, typeof(VDStateContext))]
@@ -86,7 +86,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             return null;
         }
 
-        /// <summary>向下扇散一把火(数量服务端掷),每颗过一段延迟后转头向上加速;P3 三分之一晚转向</summary>
+        /// <summary>向下扇散一把火(数量服务端掷),每颗过一段延迟后转头向上;P3 三分之一晚转向</summary>
         private static void FireVolley(VDStateContext ctx, Vector2 core) {
             MuzzleCue(ctx, Vector2.UnitY, 4f, "CruiserSpit", 0.8f);
             if (!IsServer) {

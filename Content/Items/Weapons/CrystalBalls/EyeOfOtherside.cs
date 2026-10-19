@@ -40,7 +40,7 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
             }
             CreateRecipe()
                 .AddIngredient(ItemID.CrystalBall)
-                .AddIngredient<NihilityFragments>(15)
+                .AddIngredient<WraithSoulEssence>(12)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

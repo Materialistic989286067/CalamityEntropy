@@ -1,6 +1,7 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Biomes;
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Events.VoidDestroyerAftermath;
 using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Potions;
 using CalamityEntropy.Content.Items.Weapons.VoidDestroyer;
@@ -204,9 +205,17 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             target.AddDebuffFixed(ModContent.BuffType<VoidFire>(), 180);
         }
 
-        /// <summary>策划表的大师显示值 → 当前难度下的弹幕 damage 字段(命中固定 ×2,故再除 2)</summary>
-        public int ProjDamage(int masterShown) {
-            return Math.Max(1, (int)Math.Round(NPC.defDamage * (masterShown / (float)VDDirector.MasterContactDamage) / 2f));
+        /// <summary>
+        /// 普通档基值 → 弹幕 damage 字段。命中时原版再乘 EnemyDamageMultiplier(普通 1 / 专家 2 / 大师 3),字段里不能先带难度;
+        /// FTW 世界本体接触伤害多乘 (倍率 + 1) / 倍率,弹幕补同一比例(旅途模式倍率由原版命中结算自己取)
+        /// </summary>
+        public int ProjDamage(int normalBase) {
+            float mult = 1f;
+            if (Main.getGoodWorld && !Main.GameModeInfo.IsJourneyMode) {
+                float m = Main.GameModeInfo.EnemyDamageMultiplier;
+                mult = (m + 1f) / m;
+            }
+            return Math.Max(1, (int)Math.Round(normalBase * mult));
         }
 
         /// <summary>接触伤害窗:演出/闪现/落地宽限/半透明/不在判定带(退入深处或掠过镜头)时一律关,其余由状态声明</summary>
@@ -260,7 +269,11 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         }
 
         public override void OnKill() {
+            bool firstKill = !EDownedBosses.downedVoidDestroyer;
             NPC.SetEventFlagCleared(ref EDownedBosses.downedVoidDestroyer, -1);
+            if (firstKill) {
+                VDAftermath.Announce();
+            }
         }
         #endregion
 
@@ -714,7 +727,6 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             writer.Write(Context.BlinkTimer);
             writer.Write(Context.NoContactTimer);
             writer.Write(Context.AttackIndex);
-            writer.Write(Context.QueuedChainState);
             writer.Write(Context.ForcedNextState);
             writer.Write(Context.PendingState);
             for (int i = 0; i < Context.RecentHistory.Length; i++) {
@@ -752,7 +764,6 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             int packetBlink = reader.ReadInt32();
             Context.NoContactTimer = reader.ReadInt32();
             Context.AttackIndex = reader.ReadInt32();
-            Context.QueuedChainState = reader.ReadInt32();
             Context.ForcedNextState = reader.ReadInt32();
             Context.PendingState = reader.ReadInt32();
             for (int i = 0; i < Context.RecentHistory.Length; i++) {

@@ -268,8 +268,9 @@ Items: {
 		DisplayName: 虚空MK2
 		Tooltip:
 			'''
-			快速射出虚空弹头，50%概率不消耗弹药
-			开火时间每累计满0.75秒，枪身顶部弹出一架追踪无人机，停火不会清空累计
+			快速射出你装填的弹药，弹药自带的效果会保留，50%概率不消耗弹药
+			每第4发会额外射出一发虚空弹头，伤害为该发的150%，命中使敌人获得3秒[cebuff:CalamityEntropy/VoidFire]
+			开火时间每累计满0.6秒，枪身顶部弹出一架追踪无人机，停火不会清空累计
 			无人机撞上敌人时爆炸，使范围内的敌人获得3秒[cebuff:CalamityEntropy/VoidFire]
 			'''
 	}
@@ -279,7 +280,8 @@ Items: {
 		Tooltip:
 			'''
 			左键戳击，命中目标后引发暗影爆炸，并生成3发慢速追踪的虚空弹
-			右键投掷，飞行途中等距留下最多7发追踪虚空弹
+			按住右键连续投掷，同时最多有3支矛在场
+			每支掷出的矛在飞行途中等距留下最多7发追踪虚空弹
 			掷出的矛命中目标后，从目标下方立刻射出4发瞄准目标的极速投影三叉戟
 			虚空弹生成0.5秒后开始追踪
 			'''
@@ -293,7 +295,7 @@ Items: {
 			按住期间持续消耗魔力，杖头会积蓄一颗越来越大的闪电球，最多积蓄3秒
 			松开左键掷出闪电球，积蓄越久伤害越高，积蓄不足0.25秒时不会掷出
 			闪电球命中后爆炸，范围内的敌人会[cebuff:Electrified]
-			爆炸还会向周围的敌人释放连锁电弧，积蓄越久连到的敌人越多，最多6个
+			爆炸还会向周围的敌人释放连锁电弧，积蓄越久连到的敌人越多，最多8个
 			'''
 	}
 
@@ -4606,12 +4608,90 @@ Items: {
 	}
 
 	WraithSoulEssence: {
-		DisplayName: 幽渊魂髓
+		DisplayName: 聚星之灵
 		Tooltip:
 			'''
-			自虚无双子残躯中抽出的魂质骨髓，冷得烫手
-			击败虚无双子获得
+			星辰的余辉在地牢深处聚成的灵体，摸上去微微发凉
+			击败虚空驱逐舰后，地牢的敌怪会掉落
 			'''
+	}
+
+	BlazingSunlight: {
+		DisplayName: 烈阳之光
+		Tooltip:
+			'''
+			神圣之地的日光凝成的碎片，握在手里依旧滚烫
+			击败虚空驱逐舰后，神圣之地的敌怪会掉落
+			'''
+	}
+
+	SunblazeWarHelm: {
+		DisplayName: 烈阳战盔
+		Tooltip:
+			'''
+			增加16%近战伤害和16%近战暴击率
+			敌人更容易瞄准你
+			'''
+	}
+
+	SunblazeHood: {
+		DisplayName: 烈阳兜帽
+		Tooltip:
+			'''
+			最大仆从数量增加2个
+			召唤伤害增加22%
+			挥鞭距离增加20%
+			'''
+	}
+
+	SunblazeBreastplate: {
+		DisplayName: 烈阳胸甲
+		Tooltip:
+			'''
+			增加40点最大生命值
+			使你能发光
+			'''
+	}
+
+	SunblazeLeggings: {
+		DisplayName: 烈阳护腿
+		Tooltip:
+			'''
+			移动速度提高18%
+			伤害提高6%
+			'''
+	}
+
+	StarmoonWizardHat: {
+		DisplayName: 星月法帽
+		Tooltip:
+			'''
+			最大魔力值增加70点，魔力消耗降低17%
+			增加14%魔法伤害和14%魔法暴击率
+			'''
+	}
+
+	StarmoonLightHelm: {
+		DisplayName: 星月轻盔
+		Tooltip:
+			'''
+			增加10%远程伤害和10%远程暴击率
+			敌人更不容易瞄准你
+			'''
+	}
+
+	StarmoonBreastplate: {
+		DisplayName: 星月胸甲
+		Tooltip:
+			'''
+			增加40点最大生命值
+			伤害提高12%
+			'''
+	}
+
+	StarmoonLeggings: {
+		DisplayName: 星月护腿
+		Tooltip: 移动速度提高18%
 	}
 
 	EntropyStarterBag: {
@@ -5084,8 +5164,49 @@ ChargeReady: 蓄势就绪
 CdMantle: 神圣屏障冷却
 MissileLauncherDescTooltip: 发射可黏附在敌怪身上的导弹
 MissileLauncherMaxStickTooltip: 每个敌怪最多黏附{0}个
+SunblazeMeleeSetBonus:
+	'''
+	近战伤害和近战暴击率提高10%
+	近战攻速提高20%，生命再生速度提高2.5点/秒
+	25格内的玩家（包括你）获得[cebuff:CalamityEntropy/CozyWarmth]，生命再生速度提高2点/秒
+	'''
+SunblazeSummonSetBonus:
+	'''
+	最大仆从数量增加3个
+	召唤伤害增加40%
+	身后出现一个金乌图腾
+	100格内有敌人时，图腾每0.5秒从高空召来一只太阳神鸟追击敌人
+	太阳神鸟造成250点基础召唤伤害，命中时给予3秒[cebuff:CalamityEntropy/SunblazeBurn]
+	'''
+StarmoonMagicSetBonus:
+	'''
+	魔法伤害和魔法暴击率增加13%
+	魔法攻击暴击时，在目标处产生十字星爆，每3秒最多触发一次
+	十字星爆造成1800点基础魔法伤害，消失时为你恢复8点生命值
+	'''
+StarmoonRangedSetBonus:
+	'''
+	攻击时有25%概率不消耗弹药
+	射出的箭矢不会下坠
+	自己发射的火箭、榴弹等远程爆炸物不会炸伤自己
+	为100格内离你最近的敌人加上月亮标记
+	远程攻击命中被标记的敌人时，获得1.5秒[cebuff:CalamityEntropy/StarlightLock]
+	'''
+
+VDAftermath: {
+	Sun: 太阳女神的光芒散发着不祥的征兆
+	StarMoon: 星月贤者的智慧预示着黑暗的未来
+	Beast: 来自异界的猛兽蠢蠢欲动
+	DropPost: 击败虚空驱逐舰后
+	DropPre: 击败虚空驱逐舰前
+	HallowDrop: 击败虚空驱逐舰后，掉落自神圣之地敌怪
+	DungeonDrop: 击败虚空驱逐舰后，掉落自地牢敌怪
+}
 
 Projectiles: {
+	SunbirdTotem.DisplayName: 金乌图腾
+	Sunbird.DisplayName: 太阳神鸟
+	StarCrossBurst.DisplayName: 十字星爆
 	LDDaggerHeld.DisplayName: 光暗龙匕
 	LDKnifeLight.DisplayName: 耀光飞刃
 	LDKnifeDark.DisplayName: 黯影飞刃
@@ -5148,6 +5269,7 @@ Projectiles: {
 	VDHoloTortoise.DisplayName: 全息丛林陆龟
 	VDHoloStinger.DisplayName: 全息毒刺
 	VDHoloWyvern.DisplayName: 全息小白龙
+	VDHoloSnowflake.DisplayName: 全息雪花
 	VoidMK2Held.DisplayName: 虚空MK2
 	VoidMK2Bullet.DisplayName: 虚空弹头
 	VoidMK2Drone.DisplayName: 追踪无人机
@@ -5902,6 +6024,37 @@ Buffs: {
 	VoidStorm: {
 		DisplayName: 虚空强袭
 		Description: 来自虚空最深处的凝视
+	}
+
+	CozyWarmth: {
+		DisplayName: 暖洋洋
+		Description:
+			'''
+			暖烘烘的，很舒服
+			生命再生速度提高2点/秒
+			'''
+		ItemTooltip: 生命再生速度提高2点/秒
+	}
+
+	SunbirdTotemBuff: {
+		DisplayName: 太阳神鸟
+		Description: 太阳化身正与你并肩作战
+	}
+
+	SunblazeBurn: {
+		DisplayName: 烈阳灼烧
+		Description:
+			'''
+			烫烫烫烫烫！
+			每秒失去50点生命
+			'''
+		ItemTooltip: 敌人每秒受到300点伤害
+	}
+
+	StarlightLock: {
+		DisplayName: 星光锁定
+		Description: 远程伤害和远程暴击率提高20%
+		ItemTooltip: 远程伤害和远程暴击率提高20%
 	}
 
 	VoidTouch: {
@@ -7722,13 +7875,13 @@ CWRQuest: {
 	}
 
 	SoulEssence: {
-		Title: 幽渊魂髓
-		Summary: 攒够三十份幽渊魂髓
-		Objective: 持有 30 份幽渊魂髓
+		Title: 聚星之灵
+		Summary: 攒够三十份聚星之灵
+		Objective: 持有 30 份聚星之灵
 		Detail:
 			'''
-			虚无噬菌体掉落
-			它是多条终局配方的入口材料，部分前缀道具也要用
+			击败虚空驱逐舰后，地牢的敌怪会掉落
+			它是多条终局配方的入口材料，星月套装和部分前缀道具也要用
 			'''
 	}
 

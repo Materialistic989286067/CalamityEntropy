@@ -67,7 +67,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     ctx.RimCharge = 1f;
                     DeclareLane(ctx, ctx.AnchorPos, LaneDir(ctx), VDDirector.PhantomLaneLength, VDDirector.PhantomLaneWidth, 1f - Timer / 8f, VDDirector.RimDashIce);
                     if (ctx.Phase >= 2 && Timer % VDDirector.PhantomTrailInterval == 3) {
-                        Shoot<VDVoidBolt>(ctx, npc.Center, npc.velocity.SafeNormalize(Vector2.UnitY) * VDDirector.PhantomTrailSpeed, VDDirector.DmgVoidBolt, VDVoidBolt.ModeAccelerate);
+                        Shoot<VDVoidBolt>(ctx, npc.Center, npc.velocity.SafeNormalize(Vector2.UnitY) * VDDirector.PhantomTrailSpeed, VDDirector.DmgVoidBolt, VDVoidBolt.ModeStraight);
                     }
                     if (Timer >= VDDirector.PhantomDashFrames) {
                         dashes++;
@@ -104,7 +104,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 
         /// <summary>门开在玩家某个斜角 480px 外,航向在这一帧锁死:门 → 玩家此刻的位置</summary>
         private static void RollDash(VDStateContext ctx) {
-            ctx.CornerIndex = Main.rand.Next(4);
+            //四角按传送火弹同一圈序轮转,开门位置可预判
+            int at = Array.IndexOf(VDDirector.TeleportFireOrder, ctx.CornerIndex);
+            ctx.CornerIndex = VDDirector.TeleportFireOrder[(at + 1) % VDDirector.TeleportFireOrder.Length];
             ctx.AnchorPos = ctx.Target.Center + VDVfx.CornerDirs[ctx.CornerIndex] * VDDirector.PhantomPortalOffset;
             Vector2 dir = (ctx.Target.Center - ctx.AnchorPos).SafeNormalize(Vector2.UnitY);
             ctx.RolledAngles[1] = dir.ToRotation();

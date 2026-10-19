@@ -90,7 +90,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
             CreateRecipe()
                 .AddIngredient<RustExpeditioner>()
                 .AddIngredient(ItemID.LunarBar, 10)
-                .AddIngredient(ItemID.SpectreBar, 10)
+                .AddIngredient<WraithSoulEssence>(5)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

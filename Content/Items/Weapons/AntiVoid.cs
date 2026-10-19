@@ -85,7 +85,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient<VoidBlade>()
-                .AddCalOrOwn(CEID.Item_TwistingNether, ModContent.ItemType<WraithSoulEssence>(), 4)
+                .AddCalOrOwn(CEID.Item_TwistingNether, 4, ModContent.ItemType<WraithSoulEssence>(), 5)
                 .AddCalOrOwn(CEID.Item_RuinousSoul, ModContent.ItemType<NihilityFragments>(), 4)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();

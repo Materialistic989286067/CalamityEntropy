@@ -9,8 +9,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 {
     /// <summary>
     /// Center 是平面光盘;ai[0] 发射帧,ai[1] 预警帧,ai[2] 本体 whoAmI+1
-    /// 预警期光盘紧跟玩家,发射期每帧最多挪 4px,判定只在发射期
-    /// 命中 396;FTW 光盘加大 30%
+    /// 预警前段光盘松松追玩家,末 RedRayLockFrames 帧冻结,发射期不再追,判定只在发射期
+    /// 小激光档伤害;FTW 光盘加大 30%
     /// </summary>
     public class VDRedRay : VDHostileProjectile
     {
@@ -25,6 +25,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public float Radius => VDDirector.RedRaySpotRadius * (Main.getGoodWorld ? 1.3f : 1f);
         public int Age => (int)Projectile.localAI[1];
         public bool Firing => Age >= WarnFrames && Age < WarnFrames + Duration;
+        /// <summary>光盘已冻结:预警末段起位置不再变</summary>
+        public bool Locked => Age >= WarnFrames - VDDirector.RedRayLockFrames;
 
         private VoidDestroyerNPC OwnerBoss {
             get {
@@ -85,19 +87,9 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 int closest = Player.FindClosest(Projectile.Center, 1, 1);
                 target = closest >= 0 ? Main.player[closest] : null;
             }
-            if (target != null) {
-                if (Age < WarnFrames) {
-                    //预警期光盘紧跟在玩家脚下,玩家躲不开,但看得到光盘
-                    Projectile.Center = Vector2.Lerp(Projectile.Center, target.Center, VDDirector.RedRayWarnTrack);
-                }
-                else {
-                    //发射期追得慢,玩家跑得开,站着会被追上
-                    Vector2 to = target.Center - Projectile.Center;
-                    float dist = to.Length();
-                    if (dist > 1f) {
-                        Projectile.Center += to / dist * Math.Min(dist, VDDirector.RedRaySpotTrackSpeed);
-                    }
-                }
+            if (target != null && !Locked) {
+                //冻结前松松跟着玩家脚下,冻结后位置死定:看见光盘变白就该跑了
+                Projectile.Center = Vector2.Lerp(Projectile.Center, target.Center, VDDirector.RedRayWarnTrack);
             }
             if (Age == WarnFrames && !Main.dedServ) {
                 CEUtils.PlaySound("void_laser", 0.7f, Projectile.Center, 3, 1f);
@@ -132,7 +124,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 float flicker = WarnFrames - Age <= 8 ? 0.6f + 0.4f * MathF.Sin(Age * 1.4f) : 1f;
                 VDBeamDraw.DrawTapered(from, spot, 2f + 2f * p, 10f + 40f * p, RayColor, RayCore, 1f, (0.25f + 0.45f * p) * flicker, Projectile.whoAmI * 0.37f, endGlow: false);
                 DrawSourceGlow(from, p * 0.6f);
-                VDVfx.DrawDepthMarker(spot, p, radius, RayColor, 0.9f);
+                //冻结那一帧标记环收紧变白闪烁:读成「已锁定,该跑了」
+                VDVfx.DrawDepthMarker(spot, Locked ? Math.Max(p, 0.85f) : p * 0.7f, radius, Locked ? Color.Lerp(RayColor, Color.White, 0.5f) : RayColor, 0.9f);
                 return false;
             }
             float env = Envelope();

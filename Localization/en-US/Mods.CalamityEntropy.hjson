@@ -288,8 +288,9 @@ Items: {
 		DisplayName: Void MK2
 		Tooltip:
 			'''
-			Rapidly fires void rounds, 50% chance to not consume ammo
-			Every 0.75 seconds of firing launches a homing drone from the top of the gun. Ceasing fire keeps the progress
+			Rapidly fires your loaded ammo and keeps the ammo's own effects. 50% chance to not consume ammo
+			Every 4th shot also fires a void round with 150% of that shot's damage, inflicting [cebuff:CalamityEntropy/VoidFire] for 3 seconds on hit
+			Every 0.6 seconds of firing launches a homing drone from the top of the gun. Ceasing fire keeps the progress
 			The drone explodes when it reaches an enemy, inflicting [cebuff:CalamityEntropy/VoidFire] for 3 seconds on enemies in the blast
 			'''
 	}
@@ -299,7 +300,8 @@ Items: {
 		Tooltip:
 			'''
 			Left click to stab. Hitting a target sets off a shadow burst and releases 3 slow homing void bolts
-			Right click to throw the spear, leaving up to 7 homing void bolts evenly along its path
+			Hold right click to keep throwing the spear. Up to 3 spears can be out at once
+			Each thrown spear leaves up to 7 homing void bolts evenly along its path
 			When the thrown spear hits a target, 4 projected tridents instantly fire at it from below at extreme speed
 			Void bolts start homing 0.5 seconds after they appear
 			'''
@@ -313,7 +315,7 @@ Items: {
 			Holding drains mana and builds a growing lightning ball at the staff tip, up to 3 seconds
 			Release left click to hurl the ball. Longer charges deal more damage, and a charge under 0.25 seconds fires nothing
 			The lightning ball explodes on impact and inflicts [cebuff:Electrified] on enemies in the blast
-			The blast also sends chain arcs to nearby enemies. Longer charges reach more enemies, up to 6
+			The blast also sends chain arcs to nearby enemies. Longer charges reach more enemies, up to 8
 			'''
 	}
 
@@ -4530,12 +4532,90 @@ Items: {
 	}
 
 	WraithSoulEssence: {
-		DisplayName: Wraith Soul Essence
+		DisplayName: Starcluster Spirit
 		Tooltip:
 			'''
-			Soul marrow drawn from the remains of the Nihility Twins, cold enough to burn
-			Obtained by defeating the Nihility Twins
+			The afterglow of stars, gathered into a spirit deep within the Dungeon. Faintly cool to the touch
+			Dropped by Dungeon enemies after the Void Destroyer has been defeated
 			'''
+	}
+
+	BlazingSunlight: {
+		DisplayName: Blazing Sunlight
+		Tooltip:
+			'''
+			A shard of Hallowed daylight that stays scorching in your hand
+			Dropped by Hallow enemies after the Void Destroyer has been defeated
+			'''
+	}
+
+	SunblazeWarHelm: {
+		DisplayName: Sunblaze War Helm
+		Tooltip:
+			'''
+			16% increased melee damage and critical strike chance
+			Enemies are more likely to target you
+			'''
+	}
+
+	SunblazeHood: {
+		DisplayName: Sunblaze Hood
+		Tooltip:
+			'''
+			Increases your max number of minions by 2
+			22% increased summon damage
+			20% increased whip range
+			'''
+	}
+
+	SunblazeBreastplate: {
+		DisplayName: Sunblaze Breastplate
+		Tooltip:
+			'''
+			Increases max life by 40
+			Makes you glow
+			'''
+	}
+
+	SunblazeLeggings: {
+		DisplayName: Sunblaze Leggings
+		Tooltip:
+			'''
+			18% increased movement speed
+			6% increased damage
+			'''
+	}
+
+	StarmoonWizardHat: {
+		DisplayName: Starmoon Wizard Hat
+		Tooltip:
+			'''
+			Increases max mana by 70 and reduces mana usage by 17%
+			14% increased magic damage and critical strike chance
+			'''
+	}
+
+	StarmoonLightHelm: {
+		DisplayName: Starmoon Light Helm
+		Tooltip:
+			'''
+			10% increased ranged damage and critical strike chance
+			Enemies are less likely to target you
+			'''
+	}
+
+	StarmoonBreastplate: {
+		DisplayName: Starmoon Breastplate
+		Tooltip:
+			'''
+			Increases max life by 40
+			12% increased damage
+			'''
+	}
+
+	StarmoonLeggings: {
+		DisplayName: Starmoon Leggings
+		Tooltip: 18% increased movement speed
 	}
 
 	EntropyStarterBag: {
@@ -5025,8 +5105,49 @@ ChargeReady: Ultimate Ready
 CdMantle: Holy Mantle Cooldown
 MissileLauncherDescTooltip: Launch missiles that get lodged into enemies and cause damage over time
 MissileLauncherMaxStickTooltip: Up to {0} can be lodged in the same enemy
+SunblazeMeleeSetBonus:
+	'''
+	10% increased melee damage and critical strike chance
+	20% increased melee speed and 2.5 life regeneration per second
+	Players within 25 tiles (including you) gain [cebuff:CalamityEntropy/CozyWarmth], increasing life regeneration by 2 per second
+	'''
+SunblazeSummonSetBonus:
+	'''
+	Increases your max number of minions by 3
+	40% increased summon damage
+	A Golden Crow Totem appears behind you
+	While an enemy is within 100 tiles, the totem calls down a Sunbird from high above every 0.5 seconds to chase it
+	Sunbirds deal 250 base summon damage and inflict [cebuff:CalamityEntropy/SunblazeBurn] for 3 seconds
+	'''
+StarmoonMagicSetBonus:
+	'''
+	13% increased magic damage and critical strike chance
+	Magic critical hits create a Star Cross Burst on the target, at most once every 3 seconds
+	The Star Cross Burst deals 1800 base magic damage and heals you for 8 life when it fades
+	'''
+StarmoonRangedSetBonus:
+	'''
+	25% chance not to consume ammo
+	Arrows you fire do not drop
+	Rockets, grenades and other ranged explosives you fire cannot hurt you
+	The nearest enemy within 100 tiles is marked by the moon
+	Hitting the marked enemy with ranged attacks grants [cebuff:CalamityEntropy/StarlightLock] for 1.5 seconds
+	'''
+
+VDAftermath: {
+	Sun: The radiance of the Sun Goddess carries an ominous omen
+	StarMoon: The wisdom of the Starmoon Sage foretells a dark future
+	Beast: Beasts from another world are stirring
+	DropPost: After the Void Destroyer has been defeated
+	DropPre: Before the Void Destroyer has been defeated
+	HallowDrop: Dropped by Hallow enemies after the Void Destroyer has been defeated
+	DungeonDrop: Dropped by Dungeon enemies after the Void Destroyer has been defeated
+}
 
 Projectiles: {
+	SunbirdTotem.DisplayName: Golden Crow Totem
+	Sunbird.DisplayName: Sunbird
+	StarCrossBurst.DisplayName: Star Cross Burst
 	LDDaggerHeld.DisplayName: Light-Dark Dragon Dagger
 	LDKnifeLight.DisplayName: Radiant Blade
 	LDKnifeDark.DisplayName: Umbral Blade
@@ -5089,6 +5210,7 @@ Projectiles: {
 	VDHoloTortoise.DisplayName: Holographic Giant Tortoise
 	VDHoloStinger.DisplayName: Holographic Stinger
 	VDHoloWyvern.DisplayName: Holographic Wyvern
+	VDHoloSnowflake.DisplayName: Holographic Snowflake
 	VoidMK2Held.DisplayName: Void MK2
 	VoidMK2Bullet.DisplayName: Void Round
 	VoidMK2Drone.DisplayName: Homing Drone
@@ -5843,6 +5965,37 @@ Buffs: {
 	VoidStorm: {
 		DisplayName: Void Storm
 		Description: The gaze from the deepest part of the void
+	}
+
+	CozyWarmth: {
+		DisplayName: Cozy Warmth
+		Description:
+			'''
+			Warm and comfy
+			Life regeneration increased by 2 per second
+			'''
+		ItemTooltip: Life regeneration increased by 2 per second
+	}
+
+	SunbirdTotemBuff: {
+		DisplayName: Sunbird
+		Description: An avatar of the sun fights by your side
+	}
+
+	SunblazeBurn: {
+		DisplayName: Sunblaze Burn
+		Description:
+			'''
+			Hot hot hot hot hot!
+			Losing 50 life per second
+			'''
+		ItemTooltip: Enemies take 300 damage per second
+	}
+
+	StarlightLock: {
+		DisplayName: Starlight Lock
+		Description: 20% increased ranged damage and critical strike chance
+		ItemTooltip: 20% increased ranged damage and critical strike chance
 	}
 
 	VoidTouch: {
@@ -7635,13 +7788,13 @@ CWRQuest: {
 	}
 
 	SoulEssence: {
-		Title: Wraith Soul Essence
-		Summary: Bank thirty Wraith Soul Essence
-		Objective: Hold 30 Wraith Soul Essence
+		Title: Starcluster Spirit
+		Summary: Bank thirty Starcluster Spirits
+		Objective: Hold 30 Starcluster Spirits
 		Detail:
 			'''
-			Dropped by the Nihility Acteriophage
-			It is the entry material for several endgame recipes, including some prefix items
+			Dropped by Dungeon enemies after the Void Destroyer has been defeated
+			It is the entry material for several endgame recipes, the Starmoon armor and some prefix items
 			'''
 	}
 

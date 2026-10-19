@@ -38,14 +38,22 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
             return false;
         }
         public override void AddRecipes() {
-            // 灾厄原料按 material-map.md 表外兜底：Nadir（原犽戎档终局近战）→自有巡游者掉落近战 VoidAnnihilate
+            if (CECal.CalChainReady(CEID.Item_Nadir)) {
+                CreateRecipe()
+                    .AddIngredient(CEID.Item_Nadir)
+                    .AddIngredient<FadingRunestone>()
+                    .AddIngredient(ItemID.FragmentNebula, 4)
+                    .AddIngredient(ItemID.FragmentSolar, 4)
+                    .AddIngredient(ItemID.FragmentStardust, 4)
+                    .AddIngredient(ItemID.FragmentVortex, 4)
+                    .AddTile<AbyssalAltarTile>()
+                    .Register();
+                return;
+            }
             CreateRecipe()
-                .AddCalOrOwn(CEID.Item_Nadir, ModContent.ItemType<VoidAnnihilate>())
+                .AddIngredient<WraithSoulEssence>(5)
+                .AddIngredient(ItemID.DayBreak)
                 .AddIngredient<FadingRunestone>()
-                .AddIngredient(ItemID.FragmentNebula, 4)
-                .AddIngredient(ItemID.FragmentSolar, 4)
-                .AddIngredient(ItemID.FragmentStardust, 4)
-                .AddIngredient(ItemID.FragmentVortex, 4)
                 .AddTile<AbyssalAltarTile>()
                 .Register();
         }

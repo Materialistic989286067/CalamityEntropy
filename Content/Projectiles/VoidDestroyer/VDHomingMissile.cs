@@ -10,13 +10,12 @@ using Terraria.ID;
 namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 {
     /// <summary>
-    /// 径向飞出约 15 格后转头追踪,只追 MissileHomingFrames 帧就改直飞(躲过一次就甩掉);命中即炸。
-    /// ai[0] 目标玩家,localAI[0] 累计飞行距离,localAI[2] 已追踪帧数;命中 312
+    /// 径向飞出约 15 格后转头追踪,只追 MissileHomingFrames 帧就改直飞(躲过一次就甩掉),全程匀速;命中即炸。
+    /// ai[0] 目标玩家,localAI[0] 累计飞行距离,localAI[2] 已追踪帧数;弹幕档伤害
     /// </summary>
     public class VDHomingMissile : VDDepthProjectile
     {
         public const float RetargetDistance = 15f * 16f;
-        public const float MaxSpeed = 22f;
         /// <summary>贴图 24×44,画大 1.15 倍</summary>
         public const float BodyScale = 1.15f;
         public static readonly Color GlowColor = new Color(210, 90, 255);
@@ -40,13 +39,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                     float want = (target.Center - Projectile.Center).ToRotation();
                     float diff = MathHelper.WrapAngle(want - cur);
                     float turn = MathHelper.Clamp(diff, -0.105f, 0.105f);
-                    float speed = Math.Min(Projectile.velocity.Length() * 1.03f + 0.1f, MaxSpeed);
-                    Projectile.velocity = (cur + turn).ToRotationVector2() * speed;
+                    Projectile.velocity = (cur + turn).ToRotationVector2() * Projectile.velocity.Length();
                 }
-            }
-            else if (Projectile.localAI[2] >= VDDirector.MissileHomingFrames) {
-                //追踪段结束:保持速度直飞
-                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * Math.Min(Projectile.velocity.Length() * 1.01f, MaxSpeed);
             }
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Lighting.AddLight(Projectile.Center, GlowColor.ToVector3() * 0.4f);

@@ -271,8 +271,9 @@ Items: {
 		// DisplayName: Void MK2
 		/* Tooltip:
 			'''
-			Rapidly fires void rounds, 50% chance to not consume ammo
-			Every 0.75 seconds of firing launches a homing drone from the top of the gun. Ceasing fire keeps the progress
+			Rapidly fires your loaded ammo and keeps the ammo's own effects. 50% chance to not consume ammo
+			Every 4th shot also fires a void round with 150% of that shot's damage, inflicting [cebuff:CalamityEntropy/VoidFire] for 3 seconds on hit
+			Every 0.6 seconds of firing launches a homing drone from the top of the gun. Ceasing fire keeps the progress
 			The drone explodes when it reaches an enemy, inflicting [cebuff:CalamityEntropy/VoidFire] for 3 seconds on enemies in the blast
 			''' */
 	}
@@ -282,7 +283,8 @@ Items: {
 		/* Tooltip:
 			'''
 			Left click to stab. Hitting a target sets off a shadow burst and releases 3 slow homing void bolts
-			Right click to throw the spear, leaving up to 7 homing void bolts evenly along its path
+			Hold right click to keep throwing the spear. Up to 3 spears can be out at once
+			Each thrown spear leaves up to 7 homing void bolts evenly along its path
 			When the thrown spear hits a target, 4 projected tridents instantly fire at it from below at extreme speed
 			Void bolts start homing 0.5 seconds after they appear
 			''' */
@@ -296,7 +298,7 @@ Items: {
 			Holding drains mana and builds a growing lightning ball at the staff tip, up to 3 seconds
 			Release left click to hurl the ball. Longer charges deal more damage, and a charge under 0.25 seconds fires nothing
 			The lightning ball explodes on impact and inflicts [cebuff:Electrified] on enemies in the blast
-			The blast also sends chain arcs to nearby enemies. Longer charges reach more enemies, up to 6
+			The blast also sends chain arcs to nearby enemies. Longer charges reach more enemies, up to 8
 			''' */
 	}
 
@@ -4282,12 +4284,90 @@ Items: {
 	}
 
 	WraithSoulEssence: {
-		// DisplayName: Wraith Soul Essence
-		/* Tooltip:
+		DisplayName: Дух звёздного скопления
+		Tooltip:
 			'''
-			Soul marrow drawn from the remains of the Nihility Twins, cold enough to burn
-			Obtained by defeating the Nihility Twins
-			''' */
+			Отсвет звёзд, собравшийся в дух в глубинах Темницы. Слегка холодит руку
+			После победы над Эсминцем Пустоты выпадает из врагов Темницы
+			'''
+	}
+
+	BlazingSunlight: {
+		DisplayName: Палящий солнечный свет
+		Tooltip:
+			'''
+			Осколок дневного света Освящения, не остывающий даже в руке
+			После победы над Эсминцем Пустоты выпадает из врагов Освящения
+			'''
+	}
+
+	SunblazeWarHelm: {
+		DisplayName: Боевой шлем палящего солнца
+		Tooltip:
+			'''
+			На 16% увеличивает урон и шанс критического удара в ближнем бою
+			Враги чаще нацеливаются на вас
+			'''
+	}
+
+	SunblazeHood: {
+		DisplayName: Капюшон палящего солнца
+		Tooltip:
+			'''
+			Увеличивает максимальное количество приспешников на 2
+			На 22% увеличивает урон призывателя
+			На 20% увеличивает дальность кнута
+			'''
+	}
+
+	SunblazeBreastplate: {
+		DisplayName: Нагрудник палящего солнца
+		Tooltip:
+			'''
+			Увеличивает максимальный запас здоровья на 40
+			Вы излучаете свет
+			'''
+	}
+
+	SunblazeLeggings: {
+		DisplayName: Поножи палящего солнца
+		Tooltip:
+			'''
+			На 18% увеличивает скорость передвижения
+			На 6% увеличивает урон
+			'''
+	}
+
+	StarmoonWizardHat: {
+		DisplayName: Звёздно-лунная шляпа мага
+		Tooltip:
+			'''
+			Увеличивает максимальный запас маны на 70 и снижает расход маны на 17%
+			На 14% увеличивает магический урон и шанс критического удара
+			'''
+	}
+
+	StarmoonLightHelm: {
+		DisplayName: Звёздно-лунный лёгкий шлем
+		Tooltip:
+			'''
+			На 10% увеличивает урон и шанс критического удара дальнего боя
+			Враги реже нацеливаются на вас
+			'''
+	}
+
+	StarmoonBreastplate: {
+		DisplayName: Звёздно-лунный нагрудник
+		Tooltip:
+			'''
+			Увеличивает максимальный запас здоровья на 40
+			На 12% увеличивает урон
+			'''
+	}
+
+	StarmoonLeggings: {
+		DisplayName: Звёздно-лунные поножи
+		Tooltip: На 18% увеличивает скорость передвижения
 	}
 
 	EntropyStarterBag: {
@@ -4713,8 +4793,49 @@ DeathMode: Смерть
 CdMantle: Перезарядка Святой Мантии
 MissileLauncherDescTooltip: Запускайте ракеты, которые могут быть прикреплены к врагам.
 MissileLauncherMaxStickTooltip: Каждый монстр прилипает {0}
+SunblazeMeleeSetBonus:
+	'''
+	На 10% увеличивает урон и шанс критического удара в ближнем бою
+	На 20% увеличивает скорость атаки в ближнем бою, регенерация здоровья +2,5 в секунду
+	Игроки в радиусе 25 блоков (включая вас) получают [cebuff:CalamityEntropy/CozyWarmth], регенерация здоровья +2 в секунду
+	'''
+SunblazeSummonSetBonus:
+	'''
+	Увеличивает максимальное количество приспешников на 3
+	На 40% увеличивает урон призывателя
+	За вашей спиной появляется тотем Золотого ворона
+	Пока враг находится в пределах 100 блоков, тотем каждые 0,5 секунды призывает с высоты Солнечную птицу, преследующую его
+	Солнечные птицы наносят 250 базового урона призывателя и накладывают [cebuff:CalamityEntropy/SunblazeBurn] на 3 секунды
+	'''
+StarmoonMagicSetBonus:
+	'''
+	На 13% увеличивает магический урон и шанс критического удара
+	Магические критические удары создают на цели Звёздный крестовый взрыв, не чаще раза в 3 секунды
+	Звёздный крестовый взрыв наносит 1800 базового магического урона и, угасая, восстанавливает вам 8 здоровья
+	'''
+StarmoonRangedSetBonus:
+	'''
+	25% шанс не потратить боеприпасы
+	Выпущенные вами стрелы не падают
+	Ракеты, гранаты и другие взрывные снаряды дальнего боя, выпущенные вами, не ранят вас
+	Ближайший враг в пределах 100 блоков получает лунную метку
+	Попадание по отмеченному врагу атаками дальнего боя даёт [cebuff:CalamityEntropy/StarlightLock] на 1,5 секунды
+	'''
+
+VDAftermath: {
+	Sun: Сияние Солнечной богини несёт зловещее предзнаменование
+	StarMoon: Мудрость Звёздно-лунного мудреца предвещает тёмное будущее
+	Beast: Звери из иного мира приходят в движение
+	DropPost: После победы над Эсминцем Пустоты
+	DropPre: До победы над Эсминцем Пустоты
+	HallowDrop: После победы над Эсминцем Пустоты выпадает из врагов Освящения
+	DungeonDrop: После победы над Эсминцем Пустоты выпадает из врагов Темницы
+}
 
 Projectiles: {
+	SunbirdTotem.DisplayName: Тотем Золотого ворона
+	Sunbird.DisplayName: Солнечная птица
+	StarCrossBurst.DisplayName: Звёздный крестовый взрыв
 	// LDDaggerHeld.DisplayName: Light-Dark Dragon Dagger
 	// LDKnifeLight.DisplayName: Radiant Blade
 	// LDKnifeDark.DisplayName: Umbral Blade
@@ -4777,6 +4898,7 @@ Projectiles: {
 	VDHoloTortoise.DisplayName: Голографическая гигантская черепаха
 	VDHoloStinger.DisplayName: Голографическое жало
 	VDHoloWyvern.DisplayName: Голографическая виверна
+	VDHoloSnowflake.DisplayName: Голографическая снежинка
 	// VoidMK2Held.DisplayName: Void MK2
 	// VoidMK2Bullet.DisplayName: Void Round
 	// VoidMK2Drone.DisplayName: Homing Drone
@@ -5531,6 +5653,37 @@ Buffs: {
 	VoidStorm: {
 		DisplayName: Пустотный шторм
 		Description: Взгляд из самой глубокой части пустоты
+	}
+
+	CozyWarmth: {
+		DisplayName: Уютное тепло
+		Description:
+			'''
+			Тепло и уютно
+			Регенерация здоровья +2 в секунду
+			'''
+		ItemTooltip: Регенерация здоровья +2 в секунду
+	}
+
+	SunbirdTotemBuff: {
+		DisplayName: Солнечная птица
+		Description: Воплощение солнца сражается рядом с вами
+	}
+
+	SunblazeBurn: {
+		DisplayName: Палящий ожог
+		Description:
+			'''
+			Горячо-горячо-горячо!
+			Теряете 50 здоровья в секунду
+			'''
+		ItemTooltip: Враги получают 300 урона в секунду
+	}
+
+	StarlightLock: {
+		DisplayName: Звёздный захват
+		Description: На 20% увеличивает урон и шанс критического удара дальнего боя
+		ItemTooltip: На 20% увеличивает урон и шанс критического удара дальнего боя
 	}
 
 	VoidTouch: {
@@ -7351,13 +7504,13 @@ CWRQuest: {
 	}
 
 	SoulEssence: {
-		// Title: Wraith Soul Essence
-		// Summary: Bank thirty Wraith Soul Essence
-		// Objective: Hold 30 Wraith Soul Essence
+		// Title: Starcluster Spirit
+		// Summary: Bank thirty Starcluster Spirits
+		// Objective: Hold 30 Starcluster Spirits
 		/* Detail:
 			'''
-			Dropped by the Nihility Acteriophage
-			It is the entry material for several endgame recipes, including some prefix items
+			Dropped by Dungeon enemies after the Void Destroyer has been defeated
+			It is the entry material for several endgame recipes, the Starmoon armor and some prefix items
 			''' */
 	}
 

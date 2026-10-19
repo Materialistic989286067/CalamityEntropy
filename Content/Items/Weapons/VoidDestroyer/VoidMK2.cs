@@ -18,13 +18,16 @@ using Terraria.ModLoader;
 namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
 {
     /// <summary>
-    /// 虚空 MK2:虚空驱逐舰掉落的机枪。手持弹幕持枪(握把在手),逐发自取弹药,射出的一律是专用虚空弹头。
+    /// 虚空 MK2:虚空驱逐舰掉落的机枪。手持弹幕持枪(握把在手),逐发自取弹药,射出的是弹药自己的弹幕,每 <see cref="VoidRoundInterval"/> 发另加一发虚空弹头。
     /// 持续开火累计 <see cref="DroneCharge"/> 帧,机匣顶部的发射模块放出一架追踪无人机,贴到敌怪爆炸并施加 3 秒虚空之火;充能跨点射保留
     /// </summary>
     public class VoidMK2 : ModItem
     {
-        public const int DroneCharge = 45;
+        public const int DroneCharge = 36;
         public const float DroneDamageMult = 3f;
+        public const int VoidRoundInterval = 4;
+        public const float VoidRoundMult = 1.5f;
+        public const float VoidRoundSpeed = 16f;
         /// <summary>无人机充能,只在拥有者本端维护;手持弹幕生成时经 ai[1] 带给各端,收枪时写回</summary>
         internal int droneCharge;
 
@@ -57,7 +60,10 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
         public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextBool(2);
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
-            Projectile.NewProjectile(source, player.MountedCenter, velocity.SafeNormalize(Vector2.UnitX * player.direction), Item.shoot, damage, knockback, player.whoAmI, 0f, droneCharge);
+            int index = Projectile.NewProjectile(source, player.MountedCenter, velocity.SafeNormalize(Vector2.UnitX * player.direction), Item.shoot, damage, knockback, player.whoAmI, 0f, droneCharge);
+            if (index >= 0 && index < Main.maxProjectiles && Main.projectile[index].ModProjectile is VoidMK2Held held) {
+                held.SetFirstShot(source.AmmoItemIdUsed, type, velocity.Length());
+            }
             return false;
         }
     }
@@ -100,8 +106,17 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
         private int flash;
         private float flashRot;
         private int launchFlash;
+        private int firstAmmo;
+        private int firstType;
+        private float firstSpeed;
 
         public float DroneCharge { get => Projectile.ai[1]; set => Projectile.ai[1] = value; }
+
+        internal void SetFirstShot(int ammoItem, int projType, float speed) {
+            firstAmmo = ammoItem;
+            firstType = projType;
+            firstSpeed = speed;
+        }
 
         public override void SetDefaults() {
             Projectile.HeldProjSetDefaults(DamageClass.Ranged);
@@ -198,20 +213,34 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
         /// <summary>开一枪:拥有者取弹并生成弹头(取不到弹 = 收枪),各端各自播后坐、抛壳、枪口焰与枪声</summary>
         private bool Fire(Player player) {
             bool owner = Projectile.owner == Main.myPlayer;
+            int type = firstType;
+            int ammoItem = firstAmmo;
+            float speed = firstSpeed;
             if (owner && shots > 0) {
-                if (!player.PickAmmo(player.HeldItem, out _, out _, out int damage, out float knockback, out _)) {
+                if (!player.PickAmmo(player.HeldItem, out type, out speed, out int pickedDamage, out float pickedKnockback, out ammoItem)) {
                     return false;
                 }
-                Projectile.damage = damage;
-                Projectile.knockBack = knockback;
+                Projectile.damage = pickedDamage;
+                Projectile.knockBack = pickedKnockback;
             }
             HeldSprite gun = GunSprite(player);
             Vector2 dir = aim.ToRotationVector2();
             Vector2 muzzle = gun.ToWorld(Muzzle);
             if (owner) {
                 Vector2 spawn = Collision.CanHitLine(player.MountedCenter, 1, 1, muzzle, 1, 1) ? muzzle : player.MountedCenter;
-                Vector2 vel = dir.RotatedByRandom(0.04f) * player.HeldItem.shootSpeed;
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawn, vel, ModContent.ProjectileType<VoidMK2Bullet>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                if (speed <= 0f) {
+                    speed = player.HeldItem.shootSpeed;
+                }
+                bool ammoShot = type > 0 && type != Projectile.type;
+                if (ammoShot) {
+                    IEntitySource ammoSource = player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, ammoItem);
+                    Projectile.NewProjectile(ammoSource, spawn, dir.RotatedByRandom(0.04f) * speed, type, Projectile.damage, Projectile.knockBack, Projectile.owner);
+                }
+                if (!ammoShot || shots % VoidMK2.VoidRoundInterval == VoidMK2.VoidRoundInterval - 1) {
+                    int roundDamage = ammoShot ? (int)(Projectile.damage * VoidMK2.VoidRoundMult) : Projectile.damage;
+                    Vector2 roundVel = dir.RotatedByRandom(0.03f) * Math.Min(speed, VoidMK2.VoidRoundSpeed);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawn, roundVel, ModContent.ProjectileType<VoidMK2Bullet>(), roundDamage, Projectile.knockBack, Projectile.owner);
+                }
             }
             shots++;
             kick += RecoilKick;
@@ -308,7 +337,33 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
                 Main.spriteBatch.Draw(star, muzzle - Main.screenPosition, null, VDVfx.VoidWhite * f, flashRot, star.Size() / 2f, 0.3f * (0.6f + 0.4f * f), SpriteEffects.None, 0f);
             }
             VDWeaponFx.End();
+            DrawTracers();
             return false;
+        }
+
+        private void DrawTracers() {
+            Rectangle view = new Rectangle((int)Main.screenPosition.X - 160, (int)Main.screenPosition.Y - 160, Main.screenWidth + 320, Main.screenHeight + 320);
+            bool begun = false;
+            foreach (Projectile p in Main.ActiveProjectiles) {
+                if (p.owner != Projectile.owner || !p.friendly || p.minion || p.type == Type || p.ModProjectile is VoidMK2Bullet || p.ModProjectile is VoidMK2Drone || p.ModProjectile is VoidMK2Explosion) {
+                    continue;
+                }
+                if (!p.DamageType.CountsAsClass(DamageClass.Ranged) || p.velocity.LengthSquared() < 64f || !view.Contains(p.Center.ToPoint())) {
+                    continue;
+                }
+                if (!begun) {
+                    begun = true;
+                    VDWeaponFx.BeginAdditive();
+                }
+                Vector2 dir = p.velocity.SafeNormalize(Vector2.UnitX);
+                float perFrame = p.velocity.Length() * (p.extraUpdates + 1);
+                Vector2 tail = p.Center - dir * MathHelper.Clamp(perFrame * 1.6f, 24f, 110f);
+                VDWeaponFx.Streak(p.Center + dir * 4f, tail, 5f, Color.White, TracerColor);
+                VDWeaponFx.Glow(p.Center, TracerColor * 0.4f, 9f);
+            }
+            if (begun) {
+                VDWeaponFx.End();
+            }
         }
     }
 
@@ -339,6 +394,10 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
             trail[0] = Projectile.Center;
             trailCount = Math.Min(trailCount + 1, TrailPoints);
             Lighting.AddLight(Projectile.Center, VoidMK2Held.TracerColor.ToVector3() * 0.25f);
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            target.AddBuff(ModContent.BuffType<VoidFire>(), 180);
         }
 
         public override void OnKill(int timeLeft) {
@@ -377,8 +436,8 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
     {
         public const int DeployFrames = 14;
         /// <summary>每次更新的巡航速度(两次更新,实际每帧两倍)</summary>
-        public const float CruiseSpeed = 11f;
-        public const float TurnRate = 0.085f;
+        public const float CruiseSpeed = 13f;
+        public const float TurnRate = 0.11f;
         public const int TrailLength = 14;
 
         public override string Texture => "CalamityEntropy/Content/Projectiles/VoidDestroyer/VDSporeDrone";
@@ -550,7 +609,7 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
     /// <summary>无人机爆炸:半径 <see cref="Radius"/> 的圆形判定,前 <see cref="DamageFrames"/> 帧有效,命中施加 3 秒虚空之火;首帧在各端放演出</summary>
     public class VoidMK2Explosion : ModProjectile
     {
-        public const float Radius = 110f;
+        public const float Radius = 130f;
         public const int Lifetime = 16;
         public const int DamageFrames = 4;
 

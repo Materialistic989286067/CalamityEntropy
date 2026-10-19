@@ -6,7 +6,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
-    /// <summary>依次闪到玩家的几个斜角,落地蓄力 18 帧后扇射一把起步慢、越飞越快的虚空弹;闪现期间计时暂停,自带传送</summary>
+    /// <summary>依次闪到玩家的几个斜角,落地蓄力 30 帧后扇射一把匀速虚空弹;闪现期间计时暂停,自带传送</summary>
     [VaultState((int)VDStateIndex.TeleportFire, typeof(VDStateContext))]
     public class VDTeleportFireState : VDStateBase
     {
@@ -28,7 +28,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     ctx.CornerIndex = VDDirector.TeleportFireOrder[cornerStep % VDDirector.TeleportFireOrder.Length];
                     ctx.Owner.StartBlink(ctx.Target.Center + VDVfx.CornerDirs[ctx.CornerIndex] * VDDirector.TeleportFireOffset);
                 }
-                //落地后用 18 帧做核心蓄力和汇聚流再出手,落地就给出预告
+                //落地后用 TeleportFireShotFrame 帧做核心蓄力和汇聚流再出手,落地就给出预告
                 float charge = MathHelper.Clamp(Timer / (float)VDDirector.TeleportFireShotFrame, 0f, 1f);
                 ctx.CoreGlow = Math.Max(ctx.CoreGlow, charge);
                 ctx.RimCharge = charge;
@@ -55,7 +55,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             return null;
         }
 
-        /// <summary>扇形对准玩家当下位置,每颗起步 4 再逐帧加速</summary>
+        /// <summary>扇形对准玩家当下位置,每颗匀速</summary>
         private static void Fire(VDStateContext ctx) {
             Vector2 core = ctx.Owner.CorePos;
             Vector2 dir = (ctx.Target.Center - core).SafeNormalize(Vector2.UnitY);
@@ -63,7 +63,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             int half = VDDirector.TeleportFireBolts(ctx.Phase) / 2;
             for (int i = -half; i <= half; i++) {
                 Vector2 vel = dir.RotatedBy(MathHelper.ToRadians(VDDirector.TeleportFireSpreadDeg * i)) * VDDirector.TeleportFireBoltSpeed;
-                Shoot<VDVoidBolt>(ctx, core, vel, VDDirector.DmgVoidBolt, VDVoidBolt.ModeAccelerate);
+                Shoot<VDVoidBolt>(ctx, core, vel, VDDirector.DmgVoidBolt, VDVoidBolt.ModeStraight);
             }
         }
     }

@@ -21,7 +21,6 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         public override void OnEnter(VDStateContext ctx) {
             base.OnEnter(ctx);
             ctx.BlinkTimer = 0;
-            ctx.QueuedChainState = -1;
             (startDepth, startPoint) = CaptureSurface(ctx);
             proxy = ctx.Target.Center;
         }

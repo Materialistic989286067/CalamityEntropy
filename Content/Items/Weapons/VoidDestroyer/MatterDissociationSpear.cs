@@ -19,11 +19,16 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
 {
     public class MatterDissociationSpear : ModItem
     {
-        public const float BoltMult = 0.15f;
+        public const float BoltMult = 0.2f;
         public const float BurstMult = 0.8f;
         public const float TridentMult = 0.3f;
-        public const int StabUseTime = 24;
+        public const int StabUseTime = 18;
         public const int ThrowUseTime = 32;
+        public const int MaxThrown = 3;
+
+        public override void SetStaticDefaults() {
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
+        }
 
         public override void SetDefaults() {
             Item.width = 64;
@@ -52,8 +57,8 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
             if (player.altFunctionUse == 2) {
                 Item.useTime = Item.useAnimation = ThrowUseTime;
                 Item.shoot = thrown;
-                //同时只允许一支掷出的矛在场,戳击途中也不能起手投掷
-                return player.ownedProjectileCounts[thrown] == 0 && player.ownedProjectileCounts[stab] == 0;
+                //只限同时在场的矛数(蓄势中的也算一支),戳击途中不能起手投掷
+                return player.ownedProjectileCounts[thrown] < MaxThrown && player.ownedProjectileCounts[stab] == 0 && !MatterDissociationSpearThrow.WindingUp(player);
             }
             Item.useTime = Item.useAnimation = StabUseTime;
             Item.shoot = stab;

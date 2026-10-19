@@ -13,16 +13,14 @@ using Terraria.ModLoader;
 namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 {
     /// <summary>
-    /// ai[0]:0 直飞,1 弧形包抄(ai[1]/ai[2] 锁定点),2 延迟转向上(ai[1] 延迟帧),3 沿初速加速,4 形状弹(乘法外扩),
-    /// 5 炸弹(重力下落),6 螺旋(绕 ai[1]/ai[2] 外旋)。全部留在平面;命中 + 虚空之火 3 秒
+    /// ai[0]:0 直飞,1 弧形包抄(ai[1]/ai[2] 锁定点),2 延迟转向上(ai[1] 延迟帧),
+    /// 5 炸弹(重力下落),6 螺旋(绕 ai[1]/ai[2] 外旋)。除炸弹与螺旋外全程匀速,留在平面;命中 + 虚空之火 3 秒
     /// </summary>
     public class VDVoidBolt : VDDepthProjectile
     {
         public const int ModeStraight = 0;
         public const int ModeArcWrap = 1;
         public const int ModeFanRise = 2;
-        public const int ModeAccelerate = 3;
-        public const int ModeShapeBurst = 4;
         public const int ModeBomb = 5;
         public const int ModeSpiral = 6;
         /// <summary>螺旋弹寿命:半径从吸积盘外沿长到约 530px</summary>
@@ -55,12 +53,6 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             if (Projectile.localAI[0] == 0f) {
                 Projectile.localAI[0] = 1f;
                 switch (Mode) {
-                    case ModeShapeBurst:
-                        Projectile.timeLeft = 120;
-                        break;
-                    case ModeAccelerate:
-                        Projectile.timeLeft = 180;
-                        break;
                     case ModeBomb:
                         Projectile.timeLeft = 200;
                         break;
@@ -85,8 +77,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                         float want = toTarget.ToRotation();
                         float diff = MathHelper.WrapAngle(want - cur);
                         float turn = MathHelper.Clamp(diff, -0.038f, 0.038f);
-                        float speed = Math.Min(Projectile.velocity.Length() + 0.06f, 17f);
-                        Projectile.velocity = (cur + turn).ToRotationVector2() * speed;
+                        Projectile.velocity = (cur + turn).ToRotationVector2() * Projectile.velocity.Length();
                     }
                     break;
                 }
@@ -95,22 +86,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                         float cur = Projectile.velocity.ToRotation();
                         float diff = MathHelper.WrapAngle(-MathHelper.PiOver2 - cur);
                         float turn = MathHelper.Clamp(diff, -0.16f, 0.16f);
-                        float speed = Projectile.velocity.Length();
-                        if (Math.Abs(diff) < 0.3f) {
-                            speed = Math.Min(speed * 1.05f + 0.1f, 24f);
-                        }
-                        Projectile.velocity = (cur + turn).ToRotationVector2() * speed;
+                        Projectile.velocity = (cur + turn).ToRotationVector2() * Projectile.velocity.Length();
                     }
-                    break;
-                }
-                case ModeAccelerate: {
-                    float speed = Math.Min(Projectile.velocity.Length() * 1.045f + 0.05f, 30f);
-                    Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * speed;
-                    break;
-                }
-                case ModeShapeBurst: {
-                    //乘法加速:同一轮所有弹按相同比例外扩,形状不变
-                    Projectile.velocity *= 1.012f;
                     break;
                 }
                 case ModeBomb: {
@@ -131,7 +108,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Lighting.AddLight(Projectile.Center, GlowColor.ToVector3() * 0.55f);
 
-            if (Main.dedServ || Mode == ModeShapeBurst) {
+            if (Main.dedServ) {
                 return;
             }
             //火焰拖尾:虚空粒子走像素管线,发光火花保底
@@ -159,7 +136,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 
         /// <summary>
         /// 四层:加法外晕 + 同贴图残影(拖尾与弹体同材质,横向宽度 ≥ 弹体一半)→ 警示描边(暗底 + 暖白亮边)→ 弹体 → 白热芯。
-        /// 形状弹太密,不画残影;所有层按 BodyScale 放大
+        /// 所有层按 BodyScale 放大
         /// </summary>
         protected override void DrawDepth(SpriteBatch spriteBatch) {
             Texture2D tex = TextureAssets.Projectile[Type].Value;
@@ -167,20 +144,17 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Vector2 origin = tex.Size() / 2f;
             Vector2 drawPos = Projectile.Center - Main.screenPosition;
             float scale = Projectile.scale * BodyScale;
-            float fade = Mode == ModeShapeBurst ? MathHelper.Clamp(Projectile.timeLeft / 30f, 0f, 1f) : 1f;
-            fade *= MathHelper.Clamp(Projectile.localAI[1] / 4f, 0f, 1f);
+            float fade = MathHelper.Clamp(Projectile.localAI[1] / 4f, 0f, 1f);
 
             spriteBatch.UseAdditive();
             spriteBatch.Draw(glowTex, drawPos, null, GlowColor * (0.5f * fade), 0f, glowTex.Size() / 2f, 0.3f * scale, SpriteEffects.None, 0f);
-            if (Mode != ModeShapeBurst) {
-                for (int i = 1; i < Projectile.oldPos.Length; i++) {
-                    if (Projectile.oldPos[i] == Vector2.Zero) {
-                        continue;
-                    }
-                    float k = i / (float)Projectile.oldPos.Length;
-                    Vector2 pos = Projectile.oldPos[i] + Projectile.Size / 2f - Main.screenPosition;
-                    spriteBatch.Draw(tex, pos, null, GlowColor * ((1f - k) * 0.45f * fade), Projectile.oldRot[i], origin, scale * (1f - k * 0.45f), SpriteEffects.None, 0f);
+            for (int i = 1; i < Projectile.oldPos.Length; i++) {
+                if (Projectile.oldPos[i] == Vector2.Zero) {
+                    continue;
                 }
+                float k = i / (float)Projectile.oldPos.Length;
+                Vector2 pos = Projectile.oldPos[i] + Projectile.Size / 2f - Main.screenPosition;
+                spriteBatch.Draw(tex, pos, null, GlowColor * ((1f - k) * 0.45f * fade), Projectile.oldRot[i], origin, scale * (1f - k * 0.45f), SpriteEffects.None, 0f);
             }
             CEUtils.ReSetToEndShader();
 

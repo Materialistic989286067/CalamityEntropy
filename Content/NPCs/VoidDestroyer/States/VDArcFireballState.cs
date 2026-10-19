@@ -6,7 +6,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
-    /// <summary>每轮中弹直射玩家,两侧弧弹朝出手那一刻的锁定点包抄;P2 起再加一对外弧。站着不动被夹,横移就让开</summary>
+    /// <summary>每轮中弹直射玩家,两侧弧弹朝出手那一刻的锁定点包抄,P2、P3 各再加一对外弧。站着不动被夹,横移就让开</summary>
     [VaultState((int)VDStateIndex.ArcFireball, typeof(VDStateContext))]
     public class VDArcFireballState : VDStateBase
     {
@@ -83,8 +83,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             return null;
         }
 
-        private static readonly float[] SideDegs = { -VDDirector.ArcOuterDeg, -VDDirector.ArcInnerDeg, VDDirector.ArcInnerDeg, VDDirector.ArcOuterDeg };
-        private static readonly float[] SideDegsWide = { -VDDirector.ArcWideDeg, -VDDirector.ArcOuterDeg, -VDDirector.ArcInnerDeg, VDDirector.ArcInnerDeg, VDDirector.ArcOuterDeg, VDDirector.ArcWideDeg };
+        private static readonly float[] SideDegs = { -VDDirector.ArcInnerDeg, VDDirector.ArcInnerDeg };
+        private static readonly float[] SideDegsWide = { -VDDirector.ArcOuterDeg, -VDDirector.ArcInnerDeg, VDDirector.ArcInnerDeg, VDDirector.ArcOuterDeg };
+        private static readonly float[] SideDegsFull = { -VDDirector.ArcWideDeg, -VDDirector.ArcOuterDeg, -VDDirector.ArcInnerDeg, VDDirector.ArcInnerDeg, VDDirector.ArcOuterDeg, VDDirector.ArcWideDeg };
 
         /// <summary>一轮:中弹直射;两侧弧弹斜着射出,再按限速转向朝锁定点(出手时的玩家位置)收拢</summary>
         private static void FireVolley(VDStateContext ctx) {
@@ -93,7 +94,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             Vector2 lockPos = ctx.Target.Center;
             MuzzleCue(ctx, dir, 3f, "CruiserSpit", 0.9f);
             Shoot<VDVoidBolt>(ctx, core, dir * VDDirector.ArcBoltSpeed, VDDirector.DmgVoidBolt, VDVoidBolt.ModeStraight);
-            foreach (float deg in ctx.Phase >= 2 ? SideDegsWide : SideDegs) {
+            foreach (float deg in ctx.Phase >= 3 ? SideDegsFull : ctx.Phase >= 2 ? SideDegsWide : SideDegs) {
                 Shoot<VDVoidBolt>(ctx, core, dir.RotatedBy(MathHelper.ToRadians(deg)) * VDDirector.ArcBoltSpeed, VDDirector.DmgVoidBolt, VDVoidBolt.ModeArcWrap, lockPos.X, lockPos.Y);
             }
         }

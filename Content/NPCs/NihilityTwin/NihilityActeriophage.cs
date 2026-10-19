@@ -466,9 +466,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         public override void ModifyNPCLoot(NPCLoot npcLoot) {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<NihilityTwinBag>()));
 
-            //深渊亡魂移除后,幽渊魂髓和深渊书签改由本 Boss 承接,数量和概率按旧掉落表保留
-            // 与旧主人一样不挂 NotExpert,专家模式下也照常掉,不进宝袋
-            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<WraithSoulEssence>(), 1, 15, 25));
+            //深渊书签承接自已移除的深渊亡魂,概率按旧表
             if (!CERef.Has) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAbyss>(), 2));
             }

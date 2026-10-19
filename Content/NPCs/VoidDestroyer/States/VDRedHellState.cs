@@ -8,7 +8,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
     /// <summary>
     /// 本体在玩家头顶指挥,全息红恶魔每轮换到玩家另一侧上方现身(平面,无判定):
-    /// 探照光盘追脚下 → 两排三叉戟扇从红恶魔朝玩家预测点射出,第二排错半格补缝。射线出手前 6 帧保持静默
+    /// 探照光盘松松追着脚下,末 24 帧冻结在原地,发射期也不再追 → 射线收束后两排三叉戟扇从红恶魔朝玩家预测点射出,第二排错半格补缝。射线出手前 6 帧保持静默
     /// </summary>
     [VaultState((int)VDStateIndex.RedHell, typeof(VDStateContext))]
     public class VDRedHellState : VDStateBase
@@ -43,13 +43,13 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             int t = Timer;
             if (t == 1) {
                 if (IsServer) {
-                    //首轮随机侧,之后每轮换边
-                    ctx.SideDir = round == 0 ? (Main.rand.NextBool() ? -1 : 1) : -ctx.SideDir;
+                    //首轮沿用 hub 轮换的侧向,之后每轮换边
+                    ctx.SideDir = round == 0 ? ctx.SideDir : -ctx.SideDir;
                     ctx.AnchorPos = ctx.Target.Center + new Vector2(ctx.SideDir * VDDirector.RedDevilOffset.X, VDDirector.RedDevilOffset.Y);
                     if (round == 0) {
                         SpawnVisual<VDHoloRedDevil>(ctx, ctx.AnchorPos, Vector2.Zero, npc.whoAmI);
                     }
-                    //探照光盘:预警 30 帧后从红恶魔打下来
+                    //探照光盘:预警 RedHellRayWarn 帧后从红恶魔打下来
                     Shoot<VDRedRay>(ctx, ctx.Target.Center, Vector2.Zero, VDDirector.DmgRedRay, VDDirector.RedHellRayDuration, VDDirector.RedHellRayWarn, npc.whoAmI + 1);
                     npc.netUpdate = true;
                 }
@@ -68,7 +68,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 ctx.CoreGlow = Math.Max(ctx.CoreGlow, warn);
                 ctx.RimCharge = warn;
                 if (t <= VDDirector.RedHellRayWarn) {
-                    //汇聚流在出手前 6 帧断掉,这段静默就是预告
+                    //汇聚流在出手前 6 帧断掉,这段静默就是预告;光盘冻结的 24 帧是躲避窗口
                     if (t < VDDirector.RedHellRayWarn - 6 && t % 2 == 0) {
                         ConvergeSparks(ctx, VDVfx.HellRed, 70f, 150f, 0.1f);
                     }

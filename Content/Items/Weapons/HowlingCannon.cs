@@ -71,9 +71,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 return;
             }
             CreateRecipe()
-                .AddIngredient(ItemID.SnowmanCannon)
-                .AddIngredient<ChaoticPiece>(10)
-                .AddIngredient(ItemID.LunarBar, 10)
+                .AddIngredient<WraithSoulEssence>(12)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

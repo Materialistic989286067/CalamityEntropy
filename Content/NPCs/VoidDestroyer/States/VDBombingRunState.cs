@@ -95,7 +95,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             }
         }
 
-        /// <summary>一轮:本体一对、每艘护航一发;护航的炸弹从它当下的位置落(编队有滞后,不用理想队形点)</summary>
+        /// <summary>一轮:本体一发、每艘护航一发;护航的炸弹从它当下的位置落(编队有滞后,不用理想队形点)</summary>
         private static void DropBombs(VDStateContext ctx) {
             NPC npc = ctx.Npc;
             MuzzleCue(ctx, Vector2.UnitY, 1.5f, "CruiserSpit", 1.05f, 0.7f);
@@ -103,10 +103,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 return;
             }
             Vector2 vel = new Vector2(npc.velocity.X * VDDirector.BombInherit, VDDirector.BombDropSpeed);
-            Vector2 core = ctx.Owner.CorePos;
-            for (int i = -1; i <= 1; i += 2) {
-                Shoot<VDVoidBolt>(ctx, core + new Vector2(i * VDDirector.BombPairSpread * 0.5f, 0f), vel, VDDirector.DmgVoidBolt, VDVoidBolt.ModeBomb);
-            }
+            Shoot<VDVoidBolt>(ctx, ctx.Owner.CorePos, vel, VDDirector.DmgVoidBolt, VDVoidBolt.ModeBomb);
             int escortType = ModContent.ProjectileType<VDEscortShip>();
             foreach (Projectile p in Main.ActiveProjectiles) {
                 if (p.type == escortType && (int)p.ai[0] == npc.whoAmI) {

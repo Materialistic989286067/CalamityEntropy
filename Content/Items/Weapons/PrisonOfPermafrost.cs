@@ -62,6 +62,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             ownRecipe.AddIngredient(ItemID.BlizzardStaff);
             ownRecipe.AddIngredient(ItemID.FrostStaff);
             ownRecipe.AddIngredient(ItemID.LunarBar, 5);
+            ownRecipe.AddIngredient<WraithSoulEssence>(5);
             ownRecipe.AddTile(TileID.LunarCraftingStation);
             ownRecipe.Register();
         }

@@ -25,7 +25,7 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
             Item.height = 56;
             Item.damage = 280;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 12;
+            Item.mana = 10;
             Item.useTime = 20;
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -55,15 +55,18 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
         public const int MaxCharge = 180;
         public const int MinReleaseCharge = 15;
         public const int LaserCount = 5;
-        public const float LaserRange = 1100f;
-        public const int LaserHitCooldown = 8;
-        public const int ManaInterval = 10;
+        public const float LaserRange = 1400f;
+        public const int LaserHitCooldown = 5;
+        public const int ManaInterval = 12;
         public const int ReleaseFrames = 14;
         public const float BallMinMult = 1.5f;
         public const float BallMaxMult = 10f;
+        public const float SpreadOpen = 0.56f;
+        public const float SpreadFocus = 0.24f;
         /// <summary>光束可见宽度(像素):基础 + 满蓄力增量,再乘出现包络</summary>
-        public const float BeamWidthBase = 10f;
-        public const float BeamWidthCharge = 9f;
+        public const float BeamWidthBase = 12f;
+        public const float BeamWidthCharge = 10f;
+        public const float HitWidthExtra = 14f;
         /// <summary>打空的束末端收窄到起点宽度的比例,和末端渐隐占全长的比例</summary>
         public const float OpenEndTaper = 0.3f;
         public const float OpenEndFade = 0.24f;
@@ -122,6 +125,10 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
         }
 
         public float BallRadius => RadiusAt(Ratio);
+
+        public override void SetStaticDefaults() {
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 1600;
+        }
 
         public override void SetDefaults() {
             Projectile.HeldProjSetDefaults(DamageClass.Magic);
@@ -233,7 +240,7 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
         private void UpdateBeams(Player owner) {
             Vector2 center = BallPos(owner);
             float r = BallRadius;
-            float spread = MathHelper.Lerp(0.42f, 0.16f, Ratio);
+            float spread = MathHelper.Lerp(SpreadOpen, SpreadFocus, Ratio);
             for (int i = 0; i < LaserCount; i++) {
                 float phase = spin + i * MathHelper.TwoPi / LaserCount;
                 Vector2 d = (aim + spread * MathF.Sin(phase)).ToRotationVector2();
@@ -382,7 +389,7 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
         public override bool? CanDamage() => !Releasing && Envelope > 0.3f ? null : false;
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
-            float w = (8f + 6f * Ratio) * Envelope + 10f;
+            float w = (BeamWidthBase + BeamWidthCharge * Ratio) * Envelope + HitWidthExtra;
             for (int i = 0; i < LaserCount; i++) {
                 if (CEUtils.LineThroughRect(beamStart[i], beamEnd[i], targetHitbox, (int)w)) {
                     return true;
@@ -598,15 +605,15 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
     }
 
     /// <summary>
-    /// 闪电球爆炸:半径随蓄力比 100 → 180 的圆形判定,前 <see cref="DamageFrames"/> 帧有效,命中带电。
-    /// 拥有者在首帧向爆炸圈边缘及以外的敌人(最多 2 + 4 × 蓄力比 个)甩出连锁电弧 <see cref="VoidElectricArc"/>;演出是电浆配色的 PRT_VDVoidBlast(暗核压低)与十余道向外爬的电弧
+    /// 闪电球爆炸:半径随蓄力比 120 → 210 的圆形判定,前 <see cref="DamageFrames"/> 帧有效,命中带电。
+    /// 拥有者在首帧向爆炸圈边缘及以外的敌人(最多 3 + 5 × 蓄力比 个)甩出连锁电弧 <see cref="VoidElectricArc"/>;演出是电浆配色的 PRT_VDVoidBlast(暗核压低)与十余道向外爬的电弧
     /// </summary>
     public class VoidElectricBurst : ModProjectile
     {
         public const int Lifetime = 20;
         public const int DamageFrames = 4;
-        public const float ChainRange = 480f;
-        public const float ChainMult = 0.3f;
+        public const float ChainRange = 640f;
+        public const float ChainMult = 0.4f;
 
         public override string Texture => "CalamityEntropy/Assets/Extra/Empty";
 
@@ -614,7 +621,7 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
         private readonly List<float> arcAngles = new List<float>();
 
         public float Ratio => MathHelper.Clamp(Projectile.ai[0], 0f, 1f);
-        public float Radius => MathHelper.Lerp(100f, 180f, Ratio);
+        public float Radius => MathHelper.Lerp(120f, 210f, Ratio);
         public int Age => (int)Projectile.localAI[0];
 
         public override void SetDefaults() {
@@ -684,7 +691,7 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
 
         /// <summary>连锁电弧的目标:爆炸圈 0.6 倍半径以外、<see cref="ChainRange"/> 以内的敌人,由近到远</summary>
         private void SpawnChains() {
-            int max = 2 + (int)(4 * Ratio);
+            int max = 3 + (int)(5 * Ratio);
             List<NPC> picks = new List<NPC>();
             foreach (NPC n in Main.ActiveNPCs) {
                 if (!n.CanBeChasedBy(Projectile)) {

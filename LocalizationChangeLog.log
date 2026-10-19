@@ -1288,3 +1288,56 @@
 [Mods.CalamityEntropy.Projectiles.VoidMK2Held.DisplayName] - added // 虚空MK2 手持弹幕
 [Mods.CalamityEntropy.Projectiles.VoidElectricArc.DisplayName] - added // 虚空电场爆炸的连锁电弧
 [Mods.CalamityEntropy.Items.VoidMK2.Tooltip] - changed // 无人机充能从 1 秒缩到 0.75 秒(驱逐舰武器数值上调)
+[Mods.CalamityEntropy.Items.VoidMK2.Tooltip] - changed // 改为射出弹药自己的弹幕并保留自带效果,每第 4 发额外一发虚空弹头(150% 伤害,命中施加虚空之火),无人机充能缩到 0.6 秒
+[Mods.CalamityEntropy.Items.MatterDissociationSpear.Tooltip] - changed // 右键改为按住连续投掷,同时最多 3 支矛在场
+[Mods.CalamityEntropy.Items.VoidElectricField.Tooltip] - changed // 连锁电弧上限从 6 个提到 8 个
+[Mods.CalamityEntropy.Projectiles.VDHoloSnowflake.DisplayName] - added // 蓝色天空重做:小白龙横越时落下的全息雪花
+[Mods.CalamityEntropy.Items.WraithSoulEssence.DisplayName] - changed // 幽渊魂髓替换为聚星之灵(类名不变保旧档),改为虚空驱逐舰后地牢敌怪掉落,虚无双子不再掉落
+[Mods.CalamityEntropy.Items.WraithSoulEssence.Tooltip] - changed
+[Mods.CalamityEntropy.Items.BlazingSunlight.DisplayName] - added // 新材料 烈阳之光,虚空驱逐舰后神圣之地敌怪掉落
+[Mods.CalamityEntropy.Items.BlazingSunlight.Tooltip] - added
+[Mods.CalamityEntropy.Items.SunblazeWarHelm.DisplayName] - added // 烈阳套装(战士盔/召唤兜帽 + 胸甲 + 护腿)
+[Mods.CalamityEntropy.Items.SunblazeWarHelm.Tooltip] - added
+[Mods.CalamityEntropy.Items.SunblazeHood.DisplayName] - added
+[Mods.CalamityEntropy.Items.SunblazeHood.Tooltip] - added
+[Mods.CalamityEntropy.Items.SunblazeBreastplate.DisplayName] - added
+[Mods.CalamityEntropy.Items.SunblazeBreastplate.Tooltip] - added
+[Mods.CalamityEntropy.Items.SunblazeLeggings.DisplayName] - added
+[Mods.CalamityEntropy.Items.SunblazeLeggings.Tooltip] - added
+[Mods.CalamityEntropy.Items.StarmoonWizardHat.DisplayName] - added // 星月套装(法师帽/射手轻盔 + 胸甲 + 护腿)
+[Mods.CalamityEntropy.Items.StarmoonWizardHat.Tooltip] - added
+[Mods.CalamityEntropy.Items.StarmoonLightHelm.DisplayName] - added
+[Mods.CalamityEntropy.Items.StarmoonLightHelm.Tooltip] - added
+[Mods.CalamityEntropy.Items.StarmoonBreastplate.DisplayName] - added
+[Mods.CalamityEntropy.Items.StarmoonBreastplate.Tooltip] - added
+[Mods.CalamityEntropy.Items.StarmoonLeggings.DisplayName] - added
+[Mods.CalamityEntropy.Items.StarmoonLeggings.Tooltip] - added
+[Mods.CalamityEntropy.SunblazeMeleeSetBonus] - added // 烈阳战士套装奖励
+[Mods.CalamityEntropy.SunblazeSummonSetBonus] - added // 烈阳召唤套装奖励
+[Mods.CalamityEntropy.StarmoonMagicSetBonus] - added // 星月法师套装奖励
+[Mods.CalamityEntropy.StarmoonRangedSetBonus] - added // 星月射手套装奖励
+[Mods.CalamityEntropy.VDAftermath.Sun] - added // 首次击败虚空驱逐舰时的三行播报
+[Mods.CalamityEntropy.VDAftermath.StarMoon] - added
+[Mods.CalamityEntropy.VDAftermath.Beast] - added
+[Mods.CalamityEntropy.VDAftermath.DropPost] - added // 掉落条件描述
+[Mods.CalamityEntropy.VDAftermath.DropPre] - added
+[Mods.CalamityEntropy.VDAftermath.HallowDrop] - added // MoreObtainingTooltips 来源描述
+[Mods.CalamityEntropy.VDAftermath.DungeonDrop] - added
+[Mods.CalamityEntropy.Buffs.CozyWarmth.DisplayName] - added // 暖洋洋
+[Mods.CalamityEntropy.Buffs.CozyWarmth.Description] - added
+[Mods.CalamityEntropy.Buffs.CozyWarmth.ItemTooltip] - added
+[Mods.CalamityEntropy.Buffs.SunbirdTotemBuff.DisplayName] - added // 太阳神鸟
+[Mods.CalamityEntropy.Buffs.SunbirdTotemBuff.Description] - added
+[Mods.CalamityEntropy.Buffs.SunblazeBurn.DisplayName] - added // 烈阳灼烧
+[Mods.CalamityEntropy.Buffs.SunblazeBurn.Description] - added
+[Mods.CalamityEntropy.Buffs.SunblazeBurn.ItemTooltip] - added
+[Mods.CalamityEntropy.Buffs.StarlightLock.DisplayName] - added // 星光锁定
+[Mods.CalamityEntropy.Buffs.StarlightLock.Description] - added
+[Mods.CalamityEntropy.Buffs.StarlightLock.ItemTooltip] - added
+[Mods.CalamityEntropy.Projectiles.SunbirdTotem.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.Sunbird.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.StarCrossBurst.DisplayName] - added
+[Mods.CalamityEntropy.CWRQuest.SoulEssence.Title] - changed // 任务节点随材料改名为聚星之灵,来源改为驱逐舰后地牢
+[Mods.CalamityEntropy.CWRQuest.SoulEssence.Summary] - changed
+[Mods.CalamityEntropy.CWRQuest.SoulEssence.Objective] - changed
+[Mods.CalamityEntropy.CWRQuest.SoulEssence.Detail] - changed

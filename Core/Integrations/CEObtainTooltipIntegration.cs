@@ -25,6 +25,8 @@ namespace CalamityEntropy.Core.Integrations
             AddSource(mot, "EvilEnemiesDrop", ModContent.ItemType<BitternessCard>());
             AddSource(mot, "DungeonEnemiesDrop", ModContent.ItemType<BookMarkBlackKnife>());
             AddSource(mot, "AbyssalPiercerObt", ModContent.ItemType<AbyssalPiercer>());
+            AddSource(mot, "VDAftermath.HallowDrop", ModContent.ItemType<BlazingSunlight>());
+            AddSource(mot, "VDAftermath.DungeonDrop", ModContent.ItemType<WraithSoulEssence>());
             //贪婪卡 MOT 来源按 CERef.Has 分发,无灾厄不得出现星辉
             AddSource(mot, CERef.Has ? "AstralFishing" : "EvilFishing", ModContent.ItemType<GreedCard>());
         }

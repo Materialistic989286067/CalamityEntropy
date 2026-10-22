@@ -41,7 +41,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 float turn = MathHelper.Clamp(diff, -0.021f, 0.021f);
                 Projectile.velocity = (cur + turn).ToRotationVector2() * Math.Max(Projectile.velocity.Length(), 6f);
             }
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            //贴图弹头朝下,喷口朝上
+            Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
             Lighting.AddLight(Projectile.Center, GlowColor.ToVector3() * 0.6f);
 
             if (Main.dedServ) {

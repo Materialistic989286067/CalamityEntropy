@@ -14,7 +14,12 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
     public class CruiserLaserMouth : ModProjectile
     {
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
-            target.AddBuff(ModContent.BuffType<VoidTouch>(), 160);
+            if (ownern?.ModNPC is NihilityActeriophage) {
+                target.AddDebuffFixed(ModContent.BuffType<VoidVirus>(), 300);
+            }
+            else {
+                target.AddDebuffFixed(ModContent.BuffType<VoidTouch>(), 270);
+            }
         }
         public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;

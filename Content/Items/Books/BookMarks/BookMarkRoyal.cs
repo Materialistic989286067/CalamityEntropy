@@ -22,18 +22,20 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 
     public class RoyalBMEffect : EBookProjectileEffect
     {
+        public const int RubyDamage = 10;
+        public const int EmeraldDamage = 45;
         public override void OnActive(EntropyBookHeldProjectile book) {
             if (book.Projectile.owner == Main.myPlayer) {
-                book.ShootSingleProjectile(ModContent.ProjectileType<JewelRuby>(), book.Projectile.Center, Vector2.Zero, 1, 1, 1, fixedBaseDamage: 25);
-                book.ShootSingleProjectile(ModContent.ProjectileType<JewelEmerald>(), book.Projectile.Center, Vector2.Zero, 1, 1, 1, fixedBaseDamage: 50);
+                book.ShootSingleProjectile(ModContent.ProjectileType<JewelRuby>(), book.Projectile.Center, Vector2.Zero, 1, 1, 1, fixedBaseDamage: RubyDamage);
+                book.ShootSingleProjectile(ModContent.ProjectileType<JewelEmerald>(), book.Projectile.Center, Vector2.Zero, 1, 1, 1, fixedBaseDamage: EmeraldDamage);
                 book.ShootSingleProjectile(ModContent.ProjectileType<JewelSapphire>(), book.Projectile.Center, Vector2.Zero);
             }
         }
         public override void OnStandaloneAttack(Player player, Vector2 position, Vector2 direction, int damage, float knockback) {
             if (player.whoAmI == Main.myPlayer) {
                 var src = player.GetSource_FromThis();
-                Projectile.NewProjectile(src, position, Vector2.Zero, ModContent.ProjectileType<JewelRuby>(), EBookProjectileEffect.FixedDamage(player, 25, DamageClass.Magic), knockback, player.whoAmI);
-                Projectile.NewProjectile(src, position, Vector2.Zero, ModContent.ProjectileType<JewelEmerald>(), EBookProjectileEffect.FixedDamage(player, 50, DamageClass.Magic), knockback, player.whoAmI);
+                Projectile.NewProjectile(src, position, Vector2.Zero, ModContent.ProjectileType<JewelRuby>(), EBookProjectileEffect.FixedDamage(player, RubyDamage, DamageClass.Magic), knockback, player.whoAmI);
+                Projectile.NewProjectile(src, position, Vector2.Zero, ModContent.ProjectileType<JewelEmerald>(), EBookProjectileEffect.FixedDamage(player, EmeraldDamage, DamageClass.Magic), knockback, player.whoAmI);
                 Projectile.NewProjectile(src, position, Vector2.Zero, ModContent.ProjectileType<JewelSapphire>(), damage, knockback, player.whoAmI);
             }
         }
@@ -47,6 +49,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
 
         public virtual Color getColor => Color.White;
+        public override bool InheritBookEffect => false;
 
         public override void SetDefaults() {
             base.SetDefaults();
@@ -86,6 +89,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     }
     public class RubyProj : EBookBaseProjectile
     {
+        public override bool InheritBookEffect => false;
 
         public override void SetDefaults() {
             base.SetDefaults();
@@ -115,7 +119,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             if (target != null && Main.myPlayer == Projectile.owner) {
                 if (shootCooldown <= 0) {
                     shootCooldown = ((EntropyBookHeldProjectile)ShooterModProjectile).GetShootCd() * 3;
-                    ((EntropyBookHeldProjectile)ShooterModProjectile).ShootSingleProjectile(ModContent.ProjectileType<RubyProj>(), Projectile.Center, (target.Center - Projectile.Center), 1, shotSpeedMul: 0.4f, fixedBaseDamage: 25);
+                    ((EntropyBookHeldProjectile)ShooterModProjectile).ShootSingleProjectile(ModContent.ProjectileType<RubyProj>(), Projectile.Center, (target.Center - Projectile.Center), 1, shotSpeedMul: 0.4f, fixedBaseDamage: RoyalBMEffect.RubyDamage);
                 }
             }
             if (shootCooldown > 0) {
@@ -128,6 +132,20 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     {
         public override Color getColor => new Color(90, 255, 90);
         public int dashTime = 0;
+        /// <summary>本次冲刺已命中的目标数,每个衰减 DashHitDecay,总衰减上限 DashMaxDecay</summary>
+        public int dashHits = 0;
+        public const float DashHitDecay = 0.2f;
+        public const float DashMaxDecay = 0.8f;
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
+            base.ModifyHitNPC(target, ref modifiers);
+            if (dashTime > 0)
+                modifiers.FinalDamage *= 1f - float.Min(DashMaxDecay, dashHits * DashHitDecay);
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            base.OnHitNPC(target, hit, damageDone);
+            if (dashTime > 0)
+                dashHits++;
+        }
         public override void AI() {
             base.AI();
             Vector2 targetPos = Projectile.GetOwner().Center + new Vector2(0, -120);
@@ -150,6 +168,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 if (dashCooldown <= 0 && dashTime <= 0) {
                     dashCooldown = ((EntropyBookHeldProjectile)ShooterModProjectile).GetShootCd() * 12;
                     dashTime = 60;
+                    dashHits = 0;
                     Projectile.velocity = (target.Center - Projectile.Center).normalize() * 20;
                 }
             }

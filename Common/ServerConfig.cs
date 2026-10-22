@@ -29,5 +29,9 @@ namespace CalamityEntropy.Common
         [DefaultValue(true)]
         [ReloadRequired]
         public bool EnableArmorPrefix { get; set; }
+
+        /// <summary>基础机动性:+25% 移动速度,无冲刺饰品时附赠短距冲刺,BaseMobilityPlayer 读取</summary>
+        [DefaultValue(false)]
+        public bool BaseMobilityBoost { get; set; }
     }
 }

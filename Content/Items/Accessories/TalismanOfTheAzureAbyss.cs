@@ -19,7 +19,9 @@ namespace CalamityEntropy.Content.Items.Accessories
     {
         // 2026-08-31 平衡案重做:增加玩家无敌帧;武器命中目标时不断召唤追踪的深渊漩涡
         // (0.5秒内置节流);受击时召唤3个漩涡,5秒效果冷却。水下机动风味保留。
-        public const int VortexBaseDamage = 50;
+        public const int VortexBaseDamage = 240;
+        /// <summary>漩涡命中后的剩余存在帧数上限,1 秒</summary>
+        public const int VortexTimeAfterHit = 60;
 
         public override void SetDefaults() {
             Item.width = 52;
@@ -134,10 +136,19 @@ namespace CalamityEntropy.Content.Items.Accessories
             Projectile.timeLeft = 250;
             Projectile.light = 1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = 30;
         }
         public override bool? CanHitNPC(NPC target) {
             return Projectile.localAI[0] > 16 ? null : false;
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
+            modifiers.DisableCrit();
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            if (Projectile.timeLeft > TalismanOfTheAzureAbyss.VortexTimeAfterHit) {
+                Projectile.timeLeft = TalismanOfTheAzureAbyss.VortexTimeAfterHit;
+                Projectile.netUpdate = true;
+            }
         }
         public override void AI() {
             Projectile.pushByOther(0.6f);

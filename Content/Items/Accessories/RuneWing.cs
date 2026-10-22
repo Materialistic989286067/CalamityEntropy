@@ -16,26 +16,27 @@ namespace CalamityEntropy.Content.Items.Accessories
     [AutoloadEquip(EquipType.Wings)]
     public class RuneWing : CEBaseWings, ISpecialDrawingWing
     {
-        public static float HorSpeed = 7.5f;
-        public static float AccMul = 1.2f;
-        public static int wTime = 170;
+        //数值同猪鱼龙之翼
+        public static float HorSpeed = 8f;
+        public static float AccMul = 2f;
+        public static int wTime = 180;
         /// <summary>灵魂冲刺持续帧数。</summary>
         public const int DashDuration = 30;
         /// <summary>灵魂冲刺总位移(像素),40 格。</summary>
         public const float DashDistance = 40 * 16f;
         /// <summary>灵魂冲刺冷却(帧),30 秒。</summary>
         public const int DashCooldownTicks = 30 * 60;
-        public override float BonusAscentWhileFalling => 1f;
-        public override float BonusAscentWhileRising => 0.12f;
+        public override float BonusAscentWhileFalling => 0.75f;
+        public override float BonusAscentWhileRising => 0.15f;
         public override float RisingSpeedThreshold => 1f;
-        public override float MaxAscentSpeed => 2.8f;
-        public override float BaseAscent => 0.13f;
+        public override float MaxAscentSpeed => 2.5f;
+        public override float BaseAscent => 0.125f;
         public int AnimationTick => 4;
         public int FallingFrame => 0;
         public int MaxFrame => 5;
         public int SlowFallingFrame => 5;
         public override void SetStaticDefaults() {
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(wTime, HorSpeed, AccMul, false, 20, 2.8f);
+            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(wTime, HorSpeed, AccMul);
         }
 
         public override void SetDefaults() {

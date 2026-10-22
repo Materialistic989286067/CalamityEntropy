@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.Items.Armor.Marivinium
         public override void UpdateEquip(Player player) {
             player.Entropy().mariviniumBody = true;
             player.GetDamage(DamageClass.Generic) += 0.15f;
-            player.GetCritChance(DamageClass.Generic) += 5;
+            player.GetCritChance(DamageClass.Generic) += 15;
         }
 
         public override void AddRecipes() {

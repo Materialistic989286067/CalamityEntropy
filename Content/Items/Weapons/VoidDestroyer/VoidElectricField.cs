@@ -23,9 +23,9 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
         public override void SetDefaults() {
             Item.width = 56;
             Item.height = 56;
-            Item.damage = 280;
+            Item.damage = 200;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 10;
+            Item.mana = 28;
             Item.useTime = 20;
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Shoot;

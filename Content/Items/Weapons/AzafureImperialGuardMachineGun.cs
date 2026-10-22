@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class AzafureImperialGuardMachineGun : ModItem, IAzafureEnhancable
     {
         public override void SetDefaults() {
-            Item.damage = 23;
+            Item.damage = 19;
             Item.DamageType = DamageClass.Ranged;
             Item.width = 76;
             Item.height = 46;
@@ -48,7 +48,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 .Register();
         }
         public int AmmoLeft = 0;
-        public static int MaxAmmo = 100;
+        public static int MaxAmmo = 500;
         //弹药条底图,加载期由 VaultLoaden 赋值,仅物品栏绘制读取
         [VaultLoaden("CalamityEntropy/Assets/GenericBarBack")]
         internal static Asset<Texture2D> BarBackTex;

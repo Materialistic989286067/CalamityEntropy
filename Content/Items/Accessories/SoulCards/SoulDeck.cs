@@ -58,7 +58,7 @@ namespace CalamityEntropy.Content.Items.Accessories.SoulCards
                 .AddIngredient<RequiemCard>()
                 .AddIngredient<WisperCard>()
                 .AddIngredient<CursedThread>()
-                .AddCalOrOwn(CEID.Item_CoreofCalamity, 1, ItemID.LunarBar, 5)
+                .AddCalOrOwn(CEID.Item_CoreofCalamity, 1, ItemID.SpectreBar, 5)
                 .AddTile(TileID.Bookcases)
                 .Register();
         }

@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.NPCs.Prophet.Core;
 using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -57,7 +58,7 @@ namespace CalamityEntropy.Content.Projectiles.Prophet
             return false;
         }
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
-            target.AddBuff(ModContent.BuffType<SoulDisorder>(), 8 * 60);
+            target.AddDebuffFixed(ModContent.BuffType<SoulDisorder>(), ProphetDirector.SoulDisorderFrames);
         }
         public override bool PreDraw(ref Color lightColor) {
 

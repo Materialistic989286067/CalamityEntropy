@@ -24,7 +24,7 @@ namespace CalamityEntropy.Content.Projectiles.ApsychosProjs
         }
         public float scale = 0;
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
-            target.AddBuff(BuffID.OnFire3, 180);
+            target.AddDebuffFixed(BuffID.OnFire, 180);
         }
         public float ft = 2;
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI) {

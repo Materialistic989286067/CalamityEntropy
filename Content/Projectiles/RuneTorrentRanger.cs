@@ -23,10 +23,10 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.width = Projectile.height = 64;
             Projectile.MaxUpdates = 4;
             Projectile.timeLeft = 180;
-            Projectile.penetrate = 6;
+            Projectile.penetrate = 7;
             Projectile.ArmorPenetration = 8;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 8;
+            Projectile.localNPCHitCooldown = -1;
         }
         public bool r = true; public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.AddBuff(ModContent.BuffType<SoulDisorder>(), 300);

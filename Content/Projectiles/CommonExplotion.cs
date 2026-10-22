@@ -1,5 +1,6 @@
 ﻿using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Projectiles
@@ -49,10 +50,15 @@ namespace CalamityEntropy.Content.Projectiles
         public Action<NPC, NPC.HitInfo, int> onHitAction = null;
         public Action<NPC> modifyHitAction = null;
         public float DamageMulToWormSegs = 1;
+        //血肉墙的嘴与眼、毁灭者全部体节
+        public float DamageMulToWoFAndDestroyer = 1;
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
             modifyHitAction?.Invoke(target);
             if (target.realLife >= 0)
                 modifiers.SourceDamage *= DamageMulToWormSegs;
+            if (target.type == NPCID.WallofFlesh || target.type == NPCID.WallofFleshEye
+                || target.type == NPCID.TheDestroyer || target.type == NPCID.TheDestroyerBody || target.type == NPCID.TheDestroyerTail)
+                modifiers.SourceDamage *= DamageMulToWoFAndDestroyer;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             onHitAction?.Invoke(target, hit, damageDone);

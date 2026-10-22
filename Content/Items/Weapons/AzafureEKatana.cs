@@ -30,7 +30,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAnimation = 10;
             Item.autoReuse = true;
             Item.DamageType = DamageClass.Melee;
-            Item.damage = 120;
+            Item.damage = 60;
             Item.knockBack = 6;
             Item.crit = 15;
             Item.channel = true;
@@ -81,7 +81,6 @@ namespace CalamityEntropy.Content.Items.Weapons
                     Projectile.ResetLocalNPCHitImmunity();
                     CEUtils.PlaySound("vbapear", 3.8f, Projectile.Center, 0, 0.2f);
                     CEUtils.PlaySound("vbuse", Projectile.frameCounter / 6f + 2, Projectile.Center, 6, 0.35f);
-                    shake = true;
                 }
             }
 
@@ -104,24 +103,34 @@ namespace CalamityEntropy.Content.Items.Weapons
             }
             Projectile.Center = player.GetDrawCenter();
         }
+        //各帧刀柄中心在贴图内的像素坐标
+        static readonly Vector2[] HiltAnchor = {
+            new(104.5f, 146.3f), new(85.9f, 153.9f), new(51.1f, 157f),
+            new(124.9f, 82.8f), new(97.7f, 84.1f), new(72.9f, 87.4f),
+            new(121.1f, 138.5f), new(99.3f, 63.5f), new(59.9f, 57f)
+        };
+        Vector2 HiltOrigin(int frameIndex, float texWidth) {
+            Vector2 h = HiltAnchor[frameIndex];
+            return new Vector2(Projectile.velocity.X > 0 ? h.X : texWidth - h.X, h.Y);
+        }
         public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = Projectile.GetTexture();
             Rectangle frame;
+            Player owner = Projectile.GetOwner();
             SpriteEffects effect = Projectile.velocity.X > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            Vector2 origin = new Vector2(Projectile.velocity.X > 0 ? 84 : tex.Width - 84, 254 / 2);
             float rot = Projectile.rotation + (Projectile.velocity.X > 0 ? 0 : MathHelper.Pi);
+            Vector2 hand = owner.GetFrontHandPositionImproved(owner.compositeFrontArm) + owner.gfxOffY * Vector2.UnitY;
             for (int i = 0; i < OldFrames.Count; i++) {
                 frame = new Rectangle(0, OldFrames[i] * 256, tex.Width, 254);
-                Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, lightColor * 0.16f * ((i + 1) / (float)OldFrames.Count), rot, origin, Scale, effect);
+                Main.EntitySpriteDraw(tex, hand - Main.screenPosition, frame, lightColor * 0.16f * ((i + 1) / (float)OldFrames.Count), rot, HiltOrigin(OldFrames[i], tex.Width), Scale, effect);
             }
             frame = new Rectangle(0, Projectile.frameCounter * 256, tex.Width, 254);
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, lightColor, rot, origin, Scale, effect);
+            Main.EntitySpriteDraw(tex, hand - Main.screenPosition, frame, lightColor, rot, HiltOrigin(Projectile.frameCounter, tex.Width), Scale, effect);
             return false;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * 160 * Scale, targetHitbox, 256);
         }
-        public bool shake = true;
         // 灾厄 Organic() 扩展的本地等价：按受击音效白名单区分肉质/非肉质
         private static bool IsOrganic(NPC target) {
             return target.HitSound != SoundID.NPCHit4 && target.HitSound != SoundID.NPCHit41 && target.HitSound != SoundID.NPCHit2 &&
@@ -166,9 +175,6 @@ namespace CalamityEntropy.Content.Items.Weapons
             target.AddBuff<GalvanicCorrosion>(8 * 60);
             target.AddBuff<Crumbling>(8 * 60);
             target.AddBuff(BuffID.Electrified, 8 * 60);
-            if (shake)
-                ScreenShaker.AddShake(new ScreenShaker.ScreenShake(Projectile.velocity.normalize() * -2, 4f));
-            shake = false;
         }
     }
 }

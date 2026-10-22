@@ -90,12 +90,13 @@ namespace CalamityEntropy.Core.Integrations
         private static List<BossEntry> BuildEntries() {
             return new List<BossEntry>()
             {
-                new BossEntry("AcropolisMechine", "AcropolisMachine", 2.8f,
+                //蜂王前,原版 3 与 4 之间
+                new BossEntry("AcropolisMechine", "AcropolisMachine", 3.5f,
                     () => EDownedBosses.downedAcropolis,
                     ModContent.NPCType<AcropolisMachine>(),
-                    ItemID.None,
+                    ModContent.ItemType<SignalBlocker>(),
                     new List<int>(),
-                    "CalamityEntropy/Assets/BCL/AcropolisMachine", 0.8f, MiniBoss: true,
+                    "CalamityEntropy/Assets/BCL/AcropolisMachine", 0.8f,
                     Actor: AcropolisPortraitActor.Instance),
 
                 new BossEntry("Apsychos", "Apsychos", 6.4f,
@@ -106,7 +107,8 @@ namespace CalamityEntropy.Core.Integrations
                     "CalamityEntropy/Assets/BCL/Apsychos", 0.36f,
                     Actor: ApsychosPortraitActor.Instance),
 
-                new BossEntry("Luminaris", "Luminaris", 9.505f,
+                //机械骷髅王 11 与日食 11.5 之间
+                new BossEntry("Luminaris", "Luminaris", 11.25f,
                     () => EDownedBosses.downedLuminaris,
                     ModContent.NPCType<Luminaris>(),
                     ModContent.ItemType<IllusionaryDew>(),
@@ -114,7 +116,8 @@ namespace CalamityEntropy.Core.Integrations
                     "CalamityEntropy/Assets/BCL/LuminarisBossCheckList", 1f,
                     Actor: LuminarisPortraitActor.Instance),
 
-                new BossEntry("TheProphet", "TheProphet", 12.02f,
+                //先知:教徒 17 之后,天界柱 17.01 之前
+                new BossEntry("TheProphet", "TheProphet", 17.005f,
                     () => EDownedBosses.downedProphet,
                     ModContent.NPCType<TheProphet>(),
                     ModContent.ItemType<ProphecyToken>(),

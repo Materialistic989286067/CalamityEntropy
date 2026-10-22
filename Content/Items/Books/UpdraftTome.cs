@@ -16,7 +16,7 @@ namespace CalamityEntropy.Content.Items.Books
             Item.damage = 35;
             Item.useAnimation = Item.useTime = 23;
             Item.crit = 5;
-            Item.mana = 12;
+            Item.mana = 10;
         }
         [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/BookMark2")]
         internal static Asset<Texture2D> BookMarkSlotTex;

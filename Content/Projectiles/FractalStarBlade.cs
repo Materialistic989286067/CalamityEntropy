@@ -88,7 +88,9 @@ namespace CalamityEntropy.Content.Projectiles
             }
             for (int i = 0; i < 3; i++) {
                 Vector2 pos = target.Center + new Vector2(0, -900) + CEUtils.randomPointInCircle(400);
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, (target.Center - pos).normalize() * 42, ModContent.ProjectileType<AstralStarMelee>(), Projectile.damage / 4, Projectile.owner).ToProj();
+                int star = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, (target.Center - pos).normalize() * 42, ModContent.ProjectileType<AstralStarMelee>(), Projectile.damage / 4, Projectile.owner);
+                if (star >= 0 && star < Main.maxProjectiles)
+                    Main.projectile[star].ArmorPenetration += 20;
             }
         }
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/Fractal/StarlitFractalGlow";

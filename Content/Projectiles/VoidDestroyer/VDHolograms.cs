@@ -158,7 +158,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         }
     }
 
-    /// <summary>全息邪恶三叉戟:从红恶魔处匀速直飞;画大 1.4 倍,拖尾是同一张贴图的全息残影。弹幕档伤害</summary>
+    /// <summary>全息邪恶三叉戟:从红恶魔处匀速直飞;画大 1.4 倍,拖尾是同一张贴图的全息残影。小激光档伤害</summary>
     public class VDHoloTrident : VDDepthProjectile
     {
         public const float BodyScale = 1.4f;
@@ -202,7 +202,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 
     /// <summary>
     /// 全息陆龟:每次冲锋在玩家左右 TortoiseStartOffset 处现身(屏内),待机期画出整条水平航道,y 在现身那一刻锁死,
-    /// 起冲时扇形 StingerCount 发毒刺,沿航道直冲不修正;下一冲换到另一侧。ai[0] 本体,ai[1] 目标玩家,ai[2] 首冲侧向(0 = 自选)。体术档伤害
+    /// 起冲时扇形 StingerCount 发毒刺,沿航道直冲不修正;下一冲换到另一侧。ai[0] 本体,ai[1] 目标玩家,ai[2] 首冲侧向(0 = 自选)。小激光档伤害
     /// </summary>
     public class VDHoloTortoise : VDHoloProjectile
     {

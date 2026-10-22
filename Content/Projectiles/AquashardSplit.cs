@@ -5,11 +5,9 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Projectiles
 {
-    //脱离灾厄:灾厄AquashardSplit同短名移植(水刃大招分裂弹),运动与判定逐式对齐,贴图复用自有主弹
+    //脱离灾厄:灾厄AquashardSplit同短名移植(水刃大招分裂弹),运动与判定逐式对齐
     public class AquashardSplit : ModProjectile
     {
-        public override string Texture => "CalamityEntropy/Content/Projectiles/AquashardThrow";
-
         public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
 
         public override void SetDefaults() {

@@ -29,7 +29,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Item.useAnimation = Item.useTime = 42;
             Item.width = 70;
             Item.height = 70;
-            Item.damage = 70;
+            Item.damage = 81;
             Item.crit = 6;
             Item.ArmorPenetration = 20;
             Item.UseSound = SoundID.Item1 with { Volume = 1.2f };

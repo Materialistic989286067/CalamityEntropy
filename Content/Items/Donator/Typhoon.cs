@@ -19,7 +19,7 @@ namespace CalamityEntropy.Content.Items.Donator
         public override void SetDefaults() {
             Item.width = 136;
             Item.height = 52;
-            Item.damage = 13;
+            Item.damage = 16;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 1;
             Item.useAnimation = 1;
@@ -125,18 +125,9 @@ namespace CalamityEntropy.Content.Items.Donator
         #endregion
 
         public override void AddRecipes() {
-            if (CECal.CalChainReady(CEID.Item_P90)) {
-                CreateRecipe()
-                .AddIngredient(CEID.Item_P90)
-                .AddIngredient(ItemID.FragmentVortex, 6)
-                .AddIngredient(ItemID.LunarBar, 8)
-                .AddTile(TileID.LunarCraftingStation)
-                .Register();
-                return;
-            }
             CreateRecipe()
                 .AddIngredient(ItemID.ChainGun)
-                .AddIngredient(ItemID.LunarBar, 10)
+                .AddIngredient<WraithSoulEssence>(12)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

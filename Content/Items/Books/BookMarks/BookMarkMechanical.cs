@@ -36,7 +36,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     {
         public override void OnProjectileSpawn(Projectile projectile, bool ownerClient) {
             if (ownerClient && (projectile.ModProjectile is EBookBaseProjectile eb && eb.mainProj) && Main.rand.NextBool(projectile.HasEBookEffect<APlusBMEffect>() ? 5 : 8) && CECooldowns.CheckCD("MechanicalBookmark", 30)) {
-                Projectile.NewProjectile(projectile.GetSource_FromAI(), projectile.Center, Vector2.UnitY * -8, ModContent.ProjectileType<Detector>(), EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 20, projectile.DamageType), projectile.knockBack, projectile.owner);
+                Projectile.NewProjectile(projectile.GetSource_FromAI(), projectile.Center, Vector2.UnitY * -8, ModContent.ProjectileType<Detector>(), EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 10, projectile.DamageType), projectile.knockBack, projectile.owner);
             }
         }
     }

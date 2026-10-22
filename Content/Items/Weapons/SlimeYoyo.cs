@@ -18,7 +18,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.UseSound = SoundID.Item1;
-            Item.damage = 10;
+            Item.damage = 25;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.knockBack = 3f;
             Item.crit = 8;

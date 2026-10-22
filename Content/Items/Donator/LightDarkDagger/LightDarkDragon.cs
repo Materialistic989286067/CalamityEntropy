@@ -19,8 +19,9 @@ namespace CalamityEntropy.Content.Items.Donator.LightDarkDagger
 
         public const int Frames = 5;
         public const int FrameTicks = 7;
-        //最朦胧时的不透明度,层数满时到 1
-        public const float MinOpacity = 0.16f;
+        //最朦胧时的不透明度,层数满时到 1;光晕强度的底值
+        public const float MinOpacity = 0.7f;
+        public const float GlowFloor = 0.35f;
         public const float FollowLerp = 0.09f;
         public static readonly Vector2 HoverOffset = new Vector2(-64f, -54f);
 
@@ -111,7 +112,7 @@ namespace CalamityEntropy.Content.Items.Donator.LightDarkDagger
             //贴图本体朝左,玩家朝右时水平翻转
             SpriteEffects effects = Projectile.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             float a = shownOpacity;
-            float glowA = Projectile.ai[0] * a;
+            float glowA = (GlowFloor + (1f - GlowFloor) * Projectile.ai[0]) * a;
 
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             if (glowA > 0.02f) {
@@ -121,7 +122,7 @@ namespace CalamityEntropy.Content.Items.Donator.LightDarkDagger
                 Main.EntitySpriteDraw(glow, pos + new Vector2(14f * Projectile.spriteDirection, 12f), null, LDPalette.DarkMain * glowA * 0.5f, 0f, glow.Size() / 2f, 0.55f, SpriteEffects.None);
             }
             //朦胧幻影:先铺一层加法幽光,再叠半透明本体
-            Main.EntitySpriteDraw(tex, pos, frame, new Color(120, 90, 200) * a * 0.5f, Projectile.rotation, origin, Projectile.scale * 1.03f, effects);
+            Main.EntitySpriteDraw(tex, pos, frame, new Color(120, 90, 200) * a * 0.7f, Projectile.rotation, origin, Projectile.scale * 1.03f, effects);
             Main.spriteBatch.ExitShaderRegion();
             Main.EntitySpriteDraw(tex, pos, frame, Color.White * a, Projectile.rotation, origin, Projectile.scale, effects);
             return false;

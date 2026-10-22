@@ -6,7 +6,7 @@ using Terraria.ID;
 namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 {
     /// <summary>
-    /// 核心紫色激光束:高速短光束,由本体逐发对准玩家当前位置射出形成追随的激光流。命中 348 + 带电 3 秒。
+    /// 核心紫色激光束:高速短光束,由本体逐发对准玩家当前位置射出形成追随的激光流。弹幕档伤害 + 带电 3 秒。
     /// 碰撞按自身长度做线段判定
     /// </summary>
     public class VDCoreLaserBolt : VDHostileProjectile

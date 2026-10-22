@@ -258,6 +258,16 @@ namespace CalamityEntropy.Content.Items.Books
             return true;
         }
         public Item bookItem;
+        /// <summary>每轮攻击自增,同一轮发出的弹幕共享该值</summary>
+        public int ShotRound = 0;
+        private readonly Dictionary<string, int> roundClaims = new Dictionary<string, int>();
+        /// <summary>同一个键只放行比上次更新的轮次,同轮与旧轮的迟到弹幕不放行</summary>
+        public bool TryClaimRound(string key, int round) {
+            if (roundClaims.TryGetValue(key, out int r) && round <= r)
+                return false;
+            roundClaims[key] = round;
+            return true;
+        }
         public virtual float randomShootRotMax => 0.1f;
         public virtual bool canApplyShootCDModifer => true;
         /// <summary>
@@ -329,6 +339,7 @@ namespace CalamityEntropy.Content.Items.Books
                     bp.attackSpeed = modifer.attackSpeed;
                     bp.lifeSteal += modifer.lifeSteal;
                     bp.origProjType = origType;
+                    bp.shotRound = ShotRound;
                     // 书签效果只挂在熵书本体弹幕上;衍生/召唤类弹幕不再携带,自然也无法触发书签(2026-08-31 平衡案)
                     if (MainProjectile) {
                         for (int i = 0; i < Math.Min(Main.LocalPlayer.GetMyMaxActiveBookMarks(bookItem), Projectile.GetOwner().Entropy().EBookStackItems.Count); i++) {
@@ -342,7 +353,7 @@ namespace CalamityEntropy.Content.Items.Books
                             }
                         }
                     }
-                    if (this.getEffect() != null) {
+                    if (bp.InheritBookEffect && this.getEffect() != null) {
                         bp.ProjectileEffects.Add(this.getEffect());
                     }
                     if (colorMult != default) {
@@ -475,6 +486,7 @@ namespace CalamityEntropy.Content.Items.Books
                     ManaNoRegen = 60;
                     if (shotCooldown <= 0 && CanShoot()) {
                         if (Projectile.GetOwner().CheckMana(GetManaCost(), true)) {
+                            ShotRound++;
                             if (Main.myPlayer != Projectile.owner || Shoot()) {
                                 if (active && pageTurnAnm == 0) {
                                     playTurnPageAnimation();
@@ -589,6 +601,10 @@ namespace CalamityEntropy.Content.Items.Books
         public float gravity = 0;
         public bool mainProj = false;
         public int origProjType = -1;
+        /// <summary>发射时书的 ShotRound,仅主人端使用</summary>
+        public int shotRound = 0;
+        /// <summary>false 时不继承书本体的 getEffect 效果(书签宝石用)</summary>
+        public virtual bool InheritBookEffect => true;
         public virtual Color baseColor => Color.White;
         public Color color;
         public bool initColor = true;

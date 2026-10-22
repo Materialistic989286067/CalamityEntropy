@@ -20,7 +20,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             return new LunarBMEffect();
         }
     }
-    /// <summary>夜明书签(2026-08-31 平衡案重做):命中时在敌人头顶落下2~3道月耀射线(固定基伤180)。</summary>
+    /// <summary>夜明书签(2026-08-31 平衡案重做):命中时在敌人头顶落下2~3道月耀射线(固定基伤185)。</summary>
     public class LunarBMEffect : EBookProjectileEffect
     {
         public override void UpdateProjectile(Projectile projectile, bool ownerClient) {
@@ -30,10 +30,10 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             Player owner = projectile.GetOwner();
             int count = Main.rand.Next(2, 4);
             for (int i = 0; i < count; i++) {
-                Vector2 spawnPos = target.Center + new Vector2(Main.rand.NextFloat(-140, 140), -Main.rand.NextFloat(480, 620));
+                Vector2 spawnPos = target.Center + new Vector2(Main.rand.NextFloat(-140, 140), -Main.rand.NextFloat(240, 310));
                 int p = Projectile.NewProjectile(projectile.GetSource_FromThis(), spawnPos,
                     (target.Center - spawnPos).SafeNormalize(Vector2.UnitY) * 15f,
-                    ProjectileID.LunarFlare, FixedDamage(owner, 180, projectile.DamageType), projectile.knockBack, projectile.owner);
+                    ProjectileID.LunarFlare, FixedDamage(owner, 185, projectile.DamageType), projectile.knockBack, projectile.owner);
                 if (p >= 0 && p < Main.maxProjectiles) {
                     Main.projectile[p].DamageType = projectile.DamageType;
                 }

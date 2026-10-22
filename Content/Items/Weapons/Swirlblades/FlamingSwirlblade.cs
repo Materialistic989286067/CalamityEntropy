@@ -24,10 +24,10 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 
         public override void SetDefaults() {
             Item.DamageType = DamageClass.Ranged;
-            Item.useAnimation = Item.useTime = 26;
+            Item.useAnimation = Item.useTime = 58;
             Item.width = 48;
             Item.height = 52;
-            Item.damage = 8;
+            Item.damage = 16;
             Item.crit = 2;
             Item.ArmorPenetration = 8;
             Item.UseSound = SoundID.Item1 with { Volume = 1.2f };

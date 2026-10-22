@@ -15,10 +15,10 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void SetDefaults() {
             Item.width = 36;
             Item.height = 34;
-            Item.damage = 92;
+            Item.damage = 110;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = Item.useTime = 25;
+            Item.useAnimation = Item.useTime = 45;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 5f;
             Item.UseSound = null;
@@ -27,7 +27,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.value = Item.buyPrice(gold: 35);
             Item.rare = ItemRarityID.LightPurple;
             Item.shoot = ModContent.ProjectileType<RadianceSpearThrow>();
-            Item.shootSpeed = 68f;
+            Item.shootSpeed = 40f;
             Item.DamageType = DamageClass.Melee;
         }
 

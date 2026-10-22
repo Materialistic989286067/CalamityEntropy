@@ -10,8 +10,8 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Events.VoidDestroyerAftermath
 {
-    /// <summary>敌怪强化倍率,先乘在 SetDefaults 的基础值上,专家/大师缩放照常叠在后面</summary>
-    internal readonly record struct VDStatBoost(float Damage, float Life, float Defense = 1f);
+    /// <summary>敌怪强化倍率,先乘在 SetDefaults 的基础值上,专家/大师缩放照常叠在后面,KnockBackResist 为绝对值,负数不改</summary>
+    internal readonly record struct VDStatBoost(float Damage, float Life, float Defense = 1f, float KnockBackResist = -1f);
 
     /// <summary>必掉或按概率掉的新材料,Chance 为分母</summary>
     internal readonly record struct VDMaterialDrop(int Chance, int Min, int Max);
@@ -30,20 +30,20 @@ namespace CalamityEntropy.Content.Events.VoidDestroyerAftermath
 
         static VDAftermath() {
             //神圣之地普通敌怪
-            VDStatBoost hallow = new(1.66f, 15f);
-            AddHallow(NPCID.Unicorn, hallow, 1, 3);
-            AddHallow(NPCID.Gastropod, hallow, 1, 1);
-            AddHallow(NPCID.Pixie, hallow, 1, 1);
-            AddHallow(NPCID.LightMummy, hallow, 1, 1);
-            AddHallow(NPCID.RainbowSlime, hallow, 2, 3);
-            AddHallow(NPCID.IlluminantSlime, hallow, 1, 1);
-            AddHallow(NPCID.IlluminantBat, hallow, 1, 1);
-            AddHallow(NPCID.DesertGhoulHallow, hallow, 1, 1);
-            AddHallow(NPCID.PigronHallow, hallow, 2, 3);
+            VDStatBoost hallow = new(2f, 20f);
+            AddHallow(NPCID.Unicorn, new(2f, 20f, 1f, 0.05f), 1, 1, 1);
+            AddHallow(NPCID.Gastropod, hallow, 3, 1, 1);
+            AddHallow(NPCID.Pixie, hallow, 3, 1, 1);
+            AddHallow(NPCID.LightMummy, hallow, 3, 1, 1);
+            AddHallow(NPCID.RainbowSlime, hallow, 1, 1, 3);
+            AddHallow(NPCID.IlluminantSlime, hallow, 3, 1, 1);
+            AddHallow(NPCID.IlluminantBat, hallow, 3, 1, 1);
+            AddHallow(NPCID.DesertGhoulHallow, hallow, 3, 1, 1);
+            AddHallow(NPCID.PigronHallow, hallow, 1, 2, 3);
             //神圣之地特殊敌怪
-            AddHallow(NPCID.EnchantedSword, new(1.5f, 15f), 1, 3);
-            AddHallow(NPCID.ChaosElemental, new(2.5f, 15f), 1, 3);
-            AddHallow(NPCID.BigMimicHallow, new(1.5f, 5f, 2f), 12, 16);
+            AddHallow(NPCID.EnchantedSword, new(1.5f, 15f), 1, 1, 3);
+            AddHallow(NPCID.ChaosElemental, new(2.5f, 15f), 1, 1, 3);
+            AddHallow(NPCID.BigMimicHallow, new(1.66f, 6f, 2f), 1, 12, 16);
 
             //地牢花前敌怪
             VDStatBoost dungeonEarly = new(3f, 30f);
@@ -54,22 +54,21 @@ namespace CalamityEntropy.Content.Events.VoidDestroyerAftermath
             AddDungeon(NPCID.DungeonSlime, dungeonEarly, 1, 2, 3);
 
             //地牢花后骷髅
-            VDStatBoost dungeonLate = new(1.66f, 8f);
+            VDStatBoost dungeonLate = new(2f, 12f);
             foreach (int type in new int[] {
                 NPCID.BlueArmoredBones, NPCID.BlueArmoredBonesMace, NPCID.BlueArmoredBonesNoPants, NPCID.BlueArmoredBonesSword,
                 NPCID.RustyArmoredBonesAxe, NPCID.RustyArmoredBonesFlail, NPCID.RustyArmoredBonesSword, NPCID.RustyArmoredBonesSwordNoArmor,
                 NPCID.HellArmoredBones, NPCID.HellArmoredBonesSpikeShield, NPCID.HellArmoredBonesMace, NPCID.HellArmoredBonesSword }) {
-                AddDungeon(type, dungeonLate, 2, 1, 1);
+                AddDungeon(type, dungeonLate, 3, 1, 1);
             }
 
             //地牢花后法师单位
-            VDStatBoost dungeonCaster = new(1.66f, 10f);
             foreach (int type in new int[] { NPCID.Necromancer, NPCID.NecromancerArmored, NPCID.RaggedCaster, NPCID.RaggedCasterOpenCoat,
                 NPCID.DiabolistRed, NPCID.DiabolistWhite }) {
-                AddDungeon(type, dungeonCaster, 1, 1, 2);
+                AddDungeon(type, dungeonLate, 1, 1, 1);
             }
-            AddDungeon(NPCID.GiantCursedSkull, dungeonCaster, 2, 1, 1);
-            AddDungeon(NPCID.DungeonSpirit, dungeonCaster, 2, 1, 1);
+            AddDungeon(NPCID.GiantCursedSkull, dungeonLate, 2, 1, 1);
+            AddDungeon(NPCID.DungeonSpirit, dungeonLate, 2, 1, 1);
 
             //地牢特殊敌怪,水球只强化伤害不掉落
             StatBoosts[NPCID.WaterSphere] = new(1.33f, 1f);
@@ -80,9 +79,9 @@ namespace CalamityEntropy.Content.Events.VoidDestroyerAftermath
             AddDungeon(NPCID.Paladin, new(1.5f, 4f), 1, 12, 16);
         }
 
-        private static void AddHallow(int type, VDStatBoost boost, int min, int max) {
+        private static void AddHallow(int type, VDStatBoost boost, int chance, int min, int max) {
             StatBoosts[type] = boost;
-            SunlightDrops[type] = new(1, min, max);
+            SunlightDrops[type] = new(chance, min, max);
         }
 
         private static void AddDungeon(int type, VDStatBoost boost, int chance, int min, int max) {

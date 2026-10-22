@@ -127,6 +127,8 @@ namespace CalamityEntropy.Common
         public bool halfManaSick;
         /// <summary>上神之佑团队免伤光环持有者标记(2026-08-31 平衡案)。</summary>
         public bool odinAura;
+        /// <summary>本人或队友持有上神之佑,受伤时最终伤害降低,在防御与免伤之后结算</summary>
+        public bool odinWardFinal;
         /// <summary>上神之佑走 3.33 灾厄时代形态(装灾厄时的分支),受击侧与冰霜屏障由本类结算。</summary>
         public bool odinRefugeCalEra;
         /// <summary>莱拉蜂蜜光环持有者标记(2026-08-31 平衡案)。</summary>
@@ -136,8 +138,10 @@ namespace CalamityEntropy.Common
         // 书签玩家侧被动票据:由各书签 BookUpdate 每帧续期,消费处自行倒数(2026-08-31 平衡案)
         public int bmLightJumpTime;
         public int bmTerraDefTime;
+        public int bmLibraDefTime;
         public int bmSilvaRegenTime;
         public int bmSagSpawnTime;
+        public int bmAerialWingTime;
         private int manaSickPrev = 0;
         /// <summary>虚灵宙法盔:攻击敌人后的强再生剩余帧(5hp/s)。</summary>
         public int cosmosRegenTime = 0;
@@ -958,6 +962,7 @@ namespace CalamityEntropy.Common
             ilmeranAsylum = false;
             FallSpeed = 1;
             WingTimeMult = 1;
+            WingTimeAddTicks = 0;
             devouringCard = false;
             bitternessCard = false;
             mourningCard = false;
@@ -1050,6 +1055,7 @@ namespace CalamityEntropy.Common
             VFHelmMelee = false;
             halfManaSick = false;
             odinAura = false;
+            odinWardFinal = false;
             odinRefugeCalEra = false;
             leylaAura = false;
             thiefWatch = false;
@@ -1489,6 +1495,7 @@ namespace CalamityEntropy.Common
         public int HitTCounter = 0;
         public int voidslashType = -1;
         public float WingTimeMult = 1;
+        public int WingTimeAddTicks = 0;  //额外飞行时间(帧),乘区之后追加
         public int ffDecSlot = 0;
         public override void UpdateLifeRegen() {
             // 虚灵宙法盔:攻击敌人后5秒内大幅提升自然生命再生(5hp/s)
@@ -1576,6 +1583,9 @@ namespace CalamityEntropy.Common
                 Player.lifeRegen += ProphetLore.LifeRegen;
             }
             Player.wingTimeMax = (int)(Player.wingTimeMax * WingTimeMult);
+            if (WingTimeAddTicks > 0 && Player.wingTimeMax > 0) {
+                Player.wingTimeMax += WingTimeAddTicks;
+            }
             if (voidslashType == -1) {
                 voidslashType = ModContent.ProjectileType<VoidSlash>();
             }
@@ -1622,7 +1632,7 @@ namespace CalamityEntropy.Common
                 d += 0.05f;
             }
             // 2026-08-31 平衡案:虚湮吞天盔职业奖励重做,原+10%全减伤退役(改为接触伤害-15%,在头盔文件里)
-            // 上神之佑:自己或任一队友持有时+15%免伤(不叠加)
+            // 上神之佑:自己或任一队友持有时最终伤害-15%(不叠加,见 EPHurtModifier)
             bool odinWard = odinAura;
             if (!odinWard) {
                 foreach (Player teammate in Main.ActivePlayers) {
@@ -1632,9 +1642,7 @@ namespace CalamityEntropy.Common
                     }
                 }
             }
-            if (odinWard) {
-                d += OdinsRefuge.TeamWardDR;
-            }
+            odinWardFinal = odinWard;
             Player.endurance += d;
             if (rBadgeActive) {
                 Player.gravity = 0;
@@ -1724,8 +1732,16 @@ namespace CalamityEntropy.Common
                 bmTerraDefTime--;
                 Player.statDefense += 10;
             }
+            if (bmLibraDefTime > 0) {
+                bmLibraDefTime--;
+                Player.statDefense += 4;
+            }
             if (bmSagSpawnTime > 0) {
                 bmSagSpawnTime--;
+            }
+            if (bmAerialWingTime > 0) {
+                bmAerialWingTime--;
+                WingSpeed += 0.1f;
             }
             //基于尺寸更改机动性
             Player.jumpSpeed *= float.Lerp(Scale, 1, 0.55f);
@@ -2028,6 +2044,8 @@ namespace CalamityEntropy.Common
                     return;
             }
             info.Damage = (int)(info.Damage * (1 - EDamageReduce));
+            if (odinWardFinal && info.Damage > 1)
+                info.Damage = Math.Max(1, (int)(info.Damage * (1 - OdinsRefuge.TeamWardDR)));
             noCsDodge = false;
             if (HolyShield && info.Damage > 120) {
                 return;
@@ -2723,9 +2741,9 @@ namespace CalamityEntropy.Common
             if (VFHelmSummoner) {
                 // 2026-08-31 平衡案:套装仆从换为迷你虚空吞噬者(原 VoidMonster 退役)
                 if (Player.ownedProjectileCounts[ModContent.ProjectileType<MiniVoidDevourer>()] < 1) {
-                    int mvd = Projectile.NewProjectile(Player.GetSource_FromAI(), Player.Center, Vector2.Zero, ModContent.ProjectileType<MiniVoidDevourer>(), (int)(Player.GetTotalDamage(DamageClass.Summon).ApplyTo(680)), 4, Player.whoAmI);
+                    int mvd = Projectile.NewProjectile(Player.GetSource_FromAI(), Player.Center, Vector2.Zero, ModContent.ProjectileType<MiniVoidDevourer>(), (int)(Player.GetTotalDamage(DamageClass.Summon).ApplyTo(400)), 4, Player.whoAmI);
                     if (mvd >= 0 && mvd < Main.maxProjectiles) {
-                        Main.projectile[mvd].originalDamage = 680;
+                        Main.projectile[mvd].originalDamage = 400;
                     }
                 }
             }
@@ -3244,7 +3262,7 @@ namespace CalamityEntropy.Common
                 if (!Player.HasCooldown(ShadowDashCD.ID)) {
                     Player.AddCooldown(ShadowDashCD.ID, ShadowMantle.CooldownTicks);
                     immune = 16;
-                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, (Main.MouseWorld - Player.Center).normalize() * 800, ModContent.ProjectileType<ShadowMantleSlash>(), (int)Player.GetTotalDamage(DamageClass.Generic).ApplyTo(((int)(1 + ShadowMantle.BaseDamage)).ApplyAccArmorDamageBonus(Player)), 0, Player.whoAmI);
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, (Main.MouseWorld - Player.Center).normalize() * 800, ModContent.ProjectileType<ShadowMantleSlash>(), (int)Player.GetTotalDamage(DamageClass.Generic).ApplyTo(((int)ShadowMantle.BaseDamage).ApplyAccArmorDamageBonus(Player)), 0, Player.whoAmI);
                 }
             }
         }
@@ -3464,11 +3482,11 @@ namespace CalamityEntropy.Common
         }
 
         public override void CatchFish(FishingAttempt attempt, ref int itemDrop, ref int npcSpawn, ref AdvancedPopupRequest sonar, ref Vector2 sonarPosition) {
+            if (Main.bloodMoon && Player.ZoneUnderworldHeight && attempt.rare && Main.rand.NextBool(8)) {
+                itemDrop = ModContent.ItemType<FetalDream>();
+                return;
+            }
             if (CERef.Has) {
-                if (CECal.ZoneAbyssLayer4(Player, false) && attempt.rare && Main.rand.NextBool(8)) {
-                    itemDrop = ModContent.ItemType<FetalDream>();
-                    return;
-                }
                 if (CEID.Item_Voidstone > 0 && CECal.ZoneSulphur(Player, false) && attempt.common && Main.rand.NextBool(10)) {
                     itemDrop = CEID.Item_Voidstone;
                     return;
@@ -3483,10 +3501,6 @@ namespace CalamityEntropy.Common
                 return;
             }
             if (!Player.ZoneBeach) {
-                return;
-            }
-            if (!CERef.Has && Main.bloodMoon && attempt.rare && Main.rand.NextBool(8)) {
-                itemDrop = ModContent.ItemType<FetalDream>();
                 return;
             }
             if (Main.rand.NextBool(20)) {

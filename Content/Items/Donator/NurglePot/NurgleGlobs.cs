@@ -115,7 +115,26 @@ namespace CalamityEntropy.Content.Items.Donator.NurglePot
             return null;
         }
 
+        public const int MaxStuckPerNPC = 10;
+
+        private static int StuckCountOn(int npcIndex) {
+            int count = 0;
+            foreach (Projectile p in Main.ActiveProjectiles) {
+                if (p.ModProjectile is NurgleGlobBase g && g.state == GlobState.StuckOnNPC && g.stickIndex == npcIndex) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            //已粘满的敌怪:这一发照常结算减益,但不再粘附
+            if (state == GlobState.Flying && StuckCountOn(target.whoAmI) >= MaxStuckPerNPC) {
+                ApplyStuckDebuffs(target);
+                SplatEffects(Projectile.Center);
+                Projectile.Kill();
+                return;
+            }
             if (state == GlobState.Flying) {
                 state = GlobState.StuckOnNPC;
                 stickIndex = target.whoAmI;

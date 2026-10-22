@@ -12,7 +12,7 @@ namespace CalamityEntropy.Content.Items.Armor.Marivinium
     {
         public static int ShieldCd = 36 * 60;
         public static int MaxShield = 2;
-        public static int MinionSlotsOwn = 3;
+        public static int MinionSlotsOwn = 5;
         public static int MinionSlotsCal = 8;
         public override void SetDefaults() {
             Item.width = 48;

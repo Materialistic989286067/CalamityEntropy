@@ -20,11 +20,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
     public class StarlitFractal : ModItem
     {
         public override void SetDefaults() {
-            Item.damage = 85;
+            Item.damage = 90;
             Item.DamageType = DamageClass.Melee;
             Item.width = 48;
             Item.height = 60;
-            Item.useTime = Item.useAnimation = 20;
+            Item.useTime = Item.useAnimation = 23;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 6;
             Item.value = Item.buyPrice(gold: 20);
@@ -159,7 +159,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 460);
             for (int i = 0; i < 2; i++) {
                 Vector2 pos = target.Center + new Vector2(0, -900) + CEUtils.randomPointInCircle(400);
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, (target.Center - pos).normalize() * 42, ModContent.ProjectileType<AstralStarMelee>(), Projectile.damage / 4, Projectile.owner);
+                int star = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, (target.Center - pos).normalize() * 42, ModContent.ProjectileType<AstralStarMelee>(), Projectile.damage / 4, Projectile.owner);
+                if (star >= 0 && star < Main.maxProjectiles)
+                    Main.projectile[star].ArmorPenetration += 20;
             }
             if (playHitSound) {
                 playHitSound = false;

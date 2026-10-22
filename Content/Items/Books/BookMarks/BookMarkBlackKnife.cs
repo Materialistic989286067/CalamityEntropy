@@ -27,7 +27,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     {
         public override void OnHitNPC(Projectile projectile, NPC target, int damageDone) {
             if (Main.rand.NextBool(projectile.HasEBookEffect<APlusBMEffect>() ? 5 : 7) && CECooldowns.CheckCD("BlackKnifeBMProj", 3)) {
-                Projectile.NewProjectile(projectile.GetSource_FromAI(), target.Center, Vector2.Zero, ModContent.ProjectileType<BlackKnife>(), EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 150, projectile.DamageType), projectile.knockBack, projectile.owner, target.whoAmI, CEUtils.randomRot());
+                Projectile.NewProjectile(projectile.GetSource_FromAI(), target.Center, Vector2.Zero, ModContent.ProjectileType<BlackKnife>(), EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 80, projectile.DamageType), projectile.knockBack, projectile.owner, target.whoAmI, CEUtils.randomRot());
             }
         }
     }

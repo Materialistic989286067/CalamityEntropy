@@ -61,6 +61,10 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 Main.dust[num98].velocity = CEUtils.randomPointInCircle(4);
             }
         }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            base.OnHitNPC(target, hit, damageDone);
+            target.AddBuff(BuffID.Poisoned, 200);
+        }
         public override void AI() {
             base.AI();
             int num98 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.CorruptGibs, 0f, 0f, 0, default(Color), 0.9f);

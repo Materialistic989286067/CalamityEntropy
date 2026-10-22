@@ -32,11 +32,11 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 VDVfx.Sound("VoidAnticipation", 0.8f, ctx.Npc.Center, 3, 0.9f);
                 if (IsServer) {
                     if (Main.getGoodWorld) {
-                        Shoot<VDHoloTortoise>(ctx, ctx.Npc.Center, Vector2.Zero, VDDirector.DmgHoloBeast, ctx.Npc.whoAmI, ctx.Npc.target, -1);
-                        Shoot<VDHoloTortoise>(ctx, ctx.Npc.Center, Vector2.Zero, VDDirector.DmgHoloBeast, ctx.Npc.whoAmI, ctx.Npc.target, 1);
+                        Shoot<VDHoloTortoise>(ctx, ctx.Npc.Center, Vector2.Zero, VDDirector.DmgHoloTortoise, ctx.Npc.whoAmI, ctx.Npc.target, -1);
+                        Shoot<VDHoloTortoise>(ctx, ctx.Npc.Center, Vector2.Zero, VDDirector.DmgHoloTortoise, ctx.Npc.whoAmI, ctx.Npc.target, 1);
                     }
                     else {
-                        Shoot<VDHoloTortoise>(ctx, ctx.Npc.Center, Vector2.Zero, VDDirector.DmgHoloBeast, ctx.Npc.whoAmI, ctx.Npc.target, 0);
+                        Shoot<VDHoloTortoise>(ctx, ctx.Npc.Center, Vector2.Zero, VDDirector.DmgHoloTortoise, ctx.Npc.whoAmI, ctx.Npc.target, 0);
                     }
                 }
             }

@@ -1,6 +1,8 @@
-﻿using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Cooldowns;
+using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Core.CalamityRef;
+using CalamityEntropy.Core.Cooldowns;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -21,12 +23,12 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.useTime = 32;
-            Item.useAnimation = 32;
+            Item.useTime = 42;
+            Item.useAnimation = 42;
             Item.autoReuse = true;
-            Item.scale = 1f;
+            Item.scale = 0.7f;
             Item.DamageType = DamageClass.Melee;
-            Item.damage = 100;
+            Item.damage = 64;
             Item.knockBack = 6;
             Item.UseSound = CEUtils.GetSound("powerwhip");
             Item.crit = 6;
@@ -36,11 +38,12 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.rare = ModContent.RarityType<VoidPurple>();
         }
         public override bool AltFunctionUse(Player player) {
-            return true;
+            return !player.HasCooldown(VoidshadeDashCD.ID);
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             if (player.altFunctionUse == 2) {
                 attackType = 3;
+                player.AddCooldown(VoidshadeDashCD.ID, 3 * 60);
                 damage = (int)(damage * 1.5f);
                 SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/AntivoidDashSlash") { Pitch = -0.2f, MaxInstances = 4, Volume = 0.65f * CEUtils.WeapSound }, player.Center);
             }

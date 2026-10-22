@@ -127,7 +127,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
-            target.AddBuff(ModContent.BuffType<VoidVirus>(), 360);
+            target.AddDebuffFixed(ModContent.BuffType<VoidVirus>(), 300);
         }
 
         public override bool CheckActive() {

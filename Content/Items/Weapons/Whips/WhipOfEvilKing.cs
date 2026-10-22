@@ -14,12 +14,12 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
 {
     public class WhipOfEvilKing : BaseWhipItem, IPriceFromRecipe, IGetFromStarterBag
     {
-        public override int TagDamage => 2;
+        public override int TagDamage => 3;
         public override void ModifyTooltips(List<TooltipLine> tooltips) {
             base.ModifyTooltips(tooltips);
         }
         public override void SetDefaults() {
-            Item.DefaultToWhip(ModContent.ProjectileType<EvilKingWhipProjectile>(), 9, 4, 8f, 26);
+            Item.DefaultToWhip(ModContent.ProjectileType<EvilKingWhipProjectile>(), 27, 4, 8f, 26);
             Item.rare = ItemRarityID.Yellow;
             Item.autoReuse = true;
             Item.width = 44;

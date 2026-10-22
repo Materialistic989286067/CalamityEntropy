@@ -38,8 +38,8 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.Core
 
         //==================== 全局 / 形态 ====================
 
-        /// <summary>血量低于这个比例就自我晋升成 Boss(原 <c>life / lifeMax &lt; 0.98f</c>)</summary>
-        public const float BossPromoteLifeRatio = 0.98f;
+        /// <summary>血量低于这个比例晋升成 Boss,大于 1 即出场就是 Boss(原 0.98)</summary>
+        public const float BossPromoteLifeRatio = 1.01f;
 
         /// <summary>目标距离超过它就算脱战(原 <c>Distance(NPC.Center) &lt; 6000</c> 的补集)</summary>
         public const float DisengageDistance = 6000f;
@@ -317,12 +317,5 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.Core
         /// <summary>死亡爆炸的基础伤害是 40,专家再乘 2,大师或死亡难度再乘 2,半径是 500 再乘 scale</summary>
         public const int DeathBlastDamage = 40;
         public const float DeathBlastRadius = 500f;
-
-        //==================== 掉落与生成 ====================
-
-        /// <summary>地狱层自然生成频率:月后 0.04,困难 0.07,其余 0.18</summary>
-        public const float SpawnChancePostMoonlord = 0.04f;
-        public const float SpawnChanceHardmode = 0.07f;
-        public const float SpawnChancePreHardmode = 0.18f;
     }
 }

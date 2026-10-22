@@ -17,10 +17,10 @@ namespace CalamityEntropy.Content.Items.Books
     {
         public override void SetDefaults() {
             base.SetDefaults();
-            Item.damage = 66;
+            Item.damage = 34;
             Item.useAnimation = Item.useTime = 24;
             Item.crit = 4;
-            Item.mana = 18;
+            Item.mana = 22;
             Item.rare = ItemRarityID.Lime;
             Item.value = Item.buyPrice(gold: 45);
             Item.width = 40;

@@ -76,7 +76,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                         float cur = Projectile.velocity.ToRotation();
                         float want = toTarget.ToRotation();
                         float diff = MathHelper.WrapAngle(want - cur);
-                        float turn = MathHelper.Clamp(diff, -0.038f, 0.038f);
+                        float maxTurn = 0.038f * VDDirector.VoidBoltSpeedMult;
+                        float turn = MathHelper.Clamp(diff, -maxTurn, maxTurn);
                         Projectile.velocity = (cur + turn).ToRotationVector2() * Projectile.velocity.Length();
                     }
                     break;
@@ -85,7 +86,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                     if (age > Projectile.ai[1]) {
                         float cur = Projectile.velocity.ToRotation();
                         float diff = MathHelper.WrapAngle(-MathHelper.PiOver2 - cur);
-                        float turn = MathHelper.Clamp(diff, -0.16f, 0.16f);
+                        float maxTurn = 0.16f * VDDirector.VoidBoltSpeedMult;
+                        float turn = MathHelper.Clamp(diff, -maxTurn, maxTurn);
                         Projectile.velocity = (cur + turn).ToRotationVector2() * Projectile.velocity.Length();
                     }
                     break;

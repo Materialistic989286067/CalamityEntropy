@@ -8,7 +8,7 @@ namespace CalamityEntropy.Content.Items.Accessories.Hungry
 {
     public class HungryLantern : ModItem
     {
-        public static int Damage = 25;
+        public static int Damage = 17;
         public override void SetDefaults() {
             Item.width = 36;
             Item.height = 62;

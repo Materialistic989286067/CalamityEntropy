@@ -15,11 +15,11 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void SetDefaults() {
             Item.width = 42;
             Item.height = 42;
-            Item.damage = 60;
+            Item.damage = 45;
             Item.ArmorPenetration = 12;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = Item.useTime = 30;
+            Item.useAnimation = Item.useTime = 50;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.ArmorPenetration = 86;
             Item.knockBack = 6f;

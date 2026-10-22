@@ -10,9 +10,9 @@ namespace CalamityEntropy.Content.Items.Armor.Starmoon
     public class StarmoonArmorPlayer : ModPlayer
     {
         public const int CrossBurstCooldown = 180;
-        public const int CrossBurstBaseDamage = 1800;
+        public const int CrossBurstBaseDamage = 900;
         public const float MarkRange = 100 * 16;
-        public const int StarlightLockTime = 90;
+        public const int StarlightLockTime = 300;
 
         public bool MagicSet;
         public bool RangedSet;

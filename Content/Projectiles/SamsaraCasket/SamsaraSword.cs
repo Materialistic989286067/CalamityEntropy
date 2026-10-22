@@ -177,13 +177,15 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
 
         public virtual void setDamage(float damageMul) {
             Projectile.damage = 0;
-            if (Projectile.owner.ToPlayer().HeldItem.ModItem is HorizonssKey hk) {
-                Projectile.damage = (int)(damageMul * Projectile.owner.ToPlayer().GetWeaponDamage(Projectile.owner.ToPlayer().HeldItem));
+            Player owner = Projectile.owner.ToPlayer();
+            Item key = HorizonssKey.FindKey(owner);
+            if (key != null) {
+                Projectile.damage = (int)(damageMul * owner.GetWeaponDamage(key));
                 if (casket.ToProj().Entropy().IndexOfTwistedTwinShootedThisProj != -1) {
                     Projectile.damage = (int)((float)Projectile.damage * TwistedTwinMinion.damageMul);
                 }
-                Projectile.CritChance = (int)(Projectile.owner.ToPlayer().GetWeaponCrit(Projectile.owner.ToPlayer().HeldItem));
-                Projectile.knockBack = (int)(Projectile.owner.ToPlayer().GetWeaponKnockback(Projectile.owner.ToPlayer().HeldItem));
+                Projectile.CritChance = (int)(owner.GetWeaponCrit(key));
+                Projectile.knockBack = (int)(owner.GetWeaponKnockback(key));
 
             }
             Projectile.ArmorPenetration = HorizonssKey.getArmorPen();

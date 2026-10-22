@@ -19,7 +19,7 @@ namespace CalamityEntropy.Content.Projectiles.ApsychosProjs
             Projectile.penetrate = 1;
         }
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
-            target.AddBuff(BuffID.OnFire3, 180);
+            target.AddDebuffFixed(BuffID.OnFire, 180);
         }
         public float scale = 0;
         public float p = 0;

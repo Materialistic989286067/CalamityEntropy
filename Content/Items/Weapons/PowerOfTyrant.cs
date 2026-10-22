@@ -11,7 +11,7 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class PowerOfTyrant : ModItem
     {
         public override void SetDefaults() {
-            Item.damage = 500;
+            Item.damage = 150;
             Item.crit = 16;
             Item.DamageType = DamageClass.Melee;
             Item.width = 142;

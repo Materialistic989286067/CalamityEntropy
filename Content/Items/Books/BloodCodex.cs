@@ -53,7 +53,7 @@ namespace CalamityEntropy.Content.Items.Books
                 m.lifeSteal++;
             else
                 m.lifeSteal += 0.1f;
-            m.armorPenetration += 32;
+            m.armorPenetration += 10;
             return m;
         }
         public override bool Shoot() {

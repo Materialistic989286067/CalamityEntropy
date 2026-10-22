@@ -106,8 +106,14 @@ namespace CalamityEntropy.Content.Projectiles
             }
             return false;
         }
+        //ai[1]==1 来自过载熔炉,不挂电蚀,对克脑飞眼与世吞体节减伤
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
+            if (Projectile.ai[1] == 1 && LightningBall.IsFurnaceResistantTarget(target)) {
+                modifiers.FinalDamage *= 0.66f;
+            }
+        }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
-            if (Projectile.ai[2] == 1) {
+            if (Projectile.ai[2] == 1 && Projectile.ai[1] != 1) {
                 target.AddBuff(ModContent.BuffType<GalvanicCorrosion>(), 240);
             }
         }

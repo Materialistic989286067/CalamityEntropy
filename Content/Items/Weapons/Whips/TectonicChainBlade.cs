@@ -20,11 +20,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
 {
     public class TectonicChainBlade : BaseWhipItem
     {
-        public override int TagDamage => 3;
+        public override int TagDamage => 5;
         public int UseCount = 0;
 
         public override void SetDefaults() {
-            Item.DefaultToWhip(ModContent.ProjectileType<TectonicChainBladeWhip>(), 22, 3, 4, 28);
+            Item.DefaultToWhip(ModContent.ProjectileType<TectonicChainBladeWhip>(), 30, 3, 4, 28);
             Item.rare = ItemRarityID.LightRed;
             Item.value = Item.buyPrice(gold: 10);
             Item.autoReuse = true;
@@ -53,7 +53,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
             base.SetDefaults();
             Projectile.MaxUpdates = 7;
             this.segments = 10;
-            this.rangeMult = 2f;
+            this.rangeMult = 1.5f;
         }
         public override string getTagEffectName => "TectonicChainBlade";
         public override SoundStyle? WhipSound => Projectile.ai[1] == -1 ? CEUtils.GetSound("YharonFireball1", Main.rand.NextFloat(1.4f, 1.8f), 12, 1f) : CEUtils.GetSound("ApoctosisShoot", Main.rand.NextFloat(0.75f, 0.9f), 12, 0.6f);

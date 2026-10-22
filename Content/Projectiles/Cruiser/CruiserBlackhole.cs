@@ -115,7 +115,7 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
         public int counter = 0;
         public float scale2 = 1;
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
-            target.AddBuff(ModContent.BuffType<VoidTouch>(), 160);
+            target.AddDebuffFixed(ModContent.BuffType<VoidTouch>(), 270);
         }
         public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.End();

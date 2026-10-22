@@ -7,8 +7,8 @@ namespace CalamityEntropy.Content.Items.Armor.Sunblaze
 {
     public class SunblazeArmorPlayer : ModPlayer
     {
-        /// <summary>暖洋洋光环半径,25 格</summary>
-        public const float WarmthRadius = 25 * 16;
+        /// <summary>暖洋洋光环半径,45 格</summary>
+        public const float WarmthRadius = 45 * 16;
 
         public bool WarmthAura;
         public bool TotemActive;

@@ -29,7 +29,7 @@ namespace CalamityEntropy.Content.Buffs
     }
     public class WyrmWhipDebuff : ModBuff
     {
-        public static readonly int TagDamage = 90;
+        public static readonly int TagDamage = 15;
         public static readonly float TagDamageMul = 0.15f;
         public override string Texture => "CalamityEntropy/Content/Buffs/WhipDebuff";
         public override void SetStaticDefaults() {

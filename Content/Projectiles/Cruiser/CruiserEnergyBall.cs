@@ -14,7 +14,7 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
     {
         public override string Texture => CEUtils.WhiteTexPath;
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
-            target.AddBuff(ModContent.BuffType<VoidTouch>(), 160);
+            target.AddDebuffFixed(ModContent.BuffType<VoidTouch>(), 270);
         }
         public override void SetDefaults() {
             Projectile.width = 16;

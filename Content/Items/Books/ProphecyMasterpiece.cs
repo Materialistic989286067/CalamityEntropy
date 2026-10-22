@@ -18,7 +18,7 @@ namespace CalamityEntropy.Content.Items.Books
     {
         public override void SetDefaults() {
             base.SetDefaults();
-            Item.damage = 48;
+            Item.damage = 54;
             Item.useAnimation = Item.useTime = 11;
             Item.crit = 10;
             Item.mana = 7;
@@ -113,7 +113,8 @@ namespace CalamityEntropy.Content.Items.Books
                             if (BookMarkLoader.IsABookMark(it)) {
                                 var e = BookMarkLoader.GetEffect(it);
                                 if (e != null) {
-                                    e.OnShoot(eb);
+                                    if (CECooldowns.CheckBMProc("Shoot_" + e.RegisterName()))
+                                        e.OnShoot(eb);
                                     e.OnProjectileSpawn(Projectile, Main.myPlayer == Projectile.owner);
                                 }
                             }

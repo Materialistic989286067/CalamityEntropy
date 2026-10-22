@@ -21,7 +21,8 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             return new CorruptBMEffect();
         }
         public override void ModifyStat(EBookStatModifer modifer) {
-            modifer.armorPenetration += 6;
+            modifer.armorPenetration += 3;
+            modifer.Damage += 0.03f;
         }
         public override Color tooltipColor => Color.Purple;
     }
@@ -34,7 +35,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override void OnHitNPC(Projectile projectile, NPC target, int damageDone) {
             if (Main.rand.NextBool(projectile.HasEBookEffect<APlusBMEffect>() ? 3 : 5)) {
                 Vector2 shotDir = projectile.velocity.RotateRandom(1).normalize() * 14;
-                Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center, shotDir, 496, EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 10, projectile.DamageType), projectile.knockBack / 3, projectile.owner, 0, Main.rand.NextFloat(-0.1f, 0.1f)).ToProj().DamageType = projectile.DamageType;
+                Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center, shotDir, 496, EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 72, projectile.DamageType), projectile.knockBack / 3, projectile.owner, 0, Main.rand.NextFloat(-0.1f, 0.1f)).ToProj().DamageType = projectile.DamageType;
             }
 
         }

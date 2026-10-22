@@ -41,7 +41,7 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => true;
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo) {
-            target.AddBuff(BuffID.OnFire3, 180);
+            target.AddDebuffFixed(BuffID.OnFire, 180);
         }
 
         public override void AI() {

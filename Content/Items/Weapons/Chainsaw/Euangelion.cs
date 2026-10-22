@@ -9,7 +9,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
     public class Euangelion : ModItem
     {
         public override void SetDefaults() {
-            Item.damage = 230;
+            Item.damage = 110;
             Item.DamageType = DamageClass.Melee;
             Item.width = 42;
             Item.height = 42;

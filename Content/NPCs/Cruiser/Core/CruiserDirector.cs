@@ -62,9 +62,9 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.Core
         public const float DamageMulStart = 0.1f;
         public const float DamageMulRamp = 1f / 10000f;
 
-        /// <summary>原灾厄 DR 体系的本地等效:一阶段减伤 54%,二阶段 42%</summary>
-        public const float DRPhase1 = 0.54f;
-        public const float DRPhase2 = 0.42f;
+        /// <summary>头、体、尾共用的减伤比例(承伤乘 1 减它):一阶段 48%,二阶段 36%</summary>
+        public const float DRPhase1 = 0.48f;
+        public const float DRPhase2 = 0.36f;
 
         /// <summary>同一发弹幕重复命中时伤害衰减记录每帧向 1 回归的比例</summary>
         public const float HitRecordDecay = 0.09f;

@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class AzafureRailgun : ModItem, IAzafureEnhancable
     {
         public override void SetDefaults() {
-            Item.damage = 60;
+            Item.damage = 72;
             Item.DamageType = DamageClass.Ranged;
             Item.width = 82;
             Item.height = 32;

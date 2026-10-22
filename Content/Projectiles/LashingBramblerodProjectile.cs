@@ -18,7 +18,7 @@ namespace CalamityEntropy.Content.Projectiles
             base.SetDefaults();
             Projectile.MaxUpdates = 6;
             this.segments = 36;
-            this.rangeMult = 2f;
+            this.rangeMult = 1.5f;
         }
         public override string getTagEffectName => "LashingBramblerod";
         public override SoundStyle? WhipSound => SoundID.Grass;
@@ -100,8 +100,8 @@ namespace CalamityEntropy.Content.Projectiles
             }
             return false;
         }
-        public static float baseDR = 0.1f;
-        public static float DREachFlower = 0.05f;
+        public static float baseDR = 0.04f;
+        public static float DREachFlower = 0.01f;
         public static int RegenPerFlower = 2;
         public float DamageReduce => baseDR + DREachFlower * flowerCount;
         public override void SendExtraAI(BinaryWriter writer) {

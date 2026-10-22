@@ -17,8 +17,8 @@ namespace CalamityEntropy.Content.Items.Armor.Smoldering
         }
 
         public override void UpdateEquip(Player player) {
-            player.lifeRegen += 4;
-            player.endurance += 0.08f;
+            player.noKnockback = true;
+            player.endurance += 0.03f;
             player.lavaImmune = true;
             player.buffImmune[BuffID.OnFire] = true;
             player.buffImmune[BuffID.OnFire3] = true;

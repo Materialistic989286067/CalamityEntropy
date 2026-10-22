@@ -20,7 +20,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.ArmorPenetration = 10;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = Item.useTime = 24;
+            Item.useAnimation = Item.useTime = 35;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 1f;
             Item.UseSound = null;
@@ -29,7 +29,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.value = Item.buyPrice(gold: 5);
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<AzureOfFirmamentThrow>();
-            Item.shootSpeed = 50f;
+            Item.shootSpeed = 24f;
             Item.DamageType = DamageClass.Melee;
         }
 

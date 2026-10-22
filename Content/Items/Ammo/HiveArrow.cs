@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.Items.Ammo
             Item.knockBack = 1f;
             Item.value = Item.sellPrice(copper: 26);
             Item.shoot = ModContent.ProjectileType<HiveArrowProjectile>();
-            Item.shootSpeed = 0.8f;
+            Item.shootSpeed = 0.4f;
             Item.ammo = AmmoID.Arrow;
         }
 

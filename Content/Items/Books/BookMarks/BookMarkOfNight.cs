@@ -29,7 +29,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 Player owner = projectile.GetOwner();
                 if (owner.ownedProjectileCounts[ModContent.ProjectileType<DarkSoul>()] >= 5)
                     return;
-                (Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(30, 34), ModContent.ProjectileType<DarkSoul>(), EBookProjectileEffect.FixedDamage(owner, 35, projectile.DamageType), projectile.knockBack / 3, projectile.owner).ToProj().ModProjectile as EBookBaseProjectile).homing = ((EBookBaseProjectile)projectile.ModProjectile).homing;
+                (Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(30, 34), ModContent.ProjectileType<DarkSoul>(), EBookProjectileEffect.FixedDamage(owner, 230, projectile.DamageType), projectile.knockBack / 3, projectile.owner).ToProj().ModProjectile as EBookBaseProjectile).homing = ((EBookBaseProjectile)projectile.ModProjectile).homing;
             }
         }
     }

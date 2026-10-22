@@ -17,7 +17,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DragonWhipDebuff.TagDamage);
 
         public override void SetDefaults() {
-            Item.DefaultToWhip(ModContent.ProjectileType<VitalfeatherProjectile>(), 140, 2, 4, 42);
+            Item.DefaultToWhip(ModContent.ProjectileType<VitalfeatherProjectile>(), 200, 2, 4, 33);
             Item.rare = ModContent.RarityType<Golden>();
             Item.value = Item.buyPrice(platinum: 2, gold: 40);
             Item.autoReuse = true;

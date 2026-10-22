@@ -18,12 +18,12 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class TrueMoonlightSword : ModItem
     {
         public override void SetDefaults() {
-            Item.damage = 130;
+            Item.damage = 100;
             Item.DamageType = ModContent.GetInstance<MeleeDamageClass>();
             Item.width = 48;
             Item.height = 60;
-            Item.useTime = 30;
-            Item.useAnimation = 30;
+            Item.useTime = 37;
+            Item.useAnimation = 37;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 6;
             Item.value = Item.buyPrice(gold: 20);

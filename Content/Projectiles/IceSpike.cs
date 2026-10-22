@@ -29,7 +29,7 @@ namespace CalamityEntropy.Content.Projectiles
             for (int i = 0; i < 10; i++) {
                 Dust.NewDust(Projectile.Center, 8, 8, ModContent.DustType<IcePiece1>());
             }
-            CEUtils.PlaySound("CryogenHit" + Main.rand.Next(1, 4), 1, Projectile.Center);
+            CEUtils.PlaySound("CryogenHit" + Main.rand.Next(1, 4), 1, Projectile.Center, 6, 0.7f);
             target.AddBuff(BuffID.Frostburn, 1080);
             Main.player[Projectile.owner].AddBuff(ModContent.BuffType<CosmicFreeze>(), 600);
         }

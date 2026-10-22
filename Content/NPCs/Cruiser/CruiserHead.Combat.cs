@@ -116,7 +116,12 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo) {
-            target.AddBuff(Main.zenithWorld ? ModContent.BuffType<MaliciousCode>() : ModContent.BuffType<VoidTouch>(), 150);
+            if (Main.zenithWorld) {
+                target.AddBuff(ModContent.BuffType<MaliciousCode>(), 150);
+            }
+            else {
+                target.AddDebuffFixed(ModContent.BuffType<VoidTouch>(), 270);
+            }
         }
 
         /// <summary>血量归零改走 200 帧死亡演出,演出跑完才真死</summary>

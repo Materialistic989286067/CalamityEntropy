@@ -14,7 +14,7 @@ namespace CalamityEntropy.Content.Projectiles.ApsychosProjs
     {
         public override string Texture => CEUtils.WhiteTexPath;
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
-            target.AddBuff(BuffID.OnFire3, 180);
+            target.AddDebuffFixed(BuffID.OnFire, 180);
         }
         public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;

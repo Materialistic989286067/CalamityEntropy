@@ -22,9 +22,6 @@ namespace CalamityEntropy.Content.Items
             Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.LightRed;
-            // 可作弹药：注射器类武器 useAmmo 指向本类型（getAmmoName 对本类型有特判）
-            Item.ammo = Item.type;
-            Item.consumable = true;
         }
 
         public override void AddRecipes() {

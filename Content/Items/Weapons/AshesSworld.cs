@@ -20,12 +20,12 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class AshesSword : ModItem
     {
         public override void SetDefaults() {
-            Item.damage = 25;
+            Item.damage = 22;
             Item.DamageType = DamageClass.Melee;
             Item.width = 70;
             Item.height = 72;
-            Item.useTime = 27;
-            Item.useAnimation = 27;
+            Item.useTime = 30;
+            Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 8;
             Item.value = Item.buyPrice(0, 10);

@@ -150,7 +150,7 @@ namespace CalamityEntropy.Content.Projectiles
 
             }
 
-            SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/CryogenHit", 3), Projectile.Center);
+            SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/CryogenHit", 3) { Volume = 0.7f }, Projectile.Center);
         }
     }
 

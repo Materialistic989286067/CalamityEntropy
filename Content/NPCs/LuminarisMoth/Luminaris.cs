@@ -91,9 +91,9 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
             NPC.aiStyle = -1;
             NPC.width = 96;
             NPC.height = 96;
-            NPC.damage = 68;
+            NPC.damage = 63;
             NPC.defense = 10;
-            NPC.lifeMax = 28000;
+            NPC.lifeMax = 25800;
             NPC.HitSound = SoundID.NPCHit32;
             NPC.DeathSound = SoundID.NPCDeath22;
             NPC.value = 1600f;

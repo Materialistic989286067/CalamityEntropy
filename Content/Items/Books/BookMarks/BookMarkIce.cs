@@ -23,8 +23,11 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     {
         public override void OnProjectileSpawn(Projectile projectile, bool ownerClient) {
             if (ownerClient && ((projectile.ModProjectile is EBookBaseProjectile eb && eb.mainProj) || Main.rand.NextBool(8))) {
+                //同一轮攻击只放一把,焦灼遗编三发/救赎圣经两发不叠加
+                if (projectile.ModProjectile is EBookBaseProjectile src && src.ShooterModProjectile is EntropyBookHeldProjectile book && !book.TryClaimRound("IceBM", src.shotRound))
+                    return;
                 Vector2 pos = projectile.Center - projectile.velocity.normalize() * 168 + CEUtils.randomVec(128);
-                int p = Projectile.NewProjectile(projectile.GetSource_FromThis(), pos, (Main.MouseWorld - pos).normalize() * 32, ModContent.ProjectileType<IceEdge2>(), EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 50, projectile.DamageType), projectile.knockBack, projectile.owner);
+                int p = Projectile.NewProjectile(projectile.GetSource_FromThis(), pos, (Main.MouseWorld - pos).normalize() * 32, ModContent.ProjectileType<IceEdge2>(), EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 26, projectile.DamageType), projectile.knockBack, projectile.owner);
                 (p.ToProj().ModProjectile as EBookBaseProjectile).homing = (projectile.ModProjectile as EBookBaseProjectile).homing;
             }
         }

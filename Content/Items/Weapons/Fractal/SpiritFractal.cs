@@ -17,11 +17,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
     public class SpiritFractal : ModItem
     {
         public override void SetDefaults() {
-            Item.damage = 265;
+            Item.damage = 280;
             Item.DamageType = DamageClass.Melee;
             Item.width = 48;
             Item.height = 60;
-            Item.useTime = Item.useAnimation = 20;
+            Item.useTime = Item.useAnimation = 24;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 7;
             Item.value = Item.buyPrice(gold: 20);

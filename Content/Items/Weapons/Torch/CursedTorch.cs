@@ -20,7 +20,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
             ItemID.Sets.StaffMinionSlotsRequired[Item.type] = 2;
         }
         public override void SetDefaults() {
-            Item.damage = 10;
+            Item.damage = 11;
             Item.DamageType = DamageClass.Summon;
             Item.width = 46;
             Item.height = 46;
@@ -116,7 +116,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
             if (target != null) {
                 if (CEUtils.getDistance(target.Center + new Vector2(0, -60), Projectile.Center) > 240)
                     Projectile.velocity += (target.Center + new Vector2(0, -60) - Projectile.Center).normalize() * 1.4f;
-                if (Projectile.ai[0]++ > 12) {
+                if (Projectile.ai[0]++ > 26) {
                     Projectile.ai[0] = 0;
                     if (Main.myPlayer == Projectile.owner) {
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + new Vector2(0, -16).RotatedBy(Projectile.rotation), (target.Center + target.velocity * 6 - Projectile.Center - Projectile.velocity * 10).normalize() * 8 + Projectile.velocity * 0.25f, ModContent.ProjectileType<CursingFlame>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
@@ -158,7 +158,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Summon;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 4;
             Projectile.ArmorPenetration = 16;
             Projectile.MaxUpdates = 3;
             Projectile.timeLeft = Lifetime;

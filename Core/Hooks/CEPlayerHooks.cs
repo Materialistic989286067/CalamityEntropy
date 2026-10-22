@@ -202,6 +202,9 @@ namespace CalamityEntropy.Core.Hooks
             }
             if (isDebuff && !isCooldownBuff) {
                 timeToAdd = (int)(timeToAdd * entropy.DebuffTime);
+                float damagingMult = self.GetModPlayer<CelestialChronometerPlayer>().damagingDebuffTime;
+                if (damagingMult != 1f && CelestialChronometer.IsDamagingDebuff(type))
+                    timeToAdd = (int)(timeToAdd * damagingMult);
             }
             orig(self, type, timeToAdd, quiet, foodHack);
         }

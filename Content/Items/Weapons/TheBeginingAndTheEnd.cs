@@ -21,7 +21,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void SetDefaults() {
             Item.width = 50;
             Item.height = 38;
-            Item.damage = 2000;
+            Item.damage = 1000;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 9;

@@ -729,6 +729,9 @@ namespace CalamityEntropy.Common
             if (npc.type == NPCID.BigMimicHallow) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<PurificationCard>(), 2));
             }
+            if (npc.type == NPCID.BigMimicCorruption || npc.type == NPCID.BigMimicCrimson) {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BitternessCard>(), 2));
+            }
             if (npc.type == NPCID.Plantera) {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<LashingBramblerod>(), 5, 1, 1, 3));
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<MutantBulb>(), 5, 1, 1, 2));
@@ -787,14 +790,14 @@ namespace CalamityEntropy.Common
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkCancer>(), 100));
             }
             if (!CERef.Has && (npc.type == NPCID.IceElemental || npc.type == NPCID.IcyMerman || npc.type == NPCID.IceTortoise || npc.type == NPCID.ArmoredViking || npc.type == NPCID.Wolf)) {
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkIce>(), 40));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkIce>(), 100));
             }
             if (!CERef.Has && npc.type == NPCID.IceGolem) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<FrostboundCage>(), 5));
             }
             if (!CERef.Has && npc.type == NPCID.RedDevil) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<EvilFriend>(), 20));
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkBrimstone>(), 50));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkBrimstone>(), 10));
             }
             if (!CERef.Has && npc.type == NPCID.Lavabat) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<FriendBox>(), 100));
@@ -1026,6 +1029,7 @@ namespace CalamityEntropy.Common
                             npc.AddBuff<FlamingBlood>(16 * 60);
                         }
                         cef.modifyHitAction = onhit;
+                        cef.DamageMulToWoFAndDestroyer = 0.6f;
                     }
                 }
             }
@@ -1346,7 +1350,7 @@ namespace CalamityEntropy.Common
                 shop.Add(ModContent.ItemType<Barren>());
             }
             if (shop.NpcType == 17) {
-                shop.Add(ModContent.ItemType<SoyMilk>(), new Condition(Mod.GetLocalization("DownedBoss2").Value, () => NPC.downedBoss2));
+                shop.Add(ModContent.ItemType<SoyMilk>(), Condition.DownedMechBossAll);
                 shop.Add(ModContent.ItemType<BrillianceCard>());
             }
             // 大法师手镜 3.33 就挂在灾厄永冻大法师的货架上且无门槛,装灾厄时挂回去

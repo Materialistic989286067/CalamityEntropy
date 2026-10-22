@@ -16,7 +16,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void SetDefaults() {
             Item.width = 40;
             Item.height = 72;
-            Item.damage = 34;
+            Item.damage = 28;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 18;
             Item.useAnimation = 18;
@@ -143,7 +143,7 @@ namespace CalamityEntropy.Content.Items.Weapons
     {
         public override string Texture => CEUtils.WhiteTexPath;
         public override void SetDefaults() {
-            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
+            Projectile.FriendlySetDefaults(DamageClass.Ranged, false, 5);
             Projectile.timeLeft = 26;
             Projectile.MaxUpdates = 2;
             Projectile.usesLocalNPCImmunity = true;

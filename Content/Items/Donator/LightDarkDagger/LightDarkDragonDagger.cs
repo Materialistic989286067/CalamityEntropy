@@ -21,9 +21,10 @@ namespace CalamityEntropy.Content.Items.Donator.LightDarkDagger
         public const int ChargeHits = 24;
         //每次三连的三把刃相对瞄准线的起手偏角(度),越靠后的刃弧越大
         public static readonly float[] VolleyOffsetsDeg = { 20f, 42f, 64f };
-        //弧线回摆倍率:大于 1 让飞刃越过瞄准线一点,三条弧在目标前交叉
-        public const float ArcOvershoot = 1.35f;
-        public const int ArcTurnFrames = 26;
+        //回摆弧按光标距离对称回摆,三条弧恰在光标处交会;距离夹取(像素)与最少回摆帧数
+        public const float ArcMinDist = 120f;
+        public const float ArcMaxDist = 1400f;
+        public const int ArcMinFrames = 6;
         //暴击层数上限与每层基础伤害
         public const int MaxCritStack = 15;
         public const int DamagePerStack = 2;
@@ -45,7 +46,7 @@ namespace CalamityEntropy.Content.Items.Donator.LightDarkDagger
         public override void SetDefaults() {
             Item.width = 52;
             Item.height = 48;
-            Item.damage = 38;
+            Item.damage = 130;
             Item.crit = 8;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 22;

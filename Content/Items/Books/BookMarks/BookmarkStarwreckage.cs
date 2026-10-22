@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
@@ -47,6 +48,16 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     {
         private static readonly int[] FragmentItems = new int[] { ItemID.FragmentSolar, ItemID.FragmentVortex, ItemID.FragmentNebula, ItemID.FragmentStardust };
         public override string Texture => CEUtils.WhiteTexPath;
+        public override void SetStaticDefaults() {
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+        }
+        private Color GlowColor => ((int)Projectile.ai[0] % 4) switch {
+            0 => new Color(255, 160, 40),
+            1 => new Color(60, 220, 180),
+            2 => new Color(220, 80, 220),
+            _ => new Color(80, 160, 255)
+        };
         public override void SetDefaults() {
             Projectile.width = Projectile.height = 26;
             Projectile.friendly = true;
@@ -63,18 +74,20 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 Projectile.velocity.Y += 0.14f;
             }
             Projectile.rotation += Projectile.velocity.X * 0.02f;
-            int fragIndex = (int)Projectile.ai[0] % 4;
-            Color glow = fragIndex switch {
-                0 => new Color(255, 160, 40),
-                1 => new Color(60, 220, 180),
-                2 => new Color(220, 80, 220),
-                _ => new Color(80, 160, 255)
-            };
+            Color glow = GlowColor;
             Lighting.AddLight(Projectile.Center, glow.ToVector3() * 0.4f);
+            if (Main.rand.NextBool(3)) {
+                Dust d = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2, -Projectile.velocity * 0.12f, 0, glow, Main.rand.NextFloat(0.8f, 1.2f));
+                d.noGravity = true;
+            }
         }
         public override void OnKill(int timeLeft) {
             for (int i = 0; i < 16; i++)
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Stone);
+            for (int i = 0; i < 8; i++) {
+                Dust d = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2, CEUtils.randomVec(4), 0, GlowColor, Main.rand.NextFloat(1f, 1.4f));
+                d.noGravity = true;
+            }
             SoundEngine.PlaySound(SoundID.Dig, Projectile.Center);
         }
         public override bool PreDraw(ref Color lightColor) {
@@ -82,7 +95,18 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             Main.instance.LoadItem(type);
             Texture2D tex = TextureAssets.Item[type].Value;
             Rectangle frame = Main.itemAnimations[type] == null ? tex.Frame() : Main.itemAnimations[type].GetFrame(tex);
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, lightColor, Projectile.rotation, frame.Size() / 2f, Projectile.scale, SpriteEffects.None);
+            Color glow = GlowColor;
+            Texture2D orb = CEExtraAssets.lightball;
+            Main.spriteBatch.UseAdditive();
+            for (int i = Projectile.oldPos.Length - 1; i >= 1; i--) {
+                if (Projectile.oldPos[i] == Vector2.Zero)
+                    continue;
+                float fade = 1f - i / (float)Projectile.oldPos.Length;
+                Main.spriteBatch.Draw(orb, Projectile.oldPos[i] + Projectile.Size / 2f - Main.screenPosition, null, glow * 0.5f * fade, 0, orb.Size() / 2f, 0.16f * fade * Projectile.scale, SpriteEffects.None, 0);
+            }
+            Main.spriteBatch.Draw(orb, Projectile.Center - Main.screenPosition, null, glow * 0.7f, 0, orb.Size() / 2f, 0.2f * Projectile.scale, SpriteEffects.None, 0);
+            CEUtils.ReSetToEndShader();
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, Color.Lerp(lightColor, Color.White, 0.5f), Projectile.rotation, frame.Size() / 2f, Projectile.scale, SpriteEffects.None);
             return false;
         }
     }

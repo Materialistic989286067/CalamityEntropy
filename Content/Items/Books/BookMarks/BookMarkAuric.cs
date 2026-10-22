@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
     }
 
-    /// <summary>耀日书签(2026-08-31 平衡案重做):攻击时召唤3个黄金七彩矢攻击目标(固定基伤125)。</summary>
+    /// <summary>耀日书签(2026-08-31 平衡案重做):攻击时召唤3个黄金七彩矢攻击目标(固定基伤82)。</summary>
     public class BookMarkAuricBMEffect : EBookProjectileEffect
     {
         public override void OnShoot(EntropyBookHeldProjectile book) {
@@ -32,7 +32,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 // 原版七彩矢(FairyQueenMagicItemShot),ai[1]锁金色色相
                 int p = Projectile.NewProjectile(proj.GetSource_FromAI(), proj.Center,
                     (proj.rotation + Main.rand.NextFloat(-0.7f, 0.7f)).ToRotationVector2() * 10f,
-                    ProjectileID.FairyQueenMagicItemShot, FixedDamage(owner, 125, proj.DamageType), proj.knockBack, proj.owner,
+                    ProjectileID.FairyQueenMagicItemShot, FixedDamage(owner, 82, proj.DamageType), proj.knockBack, proj.owner,
                     0, 0.12f + Main.rand.NextFloat(0.05f));
                 if (p >= 0 && p < Main.maxProjectiles) {
                     Main.projectile[p].DamageType = proj.DamageType;

@@ -15,7 +15,7 @@ namespace CalamityEntropy.Content.Items.Books
     {
         public override void SetDefaults() {
             base.SetDefaults();
-            Item.damage = 7;
+            Item.damage = 6;
             Item.shootSpeed = 24;
             Item.ArmorPenetration = 10;
             Item.mana = 8;
@@ -48,7 +48,15 @@ namespace CalamityEntropy.Content.Items.Books
     }
     public class PoisionEBEffect : EBookProjectileEffect
     {
+        public const int MaxToxinTargets = 5;
+        //每发新建实例,主人端计数
+        private readonly HashSet<int> toxinTargets = new();
         public override void OnHitNPC(Projectile projectile, NPC target, int damageDone) {
+            if (Main.myPlayer == projectile.owner && !toxinTargets.Contains(target.whoAmI)) {
+                if (toxinTargets.Count >= MaxToxinTargets)
+                    return;
+                toxinTargets.Add(target.whoAmI);
+            }
             target.AddBuff(ModContent.BuffType<BonePiercingToxin>(), 360);
         }
     }

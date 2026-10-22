@@ -14,7 +14,7 @@ namespace CalamityEntropy.Content.Items.Accessories
     public class OdinsRefuge : ModItem
     {
         // 2026-08-31 平衡案重做:18防,免疫击退,免疫火块,
-        //玩家有神圣屏障可以格挡,自己和所有队友获得 15% 免伤而且不叠加,仇恨加 600
+        //玩家有神圣屏障可以格挡,自己和所有队友最终伤害 -15% 而且不叠加,仇恨加 600
         // 减益免疫与原版十字章护身符同一组,不含渊洋神迹那张额外表。
         // 上述整套只在无灾厄时生效。装灾厄时配方换回 3.33 的两件成品盾,
         // 效果随之整体回到 3.33 形态,见 ApplyCalamityEraEffects。
@@ -57,7 +57,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             }
             //玩家开启神圣屏障,用来格挡
             player.Entropy().holyMantle = true;
-            // 团队免伤光环(结算在 EModPlayer 的减伤汇总处,不可叠加)
+            //团队最终减伤光环,在 EPHurtModifier 结算,不可叠加
             player.Entropy().odinAura = true;
             player.noKnockback = true;
             player.fireWalk = true;

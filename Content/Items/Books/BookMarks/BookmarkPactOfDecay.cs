@@ -38,14 +38,14 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     {
         public override void OnActive(EntropyBookHeldProjectile book) {
             int projtype = ModContent.ProjectileType<DecayPactMaelstrom>();
-            book.ShootSingleProjectile(projtype, book.Projectile.Center, (Main.MouseWorld - book.Projectile.Center), 1, 1, fixedBaseDamage: 500);
+            book.ShootSingleProjectile(projtype, book.Projectile.Center, (Main.MouseWorld - book.Projectile.Center), 1, 1, fixedBaseDamage: 300);
         }
         public override void OnHitNPC(Projectile projectile, NPC target, int damageDone) {
             target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 460);
         }
         public override void OnStandaloneAttack(Player player, Vector2 position, Vector2 direction, int damage, float knockback) {
             int projtype = ModContent.ProjectileType<DecayPactMaelstrom>();
-            Projectile.NewProjectile(player.GetSource_FromThis(), position, direction, projtype, EBookProjectileEffect.FixedDamage(player, 500, DamageClass.Magic), knockback, player.whoAmI);
+            Projectile.NewProjectile(player.GetSource_FromThis(), position, direction, projtype, EBookProjectileEffect.FixedDamage(player, 300, DamageClass.Magic), knockback, player.whoAmI);
         }
     }
 
@@ -54,7 +54,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override string Texture => "CalamityEntropy/Assets/Extra/white";
         public override void SetDefaults() {
             base.SetDefaults();
-            fixedBaseDamage = 500;
+            fixedBaseDamage = 300;
             Projectile.width = 300;
             Projectile.height = 300;
             Projectile.localNPCHitCooldown = 3;

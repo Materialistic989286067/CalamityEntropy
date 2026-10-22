@@ -24,7 +24,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(TagDamage);
 
         public override void SetDefaults() {
-            Item.damage = 25;
+            Item.damage = 19;
             Item.knockBack = 0;
             Item.shootSpeed = 33;
             Item.useAnimation = Item.useTime = 24;

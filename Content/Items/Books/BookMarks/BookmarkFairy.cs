@@ -40,7 +40,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public int Delay = 12;
         public override void SetDefaults() {
             base.SetDefaults();
-            fixedBaseDamage = 20;
+            fixedBaseDamage = 30;
             Projectile.FriendlySetDefaults(DamageClass.Magic, false, -1);
             Projectile.width = Projectile.height = 20;
             Projectile.usesLocalNPCImmunity = true;

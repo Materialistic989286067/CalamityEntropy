@@ -19,7 +19,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
         public override void SetDefaults() {
-            Item.damage = Main.zenithWorld ? 999 : 74;
+            Item.damage = Main.zenithWorld ? 999 : 43;
             Item.DamageType = DamageClass.Melee;
             Item.width = 108;
             Item.height = 108;

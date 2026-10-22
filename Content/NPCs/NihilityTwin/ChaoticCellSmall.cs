@@ -25,7 +25,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         private VerletStrandSolver ropeSolver;
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
-            target.AddBuff(ModContent.BuffType<VoidVirus>(), 160);
+            target.AddDebuffFixed(ModContent.BuffType<VoidVirus>(), 300);
         }
         public override void SetStaticDefaults() {
             Main.npcFrameCount[NPC.type] = 1;

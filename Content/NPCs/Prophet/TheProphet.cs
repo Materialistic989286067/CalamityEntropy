@@ -47,8 +47,6 @@ namespace CalamityEntropy.Content.NPCs.Prophet
         public float finRotCounter = 0;
         /// <summary>二阶段换曲的单发闸(仅本端)</summary>
         public bool music2 = false;
-        /// <summary>全仓库没人读这个残留量,原样保留</summary>
-        public int NoEnrange = ProphetDirector.NoEnrageStart;
         /// <summary>冲刺尾焰粒子,由 1 号招创建、宿主每帧续点。纯表现</summary>
         public PRT_ProminenceTrail trail = null;
 
@@ -109,7 +107,8 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             NPC.height = 80;
             NPC.damage = 68;
             DamageReduction = ProphetDirector.BaseDamageReduction;
-            NPC.lifeMax = 48000;
+            NPC.lifeMax = 55000;
+            NPC.defense = ProphetDirector.Defense;
             //装灾厄读死亡/复仇,缺席仍走大师/专家兜底
             if (CECal.IsDeathMode) {
                 NPC.damage += 4;
@@ -266,14 +265,8 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             }
         }
 
-        /// <summary>地牢重置,自减,阶段,难度,倒计时耗尽就选招并同帧跑新招,帧末再减</summary>
+        /// <summary>阶段,难度,倒计时耗尽就选招并同帧跑新招,帧末再减</summary>
         private void RunAttackFrame(Player target) {
-            if (target.ZoneDungeon) {
-                NoEnrange = ProphetDirector.NoEnrageDungeon;
-            }
-            NoEnrange--;
-
-            // 原灾厄该条狂怒提示位(CurrentlyEnraged)随灾厄退场,狂怒数值逻辑本就在下方自持
             if (NPC.life < NPC.lifeMax / ProphetDirector.Phase2LifeDivisor && Context.Phase < 2) {
                 Context.Phase = 2;
                 if (!VaultUtils.isClient) {
@@ -427,14 +420,14 @@ namespace CalamityEntropy.Content.NPCs.Prophet
 
         #region 掉落
         public override void BossLoot(ref int potionType) {
-            potionType = ItemID.GreaterHealingPotion;
+            potionType = ItemID.SuperHealingPotion;
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot) {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<ProphetBag>()));
 
             // 治疗药水按人 5-15 瓶,隐藏图鉴条目(承接原灾厄 PerPlayer 语义)
-            npcLoot.Add(new DropPerPlayerOnThePlayer(ItemID.GreaterHealingPotion, 1, 5, 15, new HiddenDropCondition()));
+            npcLoot.Add(new DropPerPlayerOnThePlayer(ItemID.SuperHealingPotion, 1, 5, 15, new HiddenDropCondition()));
 
             LeadingConditionRule normalOnly = new LeadingConditionRule(new Conditions.NotExpert());
             {

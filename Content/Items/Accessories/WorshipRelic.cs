@@ -8,9 +8,11 @@ namespace CalamityEntropy.Content.Items.Accessories
 {
     public class WorshipRelic : ModItem
     {
-        public static int ArrowDamage = 180;
+        public static int ArrowDamage = 150;
         // 内置冷却 0.5 秒(rogue-weapons.md §三)
         public const int ArrowCooldown = 30;
+        public const float BonusDamage = 0.05f;
+        public const int BonusCrit = 5;
         public override void SetDefaults() {
             Item.width = 42;
             Item.height = 42;
@@ -21,6 +23,8 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual) {
             // 新效果:命中概率天降圣光箭(潜行体系退役,原潜行字段写入移除)
             player.GetModPlayer<WorshipRelicPlayer>().equipped = true;
+            player.GetDamage(DamageClass.Generic) += BonusDamage;
+            player.GetCritChance(DamageClass.Generic) += BonusCrit;
             player.Entropy().MaxBaitCharge += 1;
         }
         public override void AddRecipes() {
@@ -41,7 +45,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
     }
 
-    /// <summary>崇拜圣物触发器:命中时 1/4 概率天降圣光箭,内置冷却 0.5 秒。</summary>
+    /// <summary>崇拜圣物触发器:命中时 1/2 概率天降圣光箭,内置冷却 0.5 秒。</summary>
     public class WorshipRelicPlayer : ModPlayer
     {
         public bool equipped;
@@ -67,7 +71,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         private void TryCallArrow(NPC target) {
             if (!equipped || arrowCooldown > 0 || Player.whoAmI != Main.myPlayer)
                 return;
-            if (!Main.rand.NextBool(4))
+            if (!Main.rand.NextBool(2))
                 return;
             arrowCooldown = WorshipRelic.ArrowCooldown;
             int damage = (int)Player.GetTotalDamage(DamageClass.Generic).ApplyTo(WorshipRelic.ArrowDamage);

@@ -1,5 +1,6 @@
 ﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.NPCs.Prophet.Core;
 using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -61,7 +62,7 @@ namespace CalamityEntropy.Content.Projectiles.Prophet
             return Color.Lerp(Color.White, endColor, fadeToEnd) * fadeOpacity;
         }
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
-            target.AddBuff(ModContent.BuffType<SoulDisorder>(), 8 * 60);
+            target.AddDebuffFixed(ModContent.BuffType<SoulDisorder>(), ProphetDirector.SoulDisorderFrames);
         }
         internal float WidthFunction(float completionRatio, Vector2 vertex) {
             float expansionCompletion = (float)Math.Pow(1 - completionRatio, 3);

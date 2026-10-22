@@ -28,7 +28,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.damage = 20;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = Item.useTime = 16;
+            Item.useAnimation = Item.useTime = 44;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item1;

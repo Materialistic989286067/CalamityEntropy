@@ -53,7 +53,7 @@ namespace CalamityEntropy.Content.Items.Books
 
         public override EBookStatModifer getBaseModifer() {
             var m = base.getBaseModifer();
-            m.armorPenetration += 40;
+            m.armorPenetration += 10;
             return m;
         }
         public override void AI() {
@@ -161,7 +161,7 @@ namespace CalamityEntropy.Content.Items.Books
         }
         public override void OnKill(int timeLeft) {
             if (Main.myPlayer == Projectile.owner)
-                CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromAI(), Projectile.GetOwner(), Projectile.Center, Projectile.damage, 130 * Projectile.scale, Projectile.DamageType).ArmorPenetration = Projectile.ArmorPenetration + 10;
+                CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromAI(), Projectile.GetOwner(), Projectile.Center, Projectile.damage, 130 * Projectile.scale, Projectile.DamageType).ArmorPenetration = Projectile.ArmorPenetration;
             if (!Main.dedServ) {
                 for (float i = 0; i <= 1; i += 0.05f) {
                     PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(color * 4.5f, color, i) * 0.8f, 0.005f).Configure("CalamityEntropy/Assets/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, i * 0.165f * Projectile.scale, (int)((1.2f - i) * 20));

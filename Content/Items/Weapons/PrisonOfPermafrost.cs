@@ -11,7 +11,7 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class PrisonOfPermafrost : ModItem
     {
         public override void SetDefaults() {
-            Item.damage = 150;
+            Item.damage = 95;
             Item.DamageType = DamageClass.Magic;
             Item.width = 96;
             Item.noUseGraphic = true;

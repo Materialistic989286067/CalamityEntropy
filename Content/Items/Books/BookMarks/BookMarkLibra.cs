@@ -17,19 +17,19 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Libra");
         public override Color tooltipColor => Color.LightBlue;
+        public override EBookProjectileEffect getEffect() {
+            return new LibraBMEffect();
+        }
         public override void ModifyStat(EBookStatModifer modifer) {
-            modifer.Damage += 0.1f;
-            modifer.attackSpeed += 0.04f;
-            modifer.Crit += 10;
-            modifer.shotSpeed += 0.05f;
-            modifer.armorPenetration += 4;
-            modifer.PenetrateAddition += 1;
-            if (modifer.Damage < modifer.attackSpeed) {
-                modifer.Damage += 0.04f;
-            }
-            else {
-                modifer.attackSpeed += 0.04f;
-            }
+            modifer.Damage += 0.08f;
+            modifer.Crit += 8;
+        }
+    }
+
+    public class LibraBMEffect : EBookProjectileEffect
+    {
+        public override void BookUpdate(Projectile projectile, bool ownerClient) {
+            projectile.GetOwner().Entropy().bmLibraDefTime = 2;
         }
     }
 

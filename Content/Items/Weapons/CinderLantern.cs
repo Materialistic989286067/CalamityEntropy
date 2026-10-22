@@ -27,7 +27,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             tooltips.IntegrateHotkey(CEKeybinds.CommandMinions);
         }
         public override void SetDefaults() {
-            Item.damage = 12;
+            Item.damage = 21;
             Item.DamageType = DamageClass.Summon;
             Item.width = 36;
             Item.height = 64;
@@ -112,7 +112,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 Projectile.pushByOther(1);
                 if (Projectile.ai[0] > 0) {
                     Projectile.localAI[1]++;
-                    if (Projectile.localAI[1] >= 5) {
+                    if (Projectile.localAI[1] >= 10) {
                         Projectile.localAI[1] = 0;
                         Projectile.ai[0]--;
                         Vector2 v = Shoot(target);
@@ -122,7 +122,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 }
                 else {
                     Projectile.localAI[1]++;
-                    if (Projectile.localAI[1] >= 46) {
+                    if (Projectile.localAI[1] >= 92) {
                         Projectile.localAI[1] = 0;
                         Projectile.ai[0] = 3;
                     }

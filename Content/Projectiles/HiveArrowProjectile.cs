@@ -21,15 +21,22 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.timeLeft = 1200;
             Projectile.tileCollide = true;
         }
+        const float SpeedScale = 0.5f;
+        const float HomingScale = 0.5f;
+        bool speedScaled;
         public override void AI() {
+            if (!speedScaled) {
+                speedScaled = true;
+                Projectile.velocity *= SpeedScale;
+            }
             if (++Projectile.ai[0] > 6) {
                 if (homingSpeed < 2) {
                     homingSpeed += 0.003f;
                 }
                 NPC homing = Projectile.FindTargetWithinRange(900, true);
                 if (homing != null) {
-                    Projectile.velocity = (CEUtils.RotateTowardsAngle(Projectile.velocity.ToRotation(), (homing.Center - Projectile.Center).ToRotation(), 1 * homingSpeed.ToRadians())).ToRotationVector2() * Projectile.velocity.Length();
-                    Projectile.velocity = (CEUtils.RotateTowardsAngle(Projectile.velocity.ToRotation(), (homing.Center - Projectile.Center).ToRotation(), 0.12f * homingSpeed, false)).ToRotationVector2() * Projectile.velocity.Length();
+                    Projectile.velocity = (CEUtils.RotateTowardsAngle(Projectile.velocity.ToRotation(), (homing.Center - Projectile.Center).ToRotation(), 1 * homingSpeed.ToRadians() * HomingScale)).ToRotationVector2() * Projectile.velocity.Length();
+                    Projectile.velocity = (CEUtils.RotateTowardsAngle(Projectile.velocity.ToRotation(), (homing.Center - Projectile.Center).ToRotation(), 0.12f * homingSpeed * HomingScale, false)).ToRotationVector2() * Projectile.velocity.Length();
                 }
                 else {
                     Projectile.velocity.Y += homingSpeed * 0.2f;

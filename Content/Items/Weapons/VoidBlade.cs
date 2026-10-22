@@ -9,7 +9,7 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class VoidBlade : ModItem
     {
         public override void SetDefaults() {
-            Item.damage = 26;
+            Item.damage = 105;
             Item.crit = 15;
             Item.DamageType = DamageClass.Melee;
             Item.width = 100;

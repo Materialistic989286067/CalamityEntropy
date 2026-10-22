@@ -160,7 +160,7 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
                         case 7: dmg = 120; break;
                         case 8: dmg = 140; break;
                         case 9: dmg = 150; break;
-                        case 10: dmg = 480; break;
+                        case 10: dmg = 375; break;
                         case 11: dmg = 600; break;
                         case 12: dmg = 1250; break;
                         case 13: dmg = 1400; break;
@@ -170,9 +170,9 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
                     Item.damage = dmg;
                 }
                 else {
-                    Item.damage = 480;
+                    Item.damage = 375;
                 }
-                Item.useTime = Item.useAnimation = int.Max(10, 16 - level / 4);
+                Item.useTime = Item.useAnimation = int.Max(15, 21 - level / 4);
                 LastLevel = level;
                 Item.crit = level * 3;
                 Item.knockBack = level / 2;

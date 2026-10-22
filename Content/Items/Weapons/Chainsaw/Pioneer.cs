@@ -10,7 +10,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
     public class Pioneer : ModItem
     {
         public override void SetDefaults() {
-            Item.damage = 500;
+            Item.damage = 260;
             Item.DamageType = DamageClass.Melee;
             Item.width = 42;
             Item.height = 42;

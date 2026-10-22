@@ -11,14 +11,14 @@ namespace CalamityEntropy.Content.Items.Accessories
 {
     public class ShadowMantle : ModItem
     {
-        public static float BaseDamage = 25;
+        public static float BaseDamage = 40;
         public static int CooldownTicks = 30 * 60;
         // 突进后增伤窗口:1.5 秒内 +10% 伤害(rogue-weapons.md §三)
         public const int DashBoostTime = 90;
         public const float DashBoostDamage = 0.10f;
         public override void SetDefaults() {
             Item.width = 42;
-            Item.defense = 4;
+            Item.defense = 2;
             Item.height = 48;
             Item.value = Item.buyPrice(gold: 5);
             Item.rare = ItemRarityID.Orange;

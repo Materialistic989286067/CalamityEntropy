@@ -12,7 +12,7 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
     public class CruiserLaser2 : ModProjectile
     {
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
-            target.AddBuff(ModContent.BuffType<VoidTouch>(), 160);
+            target.AddDebuffFixed(ModContent.BuffType<VoidTouch>(), 270);
         }
         public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;

@@ -10,12 +10,11 @@ namespace CalamityEntropy.Content.Items.Accessories
 {
     public class ShadowPact : ModItem
     {
-        public float Damage = 0.06f;
-        public static int BaseDamage = 16;
+        public float Damage = 0.10f;
+        public static int BaseDamage = 25;
 
         public override void SetDefaults() {
             Item.width = 42;
-            Item.defense = 4;
             Item.height = 36;
             Item.value = Item.buyPrice(gold: 5);
             Item.rare = ItemRarityID.Orange;

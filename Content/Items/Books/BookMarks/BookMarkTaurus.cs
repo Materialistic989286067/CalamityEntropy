@@ -39,6 +39,8 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 
     public class TaurusBMEffect : EBookProjectileEffect
     {
+        /// <summary>分裂弹伤害 = 原伤害/12 + 本值</summary>
+        public const int SplitFlatDamage = 40;
         public override void OnHitNPC(Projectile projectile, NPC target, int damageDone) {
             if (projectile.ModProjectile is AstralBullet)
                 return;
@@ -53,7 +55,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                     float r = CEUtils.randomRot();
                     for (int i = 0; i < 3; i++) {
                         Vector2 vel = (MathHelper.ToRadians(i * 120) + r).ToRotationVector2() * projectile.velocity.Length();
-                        int p = Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center, vel, projectile.type, projectile.damage / 12 + 1, projectile.knockBack / 3, projectile.owner);
+                        int p = Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center, vel, projectile.type, projectile.damage / 12 + SplitFlatDamage, projectile.knockBack / 3, projectile.owner);
                         var m = (p.ToProj().ModProjectile as EBookBaseLaser);
                         foreach (var effect in (projectile.ModProjectile as EBookBaseProjectile).ProjectileEffects) {
                             if (!(effect is TaurusBMEffect)) {
@@ -66,6 +68,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                         m.ShooterModProjectile = esb.ShooterModProjectile;
                         // 分裂产物视作本体弹幕的延续,保持书签效果可触发(仍受1秒内置CD约束)
                         m.mainProj = true;
+                        m.shotRound = esb.shotRound;
                         if (m.penetrate > 0) {
                             m.penetrate = esb.penetrate + 1;
                         }
@@ -78,7 +81,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                         float r = CEUtils.randomRot();
                         for (int i = 0; i < 3; i++) {
                             Vector2 vel = (MathHelper.ToRadians(i * 120) + r).ToRotationVector2() * projectile.velocity.Length();
-                            int p = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, vel, projectile.type, projectile.damage / 12 + 1, projectile.knockBack / 3, projectile.owner);
+                            int p = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, vel, projectile.type, projectile.damage / 12 + SplitFlatDamage, projectile.knockBack / 3, projectile.owner);
                             var m = (p.ToProj().ModProjectile as EBookBaseProjectile);
                             foreach (var effect in (projectile.ModProjectile as EBookBaseProjectile).ProjectileEffects) {
                                 if (!(effect is TaurusBMEffect)) {
@@ -100,6 +103,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                             m.ShooterModProjectile = esb.ShooterModProjectile;
                             m.homing = esb.homing;
                             m.mainProj = true;
+                            m.shotRound = esb.shotRound;
                             p.ToProj().scale = projectile.scale * 0.4f;
                         }
                         if (!BookMarkTaurus.DontDestroy(eb))

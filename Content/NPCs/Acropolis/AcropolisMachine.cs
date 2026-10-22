@@ -119,9 +119,9 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             NPC.aiStyle = -1;
             NPC.width = 142;
             NPC.height = 132;
-            NPC.damage = 26;
+            NPC.damage = 32;
             NPC.defense = 8;
-            NPC.lifeMax = 3000;
+            NPC.lifeMax = 3280;
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = CEUtils.GetSound("chainsaw_break");
             NPC.value = 1600f;
@@ -138,20 +138,12 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             if (Main.zenithWorld) {
                 NPC.scale += 0.8f;
             }
-            NPC.boss = false;
+            NPC.boss = true;
             // 灾厄元素易伤体系不移植(debuff-map:等效取基准值);原硫火之崖群系归属改原版地狱层(biome-map)
         }
 
         public override bool CheckActive() {
             return !NPC.boss;
-        }
-
-        public override float SpawnChance(NPCSpawnInfo spawnInfo) {
-            //生成条件把原灾厄硫火之崖改成地狱层自然生成,频率原样保留(biome-map)
-            return (spawnInfo.Player.ZoneUnderworldHeight && !NPC.AnyNPCs(Type) && EModSys.AcropolisDontSpawn <= 0)
-                ? (NPC.downedMoonlord ? AcropolisDirector.SpawnChancePostMoonlord
-                    : (Main.hardMode ? AcropolisDirector.SpawnChanceHardmode : AcropolisDirector.SpawnChancePreHardmode))
-                : 0f;
         }
 
         public static bool CanStandOn(Vector2 pos) {
@@ -927,7 +919,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot) {
-            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<HellIndustrialComponents>(), 1, 24, 30));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<HellIndustrialComponents>(), 1, 48, 64));
             //掉落把灾厄可疑镀层换成阿扎弗镀层,数量原样保留(material-map §一)
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<AzafurePlating>(), 1, 18, 36));
             npcLoot.Add(new CommonDrop(ModContent.ItemType<MottledSpear>(), 5, 1, 1, 2));

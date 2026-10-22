@@ -23,7 +23,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             AmmoID.Sets.SpecificLauncherAmmoProjectileFallback[Type] = ItemID.RocketLauncher;
         }
         public override void SetDefaults() {
-            Item.damage = 1400;
+            Item.damage = 1100;
             Item.crit = 10;
             Item.DamageType = DamageClass.Ranged;
             Item.width = 80;

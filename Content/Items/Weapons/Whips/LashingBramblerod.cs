@@ -28,7 +28,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
             return false;
         }
         public override void SetDefaults() {
-            Item.DefaultToWhip(ModContent.ProjectileType<LashingBramblerodProjectile>(), 60, 3, 4, 40);
+            Item.DefaultToWhip(ModContent.ProjectileType<LashingBramblerodProjectile>(), 60, 3, 4, 30);
             Item.rare = ItemRarityID.Yellow;
             Item.value = Item.buyPrice(gold: 60);
             Item.autoReuse = true;

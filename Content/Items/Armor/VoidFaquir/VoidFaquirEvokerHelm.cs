@@ -30,10 +30,10 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
             player.armorEffectDrawOutlines = true;
         }
 
-        // 2026-08-31 平衡案:职业专属奖励=+32%召唤伤害、+4仆从栏、召唤迷你虚空吞噬者(VFHelmSummoner 驱动)
+        //职业奖励:召唤伤害、仆从栏、迷你吞噬者(VFHelmSummoner 驱动)
         public override void UpdateArmorSet(Player player) {
             player.setBonus = VoidFaquirSet.BonusText(Mod, "helmvfe");
-            player.GetDamage(DamageClass.Summon) += 0.32f;
+            player.GetDamage(DamageClass.Summon) += 0.40f;
             player.maxMinions += 4;
             player.Entropy().VFSet = true;
             player.Entropy().VFHelmSummoner = true;
@@ -42,9 +42,8 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
         public override void UpdateEquip(Player player) {
             player.Entropy().summonerVF = true;
             player.GetDamage(DamageClass.Summon) += 0.40f;
-            player.maxMinions += 1;
+            player.maxMinions += 2;
             player.statLifeMax2 += 80;
-            player.statManaMax2 += 100;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) {

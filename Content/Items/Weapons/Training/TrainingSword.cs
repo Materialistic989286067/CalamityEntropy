@@ -17,7 +17,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Training
     public class TrainingSword : ModItem
     {
         public override void SetDefaults() {
-            Item.damage = 12;
+            Item.damage = 20;
             Item.DamageType = DamageClass.Melee;
             Item.width = 28;
             Item.height = 68;
@@ -49,8 +49,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Training
         }
         public override void AddRecipes() {
             CreateRecipe()
-                .AddIngredient(ItemID.Wood, 12)
-                .AddIngredient(ItemID.BambooBlock, 4)
+                .AddIngredient(ItemID.Wood, 4)
+                .AddIngredient(ItemID.BambooBlock, 12)
+                .AddIngredient(ItemID.JungleSpores, 1)
                 .AddTile(TileID.WorkBenches)
                 .Register();
         }

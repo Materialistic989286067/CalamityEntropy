@@ -16,7 +16,7 @@ namespace CalamityEntropy.Content.Items.Armor.Smoldering
         }
 
         public override void UpdateEquip(Player player) {
-            player.Entropy().moveSpeed += 0.4f;
+            player.moveSpeed += 0.3f;
         }
         public override void AddRecipes() {
             CreateRecipe()

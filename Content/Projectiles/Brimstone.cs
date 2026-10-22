@@ -142,6 +142,13 @@ namespace CalamityEntropy.Content.Projectiles
         public override bool ShouldUpdatePosition() {
             return true;
         }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
+            int src = (int)Projectile.ai[2];
+            bool fromBuddy = src >= 0 && src < Main.maxProjectiles && src.ToProj().type == ModContent.ProjectileType<LilBrimstone>();
+            if (fromBuddy && (target.type == NPCID.TheDestroyer || target.type == NPCID.TheDestroyerBody || target.type == NPCID.TheDestroyerTail)) {
+                modifiers.FinalDamage *= 0.75f;
+            }
+        }
         public float counter = 0;
         public List<Vector2> points = new List<Vector2>();
         public List<float> prs = new List<float>();

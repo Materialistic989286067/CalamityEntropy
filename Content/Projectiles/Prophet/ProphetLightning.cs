@@ -1,5 +1,6 @@
 ﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.NPCs.Prophet.Core;
 using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ namespace CalamityEntropy.Content.Projectiles.Prophet
             Projectile.timeLeft = 100;
         }
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
-            target.AddBuff(ModContent.BuffType<SoulDisorder>(), 8 * 60);
+            target.AddDebuffFixed(ModContent.BuffType<SoulDisorder>(), ProphetDirector.SoulDisorderFrames);
         }
         public override bool ShouldUpdatePosition() {
             return false;

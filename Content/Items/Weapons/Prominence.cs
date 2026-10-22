@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void SetDefaults() {
             Item.width = 50;
             Item.height = 80;
-            Item.damage = 78;
+            Item.damage = 65;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 25;
             Item.useAnimation = 25;
@@ -69,15 +69,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             return false;
         }
         public override void AddRecipes() {
-            if (CECal.CalChainReady(CEID.Item_TheBallista)) {
-                CreateRecipe().AddIngredient(ItemID.FragmentSolar, 16)
-                .AddIngredient(CEID.Item_TheBallista)
-                .AddTile(TileID.LunarCraftingStation)
-                .Register();
-                return;
-            }
             CreateRecipe()
-                .AddIngredient(ItemID.Uzi)
+                .AddIngredient(ItemID.ShadowFlameBow)
                 .AddIngredient(ItemID.FragmentSolar, 10)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();

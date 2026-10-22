@@ -18,9 +18,10 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Sagittarius");
         public override Color tooltipColor => Color.LightBlue;
-        // 2026-08-31 平衡案重做:+33%弹速,持书期间刷怪率翻倍
+        // 2026-08-31 平衡案重做:+33%弹速,持书期间刷怪率翻倍;+12%伤害为后续追加
         public override void ModifyStat(EBookStatModifer modifer) {
             modifer.shotSpeed += 0.33f;
+            modifer.Damage += 0.12f;
         }
         public override EBookProjectileEffect getEffect() {
             return new SagittariusBMEffect();

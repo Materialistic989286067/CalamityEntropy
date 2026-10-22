@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Items.Armor.Sunblaze;
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
@@ -26,7 +27,7 @@ namespace CalamityEntropy.Content.Items.Donator
         public override void SetDefaults() {
             Item.width = 136;
             Item.height = 52;
-            Item.damage = 2200;
+            Item.damage = 1200;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 46;
             Item.useAnimation = 46;
@@ -179,7 +180,7 @@ namespace CalamityEntropy.Content.Items.Donator
             }
             if (Enhanced) {
                 target.AddBuff<MarkedforDeath>(600);
-                target.AddBuff(ModContent.BuffType<Dragonfire>(), 400);
+                target.AddBuff(ModContent.BuffType<SunblazeBurn>(), 180);
             }
             NPCHited.Add(target.whoAmI);
         }

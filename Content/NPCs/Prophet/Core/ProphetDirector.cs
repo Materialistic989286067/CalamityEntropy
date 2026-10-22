@@ -52,12 +52,14 @@ namespace CalamityEntropy.Content.NPCs.Prophet.Core
         public const float NoTargetDrag = 0.96f;
         public const int NoTargetDespawnFrames = 180;
 
-        /// <summary>全仓库没人读这个残留量,不要把它当成狂怒计时</summary>
-        public const int NoEnrageStart = 300;
-        public const int NoEnrageDungeon = 500;
-
         /// <summary>整数除法 life &lt; lifeMax / 2,奇数 lifeMax 差一格,转过去不回落</summary>
         public const int Phase2LifeDivisor = 2;
+
+        /// <summary>防御力,不随难度变化</summary>
+        public const int Defense = 20;
+
+        /// <summary>弹幕命中附带的灵魂紊乱时长(帧),经 AddDebuffFixed 钉住,不随世界难度放大</summary>
+        public const int SoulDisorderFrames = 5 * 60;
 
         //==================== 减伤 ====================
 

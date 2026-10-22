@@ -130,7 +130,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         }
 
         public override void SetDefaults() {
-            // 原灾厄 DR 体系本地化:一阶段减伤 54%,二阶段 42%(见 DamageReduction/ModifyIncomingHit)
+            //减伤取 DRPhase1,转阶段换 DRPhase2
             DamageReduction = CruiserDirector.DRPhase1;
             NPC.boss = true;
             //状态号在 ai[3],模组 NPC 默认 aiStyle -1,原版 aiStyle == 0 从未为它跑过

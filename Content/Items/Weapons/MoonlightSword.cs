@@ -18,7 +18,7 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class MoonlightSword : ModItem
     {
         public override void SetDefaults() {
-            Item.damage = 40;
+            Item.damage = 26;
             Item.DamageType = ModContent.GetInstance<MeleeDamageClass>();
             Item.width = 48;
             Item.height = 60;

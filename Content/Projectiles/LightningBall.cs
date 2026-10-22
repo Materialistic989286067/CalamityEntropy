@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Projectiles
@@ -57,6 +58,15 @@ namespace CalamityEntropy.Content.Projectiles
             t2.AddPoint(Projectile.Center + Projectile.velocity.RotatedBy(-MathHelper.PiOver2).normalize() * (float)(Math.Cos(Projectile.localAI[1] * 0.1f)) * (7 * Projectile.scale));
         }
 
+        //克脑飞眼与世吞体节
+        public static bool IsFurnaceResistantTarget(NPC n) {
+            return n.type == NPCID.Creeper || n.type == NPCID.EaterofWorldsBody || n.type == NPCID.EaterofWorldsTail;
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
+            if (IsFurnaceResistantTarget(target)) {
+                modifiers.FinalDamage *= 0.66f;
+            }
+        }
         public override void OnKill(int timeLeft) {
             CEUtils.PlaySound("ofhit", 1, Projectile.Center);
             for (int i = 0; i < 16; i++) {
@@ -68,7 +78,7 @@ namespace CalamityEntropy.Content.Projectiles
             if (Main.myPlayer == Projectile.owner) {
                 Projectile projectile = Projectile;
                 for (int i = 0; i < 3 + Projectile.owner.ToPlayer().Entropy().WeaponBoost; i++) {
-                    Projectile.NewProjectile(projectile.GetSource_FromAI(), projectile.Center, new Vector2(30, 0).RotatedBy(Main.rand.NextDouble() * Math.PI * 2), ModContent.ProjectileType<Lightning>(), (int)(projectile.damage * 0.45f), 4, projectile.owner, 0, 0, Projectile.ai[1]).ToProj().DamageType = DamageClass.Magic;
+                    Projectile.NewProjectile(projectile.GetSource_FromAI(), projectile.Center, new Vector2(30, 0).RotatedBy(Main.rand.NextDouble() * Math.PI * 2), ModContent.ProjectileType<Lightning>(), (int)(projectile.damage * 0.45f), 4, projectile.owner, 0, 1, Projectile.ai[1]).ToProj().DamageType = DamageClass.Magic;
                 }
             }
             SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/ExoTwinsEject"), Projectile.Center);

@@ -21,7 +21,7 @@ namespace CalamityEntropy.Content.Items.Books
             base.SetDefaults();
             Item.width = 40;
             Item.height = 52;
-            Item.damage = 48;
+            Item.damage = 54;
             Item.useAnimation = Item.useTime = 18;
             Item.crit = 5;
             Item.mana = 15;

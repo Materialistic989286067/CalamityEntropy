@@ -76,7 +76,7 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
             }
             var modPlayer = player.Entropy();
             Projectile.Center = player.Center + player.gfxOffY * Vector2.UnitY;
-            if (player.HeldItem.type == ModContent.ItemType<HorizonssKey>()) {
+            if (HorizonssKey.FindKey(player) != null) {
                 Projectile.timeLeft = 3;
             }
             else {
@@ -187,7 +187,7 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
         }
         public List<SpawnLater> later = new List<SpawnLater>();
         public void spawnSword(int type, int index, float rot, float circleRot, int hideTime = 0) {
-            if (Projectile.owner.ToPlayer().HeldItem.ModItem is HorizonssKey && Main.myPlayer == Projectile.owner) {
+            if (HorizonssKey.FindKey(Projectile.owner.ToPlayer()) != null && Main.myPlayer == Projectile.owner) {
                 if (hideTime > 0) {
                     later.Add(new SpawnLater(type, index, rot, circleRot, hideTime));
                 }

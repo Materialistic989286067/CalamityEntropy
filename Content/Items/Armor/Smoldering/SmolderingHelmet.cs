@@ -25,7 +25,7 @@ namespace CalamityEntropy.Content.Items.Armor.Smoldering
             Item.width = 32;
             Item.height = 32;
             Item.value = Item.buyPrice(gold: 10);
-            Item.defense = 5;
+            Item.defense = 8;
             Item.rare = ItemRarityID.LightRed;
         }
 
@@ -42,8 +42,8 @@ namespace CalamityEntropy.Content.Items.Armor.Smoldering
             player.GetModPlayer<CEChargePlayer>().ChargeRateMult += 0.08f;
         }
         public override void UpdateEquip(Player player) {
-            player.GetCritChance(DamageClass.Generic) += 5;
-            player.GetDamage(DamageClass.Generic) += 0.08f;
+            player.GetCritChance(DamageClass.Generic) += 9;
+            player.GetDamage(DamageClass.Generic) += 0.09f;
         }
 
 
@@ -161,6 +161,7 @@ namespace CalamityEntropy.Content.Items.Armor.Smoldering
     {
         public List<Vector2> oldPos = new List<Vector2>();
         public override void SetDefaults() {
+            Projectile.DamageType = DamageClass.Summon;
             Projectile.width = 26;
             Projectile.height = 26;
             Projectile.friendly = true;
@@ -170,6 +171,9 @@ namespace CalamityEntropy.Content.Items.Armor.Smoldering
             Projectile.timeLeft = 200 * 8;
             Projectile.penetrate = 1;
             Projectile.MaxUpdates = 8;
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
+            modifiers.DisableCrit();
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.AddBuff(BuffID.OnFire3, 180);

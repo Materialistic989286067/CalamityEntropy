@@ -24,7 +24,7 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
             Item.width = 40;
             Item.height = 40;
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
-            Item.defense = 34;
+            Item.defense = 24;
             Item.rare = ModContent.RarityType<NihilityBlue>();
         }
 
@@ -49,8 +49,8 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
             // 修复:护盾吸收开关必须在装备阶段就打开。原先只在 PostUpdate 里从 NihilitySet
             // 推导,而受伤结算发生在 PostUpdate 之前,受击时开关恒为 false,护盾从不生效。
             player.Entropy().NihilityShieldEnabled = true;
-            player.GetDamage(DamageClass.Generic) += 0.14f;
-            player.GetCritChance(DamageClass.Generic) += 14;
+            player.GetDamage(DamageClass.Generic) += 0.10f;
+            player.GetCritChance(DamageClass.Generic) += 10;
             player.maxMinions += 2;
             player.statManaMax2 += 60;
             player.statLifeMax2 += 40;

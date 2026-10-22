@@ -41,7 +41,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     {
         public override void SetDefaults() {
             base.SetDefaults();
-            fixedBaseDamage = 75;
+            fixedBaseDamage = 35;
             Projectile.penetrate = -1;
             Projectile.light = 0.4f;
             Projectile.localNPCHitCooldown = -1;

@@ -28,7 +28,7 @@ namespace CalamityEntropy.Content.Items.Weapons.TwinSaw
             Item.useAnimation = 10;
             Item.autoReuse = true;
             Item.DamageType = DamageClass.Melee;
-            Item.damage = 7;
+            Item.damage = 8;
             Item.knockBack = 6;
             Item.crit = 5;
             Item.channel = true;

@@ -67,7 +67,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override void ReceiveExtraAI(BinaryReader reader) {
             rotSpeed = reader.ReadSingle();
         }
-        public float scaleD = 0.64f;
+        public float scaleD = 0.80f;
         public float rotSpeed = 0f;
         public float rotSpeedJ = 0;
         float glowalpha = 0;

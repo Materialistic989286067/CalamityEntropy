@@ -77,7 +77,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.AddBuff(BuffID.Frostburn, 1080);
             Main.player[Projectile.owner].AddBuff(ModContent.BuffType<CosmicFreeze>(), 600);
-            SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode);
+            SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode with { Volume = 0.7f });
             //PRT_DirectionalPulseRing Configure是Calamity ring原构造,scale/rotation/lifetime顺序固定
             PRTLoader.NewParticle<PRT_DirectionalPulseRing>(Projectile.Center + Projectile.velocity * 3, Vector2.Zero, new Color(170, 170, 255), 0.1f).Configure(new Vector2(2f, 2f), 0, 0.5f, 20);
 

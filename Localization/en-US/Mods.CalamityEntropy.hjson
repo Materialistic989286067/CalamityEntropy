@@ -25,6 +25,7 @@ Items: {
 			Left click swings the pot with both hands, splashing corrosive slime
 			Slime stuck to enemies deals damage once per second and inflicts Poisoned for 10 seconds
 			Slime puddles on tiles damage passing enemies every 0.5 seconds for 5 seconds
+			Each enemy can have at most 10 globs stuck to it; once full, new globs no longer stick
 			Hold right click to aim the pot and heat it with fire magic
 			After 1.5 seconds the slime boils and spits a scalding glob every 0.4 seconds, costing 6 mana each
 			Scalding slime sticks for 5 seconds, dealing damage once per second and inflicting Poisoned and Venom
@@ -206,10 +207,10 @@ Items: {
 		}
 
 		LoreAcropolis: {
-			DisplayName: Acropolis Machines
+			DisplayName: Hell Acropolis Machines
 			Lore:
 				'''
-				These machines were built by Azafure as armed guardians for the city,
+				These machines were built by Hell Industrial as armed guardians for the city,
 				their special metal shells let them survive that battle.
 				Though many years have passed, 
 				they still execute the program set since creation: eliminate all uninvited visitors
@@ -378,6 +379,7 @@ Items: {
 			'''
 			Summons a pair of orbiting twins that clone your projectiles
 			Duplicated projectiles deal 100% damage of the original weapon
+			While the twins exist, damage dealt by your projectiles is reduced by 80%
 			Each pair of twins take 4 summon slots
 			'''
 	}
@@ -419,11 +421,7 @@ Items: {
 
 	SoyMilk: {
 		DisplayName: Soy Milk
-		Tooltip:
-			'''
-			Multiplies attack speed by 3
-			Divides damage dealt by 3
-			'''
+		Tooltip: Doubles attack speed, but greatly reduces the damage you deal
 	}
 
 	DarkArts: {
@@ -543,23 +541,23 @@ Items: {
 		HoldShiftForDetails:
 			'''
 			[i:CalamityEntropy/AuraCard]Aura Card
-			Scattered across hidden cabins and submerged crates...
+			Found in Gold Chests and Iron Crates, or crafted from Iron Crates
 			[i:CalamityEntropy/BrillianceCard]Brilliance
-			Sold by an eccentric, mysterious merchant...
+			Sold by the Merchant
 			[i:CalamityEntropy/EntityCard]Entity
-			Offered to a pearly psychic of the sunken sea...
+			Dropped by King Slime
 			[i:CalamityEntropy/InspirationCard]Inspiration
-			Left to rot in the sifting sands...
+			Found in Oasis Crates, or crafted from Oasis Crates
 			[i:CalamityEntropy/MetropolisCard]Metropolics
-			Scribed from many common books...
+			Crafted from Amber and Sturdy Fossils
 			[i:CalamityEntropy/WisdomCard]Wisdom
-			Held by the dungeon's accursed warden...
+			Dropped by Skeletron
 			[i:CalamityEntropy/RadianceCard]Radiance
-			Requires the magic of a hallowed orb...
+			Crafted from Souls of Light, Pixie Dust and Fallen Stars
 			[i:CalamityEntropy/TemperanceCard]Temperance
-			Used as a spiritual anchor for a mechanical monstrosity...
+			Dropped by The Twins
 			[i:CalamityEntropy/EnduranceCard]Endurance
-			Tested in the part of the sea the light shall never touch...
+			Found in Shadow Chests and Obsidian Lock Boxes
 			'''
 	}
 
@@ -628,7 +626,7 @@ Items: {
 			Grants immunity to knockback
 			Lets you walk on fire blocks
 			Grants the Holy Mantle's blocking effect
-			You and your teammates take 15% less damage (does not stack)
+			You and your teammates take 15% less final damage, applied after defense and damage reduction (does not stack)
 			Enemies are more likely to target you
 			'''
 		ToggleEffectOn: "[c/00ff00:Panic enabled]"
@@ -723,7 +721,12 @@ Items: {
 
 	VoidFaquirEvokerHelm: {
 		DisplayName: Entropic Faquir Evoker Helm
-		Tooltip: 25% increased summon damage
+		Tooltip:
+			'''
+			40% increased summon damage
+			Increases your max amount of minions by 2
+			Increases maximum life by 80
+			'''
 	}
 
 	VoidFaquirLurkerMask: {
@@ -789,7 +792,11 @@ Items: {
 
 	RailPulseBow: {
 		DisplayName: Rail Pulse Bow
-		Tooltip: Arrows release chain lightning on hit that has a chance to inflict [cebuff:CalamityEntropy/GalvanicCorrosion]
+		Tooltip:
+			'''
+			Arrows release chain lightning on hit that has a chance to inflict [cebuff:CalamityEntropy/GalvanicCorrosion]
+			Arrows fired at full charge always critically strike
+			'''
 	}
 
 	JailerWhip: {
@@ -800,6 +807,7 @@ Items: {
 			2% summon tag critical strike chance
 			{$CommonItemTooltip.Whips}
 			Inflicts [cebuff:CalamityEntropy/BurningBlood] and [cebuff:CalamityEntropy/FlamingBlood], which causes enemies to explode on death
+			The blood explosion deals only 60% damage to the Wall of Flesh and the Destroyer
 			'''
 	}
 
@@ -839,13 +847,9 @@ Items: {
 		DisplayName: Celestial Ring
 		Tooltip:
 			'''
-			15% increased damage
-			Grants +2.5HP/s life regen
-			Increases your max number of minions by 2
-			75% increased minion knockback
-			5% increased critical strike chance
-			5% increased movement speed
-			5% increased melee speed
+			Greatly improves all of your stats
+			Increases your max number of minions by 1
+			"The power of heaven"
 			'''
 	}
 
@@ -904,8 +908,9 @@ Items: {
 		DisplayName: Horizons' Key
 		Tooltip:
 			'''
-			Summons a samsara casket minion whose swords attack nearby enemies (takes up 4 minion slots)
-			Right click an enemy to set the swords' target
+			Summons a samsara casket minion whose swords attack nearby enemies (takes up 5 minion slots)
+			Once summoned, it does not need to be held: the casket and swords stay and keep attacking as long as the item remains in your inventory
+			Right click an enemy while holding it to set the swords' target
 			Sends an array of swords to attack nearby enemies and inflict [cebuff:CalamityEntropy/Nightwither]
 			[c/d9bd1b:The strength of this weapon increases as the game progresses]
 			[c/d9bd1b:Affected by all classes' damage bonuses]
@@ -969,7 +974,12 @@ Items: {
 
 	Voidshade: {
 		DisplayName: Voidshade
-		Tooltip: Releases a fractal shockwave when swung
+		Tooltip:
+			'''
+			Releases a fractal shockwave when swung
+			Right Click to thrust and fire a void ray, with a 3 second cooldown
+			Hitting a target briefly empowers the next swing
+			'''
 	}
 
 	GreedCard: {
@@ -1084,23 +1094,23 @@ Items: {
 			'''
 			The following materials are required:
 			[i:CalamityEntropy/Perplexed][c/FF6347: Perplexed]
-			Found from a mechanical monstrosity that comes in twos...
+			Dropped by The Twins
 			[i:CalamityEntropy/Tarnish][c/FF6347: Tarnish]
-			Used by the sorcerers of a goblin tribe...
+			Dropped by Goblin Sorcerers
 			[i:CalamityEntropy/Confuse][c/FF6347: Confuse]
-			Held by the last of the Dryad kind...
+			Sold by the Dryad
 			[i:CalamityEntropy/Barren][c/FF6347: Desolation]
-			Stolen from a vault by a familiar thief...
+			Sold by the Clothier
 			[i:CalamityEntropy/Fool][c/FF6347: Fool]
-			 Held by eldritch scholars in the Abyss...
+			Dropped by the Blood Nautilus
 			[i:CalamityEntropy/Sacrifice][c/FF6347: Sacrifice]
-			Crafted with cores of chaos and perennial bars...
+			Crafted from Souls of Night and Ectoplasm
 			[i:CalamityEntropy/GreedCard][c/FF6347: Greed]
-			Lost to the waters of the Astral Infection...
+			Can be obtained by fishing in evil biomes
 			[i:CalamityEntropy/Frail][c/FF6347: Weakness]
-			Burdens the gelatinous balance of crimulan and ebonian rule...
+			Dropped by Deerclops
 			[i:CalamityEntropy/Nothing][c/FF6347: Nothing]
-			Swallowed by the apex predator of the Abyss...
+			Dropped by the Moon Lord
 			'''
 	}
 
@@ -1256,9 +1266,9 @@ Items: {
 		DisplayName: Nihility Capsid
 		Tooltip:
 			'''
-			Critical hits deal 18% increased damage
+			Critical hits deal 15% increased damage
 			You have a chance to generate an energy shell on critical hit
-			The energy shell negates 20% of an attack then breaks
+			The energy shell negates 15% of an attack then breaks
 			You can have a maximum of three shells at once
 			'''
 	}
@@ -1445,7 +1455,7 @@ Items: {
 		DisplayName: Marivinium Breastplate
 		Tooltip:
 			'''
-			+15% damage, +5% critical strike chance
+			+15% damage, +15% critical strike chance
 			Grants the ability to breath within the abyss
 			'''
 	}
@@ -1490,7 +1500,11 @@ Items: {
 
 	BookMarkAerialite: {
 		DisplayName: Bookmark - Aerialite
-		Tooltip: Rains feathers from the sky on hit
+		Tooltip:
+			'''
+			Rains feathers from the sky on hit
+			10% increased flight speed while attacking
+			'''
 	}
 
 	BookMarkFlesh: {
@@ -1498,14 +1512,18 @@ Items: {
 		Tooltip:
 			'''
 			Projectiles burst into damaging blood beams on hit that inflict [cebuff:CalamityEntropy/BurningBlood]
-			Increases armor penetration by 1
+			Projectiles pierce 1 additional enemy
 			This book's projectiles steal life from enemies
 			'''
 	}
 
 	BookMarkIce: {
 		DisplayName: Bookmark - Icy
-		Tooltip: Flings an ice sword at the target on hit that inflicts [cebuff:Frostburn]
+		Tooltip:
+			'''
+			Also fires an ice sword from behind when attacking, which inflicts [cebuff:Frostburn] on hit
+			Each attack fires at most one ice sword
+			'''
 	}
 
 	InfiniteBook: {
@@ -1575,7 +1593,7 @@ Items: {
 		DisplayName: Bookmark - Void
 		Tooltip:
 			'''
-			Enemy hits have a chance to create a void explostion
+			Enemy hits create a void explosion once every second
 			Attacks inflict [cebuff:CalamityEntropy/VoidTouch]
 			'''
 	}
@@ -1609,7 +1627,8 @@ Items: {
 		Tooltip:
 			'''
 			Enemy hits have a chance to spawn piercing tentacles that inflict [cebuff:ShadowFlame]
-			Increases armor penetration by 6
+			Increases armor penetration by 3
+			3% increased damage
 			'''
 	}
 
@@ -1687,8 +1706,10 @@ Items: {
 		DisplayName: Bookmark - Sagittarius
 		Tooltip:
 			'''
-			6% increased damage
-			26% increased projectile speed
+			33% increased projectile speed
+			12% increased damage
+			Doubles enemy spawn rate while the book is held
+			Dropped by Skeletron
 			'''
 	}
 
@@ -1714,13 +1735,9 @@ Items: {
 		DisplayName: Bookmark - Libra
 		Tooltip:
 			'''
-			10% increased damage
-			4% increased attack speed
-			10% increased critical strike chance
-			5% increased projectile speed
-			This book's attacks pierce 1 additional enemy
-			Increases armor penetration by 4
-			Additionally increases the lower of either damage or attack speed by 4%
+			8% increased damage
+			8% increased critical strike chance
+			+4 defense while holding the book
 			'''
 	}
 
@@ -1815,6 +1832,7 @@ Items: {
 			Summon 3 royal jewels to aid in combat
 			The ruby jewel fires bolts of energy at nearby enemies
 			The emerald jewel dashes at enemies, dealing damage on contact
+			Each target hit during one dash reduces its damage by 20%, up to 80%
 			The sapphire jewel creates a ring that grants players within it 15% increased damage and 5% damage resistance
 			'''
 	}
@@ -1862,7 +1880,7 @@ Items: {
 		Tooltip:
 			'''
 			Fires three solar arrows alongside a burst of short-ranged embers
-			Enemy hits inflict both the [cebuff:CalamityEntropy/HolyFlames] and [cebuff:Daybroken]
+			Enemy hits inflict [cebuff:Daybreak]
 			'''
 	}
 
@@ -1878,7 +1896,7 @@ Items: {
 	}
 
 	AzafureBatteringRam: {
-		DisplayName: Azafure Battering Ram
+		DisplayName: Hell Industrial Battering Ram
 		Tooltip:
 			'''
 			Charges up before lunging forward, creating a powerful shockwave on collision
@@ -1894,11 +1912,12 @@ Items: {
 			{$CommonItemTooltip.Whips}
 			Throws a far reaching swipe that latches into the first enemy hit before being torn back out, inflicting [cebuff:CalamityEntropy/BrainRot]
 			Minion attacks summon a flurry of shadow slashes on tagged enemy hit
+			Shadow slashes have 12 armor penetration
 			'''
 	}
 
 	AzafureChargeShield: {
-		DisplayName: Azafure Charge Shield
+		DisplayName: Hell Industrial Charge Shield
 		Tooltip:
 			'''
 			Double tap a direction or press the dash key to spend 1 energy on a long dash of 16 tiles
@@ -1913,7 +1932,7 @@ Items: {
 		Tooltip:
 			'''
 			Summons the Prophet
-			Can only be used in the dungeon
+			Can be used anywhere
 			'''
 	}
 
@@ -2163,8 +2182,9 @@ Items: {
 		DisplayName: Welkin Fractal
 		Tooltip:
 			'''
-			Sends feathers from above and below towards the cursor
-			Every third swing creates 3 homing stars
+			Sends feathers from above and below towards the cursor, ignoring 8 points of defense
+			Every third attack becomes a forward thrust that fires an infinitely piercing fractal ray
+			The ray deals 150% of the weapon's damage
 			'[c/d4fff8:You have channeled clouds into the design...]'
 			'''
 	}
@@ -2307,7 +2327,7 @@ Items: {
 	}
 
 	AzafureMiner: {
-		DisplayName: Azafure Miner
+		DisplayName: Hell Industrial Miner
 		Tooltip: Places a tiny quarry and mining terminal
 	}
 
@@ -2404,23 +2424,23 @@ Items: {
 			'''
 			The following materials are required:
 			[i:CalamityEntropy/RequiemCard][c/ADFF2F: Requiem]
-			Notes from spirits released after the death of Plantera...
+			Dropped by Dungeon Spirits
 			[i:CalamityEntropy/WisperCard][c/ADFF2F: Whisper]
-			Echoes of snips and snaps in the pinnacle of symbiosis...
+			Dropped by the Eye of Cthulhu
 			[i:CalamityEntropy/PurificationCard][c/ADFF2F: Purification]
-			Found in living chests infused with hallowed energy...
+			Dropped by Hallowed Mimics
 			[i:CalamityEntropy/ObscureCard][c/ADFF2F: Obscure]
-			Sunken in the fluids of dead gods...
+			Obtained from the exclusive crates of evil biomes
 			[i:CalamityEntropy/GrudgeCard][c/ADFF2F: Grudge]
-			Extracted from a dozen spirits' ectoplasm using a transmutative liquid...
+			Obtained by throwing 12 Ectoplasm into Shimmer
 			[i:CalamityEntropy/IndigoCard][c/ADFF2F: Indigo]
-			Hidden in lakes upheld by the clouds...
+			Obtained from chests on Floating Islands
 			[i:CalamityEntropy/MourningCard][c/ADFF2F: Mourning]
-			A moral code of the protector of a lost jungle civilization...
+			Dropped by the Golem
 			[i:CalamityEntropy/BitternessCard][c/ADFF2F: Woe]
-			Fuels the beasts of a land ever so blighted...
+			Dropped by Corrupt Mimics or Crimson Mimics
 			[i:CalamityEntropy/DevouringCard][c/ADFF2F: Soulrend]
-			Found eating at the hallowed plating of a dungeon defender...
+			Dropped by Paladins
 			'''
 	}
 
@@ -2522,7 +2542,7 @@ Items: {
 	}
 
 	AzafureAntiaircraftGun: {
-		DisplayName: Azafure Anti-aircraft Gun
+		DisplayName: Hell Industrial Anti-aircraft Gun
 		Tooltip: Fire a piercing shell that inflicts [cebuff:CalamityEntropy/ArmorCrunch] and [cebuff:CalamityEntropy/MechanicalTrauma]
 	}
 
@@ -2555,7 +2575,7 @@ Items: {
 	}
 
 	AzafureTeslaGun: {
-		DisplayName: Azafure Tesla Gun
+		DisplayName: Hell Industrial Tesla Gun
 		Tooltip:
 			'''
 			Launch a tesla ball that chains to nearby enemies as it travels
@@ -2564,7 +2584,7 @@ Items: {
 	}
 
 	AzafurePioneerCannon: {
-		DisplayName: Azafure Pioneer Cannon
+		DisplayName: Hell Industrial Pioneer Cannon
 		Tooltip:
 			'''
 			Hold Left Click to charge and load up to 5 shots
@@ -2587,7 +2607,7 @@ Items: {
 		Tooltip:
 			'''
 			Press [KEY] to shadow-dash towards your cursor, slashing enemies along the path
-			The slash deals 25 base damage, with a 30 second cooldown
+			The slash deals 40 base damage, with a 30 second cooldown
 			Gain 10% increased damage for 1.5 seconds after the dash
 			'''
 	}
@@ -2638,7 +2658,8 @@ Items: {
 		DisplayName: Worship Relic
 		Tooltip:
 			'''
-			Hits have a 1 in 4 chance to call down a holy arrow dealing 180 base damage
+			Increases damage and critical strike chance by 5%
+			Hits have a 1 in 2 chance to call down a holy arrow dealing 150 base damage
 			This effect has a 0.5 second internal cooldown
 			Raises your maximum bait charge to 2, letting you throw two baits back to back
 			'''
@@ -2650,7 +2671,7 @@ Items: {
 			'''
 			[A]% increased damage
 			The first hit on enemies at or above 90% life triggers a shadow burst
-			The burst deals 16 base damage and only triggers once per enemy
+			The burst deals 25 base damage and only triggers once per enemy
 			'''
 	}
 
@@ -2758,12 +2779,12 @@ Items: {
 	}
 
 	AcropolisRelic: {
-		DisplayName: Acropolis Relic
+		DisplayName: Hell Acropolis Relic
 		Tooltip: ""
 	}
 
 	AcropolisTrophy: {
-		DisplayName: Acropolis Trophy
+		DisplayName: Hell Acropolis Trophy
 		Tooltip: ""
 	}
 
@@ -2778,7 +2799,7 @@ Items: {
 			'''
 			+75 maximum life
 			Grants the effect of the Charm of Myths, reducing healing potion cooldown by 25%
-			Debuff duration reduced by 33%
+			Damage-over-time debuffs (such as On Fire! and Poisoned) last 33% shorter
 			Greatly increases natural life regeneration (6/s) and directly restores 1 life every second
 			Grows herbs beneath your feet as you walk on grass, shift right click to toggle
 			+20 defense while standing on herbs
@@ -2796,7 +2817,7 @@ Items: {
 		Tooltip:
 			'''
 			Fires high velocity bullets that inherit the effects of the ammo consumed
-			Every 7th shot, fire an overheated bullet that inflicts [cebuff:CalamityEntropy/MarkedforDeath] and [cebuff:CalamityEntropy/Dragonfire]
+			Every 7th shot, fire an overheated bullet that inflicts [cebuff:CalamityEntropy/MarkedforDeath] and [cebuff:CalamityEntropy/SunblazeBurn] for 3 seconds
 			'''
 	}
 
@@ -2897,7 +2918,7 @@ Items: {
 	}
 
 	AzafureDetectionEquipment: {
-		DisplayName: Azafure Detection Equipment
+		DisplayName: Hell Industrial Detection Equipment
 		Tooltip:
 			'''
 			Allows prolonged flight
@@ -2976,7 +2997,11 @@ Items: {
 
 	LushGrassclassics: {
 		DisplayName: Lush Grassclassics
-		Tooltip: Unleashes piercing vines at enemies that inflict [cebuff:CalamityEntropy/BonePiercingToxin]
+		Tooltip:
+			'''
+			Unleashes piercing vines at enemies that inflict [cebuff:CalamityEntropy/BonePiercingToxin]
+			Each attack only afflicts the first 5 enemies it hits
+			'''
 	}
 
 	MiracleWreckage: {
@@ -2997,12 +3022,12 @@ Items: {
 	}
 
 	AzafureFurnace: {
-		DisplayName: Azafure Furnace
+		DisplayName: Hell Industrial Furnace
 		Tooltip: Charges up a homing brimstone blast that inflicts [cebuff:CalamityEntropy/MechanicalTrauma] and explodes on impact
 	}
 
 	AzafurePulseWand: {
-		DisplayName: Azafure Pulse Wand
+		DisplayName: Hell Industrial Pulse Wand
 		Tooltip:
 			'''
 			Charges up an aura that marks enemies
@@ -3032,7 +3057,7 @@ Items: {
 	}
 
 	AzafureRailgun: {
-		DisplayName: Azafure Railgun
+		DisplayName: Hell Industrial Railgun
 		Tooltip:
 			'''
 			Charges up a spread of homing lasers, when fully charged, instead fire a concentrated laser
@@ -3041,7 +3066,7 @@ Items: {
 	}
 
 	AzafureDroneRemote: {
-		DisplayName: Azafure Remote
+		DisplayName: Hell Industrial Remote
 		Tooltip: Summons a drone that fires homing missiles at nearby enemies
 	}
 
@@ -3077,12 +3102,12 @@ Items: {
 		Tooltip:
 			'''
 			Randomly modifies stat bonuses based on your held item
-			'An acronym that stands for the Azafure Reallocation Indicator Device'
+			'An acronym that stands for the Hell Industrial Reallocation Indicator Device'
 			'''
 	}
 
 	AzafureProtectiveCannon: {
-		DisplayName: Azafure Strike Cannon
+		DisplayName: Hell Industrial Strike Cannon
 		Tooltip:
 			'''
 			Strikes a selected point with a powerful missle
@@ -3091,7 +3116,7 @@ Items: {
 	}
 
 	AzafureTBMTerminal: {
-		DisplayName: Azafure TBM Terminal
+		DisplayName: Hell Industrial TBM Terminal
 		Tooltip:
 			'''
 			Summons a player-controlled tunnel boring machine
@@ -3142,12 +3167,12 @@ Items: {
 	}
 
 	AzafureDrill: {
-		DisplayName: Azafure Industrial Drill
+		DisplayName: Hell Industrial Industrial Drill
 		Tooltip: ""
 	}
 
 	AzafurePowerSaw: {
-		DisplayName: Azafure Power Saw
+		DisplayName: Hell Industrial Power Saw
 		Tooltip: Rapidly damages enemies and inflicts [cebuff:CalamityEntropy/MechanicalTrauma]
 	}
 
@@ -3260,7 +3285,7 @@ Items: {
 	}
 
 	AzafureEKatana: {
-		DisplayName: Azafure E-Katana
+		DisplayName: Hell Industrial E-Katana
 		Tooltip:
 			'''
 			Rapidly swings a holographic laser blade
@@ -3372,7 +3397,7 @@ Items: {
 	}
 
 	AzafureCylinder: {
-		DisplayName: Azafure Cylinder
+		DisplayName: Hell Industrial Cylinder
 		Tooltip:
 			'''
 			Launches charged spheres that explodes when near an enemy
@@ -3481,7 +3506,7 @@ Items: {
 	}
 
 	AzafureDriverCore: {
-		DisplayName: Azafure Driver Core
+		DisplayName: Hell Industrial Driver Core
 		Tooltip:
 			'''
 			Gain a barrier with [S] health
@@ -3770,8 +3795,8 @@ Items: {
 		DisplayName: Amulet of Solace
 		Tooltip:
 			'''
-			8% increased summon damage
-			Grants +0.5HP/s life regeneration for each minion slot you have with a maximum of 3HP/s
+			5% increased summon damage
+			Grants +0.5HP/s life regeneration for each minion slot you have with a maximum of 2HP/s
 			'''
 	}
 
@@ -3779,8 +3804,8 @@ Items: {
 		DisplayName: Amulet of Fortification
 		Tooltip:
 			'''
-			8% increased summon damage
-			Gain 2 defense for each minion slot you have with a maximum of 12 defense
+			5% increased summon damage
+			Gain 2 defense for each minion slot you have with a maximum of 6 defense
 			'''
 	}
 
@@ -3822,6 +3847,7 @@ Items: {
 			'''
 			Attacks shoot clots of blood that inflict [cbuff:CalamityEntropy/FlamingBlood] and have a 10% chance to heal 1 life on hit
 			Enemies with the [cbuff:CalamityEntropy/FlamingBlood] debuff explode on death
+			Ignores 10 points of defense
 			'''
 	}
 
@@ -3832,7 +3858,11 @@ Items: {
 
 	SpectralWhispers: {
 		DisplayName: Spectral Whispers
-		Tooltip: Conjure three sharp spectral spikes that embed themselves in enemies and burst after a short time
+		Tooltip:
+			'''
+			Conjure three sharp spectral spikes that embed themselves in enemies and burst after a short time
+			Ignores 10 points of defense
+			'''
 	}
 
 	BookmarkBloodthirsty: {
@@ -3899,8 +3929,8 @@ Items: {
 	}
 
 	SignalBlocker: {
-		DisplayName: Azafure Jammer
-		Tooltip: Prevents the Acropolis Machine from spawning while favorited in the inventory
+		DisplayName: Hell Signal Amplifier
+		Tooltip: Summons the Hell Acropolis Machine, can only be used in the Underworld
 	}
 
 	Filthless: {
@@ -3915,7 +3945,7 @@ Items: {
 	}
 
 	AzafureMissile: {
-		DisplayName: Azafure Missile
+		DisplayName: Hell Industrial Missile
 		Tooltip:
 			'''
 			7% increased damage for each lodged missile
@@ -4006,7 +4036,6 @@ Items: {
 		DisplayName: Leyla
 		Tooltip:
 			'''
-			+6 defense
 			+40 maximum life
 			+2/s life regeneration
 			Grants the Honey buff to you and nearby teammates
@@ -4044,6 +4073,7 @@ Items: {
 			'''
 			This bow charges as it fires, becoming unable to fire at full charge
 			When you stop firing at full charge, release a beam of concentrated heat
+			The beam pierces up to 5 enemies
 			Attacks inflict [cebuff:OnFire3] on hit
 			'''
 	}
@@ -4052,23 +4082,23 @@ Items: {
 		DisplayName: Smoldering Breastplate
 		Tooltip:
 			'''
-			Grants +2HP/s life regeneration
-			Reduces damage taken by 8%
+			Grants immunity to knockback
+			Reduces damage taken by 3%
 			Grants immunity to [cebuff:OnFire], [cebuff:OnFire3], fire blocks and lava
 			'''
 	}
 
 	SmolderingGreaves: {
 		DisplayName: Smoldering Greaves
-		Tooltip: 40% increased movement speed
+		Tooltip: Significantly increases movement speed
 	}
 
 	SmolderingHelmet: {
 		DisplayName: Smoldering Helm
 		Tooltip:
 			'''
-			8% increased damage
-			5% increased critical strike chance
+			9% increased damage
+			9% increased critical strike chance
 			'''
 	}
 
@@ -4173,7 +4203,7 @@ Items: {
 	}
 
 	AzafurePhonograph: {
-		DisplayName: Azafure Phonograph
+		DisplayName: Hell Industrial Phonograph
 		Tooltip: ""
 	}
 
@@ -4208,7 +4238,7 @@ Items: {
 	}
 
 	AzafureImperialGuardMachineGun: {
-		DisplayName: Azafure Imperial Guard Machine Gun
+		DisplayName: Hell Industrial Imperial Guard Machine Gun
 		Tooltip:
 			'''
 			Left Click with [i:CalamityEntropy/HellIndustrialComponents] Brimstone Industrial Components in your inventory to load [AMMOMAX] ammunition
@@ -4217,12 +4247,12 @@ Items: {
 	}
 
 	AzafureExhaustGasInjector: {
-		DisplayName: Azafure Exhaust Gas Injector
+		DisplayName: Hell Industrial Exhaust Gas Injector
 		Tooltip: Fires a constrant stream of corrosive exhaust gas
 	}
 
 	AzafureStandardShotgun: {
-		DisplayName: Azafure Standard Shotgun
+		DisplayName: Hell Industrial Standard Shotgun
 		Tooltip: Fire a spread of shotgun rounds that inflict [cebuff:CalamityEntropy/MechanicalTrauma]
 	}
 
@@ -4355,7 +4385,7 @@ Items: {
 	}
 
 	AzafureMicroBeacon: {
-		DisplayName: Azafure Micro Beacon
+		DisplayName: Hell Industrial Micro Beacon
 		Tooltip:
 			'''
 			{$BaitCommonTooltip1}
@@ -4476,12 +4506,12 @@ Items: {
 	}
 
 	AzafureWarSatelliteAuthorizationKey: {
-		DisplayName: Azafure War Satellite Authorization Key
+		DisplayName: Hell Industrial War Satellite Authorization Key
 		Tooltip:
 			'''
 			{$BaitCommonTooltip1}
 			{$BaitCommonTooltip2}
-			Call Azafure War satellite to strike target
+			Call Hell Industrial War satellite to strike target
 			'''
 	}
 
@@ -4495,7 +4525,7 @@ Items: {
 	}
 
 	AzafureTwinSaw: {
-		DisplayName: Azafure Twin Saw
+		DisplayName: Hell Industrial Twin Saw
 		Tooltip: Waving up and down, then bringing the two saws together and spraying sparks forward
 	}
 
@@ -4505,19 +4535,19 @@ Items: {
 	}
 
 	AzafureCircuitry: {
-		DisplayName: Azafure Circuitry
+		DisplayName: Hell Industrial Circuitry
 		Tooltip:
 			'''
-			The core wiring of Azafure machinery, its fine traces still hot to the touch
+			The core wiring of Hell Industrial machinery, its fine traces still hot to the touch
 			Has a chance to be extracted from Hell Industrial Components in an Extractinator
 			'''
 	}
 
 	AzafurePlating: {
-		DisplayName: Azafure Plating
+		DisplayName: Hell Industrial Plating
 		Tooltip:
 			'''
-			A heat-resistant slice of Azafure armor, bullet scars still on its edge
+			A heat-resistant slice of Hell Industrial armor, bullet scars still on its edge
 			Has a chance to be extracted from Hell Industrial Components in an Extractinator
 			'''
 	}
@@ -4722,7 +4752,7 @@ Items: {
 	}
 
 	AzafureAirReaper: {
-		DisplayName: Azafure Air Reaper
+		DisplayName: Hell Industrial Air Reaper
 		Tooltip:
 			'''
 			Throws a sickle that embeds itself into enemies and inficts [cebuff:CalamityEntropy/MechanicalTrauma]
@@ -4732,7 +4762,7 @@ Items: {
 	}
 
 	AzafureLightMachineGun: {
-		DisplayName: Azafure Light Machine Gun
+		DisplayName: Hell Industrial Light Machine Gun
 		Tooltip:
 			'''
 			Fires a continuous laser
@@ -4743,7 +4773,7 @@ Items: {
 	}
 
 	AzafureSurgeRod: {
-		DisplayName: Azafure Surge Rod
+		DisplayName: Hell Industrial Surge Rod
 		Tooltip:
 			'''
 			Throws a blade that lodges itself into enemies and bursts after a short delay
@@ -4884,7 +4914,7 @@ Items: {
 	}
 
 	AzafureSwirlblade: {
-		DisplayName: Azafure Swirlblade
+		DisplayName: Hell Industrial Swirlblade
 		Tooltip:
 			'''
 			Throw a sawblade that on hit or after some time stops in place, releasing a pair of homing missiles before spinning
@@ -5048,7 +5078,7 @@ VoidEaterBonus:
 	Grants +1HP/s life regeneration while the shield is broken
 	Increases your max number of minions by 2
 	Maximum mana increased by 100
-	14% increased damage and critical strike chance
+	10% increased damage and critical strike chance
 	12% increased weapon ultimate charge rate
 	'''
 VoidEaterSet: Void Eater Set
@@ -5109,7 +5139,7 @@ SunblazeMeleeSetBonus:
 	'''
 	10% increased melee damage and critical strike chance
 	20% increased melee speed and 2.5 life regeneration per second
-	Players within 25 tiles (including you) gain [cebuff:CalamityEntropy/CozyWarmth], increasing life regeneration by 2 per second
+	Players within 45 tiles (including you) gain [cebuff:CalamityEntropy/CozyWarmth], increasing life regeneration by 2 per second
 	'''
 SunblazeSummonSetBonus:
 	'''
@@ -5123,7 +5153,7 @@ StarmoonMagicSetBonus:
 	'''
 	13% increased magic damage and critical strike chance
 	Magic critical hits create a Star Cross Burst on the target, at most once every 3 seconds
-	The Star Cross Burst deals 1800 base magic damage and heals you for 8 life when it fades
+	The Star Cross Burst deals 900 base magic damage and heals you for 8 life when it fades
 	'''
 StarmoonRangedSetBonus:
 	'''
@@ -5131,7 +5161,7 @@ StarmoonRangedSetBonus:
 	Arrows you fire do not drop
 	Rockets, grenades and other ranged explosives you fire cannot hurt you
 	The nearest enemy within 100 tiles is marked by the moon
-	Hitting the marked enemy with ranged attacks grants [cebuff:CalamityEntropy/StarlightLock] for 1.5 seconds
+	Hitting the marked enemy with ranged attacks grants [cebuff:CalamityEntropy/StarlightLock] for 5 seconds
 	'''
 
 VDAftermath: {
@@ -5630,23 +5660,23 @@ Projectiles: {
 	MiracleShoot.DisplayName: Miracle Shoot
 	MiracleWreckageHeld.DisplayName: Miracle Wreckage Held
 	Theostring.DisplayName: Theostring
-	AzafureFurnaceEnergyBall.DisplayName: Azafure Furnace Energy Ball
-	AzafureFurnaceHoldout.DisplayName: Azafure Furnace Holdout
+	AzafureFurnaceEnergyBall.DisplayName: Hell Industrial Furnace Energy Ball
+	AzafureFurnaceHoldout.DisplayName: Hell Industrial Furnace Holdout
 	FurnaceBlast.DisplayName: Furnace Blast
-	AzafurePulseWandHeld.DisplayName: Azafure Pulse Wand Held
+	AzafurePulseWandHeld.DisplayName: Hell Industrial Pulse Wand Held
 	TeslaLightningRed.DisplayName: Tesla Lightning Red
 	SandBullet.DisplayName: Sand Bullet
-	AzafureSurgeRodHeldEffect.DisplayName: Azafure Surge Rod Held Effect
-	AzafureSurgeRodThrow.DisplayName: Azafure Surge Rod Throw
+	AzafureSurgeRodHeldEffect.DisplayName: Hell Industrial Surge Rod Held Effect
+	AzafureSurgeRodThrow.DisplayName: Hell Industrial Surge Rod Throw
 	StarlightMothMinion.DisplayName: Starlight Moth Minion
 	LuminarisMinionAstralShoot.DisplayName: Luminaris Minion Astral Shoot
-	AzafureRailgunHeld.DisplayName: Azafure Railgun Held
+	AzafureRailgunHeld.DisplayName: Hell Industrial Railgun Held
 	RailgunChargeShot.DisplayName: Railgun Charge Shot
 	RailgunSmallShot.DisplayName: Railgun Small Shot
-	AzafureDroneMinion.DisplayName: Azafure Drone Minion
-	AzafureDroneBullet.DisplayName: Azafure Drone Bullet
-	AzafureHealingTowerSentry.DisplayName: Azafure Healing Tower Sentry
-	AzafureProtectiveCannonShot.DisplayName: Azafure Protective Cannon Shot
+	AzafureDroneMinion.DisplayName: Hell Industrial Drone Minion
+	AzafureDroneBullet.DisplayName: Hell Industrial Drone Bullet
+	AzafureHealingTowerSentry.DisplayName: Hell Industrial Healing Tower Sentry
+	AzafureProtectiveCannonShot.DisplayName: Hell Industrial Protective Cannon Shot
 	ATBMProjectile.DisplayName: ATBM Projectile
 	TlipocasScytheHeld.DisplayName: Tlipocas Scythe Held
 	TSSlash.DisplayName: T S Slash
@@ -5661,22 +5691,22 @@ Projectiles: {
 	MalignBullet.DisplayName: Malign Bullet
 	MalignLightning.DisplayName: Malign Lightning
 	MalignLaser.DisplayName: Malign Laser
-	AzafurePowerSawProj.DisplayName: Azafure Power Saw Proj
-	AzafureElectrocauteryWandHeld.DisplayName: Azafure Electrocautery Wand Held
-	AzafureElectrocauteryWandBomb.DisplayName: Azafure Electrocautery Wand Bomb
+	AzafurePowerSawProj.DisplayName: Hell Industrial Power Saw Proj
+	AzafureElectrocauteryWandHeld.DisplayName: Hell Industrial Electrocautery Wand Held
+	AzafureElectrocauteryWandBomb.DisplayName: Hell Industrial Electrocautery Wand Bomb
 	Snowgrave.DisplayName: Snowgrave
 	DedicatedOracleSlashProj.DisplayName: Dedicated Oracle Slash Proj
 	ALMGLaser.DisplayName: ALMG Laser
-	AzafureLightMachineGunHeld.DisplayName: Azafure Light Machine Gun Held
-	AzafureLightMachineGunStealth.DisplayName: Azafure Light Machine Gun Stealth
+	AzafureLightMachineGunHeld.DisplayName: Hell Industrial Light Machine Gun Held
+	AzafureLightMachineGunStealth.DisplayName: Hell Industrial Light Machine Gun Stealth
 	ALMGShell.DisplayName: ALMG Shell
 	PickingSwarm.DisplayName: Picking Swarm
 	BMHammerProjectile.DisplayName: Hammer
 	CrossBorderPursuitProj.DisplayName: Cross Border Pursuit
 	CBPSmash.DisplayName: Smash
 	BMSwordProjectile.DisplayName: Sword
-	AzafureEKatanaSlash.DisplayName: Azafure E-Katana Slash
-	AzafureCogflyMinion.DisplayName: Azafure Cogfly Minion
+	AzafureEKatanaSlash.DisplayName: Hell Industrial E-Katana Slash
+	AzafureCogflyMinion.DisplayName: Hell Industrial Cogfly Minion
 	GungnirThrow.DisplayName: Gungnir Throw
 	Sorensen.DisplayName: Sorensen
 	FetalDreamSlash.DisplayName: Fetal Dream Slash
@@ -5684,14 +5714,14 @@ Projectiles: {
 	CarverSpike.DisplayName: Carver Spike
 	CarverBolt.DisplayName: Carver Bolt
 	CarverSpirit.DisplayName: Carver Spirit
-	AzafureRadioMissile.DisplayName: Azafure Radio Missile
+	AzafureRadioMissile.DisplayName: Hell Industrial Radio Missile
 	MissileSilo.DisplayName: Missile Silo
 	SentryRemoverHeld.DisplayName: Sentry Remover Held
-	AzafureAirReaperThrow.DisplayName: Azafure Air Reaper Throw
+	AzafureAirReaperThrow.DisplayName: Hell Industrial Air Reaper Throw
 	FairyBMMinion.DisplayName: Fairy
-	AzafureCylinderHeld.DisplayName: Azafure Cylinder Held
+	AzafureCylinderHeld.DisplayName: Hell Industrial Cylinder Held
 	MetalBall.DisplayName: Metal Ball
-	AzafureMagicBlast.DisplayName: Azafure Magic Blast
+	AzafureMagicBlast.DisplayName: Hell Industrial Magic Blast
 	Stinger.DisplayName: Stinger
 	ExplosiveSpore.DisplayName: Explosive Spore
 	SporeGas.DisplayName: Spore Gas
@@ -5768,7 +5798,7 @@ Projectiles: {
 	AzureVortex.DisplayName: Azure Vortex
 	FilthlessMissile.DisplayName: Filthless Missile
 	FilthlessShootAlt.DisplayName: Filthless Shoot Alt
-	AzafureMissileProj.DisplayName: Azafure Missile Proj
+	AzafureMissileProj.DisplayName: Hell Industrial Missile Proj
 	DivineShield.DisplayName: Divine Shield
 	CrystalSpikePop.DisplayName: Crystal Spike Pop
 	CrystalSpikeThrow.DisplayName: Crystal Spike Throw
@@ -5812,7 +5842,7 @@ Projectiles: {
 	MinionCinderFireball.DisplayName: Cinder Fireball
 	GRainbowRocket.DisplayName: G Rainbow Rocket
 	RatzielSentry.DisplayName: Ratziel Sentry
-	AzafureCombatDrone.DisplayName: Azafure Combat Drone
+	AzafureCombatDrone.DisplayName: Hell Industrial Combat Drone
 	CombatDroneBullet.DisplayName: Combat Drone Bullet
 	EmberFireball.DisplayName: Ember Fireball
 	GhostFireMagic.DisplayName: Ghost Fire Magic
@@ -5842,9 +5872,9 @@ Projectiles: {
 	FutureKnifeSpin.DisplayName: Future Knife Spin
 	RuneSongHeld.DisplayName: Rune Song Held
 	RuneBolt.DisplayName: Rune Bolt
-	AzafureImperialGuardMachineGunHeld.DisplayName: Azafure Imperial Guard Machine Gun Held
+	AzafureImperialGuardMachineGunHeld.DisplayName: Hell Industrial Imperial Guard Machine Gun Held
 	ImperialGuardShot.DisplayName: Imperial Guard Shot
-	AzafureExhaustGasInjectorHeld.DisplayName: Azafure Exhaust Gas Injector Held
+	AzafureExhaustGasInjectorHeld.DisplayName: Hell Industrial Exhaust Gas Injector Held
 	ExhaustGas.DisplayName: Exhaust Gas
 	MewMewBombThrow.DisplayName: Mew Mew Bomb Throw
 	KinanitionSpawn.DisplayName: Kinanition Spawn
@@ -5857,9 +5887,9 @@ Projectiles: {
 	BrillianceSwirlbladeProj.DisplayName: Brilliance Swirlblade Proj
 	FlamingSwirlbladeFlame.DisplayName: Flaming Swirlblade Flame
 	FlamingSwirlbladeProj.DisplayName: Flaming Swirlblade Proj
-	AzafureSwirlbladeProj.DisplayName: Azafure Swirlblade Proj
-	AzafureSwirlbladeSaw.DisplayName: Azafure Swirlblade Saw
-	AzafureSwirlbladeMissile.DisplayName: Azafure Swirlblade Missile
+	AzafureSwirlbladeProj.DisplayName: Hell Industrial Swirlblade Proj
+	AzafureSwirlbladeSaw.DisplayName: Hell Industrial Swirlblade Saw
+	AzafureSwirlbladeMissile.DisplayName: Hell Industrial Swirlblade Missile
 	GlacierSwirlbladeProj.DisplayName: Glacier Swirlblade Proj
 	GlacierSwirlbladeSaw.DisplayName: Glacier Swirlblade Saw
 	RunicSwirlbladeBullet.DisplayName: Runic Swirlblade Bullet
@@ -5884,8 +5914,8 @@ Projectiles: {
 	WaterBulletSpawner.DisplayName: Water Bullet Spawner
 	AntlionShellProjectile.DisplayName: Antlion Shell Projectile
 	DesertNuisanceFriendly.DisplayName: Desert Nuisance Friendly
-	AzafureAssaultDrone.DisplayName: Azafure Assault Drone
-	AzafureMicroBeaconProjectile.DisplayName: Azafure Micro Beacon Projectile
+	AzafureAssaultDrone.DisplayName: Hell Industrial Assault Drone
+	AzafureMicroBeaconProjectile.DisplayName: Hell Industrial Micro Beacon Projectile
 	BeaconDroneShoot.DisplayName: Beacon Drone Shoot
 	DeliciousAcornProjectile.DisplayName: Delicious Acorn Projectile
 	SquirrerMinion.DisplayName: Squirrer Minion
@@ -5915,7 +5945,7 @@ Projectiles: {
 	SacredStoneSummon.DisplayName: Sacred Stone Summon
 	BottledFissureProjectile.DisplayName: Bottled Fissure Projectile
 	VoidEater.DisplayName: Void Eater
-	AzafureWarSatelliteAuthorizationKeyProjectile.DisplayName: Azafure War Satellite Authorization Key Projectile
+	AzafureWarSatelliteAuthorizationKeyProjectile.DisplayName: Hell Industrial War Satellite Authorization Key Projectile
 	SateliteLaser.DisplayName: Satelite Laser
 	WarSatellite.DisplayName: War Satellite
 	ArbitratorStealthImpact.DisplayName: Arbitrator Stealth Impact
@@ -5923,8 +5953,8 @@ Projectiles: {
 	TheDeadCutSlash.DisplayName: The Dead Cut Slash
 	FooveriaHeld.DisplayName: Fooveria Held
 	FooveriaIceShard.DisplayName: Fooveria Ice Shard
-	AzafureTwinSawHeld.DisplayName: Azafure Twin Saw Held
-	AzafureSawSpark.DisplayName: Azafure Saw Spark
+	AzafureTwinSawHeld.DisplayName: Hell Industrial Twin Saw Held
+	AzafureSawSpark.DisplayName: Hell Industrial Saw Spark
 	VFChargeFXProj.DisplayName: V F Charge F X Proj
 	VoidFaquirEnergyBallMelee.DisplayName: Void Faquir Energy Ball Melee
 	PartySparkle.DisplayName: Party Sparkle
@@ -6047,7 +6077,7 @@ Buffs: {
 	TwistedTwinBuff: {
 		DisplayName: Twisted Twin
 		Description: ""
-		ItemTooltip: 20% increased damage
+		ItemTooltip: Projectile damage reduced by 80%
 	}
 
 	Rainstorm: {
@@ -6072,7 +6102,7 @@ Buffs: {
 
 	SoyMilkBuff: {
 		DisplayName: Soy Milk
-		Description: You attack faster, but deal less damage
+		Description: Doubles attack speed, but greatly reduces the damage you deal
 	}
 
 	StealthState: {
@@ -6314,8 +6344,8 @@ Buffs: {
 	}
 
 	AzafureDrone: {
-		DisplayName: Azafure Drone
-		Description: Azafure Drone will fight for you
+		DisplayName: Hell Industrial Drone
+		Description: Hell Industrial Drone will fight for you
 	}
 
 	VoidEmpowerment: {
@@ -6335,7 +6365,7 @@ Buffs: {
 
 	CogflyBuff: {
 		DisplayName: Cogfly
-		Description: Azafure Cogfly will fight for you
+		Description: Hell Industrial Cogfly will fight for you
 	}
 
 	ChaosTyrant: {
@@ -6388,7 +6418,7 @@ Buffs: {
 	BonePiercingToxin: {
 		DisplayName: Bone-piercing Toxin
 		Description: As deep as the marrow
-		ItemTooltip: Typeless - 24 DPS
+		ItemTooltip: Typeless - 10 DPS
 	}
 
 	FlamingBlood: {
@@ -6709,7 +6739,7 @@ NPCs: {
 
 		BossChecklistIntegration: {
 			EntryName: The Prophet
-			SpawnInfo: Use [i:CalamityEntropy/ProphecyToken] in dungeon to summon.
+			SpawnInfo: Use [i:CalamityEntropy/ProphecyToken] anywhere to summon.
 			DespawnMessage: ""
 		}
 	}
@@ -6727,11 +6757,11 @@ NPCs: {
 	}
 
 	AcropolisMachine: {
-		DisplayName: Acropolis Machine
+		DisplayName: Hell Acropolis Machine
 
 		BossChecklistIntegration: {
-			EntryName: Acropolis Machine
-			SpawnInfo: Rarely spawns naturally in the Underworld
+			EntryName: Hell Acropolis Machine
+			SpawnInfo: Use [i:CalamityEntropy/SignalBlocker] in the Underworld to summon
 			DespawnMessage: ""
 		}
 	}
@@ -6814,6 +6844,7 @@ CdDS: Divine Shield Cooldown
 CdAntivoid: Antivoid Dash Cooldown
 AbyssalStorm: Abyssal Storm Cooldoawn
 YoungMasterDashCD: Dash Cooldown
+VoidshadeDashCD: Voidshade Thrust Cooldown
 CruiserBestiary:
 	'''
 	A supreme predator born from the void, cruising through the seams of reality in serpentine form.
@@ -6841,7 +6872,7 @@ ProphetBestiary:
 	A pitiful, shattered soul driven mad by the horrifying truth hidden behind the invasion of the void.
 	Bound to ancient texts, it endlessly repeats mindless screams and whispers, desperately—yet futilely—trying to convey what it has witnessed.
 	'''
-LuminarisBestiary: Moths infected by astral exist with the purpose of spreading astral infection
+LuminarisBestiary: A giant insect that hides in the night sky and stores starlight in its body to fuel its attacks. It is especially fond of star-flavored honeydew.
 ApsychosBestiary:
 	'''
 	The creature wandering in the depths of lava has a carapace made of crustal rocks.
@@ -6966,6 +6997,11 @@ Configs: {
 			Label: Enable Armor Prefix
 			Tooltip: Close this will disable all prefix items' recipes and generation in world
 		}
+
+		BaseMobilityBoost: {
+			Label: Boost Base Mobility
+			Tooltip: When enabled, all players gain +25% movement speed. If no other dash accessory or vanilla dash gear is equipped, double-tap a direction key or press the Dash key to dash forward about 6 tiles, then wait 0.75 seconds before dashing again
+		}
 	}
 }
 
@@ -7000,7 +7036,7 @@ helmvfl:
 	'''
 helmvfe:
 	'''
-	32% increased summon damage
+	40% increased summon damage
 	Increases your max amount of minions by 4
 	Summons a miniature Void Devourer to fight for you
 	'''
@@ -7252,7 +7288,7 @@ Owner: Owner:
 ShadowDashCD: Shadow Dash Cooldown
 ShadeCloakDashCD: Shadow Dash Cooldown
 RPDonorName: 冷级
-Acropolis: ""
+Acropolis: A war machine left behind by an ancient civilization, once used to fend off the colossal beings from the depths of the magma.
 OblivionThretherCooldown: Oblivion Thresher Dash Cooldown
 LilyDeath0: "{0} was devoured by filth"
 LilyDeath1: "{0}'s protective treasure is broken"
@@ -7280,7 +7316,7 @@ RIDModifies:
 	[7]% movement & flight speed
 	[8]% flight time
 	'''
-ProtectiveCannonCooldown: Azafure Protective Cannon Cooldown
+ProtectiveCannonCooldown: Hell Industrial Protective Cannon Cooldown
 TlipocasScytheSlashCooldown: Dash Cooldown
 TeleportSlashCooldown: Slash Cooldown
 ScytheReviveCooldown: Scythe Revive Cooldown
@@ -7361,6 +7397,9 @@ NowLV: Level
 AnyOrichalcumBar: Any Orichalcum Bar
 AnyEvilBar: Any Evil Bar
 IronBar: Iron Bar
+PostMoonLordRodHarmony: Cannot be used while the Moon Lord or a post-Moon Lord boss is present
+PostMoonLordRodDiscord: While the Moon Lord or a post-Moon Lord boss is present, the Chaos State lasts 11 seconds and you cannot teleport again during it
+GolemFirstKillDrop: Always drops the first time the Golem is defeated
 AnyFairy: Any Fairy
 Gems: Gems
 Butterflies: Butterflies
@@ -7374,7 +7413,7 @@ AstralFishing: Fishing from astral infection
 EvilFishing: Fishing from the Corruption or Crimson
 AzafureSet:
 	'''
-	All azafure equipment receive enhancements to thier abilities
+	All Hell Industrial equipment receive enhancements to thier abilities
 	Gain a durability bar
 	The Durability bar provides up to 12 defense and 16% damage reduction, while slowing your movement speed
 	Durability is consumed based on damage taken when hit
@@ -7383,9 +7422,9 @@ AzafureSet:
 	'''
 AzafureSet2:
 	'''
-	All azafure equipment receive enhancements to thier abilities
+	All Hell Industrial equipment receive enhancements to thier abilities
 	Gain a durability bar
-	The durability bar provides up to 24 defense and 20% damage reduction
+	The durability bar provides up to 20 defense and 20% damage reduction
 	Durability is consumed based on damage taken when hit
 	Durability slowly regenerates 5 seconds after taking damage
 	When the durability bar is depleted, it becomes inactive and requires time to restore functionality
@@ -7396,7 +7435,7 @@ AzafureSet2:
 AzafureSet3:
 	'''
 	Negates fall damage
-	All azafure equipment receive enhancements to thier abilities
+	All Hell Industrial equipment receive enhancements to thier abilities
 	Gain a durability bar
 	The durability bar provides up to 36 defense and 24% damage reduction
 	Durability is consumed based on damage taken when hit
@@ -7590,13 +7629,12 @@ SusiesBraceletCal:
 CWRQuest: {
 	AcropolisMachine: {
 		Title: Groan of Rusted Iron
-		Summary: Defeat the Azafure Acropolis Machine that wanders the Underworld
-		Objective: Defeat the Azafure Acropolis Machine
+		Summary: Summon and defeat the Hell Acropolis Machine in the Underworld
+		Objective: Defeat the Hell Acropolis Machine
 		Detail:
 			'''
-			It spawns naturally in the Underworld and will not attack you on its own
-			Bring it below 98% life and the fight begins
-			There is no summoning item for this one, you have to go find it
+			Use the Hell Signal Amplifier in the Underworld to summon it, and the fight begins at once
+			The Hell Signal Amplifier is crafted at an anvil from 20 iron or lead bars, 10 obsidian and 1 lava bucket
 			'''
 	}
 
@@ -7629,7 +7667,7 @@ CWRQuest: {
 		Detail:
 			'''
 			Craft a Prophecy Token at a Mythril Anvil from Books, Souls of Light and Ectoplasm
-			It only works inside the Dungeon
+			Once crafted, it can be used anywhere
 			'''
 	}
 
@@ -7768,7 +7806,7 @@ CWRQuest: {
 	AzafureMiner: {
 		Title: Automated Vein
 		Summary: Let a machine do the mining
-		Objective: Place an Azafure Digital Mining Machine in the world
+		Objective: Place a Hell Industrial Digital Mining Machine in the world
 		Detail:
 			'''
 			Crafted at a Heavy Work Bench or a Mythril Anvil, the recipe needs Hell Industrial Components

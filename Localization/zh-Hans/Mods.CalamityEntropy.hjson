@@ -25,6 +25,7 @@ Items: {
 			左键双手甩锅撒出一片侵蚀性粘液
 			沾在敌怪身上的粘液每秒造成一次伤害并施加中毒，持续10秒
 			沾在物块上的粘液坑每0.5秒伤害一次经过的敌怪，持续5秒
+			每个敌怪身上最多同时沾着10坨粘液，已满时新的粘液不再粘附
 			按住右键把锅口对准目标方向，用火魔法加热锅底
 			加热1.5秒后粘液沸腾，每0.4秒喷出一坨滚烫粘液，每坨消耗6点魔力
 			滚烫粘液命中后附着5秒，每秒造成一次伤害并施加中毒与酸性中毒
@@ -188,10 +189,10 @@ Items: {
 		}
 
 		LoreAcropolis: {
-			DisplayName: 阿萨福勒卫城机甲
+			DisplayName: 地狱卫城机甲
 			Lore:
 				'''
-				这些机械本是阿萨福勒制作出来守卫城市的武装机器人，
+				这些机械本是地狱工业制作出来守卫城市的武装机器人，
 				特质的金属外壳使它们在那场战斗中幸免于难。
 				尽管已经过了许久，它们任然执行着自从被制造出来就设定好的程序，消灭一切未被允许的来访者。
 				时间的流逝让它们变得迟钝，但凭借着精密高超的技术，它们仍然能利用环境的热量重新启动。
@@ -365,7 +366,7 @@ Items: {
 			'''
 			召唤一对纠缠双子，复制你的弹幕
 			复制弹幕造成原武器100%的伤害
-			所有造成的伤害减少为原本的1/5
+			纠缠双子存在时，你的弹幕造成的伤害降低80%
 			每对纠缠双子消耗4个召唤栏
 			'''
 	}
@@ -407,7 +408,7 @@ Items: {
 
 	SoyMilk: {
 		DisplayName: 豆奶
-		Tooltip: 大幅提升射速，同时让你造成的伤害×0.3
+		Tooltip: 攻击速度翻倍，但造成的伤害大幅降低
 	}
 
 	DarkArts: {
@@ -527,23 +528,23 @@ Items: {
 		HoldShiftForDetails:
 			'''
 			[i:CalamityEntropy/AuraCard][c/87CEFA:卡片 -『灵光』]
-			散落在隐蔽的小屋和淹没的板条箱中
+			可以从金箱子与铁匣中开出，或者由铁匣制作
 			[i:CalamityEntropy/BrillianceCard][c/87CEFA:卡片 -『辉煌』]
-			由一位古怪而神秘的商人出售
+			由商人售卖
 			[i:CalamityEntropy/EntityCard][c/87CEFA:卡片 -『实体』]
-			曾被献给沉沦的昔日之海的巨大贝类
+			由史莱姆王掉落
 			[i:CalamityEntropy/InspirationCard][c/87CEFA:卡片 -『启迪』]
-			被遗落在旱漠中腐烂
+			可以从绿洲匣中开出，或者由绿洲匣制作
 			[i:CalamityEntropy/MetropolisCard][c/87CEFA:卡片 -『都市』]
-			使用骷髅骨灰和混乱之精华融合而成
+			使用琥珀和坚固化石合成
 			[i:CalamityEntropy/WisdomCard][c/87CEFA:卡片 -『智慧』]
-			持有于地牢的看守者
+			由骷髅王掉落
 			[i:CalamityEntropy/RadianceCard][c/87CEFA:卡片 -『光芒』]
-			使用日光之精华，星芒之尘与光明之魂融合而成
+			由光明之魂，仙灵尘和落星合成
 			[i:CalamityEntropy/TemperanceCard][c/87CEFA:卡片 -『克己』]
-			被装载入地牢看守者的机械仿造品中
+			由双子魔眼掉落
 			[i:CalamityEntropy/EnduranceCard][c/87CEFA:卡片 -『坚忍』]
-			被藏匿于光明永远无法触及的海域中
+			可以从暗影宝箱和黑曜石锁盒中开出
 			'''
 	}
 
@@ -610,7 +611,7 @@ Items: {
 			免疫击退
 			免疫火块，可在火块上安全行走
 			拥有神圣屏障的格挡效果
-			给予你和所有队友15%伤害减免(不可叠加)
+			你和所有队友最终受到的伤害降低15%(不可叠加,在防御与伤害减免之后结算)
 			使敌人更容易攻击你
 			'''
 		// ToggleEffectOn: "[c/00ff00:Panic enabled]"
@@ -705,9 +706,8 @@ Items: {
 		Tooltip:
 			'''
 			+40% 召唤伤害
-			+1 召唤栏
+			+2 召唤栏
 			+80 最大生命值
-			+100 最大魔力值
 			'''
 	}
 
@@ -806,6 +806,7 @@ Items: {
 		Tooltip:
 			'''
 			射出带有电流的箭
+			蓄力满层时射出的箭矢必然暴击
 			"呼~ 嗞！"
 			'''
 	}
@@ -818,6 +819,7 @@ Items: {
 			{$CommonItemTooltip.SummonTagDamage}
 			{$CommonItemTooltip.Whips}
 			敌怪死亡后产生血爆
+			血爆对血肉墙和毁灭者只造成60%的伤害
 			'''
 	}
 
@@ -863,9 +865,9 @@ Items: {
 		DisplayName: 天界指环
 		Tooltip:
 			'''
-			+1/s 生命再生
-			+2 召唤栏，+15% 召唤伤害
-			+15% 鞭子攻速与攻击距离
+			全方面大幅度提升你的属性
+			最大召唤栏数目增加1个
+			“天堂的力量”
 			'''
 	}
 
@@ -943,8 +945,9 @@ Items: {
 		DisplayName: 视界之键
 		Tooltip:
 			'''
-			召唤剑匣仆从，剑会自动攻击附近的敌人(占用4个仆从栏)
-			右键敌怪以指定剑的攻击目标
+			召唤剑匣仆从，剑会自动攻击附近的敌人(占用5个仆从栏)
+			召唤后无需手持，只要物品仍在背包中，剑匣和剑就会保留并继续攻击
+			手持时右键敌怪以指定剑的攻击目标
 			'''
 	}
 
@@ -1014,7 +1017,7 @@ Items: {
 		Tooltip:
 			'''
 			左键挥砍，释放能量波
-			右键突刺，释放虚光射线，
+			右键突刺，释放虚光射线，使用后冷却3秒
 			刺中目标短时间内给予一次挥砍强化
 			"切裂空间！"
 			'''
@@ -1130,23 +1133,23 @@ Items: {
 		HoldShiftForDetails:
 			'''
 			[i:CalamityEntropy/Perplexed][c/FF6347: 卡片 -『迷茫』]
-			被塞入两台外貌相似且彼此相连的圣化机械中
+			由双子魔眼掉落
 			[i:CalamityEntropy/Tarnish][c/FF6347: 卡片 -『晦暗』]
-			被哥布林拾走并用于施法
+			由哥布林巫士掉落
 			[i:CalamityEntropy/Confuse][c/FF6347: 卡片 -『迷惑』]
-			持有于最后的树妖
+			售卖于树妖
 			[i:CalamityEntropy/Barren][c/FF6347: 卡片 -『荒芜』]
-			被一个强盗夺走了
+			售卖于服装商人
 			[i:CalamityEntropy/Fool][c/FF6347: 卡片 -『愚者』]
-			深渊中的奇怪法师有可能带着它
+			由恐惧鹦鹉螺掉落
 			[i:CalamityEntropy/Sacrifice][c/FF6347: 卡片 -『献祭』]
-			由混乱之精华和永恒金属融合而成
+			由暗影之魂和灵气合成
 			[i:CalamityEntropy/GreedCard][c/FF6347: 卡片 -『贪婪』]
-			在天堂遗骸所创造的星芒散溢之地的渔获
+			在邪恶环境中钓鱼可以获取
 			[i:CalamityEntropy/Frail][c/FF6347: 卡片 -『孱弱』]
-			被贫弱的生物聚合而成的个体吸收
+			由鹿角怪掉落
 			[i:CalamityEntropy/Nothing][c/FF6347: 卡片 -『虚无』]
-			深渊中的捕食者吞下了它
+			由月亮领主掉落
 			'''
 	}
 
@@ -1334,9 +1337,9 @@ Items: {
 		DisplayName: 噬虚魔壳
 		Tooltip:
 			'''
-			暴击伤害增加18%
+			暴击伤害增加15%
 			暴击时概率获得一块能量甲壳
-			每块能量甲壳能抵挡你受到伤害的20%一次
+			每块能量甲壳能抵挡你受到伤害的15%一次
 			最多同时拥有3块能量甲壳
 			“那虚空中不可名状的寄生生物身体的一部分”
 			'''
@@ -1546,7 +1549,7 @@ Items: {
 		DisplayName: 渊洋神迹胸甲
 		Tooltip:
 			'''
-			+15% 伤害，+5% 暴击率
+			+15% 伤害，+15% 暴击率
 			使你能在深渊正常呼吸
 			'''
 	}
@@ -1600,6 +1603,7 @@ Items: {
 			'''
 			射弹击中敌人后从天上降下羽毛
 			+50% 弹速
+			攻击期间+10% 飞行速度
 			'''
 	}
 
@@ -1615,7 +1619,7 @@ Items: {
 
 	BookMarkIce: {
 		DisplayName: 凌冽书签
-		Tooltip: 攻击时同时从身后发射凌冽神剑
+		Tooltip: 攻击时同时从身后发射凌冽神剑，每次攻击最多发射一把
 	}
 
 	InfiniteBook: {
@@ -1688,7 +1692,7 @@ Items: {
 
 	BookMarkVoid: {
 		DisplayName: 虚渺书签
-		Tooltip: 击中敌人造成虚空之触效果并概率产生虚空爆炸
+		Tooltip: 击中敌人造成虚空之触效果，并每秒触发一次虚空爆炸
 	}
 
 	BookMarkAuric: {
@@ -1724,7 +1728,8 @@ Items: {
 		Tooltip:
 			'''
 			击中敌人概率召唤暗影触手
-			+6 护甲穿透
+			+3 护甲穿透
+			+3% 伤害
 			'''
 	}
 
@@ -1792,6 +1797,7 @@ Items: {
 		Tooltip:
 			'''
 			+33% 弹速
+			+12% 伤害
 			持书期间刷怪率翻倍
 			由骷髅王掉落
 			'''
@@ -1815,13 +1821,9 @@ Items: {
 		DisplayName: 天秤座书签
 		Tooltip:
 			'''
-			+10% 伤害
-			+4% 射速
-			+10% 暴击率
-			+5% 弹速
-			+1 穿透
-			+4 护甲穿透
-			为伤害和射速的倍率最低的其一再增加4%
+			+8% 伤害
+			+8% 暴击率
+			持书期间+4防御力
 			'''
 	}
 
@@ -1918,7 +1920,7 @@ Items: {
 			'''
 			生成3个王冠宝石
 			红宝石会朝敌人发射能量弹
-			绿宝石会撞向敌人
+			绿宝石会撞向敌人，一次冲刺中每击中一个目标，伤害降低20%，最多降低80%
 			蓝宝石会给附近玩家增益，增加其生命恢复、伤害减免、伤害以及攻速
 			'''
 	}
@@ -1968,7 +1970,7 @@ Items: {
 		Tooltip:
 			'''
 			发射出三发附加日耀的箭矢，并同时发射大量短距离散弹
-			击中敌人造成神圣之火减益
+			击中敌人造成[cebuff:Daybreak]减益
 			'''
 	}
 
@@ -1984,7 +1986,7 @@ Items: {
 	}
 
 	AzafureBatteringRam: {
-		DisplayName: 阿萨福勒破城矛
+		DisplayName: 地狱工业破城矛
 		Tooltip:
 			'''
 			蓄力，然后朝前方突刺
@@ -1999,13 +2001,14 @@ Items: {
 			'''
 			钩住敌人，然后狠狠的抽回来
 			被击中的敌人一段时间内被召唤物击中产生暗影斩切
+			暗影斩切拥有12点护甲穿透
 			{$CommonItemTooltip.SummonTagDamage}
 			{$CommonItemTooltip.Whips}
 			'''
 	}
 
 	AzafureChargeShield: {
-		DisplayName: 阿萨福勒充能盾
+		DisplayName: 地狱工业充能盾
 		Tooltip:
 			'''
 			双击方向键或按冲刺键，消耗1点充能进行一次长冲刺，距离16格
@@ -2019,8 +2022,8 @@ Items: {
 		DisplayName: 预言信物
 		Tooltip:
 			'''
-			召唤先知，只能在地牢使用
-			位于地牢环境外狂暴
+			召唤先知
+			可在任意地点使用
 			'''
 	}
 
@@ -2285,8 +2288,9 @@ Items: {
 		DisplayName: 苍穹分形
 		Tooltip:
 			'''
-			从天上与地下召唤分形之羽
-			从剑尖刺出分形光束
+			从天上与地下召唤分形之羽，羽毛无视8点护甲
+			每第三次攻击改为向前刺出，并射出一道无限穿透的分形射线
+			射线伤害为面板的150%
 			[c/d4fff8:它被苍穹所赐福]
 			'''
 	}
@@ -2422,7 +2426,7 @@ Items: {
 	}
 
 	AzafureMiner: {
-		DisplayName: 阿萨福勒数字型采矿机
+		DisplayName: 地狱工业数字型采矿机
 		Tooltip: ""
 	}
 
@@ -2527,23 +2531,23 @@ Items: {
 		HoldShiftForDetails:
 			'''
 			[i:CalamityEntropy/RequiemCard][c/ADFF2F: 卡片 -『魂歌』]
-			地牢中的纯粹魂魄可能携带
+			由地牢幽魂掉落
 			[i:CalamityEntropy/WisperCard][c/ADFF2F: 卡片 -『低语』]
-			布满真菌的巨大尸傀可能携带
+			由克苏鲁之眼掉落
 			[i:CalamityEntropy/PurificationCard][c/ADFF2F: 卡片 -『净化』]
-			圣化的活宝箱可能装有
+			由神圣宝箱怪掉落
 			[i:CalamityEntropy/ObscureCard][c/ADFF2F: 卡片 -『幽冥』]
-			被旧神之血感染的生物可能携带
+			从邪恶地形的专属宝匣中获取
 			[i:CalamityEntropy/GrudgeCard][c/ADFF2F: 卡片 -『怨念』]
-			将一些灵气投入地下的闪光之湖...
+			将12个灵气投入微光湖转化以获取
 			[i:CalamityEntropy/IndigoCard][c/ADFF2F: 卡片 -『靛蓝』]
-			被藏入白云之上的神秘岛屿
+			从空岛中的宝箱中获取
 			[i:CalamityEntropy/MourningCard][c/ADFF2F: 卡片 -『悲恸』]
-			被蜥蜴文明用于驱动一座神像
+			由石巨人掉落
 			[i:CalamityEntropy/BitternessCard][c/ADFF2F: 卡片 -『幽怨』]
-			被旧神之血感染的活宝箱可能装有
+			由腐化宝箱怪或者猩红宝箱怪掉落
 			[i:CalamityEntropy/DevouringCard][c/ADFF2F: 卡片 -『噬魂』]
-			地牢中覆有重甲的亡魂可能携带
+			由圣骑士掉落
 			'''
 	}
 
@@ -2635,7 +2639,7 @@ Items: {
 	}
 
 	AzafureAntiaircraftGun: {
-		DisplayName: 阿萨福勒防空炮
+		DisplayName: 地狱工业防空炮
 		Tooltip: ""
 	}
 
@@ -2668,12 +2672,12 @@ Items: {
 	}
 
 	AzafureTeslaGun: {
-		DisplayName: 阿萨福勒磁暴枪
+		DisplayName: 地狱工业磁暴枪
 		Tooltip: 发射会电击附近敌怪的电磁球
 	}
 
 	AzafurePioneerCannon: {
-		DisplayName: 阿萨福勒先驱炮
+		DisplayName: 地狱工业先驱炮
 		Tooltip:
 			'''
 			长按鼠标左键蓄力装填弹药，最多装填5发
@@ -2696,7 +2700,7 @@ Items: {
 		Tooltip:
 			'''
 			按下[KEY]键向准星方向影遁突进，斩击路径上的敌人
-			斩击基础伤害为25点，冷却30秒
+			斩击基础伤害为40点，冷却30秒
 			突进后1.5秒内伤害提高10%
 			'''
 	}
@@ -2748,7 +2752,8 @@ Items: {
 		DisplayName: 日祀圣物
 		Tooltip:
 			'''
-			命中敌人时有1/4概率天降圣光箭，基础伤害为180点
+			伤害和暴击率增加5%
+			命中敌人时有1/2概率天降圣光箭，基础伤害为150点
 			该效果有0.5秒内置冷却
 			诱饵充能上限提升到2格，可以连续投出两枚诱饵
 			'''
@@ -2760,7 +2765,7 @@ Items: {
 			'''
 			+[A]%伤害
 			对生命不低于90%的敌人，首次命中会附加一次暗影爆
-			暗影爆基础伤害为16点，每个敌人只触发一次
+			暗影爆基础伤害为25点，每个敌人只触发一次
 			'''
 	}
 
@@ -2874,12 +2879,12 @@ Items: {
 	}
 
 	AcropolisRelic: {
-		DisplayName: 阿萨福勒卫城机甲圣物
+		DisplayName: 地狱卫城机甲圣物
 		Tooltip: ""
 	}
 
 	AcropolisTrophy: {
-		DisplayName: 阿萨福勒卫城机甲纪念章
+		DisplayName: 地狱卫城机甲纪念章
 		Tooltip: ""
 	}
 
@@ -2894,7 +2899,7 @@ Items: {
 			'''
 			+75 最大生命值
 			拥有神话护身符的效果，治疗药水冷却减少25%
-			减益持续时间减少33%
+			持续扣血的减益(如着火、中毒)持续时间减少33%
 			大幅提升自然生命再生(6/s)，并每秒直接回复1点生命
 			走过草地时长出草药(按住Shift右键开关)
 			站在草药上+20防御力
@@ -2911,7 +2916,7 @@ Items: {
 		DisplayName: Cayde的复仇
 		Tooltip:
 			'''
-			每6发会发射一发高伤害烈日子弹，造成死亡标记减益
+			每6发会发射一发高伤害烈日子弹，造成死亡标记减益和3秒[cebuff:CalamityEntropy/SunblazeBurn]
 			$解决一个需要被杀的人，方法实在太多
 			'''
 	}
@@ -3014,7 +3019,7 @@ Items: {
 	}
 
 	AzafureDetectionEquipment: {
-		DisplayName: 阿萨福勒推进器
+		DisplayName: 地狱工业推进器
 		Tooltip:
 			'''
 			获得轻微的推进
@@ -3094,7 +3099,11 @@ Items: {
 
 	LushGrassclassics: {
 		DisplayName: 繁茂芸编
-		Tooltip: 发射出能造成多次伤害的藤蔓
+		Tooltip:
+			'''
+			发射出能造成多次伤害的藤蔓
+			每次攻击仅对最先命中的5个敌人施加[cebuff:CalamityEntropy/BonePiercingToxin]
+			'''
 	}
 
 	MiracleWreckage: {
@@ -3117,12 +3126,12 @@ Items: {
 	}
 
 	AzafureFurnace: {
-		DisplayName: 阿萨福勒电熔炉
+		DisplayName: 地狱工业电熔炉
 		Tooltip: 射出追踪的能量球，击中后炸开
 	}
 
 	AzafurePulseWand: {
-		DisplayName: 阿萨福勒脉冲杖
+		DisplayName: 地狱工业脉冲杖
 		Tooltip:
 			'''
 			按住鼠标左键扫描周围的目标，最多标记6个目标
@@ -3146,7 +3155,7 @@ Items: {
 	}
 
 	AzafureRailgun: {
-		DisplayName: 阿萨福勒轨道炮
+		DisplayName: 地狱工业轨道炮
 		Tooltip:
 			'''
 			蓄力然后发射一发强力的电磁弹
@@ -3155,12 +3164,12 @@ Items: {
 	}
 
 	AzafureDroneRemote: {
-		DisplayName: 阿萨福勒无人机遥控器
+		DisplayName: 地狱工业无人机遥控器
 		Tooltip: 召唤一架会朝敌人发射导弹的无人机
 	}
 
 	AzafureHealingTowerRemote: {
-		DisplayName: 阿萨福勒治疗塔遥控
+		DisplayName: 地狱工业治疗塔遥控
 		Tooltip:
 			'''
 			部署一台治疗塔，为附近的玩家回复生命值，并在空闲时使用激光攻击附近敌怪
@@ -3190,12 +3199,12 @@ Items: {
 		Tooltip:
 			'''
 			根据手持物品随机对你的属性加成进行修改
-			它的全称是"阿萨福勒『指标再分配』模块"
+			它的全称是"地狱工业『指标再分配』模块"
 			'''
 	}
 
 	AzafureProtectiveCannon: {
-		DisplayName: 阿萨福勒城防炮发讯器
+		DisplayName: 地狱工业城防炮发讯器
 		Tooltip:
 			'''
 			定点打击目标位置，造成范围伤害
@@ -3204,7 +3213,7 @@ Items: {
 	}
 
 	AzafureTBMTerminal: {
-		DisplayName: 阿萨福勒盾构机终端
+		DisplayName: 地狱工业盾构机终端
 		Tooltip:
 			'''
 			操控一架盾构机，距离玩家过远会变得难以控制
@@ -3251,17 +3260,17 @@ Items: {
 	}
 
 	AzafureDrill: {
-		DisplayName: 阿萨福勒手提钻
+		DisplayName: 地狱工业手提钻
 		Tooltip: ""
 	}
 
 	AzafurePowerSaw: {
-		DisplayName: 阿萨福勒动力锯
+		DisplayName: 地狱工业动力锯
 		Tooltip: 命中时持续切割目标
 	}
 
 	AzafureElectrocauteryWand: {
-		DisplayName: 阿萨福勒电灼杖
+		DisplayName: 地狱工业电灼杖
 		Tooltip:
 			'''
 			充能发射脉冲炸弹
@@ -3334,17 +3343,17 @@ Items: {
 	}
 
 	AzafureHeavyArmor: {
-		DisplayName: 阿萨福勒重型护甲
+		DisplayName: 地狱工业重型护甲
 		Tooltip: ""
 	}
 
 	AzafureHeavyHelmet: {
-		DisplayName: 阿萨福勒重型头盔
+		DisplayName: 地狱工业重型头盔
 		Tooltip: ""
 	}
 
 	AzafureHeavyLeggings: {
-		DisplayName: 阿萨福勒重型腿甲
+		DisplayName: 地狱工业重型腿甲
 		Tooltip: ""
 	}
 
@@ -3369,12 +3378,12 @@ Items: {
 	}
 
 	AzafureEKatana: {
-		DisplayName: 阿萨福勒电太刀
+		DisplayName: 地狱工业电太刀
 		Tooltip: '''"电光飞溅"'''
 	}
 
 	AzafureCogfly: {
-		DisplayName: 阿萨福勒齿轮蜂
+		DisplayName: 地狱工业齿轮蜂
 		Tooltip: 召唤一只自动攻击敌人的齿轮蜂
 	}
 
@@ -3459,7 +3468,7 @@ Items: {
 	}
 
 	AzafureTacticalRadio: {
-		DisplayName: 阿萨福勒战术电台
+		DisplayName: 地狱工业战术电台
 		Tooltip: 部署一台导弹发射井，锁定最近的目标并朝其发射导弹
 	}
 
@@ -3474,7 +3483,7 @@ Items: {
 	}
 
 	AzafureCylinder: {
-		DisplayName: 阿萨福勒音桶
+		DisplayName: 地狱工业音桶
 		Tooltip:
 			'''
 			发射出带电的金属球，靠近敌人炸开
@@ -3569,7 +3578,7 @@ Items: {
 	}
 
 	AzafurePeaceKey: {
-		DisplayName: 阿萨福勒和平密钥
+		DisplayName: 地狱工业和平密钥
 		Tooltip:
 			'''
 			召唤一台核弹发射井，它会向附近目标发送“和平使者”
@@ -3578,7 +3587,7 @@ Items: {
 	}
 
 	AzafureDriverCore: {
-		DisplayName: 阿萨福勒驱动核心
+		DisplayName: 地狱工业驱动核心
 		Tooltip:
 			'''
 			为你提供[S]点护盾
@@ -3713,17 +3722,17 @@ Items: {
 	}
 
 	AzafureSteamKnightArmor: {
-		DisplayName: 阿萨福勒蒸汽骑士护甲
+		DisplayName: 地狱工业蒸汽骑士护甲
 		Tooltip: ""
 	}
 
 	AzafureSteamKnightHelmet: {
-		DisplayName: 阿萨福勒蒸汽骑士头盔
+		DisplayName: 地狱工业蒸汽骑士头盔
 		Tooltip: ""
 	}
 
 	AzafureSteamKnightLeggings: {
-		DisplayName: 阿萨福勒蒸汽骑士护腿
+		DisplayName: 地狱工业蒸汽骑士护腿
 		Tooltip: ""
 	}
 
@@ -3776,7 +3785,7 @@ Items: {
 	}
 
 	AcropolisHeavyArmor: {
-		DisplayName: 阿萨福勒卫城重甲
+		DisplayName: 地狱工业卫城重甲
 		Tooltip:
 			'''
 			+8% 暴击率
@@ -3785,7 +3794,7 @@ Items: {
 	}
 
 	AcropolisHeavyHelmet: {
-		DisplayName: 阿萨福勒卫城重盔
+		DisplayName: 地狱工业卫城重盔
 		Tooltip:
 			'''
 			+10% 伤害
@@ -3794,7 +3803,7 @@ Items: {
 	}
 
 	AcropolisHeavyLegArmor: {
-		DisplayName: 阿萨福勒卫城腿甲
+		DisplayName: 地狱工业卫城腿甲
 		Tooltip:
 			'''
 			+15% 移速
@@ -3860,8 +3869,8 @@ Items: {
 		DisplayName: 治愈护符
 		Tooltip:
 			'''
-			+8%召唤伤害
-			每有一个召唤栏位，增加0.5/s生命再生，最多增加3/s
+			+5%召唤伤害
+			每有一个召唤栏位，增加0.5/s生命再生，最多增加2/s
 			'''
 	}
 
@@ -3869,8 +3878,8 @@ Items: {
 		DisplayName: 庇护护符
 		Tooltip:
 			'''
-			+8%召唤伤害
-			每有一个召唤栏位，增加2点防御，最多增加12点
+			+5%召唤伤害
+			每有一个召唤栏位，增加2点防御，最多增加6点
 			'''
 	}
 
@@ -3908,6 +3917,7 @@ Items: {
 			'''
 			从翻开的书页中发射血液，命中时有概率为你回复生命值
 			敌怪死亡后产生血爆
+			无视目标10点护甲
 			'''
 	}
 
@@ -3918,7 +3928,11 @@ Items: {
 
 	SpectralWhispers: {
 		DisplayName: 魂语秘卷
-		Tooltip: 发射会黏附在敌人和物块上并爆炸的低语尖刺
+		Tooltip:
+			'''
+			发射会黏附在敌人和物块上并爆炸的低语尖刺
+			无视目标10点护甲
+			'''
 	}
 
 	BookmarkBloodthirsty: {
@@ -3986,8 +4000,8 @@ Items: {
 	}
 
 	SignalBlocker: {
-		DisplayName: 信号屏蔽器
-		Tooltip: 标记为收藏以阻止阿萨福勒卫城机甲自然生成
+		DisplayName: 地狱信号增幅器
+		Tooltip: 召唤地狱卫城机甲，只能在地狱使用
 	}
 
 	Filthless: {
@@ -4002,7 +4016,7 @@ Items: {
 	}
 
 	AzafureMissile: {
-		DisplayName: 阿萨福勒导弹
+		DisplayName: 地狱工业导弹
 		Tooltip:
 			'''
 			每个黏附的射弹增加2%目标受到伤害
@@ -4093,7 +4107,6 @@ Items: {
 		DisplayName: 莱拉
 		Tooltip:
 			'''
-			+6 防御
 			+40 最大生命值
 			+2/s 生命再生
 			给予你和附近队友蜂蜜增益
@@ -4127,6 +4140,7 @@ Items: {
 			'''
 			射击同时进行充能，完全充能需要3秒
 			充能完毕时松开鼠标左键会释放一道威力巨大的火焰射线
+			火焰射线最多穿透 5 个敌人
 			'''
 	}
 
@@ -4134,8 +4148,8 @@ Items: {
 		DisplayName: 灼烬护甲
 		Tooltip:
 			'''
-			+2/s 生命再生
-			+8% 伤害减免
+			免疫击退
+			+3% 伤害减免
 			免疫岩浆和着火伤害
 			'''
 	}
@@ -4149,8 +4163,8 @@ Items: {
 		DisplayName: 灼烬头盔
 		Tooltip:
 			'''
-			+8%伤害
-			+5%暴击率
+			+9%伤害
+			+9%暴击率
 			'''
 	}
 
@@ -4202,8 +4216,8 @@ Items: {
 	}
 
 	AzafureSupportRemote: {
-		DisplayName: 阿萨福勒支援遥控
-		Tooltip: 召唤一架阿萨福勒迷你战斗机，向敌人发射穿甲弹
+		DisplayName: 地狱工业支援遥控
+		Tooltip: 召唤一架地狱工业迷你战斗机，向敌人发射穿甲弹
 	}
 
 	AerialiteMissile: {
@@ -4246,8 +4260,8 @@ Items: {
 	}
 
 	AzafurePhonograph: {
-		DisplayName: 阿萨福勒留声机
-		Tooltip: 播放阿萨福勒卫城机甲的主题曲
+		DisplayName: 地狱工业留声机
+		Tooltip: 播放地狱卫城机甲的主题曲
 	}
 
 	BuriedSun: {
@@ -4280,7 +4294,7 @@ Items: {
 	}
 
 	AzafureImperialGuardMachineGun: {
-		DisplayName: 阿萨福勒近卫机枪
+		DisplayName: 地狱工业近卫机枪
 		Tooltip:
 			'''
 			使用[i:CalamityEntropy/HellIndustrialComponents]地狱工业构件为武器装载[AMMOMAX]发弹药
@@ -4289,12 +4303,12 @@ Items: {
 	}
 
 	AzafureExhaustGasInjector: {
-		DisplayName: 阿萨福勒废气喷射器
+		DisplayName: 地狱工业废气喷射器
 		Tooltip: 喷射腐蚀性废气
 	}
 
 	AzafureStandardShotgun: {
-		DisplayName: 阿萨福勒制式霰弹
+		DisplayName: 地狱工业制式霰弹
 		Tooltip: 发射散射的霰弹
 	}
 
@@ -4423,7 +4437,7 @@ Items: {
 	}
 
 	AzafureMicroBeacon: {
-		DisplayName: 阿萨福勒微型信标
+		DisplayName: 地狱工业微型信标
 		Tooltip:
 			'''
 			{$BaitCommonTooltip1}
@@ -4543,12 +4557,12 @@ Items: {
 	}
 
 	AzafureWarSatelliteAuthorizationKey: {
-		DisplayName: 阿萨福勒战争卫星密钥
+		DisplayName: 地狱工业战争卫星密钥
 		Tooltip:
 			'''
 			{$BaitCommonTooltip1}
 			{$BaitCommonTooltip2}
-			召唤阿萨福勒战争卫星打击目标
+			召唤地狱工业战争卫星打击目标
 			'''
 	}
 
@@ -4563,7 +4577,7 @@ Items: {
 	}
 
 	AzafureTwinSaw: {
-		DisplayName: 阿萨福勒双锯
+		DisplayName: 地狱工业双锯
 		Tooltip: 上下挥舞，随后将两把锯子贴合并向前喷射火花
 	}
 
@@ -4581,19 +4595,19 @@ Items: {
 	}
 
 	AzafureCircuitry: {
-		DisplayName: 阿扎弗电路
+		DisplayName: 地狱工业电路
 		Tooltip:
 			'''
-			阿扎弗机械的核心线路，细密的走线至今仍在发烫
+			地狱工业机械的核心线路，细密的走线至今仍在发烫
 			把地狱工业组件放进提炼机，有机会拆出它
 			'''
 	}
 
 	AzafurePlating: {
-		DisplayName: 阿扎弗镀层
+		DisplayName: 地狱工业镀层
 		Tooltip:
 			'''
-			耐熔的阿扎弗装甲切片，边缘还留着弹痕
+			耐熔的地狱工业装甲切片，边缘还留着弹痕
 			把地狱工业组件放进提炼机，有机会拆出它
 			'''
 	}
@@ -4799,7 +4813,7 @@ Items: {
 	}
 
 	AzafureAirReaper: {
-		DisplayName: 阿萨福勒压力统镰
+		DisplayName: 地狱工业压力统镰
 		Tooltip:
 			'''
 			扔出一把镰刀，击中后黏附在目标上造成多次伤害
@@ -4809,7 +4823,7 @@ Items: {
 	}
 
 	AzafureLightMachineGun: {
-		DisplayName: 阿萨福勒轻机枪
+		DisplayName: 地狱工业轻机枪
 		Tooltip:
 			'''
 			快速发射激光
@@ -4819,7 +4833,7 @@ Items: {
 	}
 
 	AzafureSurgeRod: {
-		DisplayName: 阿萨福勒电涌钎
+		DisplayName: 地狱工业电涌钎
 		Tooltip:
 			'''
 			击中后插在目标上，一段时间后朝附近的其他目标迸发出闪电
@@ -4958,7 +4972,7 @@ Items: {
 	}
 
 	AzafureSwirlblade: {
-		DisplayName: 阿萨福勒轮刃
+		DisplayName: 地狱工业轮刃
 		Tooltip:
 			'''
 			飞行一段时间或触碰到敌怪时展开锯片，造成多次伤害
@@ -5102,7 +5116,7 @@ ChaoticSetBonus:
 	'''
 VoidEaterBonus:
 	'''
-	增加14%伤害和暴击率
+	增加10%伤害和暴击率
 	增加2最大仆从栏位
 	增加40点最大生命值和60点最大魔力值
 	攻击命中时向目标发射几道激光，有3秒冷却
@@ -5168,7 +5182,7 @@ SunblazeMeleeSetBonus:
 	'''
 	近战伤害和近战暴击率提高10%
 	近战攻速提高20%，生命再生速度提高2.5点/秒
-	25格内的玩家（包括你）获得[cebuff:CalamityEntropy/CozyWarmth]，生命再生速度提高2点/秒
+	45格内的玩家（包括你）获得[cebuff:CalamityEntropy/CozyWarmth]，生命再生速度提高2点/秒
 	'''
 SunblazeSummonSetBonus:
 	'''
@@ -5182,7 +5196,7 @@ StarmoonMagicSetBonus:
 	'''
 	魔法伤害和魔法暴击率增加13%
 	魔法攻击暴击时，在目标处产生十字星爆，每3秒最多触发一次
-	十字星爆造成1800点基础魔法伤害，消失时为你恢复8点生命值
+	十字星爆造成900点基础魔法伤害，消失时为你恢复8点生命值
 	'''
 StarmoonRangedSetBonus:
 	'''
@@ -5190,7 +5204,7 @@ StarmoonRangedSetBonus:
 	射出的箭矢不会下坠
 	自己发射的火箭、榴弹等远程爆炸物不会炸伤自己
 	为100格内离你最近的敌人加上月亮标记
-	远程攻击命中被标记的敌人时，获得1.5秒[cebuff:CalamityEntropy/StarlightLock]
+	远程攻击命中被标记的敌人时，获得5秒[cebuff:CalamityEntropy/StarlightLock]
 	'''
 
 VDAftermath: {
@@ -5627,7 +5641,7 @@ Projectiles: {
 	IlmeranVortex.DisplayName: 伊尔梅兰漩涡
 	StarSootSmoke.DisplayName: 幻光蛾尘
 	Starblight.DisplayName: 幻星矢
-	AzAAGunHoldout.DisplayName: 阿萨福勒防空炮
+	AzAAGunHoldout.DisplayName: 地狱工业防空炮
 	AntiaircraftShell.DisplayName: 弹壳
 	AzAGShot.DisplayName: 防空炮子弹
 	RockBulletShot.DisplayName: 石头子弹
@@ -5689,24 +5703,24 @@ Projectiles: {
 	MiracleShoot.DisplayName: 神迹刃
 	MiracleWreckageHeld.DisplayName: 神迹残骸
 	Theostring.DisplayName: 神权飘带
-	AzafureFurnaceEnergyBall.DisplayName: 阿萨福勒能量球
-	AzafureFurnaceHoldout.DisplayName: 阿萨福勒电熔炉
+	AzafureFurnaceEnergyBall.DisplayName: 地狱工业能量球
+	AzafureFurnaceHoldout.DisplayName: 地狱工业电熔炉
 	FurnaceBlast.DisplayName: 熔炉脉冲
-	AzafurePulseWandHeld.DisplayName: 阿萨福勒脉冲杖
+	AzafurePulseWandHeld.DisplayName: 地狱工业脉冲杖
 	TeslaLightningRed.DisplayName: 闪电
 	SandBullet.DisplayName: 沙弹
-	AzafureSurgeRodHeldEffect.DisplayName: 阿萨福勒电涌钎
-	AzafureSurgeRodThrow.DisplayName: 阿萨福勒电涌钎
+	AzafureSurgeRodHeldEffect.DisplayName: 地狱工业电涌钎
+	AzafureSurgeRodThrow.DisplayName: 地狱工业电涌钎
 	StarlightMothMinion.DisplayName: 枯星蛾
 	LuminarisMinionAstralShoot.DisplayName: 枯星弹
-	AzafureRailgunHeld.DisplayName: 阿萨福勒轨道炮
+	AzafureRailgunHeld.DisplayName: 地狱工业轨道炮
 	RailgunChargeShot.DisplayName: 轨道炮蓄力弹
 	RailgunSmallShot.DisplayName: 轨道炮分裂弹
-	AzafureDroneMinion.DisplayName: 阿萨福勒无人机
+	AzafureDroneMinion.DisplayName: 地狱工业无人机
 	AzafureDroneBullet.DisplayName: 无人机导弹
-	AzafureHealingTowerSentry.DisplayName: 阿萨福勒治疗塔
-	AzafureProtectiveCannonShot.DisplayName: 阿萨福勒城防炮
-	ATBMProjectile.DisplayName: 阿萨福勒盾构机
+	AzafureHealingTowerSentry.DisplayName: 地狱工业治疗塔
+	AzafureProtectiveCannonShot.DisplayName: 地狱工业城防炮
+	ATBMProjectile.DisplayName: 地狱工业盾构机
 	TlipocasScytheHeld.DisplayName: 特莉波卡的镰刀
 	TSSlash.DisplayName: 斩击
 	TlipocasScytheThrow.DisplayName: 特莉波卡的镰刀
@@ -5720,22 +5734,22 @@ Projectiles: {
 	MalignBullet.DisplayName: 魔灵导弹
 	MalignLightning.DisplayName: 魔灵电弧
 	MalignLaser.DisplayName: 魔灵激光
-	AzafurePowerSawProj.DisplayName: 阿萨福勒动力锯
+	AzafurePowerSawProj.DisplayName: 地狱工业动力锯
 	AzafureElectrocauteryWandHeld.DisplayName: 手持弹幕
 	AzafureElectrocauteryWandBomb.DisplayName: 电磁炸弹
 	Snowgrave.DisplayName: 雪葬
 	DedicatedOracleSlashProj.DisplayName: 监邢之眼
-	ALMGLaser.DisplayName: 阿萨福勒轻机枪子弹
-	AzafureLightMachineGunHeld.DisplayName: 阿萨福勒轻机枪
-	AzafureLightMachineGunStealth.DisplayName: 阿萨福勒轻机枪子弹榴弹
+	ALMGLaser.DisplayName: 地狱工业轻机枪子弹
+	AzafureLightMachineGunHeld.DisplayName: 地狱工业轻机枪
+	AzafureLightMachineGunStealth.DisplayName: 地狱工业轻机枪子弹榴弹
 	ALMGShell.DisplayName: 弹壳
 	PickingSwarm.DisplayName: 蜂群集结
 	BMHammerProjectile.DisplayName: 魔锤
 	CrossBorderPursuitProj.DisplayName: 祟灵之眼
 	CBPSmash.DisplayName: 裂缝
 	BMSwordProjectile.DisplayName: 魔剑
-	AzafureEKatanaSlash.DisplayName: 阿萨福勒电太刀
-	AzafureCogflyMinion.DisplayName: 阿萨福勒齿轮蜂
+	AzafureEKatanaSlash.DisplayName: 地狱工业电太刀
+	AzafureCogflyMinion.DisplayName: 地狱工业齿轮蜂
 	GungnirThrow.DisplayName: 冈格尼尔
 	Sorensen.DisplayName: 索伦森
 	FetalDreamSlash.DisplayName: 斩击
@@ -5746,9 +5760,9 @@ Projectiles: {
 	AzafureRadioMissile.DisplayName: 导弹
 	MissileSilo.DisplayName: 导弹井
 	SentryRemoverHeld.DisplayName: 哨兵拆除器
-	AzafureAirReaperThrow.DisplayName: 阿萨福勒压力统镰
+	AzafureAirReaperThrow.DisplayName: 地狱工业压力统镰
 	FairyBMMinion.DisplayName: 仙灵
-	AzafureCylinderHeld.DisplayName: 阿萨福勒音桶
+	AzafureCylinderHeld.DisplayName: 地狱工业音桶
 	MetalBall.DisplayName: 金属球
 	AzafureMagicBlast.DisplayName: 金属球磁暴
 	Stinger.DisplayName: 毒刺
@@ -5827,7 +5841,7 @@ Projectiles: {
 	AzureVortex.DisplayName: 苍溟漩涡
 	FilthlessMissile.DisplayName: 污祛火箭
 	FilthlessShootAlt.DisplayName: 污祛导弹
-	AzafureMissileProj.DisplayName: 阿萨福勒导弹
+	AzafureMissileProj.DisplayName: 地狱工业导弹
 	DivineShield.DisplayName: 圣盾
 	CrystalSpikePop.DisplayName: 魔晶刺
 	CrystalSpikeThrow.DisplayName: 魔晶刺
@@ -5901,9 +5915,9 @@ Projectiles: {
 	FutureKnifeSpin.DisplayName: 预言飞刀
 	RuneSongHeld.DisplayName: 符文之歌
 	RuneBolt.DisplayName: 符文脉冲束
-	AzafureImperialGuardMachineGunHeld.DisplayName: 阿萨福勒近卫机枪
+	AzafureImperialGuardMachineGunHeld.DisplayName: 地狱工业近卫机枪
 	ImperialGuardShot.DisplayName: 近卫机枪弹
-	AzafureExhaustGasInjectorHeld.DisplayName: 阿萨福勒废气喷射器
+	AzafureExhaustGasInjectorHeld.DisplayName: 地狱工业废气喷射器
 	ExhaustGas.DisplayName: 废气
 	MewMewBombThrow.DisplayName: 喵喵炸弹
 	KinanitionSpawn.DisplayName: 孱弱血亲水弹
@@ -5916,9 +5930,9 @@ Projectiles: {
 	BrillianceSwirlbladeProj.DisplayName: 光耀轮刃
 	FlamingSwirlbladeFlame.DisplayName: 炙炎之火
 	FlamingSwirlbladeProj.DisplayName: 炙炎轮刃
-	AzafureSwirlbladeProj.DisplayName: 阿萨福勒轮刃
+	AzafureSwirlbladeProj.DisplayName: 地狱工业轮刃
 	AzafureSwirlbladeSaw.DisplayName: 锯片
-	AzafureSwirlbladeMissile.DisplayName: 阿萨福勒导弹
+	AzafureSwirlbladeMissile.DisplayName: 地狱工业导弹
 	GlacierSwirlbladeProj.DisplayName: 霜蓝轮刃
 	GlacierSwirlbladeSaw.DisplayName: 霜蓝锯片
 	RunicSwirlbladeBullet.DisplayName: 符文导弹
@@ -5943,8 +5957,8 @@ Projectiles: {
 	WaterBulletSpawner.DisplayName: 水弹标记
 	AntlionShellProjectile.DisplayName: 干缩蚁狮
 	DesertNuisanceFriendly.DisplayName: 黄沙恶虫
-	AzafureAssaultDrone.DisplayName: 阿萨福勒突击无人机
-	AzafureMicroBeaconProjectile.DisplayName: 阿萨福勒微型信标
+	AzafureAssaultDrone.DisplayName: 地狱工业突击无人机
+	AzafureMicroBeaconProjectile.DisplayName: 地狱工业微型信标
 	BeaconDroneShoot.DisplayName: 突击无人机子弹
 	DeliciousAcornProjectile.DisplayName: 美味橡果
 	SquirrerMinion.DisplayName: 松鼠
@@ -5974,15 +5988,15 @@ Projectiles: {
 	SacredStoneSummon.DisplayName: 圣火灵
 	BottledFissureProjectile.DisplayName: 瓶装裂隙
 	VoidEater.DisplayName: 噬虚弹
-	AzafureWarSatelliteAuthorizationKeyProjectile.DisplayName: 阿萨福勒战争卫星密钥
+	AzafureWarSatelliteAuthorizationKeyProjectile.DisplayName: 地狱工业战争卫星密钥
 	SateliteLaser.DisplayName: 卫星激光
-	WarSatellite.DisplayName: 阿萨福勒战争卫星
+	WarSatellite.DisplayName: 地狱工业战争卫星
 	ArbitratorStealthImpact.DisplayName: 仲裁者电弧
 	ArbitratorStealthImpactSpawner.DisplayName: 仲裁者电弧生成器
 	TheDeadCutSlash.DisplayName: 虚妄斩切
 	FooveriaHeld.DisplayName: 霜痕
 	FooveriaIceShard.DisplayName: 霜痕冰片
-	AzafureTwinSawHeld.DisplayName: 阿萨福勒双锯
+	AzafureTwinSawHeld.DisplayName: 地狱工业双锯
 	AzafureSawSpark.DisplayName: 锯片火花
 	// VFChargeFXProj.DisplayName: V F Charge F X Proj
 	// VoidFaquirEnergyBallMelee.DisplayName: Void Faquir Energy Ball Melee
@@ -6105,7 +6119,7 @@ Buffs: {
 	TwistedTwinBuff: {
 		DisplayName: 纠缠双子
 		Description: ""
-		ItemTooltip: 20% 伤害
+		ItemTooltip: 弹幕伤害降低80%
 	}
 
 	Rainstorm: {
@@ -6130,7 +6144,7 @@ Buffs: {
 
 	SoyMilkBuff: {
 		DisplayName: 豆奶
-		Description: 大幅增加攻速，伤害减少70%
+		Description: 攻击速度翻倍，但造成的伤害大幅降低
 	}
 
 	StealthState: {
@@ -6368,7 +6382,7 @@ Buffs: {
 
 	AzafureDrone: {
 		DisplayName: 地狱工业无人机
-		Description: 阿萨福勒轰炸无人机会为你战斗
+		Description: 地狱工业轰炸无人机会为你战斗
 	}
 
 	VoidEmpowerment: {
@@ -6388,7 +6402,7 @@ Buffs: {
 
 	CogflyBuff: {
 		DisplayName: 齿轮蜂
-		Description: 阿萨福勒齿轮蜂将为你战斗
+		Description: 地狱工业齿轮蜂将为你战斗
 	}
 
 	ChaosTyrant: {
@@ -6441,7 +6455,7 @@ Buffs: {
 	BonePiercingToxin: {
 		DisplayName: 穿骨毒素
 		Description: 你感到钻心的疼痛
-		ItemTooltip: 每秒造成24点伤害
+		ItemTooltip: 每秒造成10点伤害
 	}
 
 	FlamingBlood: {
@@ -6762,7 +6776,7 @@ NPCs: {
 
 		BossChecklistIntegration: {
 			EntryName: 先知
-			SpawnInfo: 在地牢使用[i:CalamityEntropy/ProphecyToken]召唤
+			SpawnInfo: 在任意地点使用[i:CalamityEntropy/ProphecyToken]召唤
 			DespawnMessage: ""
 		}
 	}
@@ -6780,11 +6794,11 @@ NPCs: {
 	}
 
 	AcropolisMachine: {
-		DisplayName: 阿萨福勒卫城机甲
+		DisplayName: 地狱卫城机甲
 
 		BossChecklistIntegration: {
-			EntryName: 阿萨福勒卫城机甲
-			SpawnInfo: 在地狱小概率生成
+			EntryName: 地狱卫城机甲
+			SpawnInfo: 在地狱使用[i:CalamityEntropy/SignalBlocker]召唤
 			DespawnMessage: ""
 		}
 	}
@@ -6887,7 +6901,7 @@ Keybinds: {
 	RuneDash.DisplayName: 符文之翼冲刺
 	CommandMinions.DisplayName: 命令仆从
 	NihilityAndChaoticArmorConnectKey.DisplayName: 噬虚者&混沌套装连接
-	AcropolisMechTransformation.DisplayName: 激活阿萨福勒卫城重甲机甲模式
+	AcropolisMechTransformation.DisplayName: 激活地狱工业卫城重甲机甲模式
 	ArmorSetBonus.DisplayName: 盔甲套装技能
 	Dash.DisplayName: 冲刺
 	AccessoryAbility.DisplayName: 饰品主动技能
@@ -6908,6 +6922,7 @@ CdDS: 神圣干预冷却
 CdAntivoid: 返虚冲刺冷却
 AbyssalStorm: 深渊狂舞冷却
 YoungMasterDashCD: 冲刺攻击冷却
+VoidshadeDashCD: 虚影薄锋突刺冷却
 CruiserBestiary:
 	'''
 	来源于虚空的顶级猎杀者，以巨蟒之姿巡曳于现实的缝隙之间。
@@ -6935,7 +6950,7 @@ ProphetBestiary:
 	一个可悲的破碎灵魂，因潜藏于虚空入侵的表象背后，更为恐怖的真相而疯狂。
 	被束缚于典籍的它一遍遍重复着无意义的嘶吼与低语，绝望且徒劳的向它人传达着它所见之物。
 	'''
-LuminarisBestiary: 被星辉所感染的一只巨蛾，它存在的目的即是散播星辉瘟疫
+LuminarisBestiary: 一种隐匿于夜空中的巨型昆虫，将星光储存在身体内用于发起攻击。它格外喜欢星星口味的蜜露。
 ApsychosBestiary:
 	'''
 	在岩浆深处游荡的生物，身上的甲壳由地壳岩石构成。
@@ -7060,6 +7075,11 @@ Configs: {
 			Label: 启用护甲词条
 			Tooltip: 关闭此项将禁用所有词条物品的合成配方和自然世界生成
 		}
+
+		BaseMobilityBoost: {
+			Label: 提升基础机动性
+			Tooltip: 开启后，所有玩家的移动速度提高 25%。没有装备其他冲刺饰品或原版冲刺装备时，双击方向键或按下「冲刺」键，可以向前冲刺约 6 格，冲刺结束后有 0.75 秒冷却
+		}
 	}
 }
 
@@ -7094,7 +7114,7 @@ helmvfl:
 	'''
 helmvfe:
 	'''
-	+32% 召唤伤害
+	+40% 召唤伤害
 	+4 召唤栏
 	召唤一只迷你虚空吞噬者协助战斗
 	'''
@@ -7355,7 +7375,7 @@ Owner: 所有者：
 ShadowDashCD: 暗影突进冷却
 ShadeCloakDashCD: 暗影冲刺冷却
 RPDonorName: 冷级
-Acropolis: 阿萨福勒量产的攻击型机甲，曾被用于大规模战争
+Acropolis: 古代文明遗留下的战争机器，曾用于抵御来自岩浆深处的庞然大物。
 OblivionThretherCooldown: 虚漩巡锯突进冷却
 LilyDeath0: "{0}被污秽所吞噬"
 LilyDeath1: "{0}的守护宝具破碎了"
@@ -7450,6 +7470,9 @@ NowLV: 当前等级
 AnyOrichalcumBar: 秘银锭或山铜锭
 AnyEvilBar: 猩红锭或魔矿锭
 IronBar: 铁定或铅锭
+PostMoonLordRodHarmony: 月亮领主或月后 Boss 在场时无法使用
+PostMoonLordRodDiscord: 月亮领主或月后 Boss 在场时，混乱状态持续 11 秒，期间无法再次传送
+GolemFirstKillDrop: 首次击败石巨人时必定掉落
 AnyFairy: 任意仙灵
 Gems: 任意宝石
 Butterflies: 任意蝴蝶
@@ -7463,7 +7486,7 @@ AstralFishing: 星辉地钓鱼获取
 EvilFishing: 腐化之地或猩红之地钓鱼获取
 AzafureSet:
 	'''
-	穿着此盔甲时所有阿萨福勒装备将获得部分强化
+	穿着此盔甲时所有地狱工业装备将获得部分强化
 	获得一条耐力条
 	耐力条会为你提供至多12点护甲与16%伤害减免，同时减慢你的移动速度
 	在受到伤害时会根据伤害值扣除耐力，耐力减少同时会使你的防御和减伤暂时降低
@@ -7473,9 +7496,9 @@ AzafureSet:
 	'''
 AzafureSet2:
 	'''
-	穿着此盔甲时所有阿萨福勒装备将获得部分强化
+	穿着此盔甲时所有地狱工业装备将获得部分强化
 	获得一条耐力条
-	耐力条会为你提供至多24点护甲与20%伤害减免
+	耐力条会为你提供至多20点护甲与20%伤害减免
 	在受到伤害时会根据伤害值扣除耐力，耐力减少同时会使你的防御和减伤暂时降低
 	耐力会在受击5秒后缓慢回复
 	当耐力清空时会失效，并需要一段时间重新启用
@@ -7486,7 +7509,7 @@ AzafureSet2:
 AzafureSet3:
 	'''
 	免疫摔落伤害
-	穿着此盔甲时所有阿萨福勒装备将获得部分强化
+	穿着此盔甲时所有地狱工业装备将获得部分强化
 	获得一条耐力条
 	耐力条会为你提供至多36点护甲与24%伤害减免
 	在受到伤害时会根据伤害值扣除耐力，耐力减少同时会使你的防御和减伤暂时降低
@@ -7677,13 +7700,12 @@ SusiesBraceletCal:
 CWRQuest: {
 	AcropolisMachine: {
 		Title: 锈海低鸣
-		Summary: 击败在地狱里自己走动的阿萨福勒卫城机甲
-		Objective: 击败阿萨福勒卫城机甲
+		Summary: 在地狱召唤并击败地狱卫城机甲
+		Objective: 击败地狱卫城机甲
 		Detail:
 			'''
-			它在地狱自然生成，平时不会主动攻击你
-			把它的生命打到 98% 以下就会正式开战
-			这个对手没有召唤物，只能去地狱里找
+			在地狱使用地狱信号增幅器召唤它，召唤后立即开战
+			地狱信号增幅器在砧上合成，需要 20 个铁锭或铅锭、10 个黑曜石和 1 个熔岩桶
 			'''
 	}
 
@@ -7716,7 +7738,7 @@ CWRQuest: {
 		Detail:
 			'''
 			在秘银砧上用书、光明之魂与灵液做出预言信物
-			进地牢之后再使用，其他地方用不出来
+			做好后可在任意地点使用
 			'''
 	}
 
@@ -7855,7 +7877,7 @@ CWRQuest: {
 	AzafureMiner: {
 		Title: 自动化矿脉
 		Summary: 让机器替你挖矿
-		Objective: 在世界里放下一台阿萨福勒数字型采矿机
+		Objective: 在世界里放下一台地狱工业数字型采矿机
 		Detail:
 			'''
 			在重型工作台或秘银砧上制作，配方要用到地狱工业元件

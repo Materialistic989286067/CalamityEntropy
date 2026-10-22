@@ -12,8 +12,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Nemesis
     {
         public string DevName => "锯角";
         private int fireIndex;
-        //普通挥砍的方向,每次左键交替下劈 / 上撩
-        private int swingDir = 1;
         public override void SetDefaults() {
             Item.height = 154;
             Item.width = 154;
@@ -33,7 +31,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Nemesis
             Item.shoot = ModContent.ProjectileType<NemesisHeld>();
             Item.shootSpeed = 18f;
             fireIndex = 0;
-            swingDir = 1;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
@@ -52,10 +49,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Nemesis
             if (player.altFunctionUse == 2) {
                 newLevel = 2;
             }
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, newLevel, swingDir);
-            if (newLevel == 0) {
-                swingDir *= -1;
-            }
+            //ai[1] 恒为 +1:每次都从上往下劈,不再往返
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, newLevel, 1f);
             return false;
         }
 

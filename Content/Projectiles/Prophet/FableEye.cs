@@ -1,6 +1,7 @@
 ﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.NPCs.Prophet.Core;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Audio;
@@ -123,7 +124,7 @@ namespace CalamityEntropy.Content.Projectiles.Prophet
         }
         float yx = 0;
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
-            target.AddBuff(ModContent.BuffType<SoulDisorder>(), 8 * 60);
+            target.AddDebuffFixed(ModContent.BuffType<SoulDisorder>(), ProphetDirector.SoulDisorderFrames);
         }
 
         public override bool PreDraw(ref Color lightColor) {

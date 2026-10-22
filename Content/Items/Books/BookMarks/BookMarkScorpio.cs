@@ -32,6 +32,8 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     public class ScorpioEffectNPC : GlobalNPC
     {
         public override bool InstancePerEntity => true;
+        public const int TickDamage = 60;
+        public const float ArmorPen = 100f;
         public float effectLevel = 0;
         public override void AI(NPC npc) {
             if (effectLevel > 0) {
@@ -43,7 +45,9 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             }
             if (effectLevel > 0) {
                 if (Main.GameUpdateCount % 30 == 0 && !npc.dontTakeDamage) {
-                    NPC.HitInfo hitInfo = npc.CalculateHitInfo(50, 0, false, 0, DamageClass.Magic);
+                    NPC.HitModifiers hitMods = npc.GetIncomingStrikeModifiers(DamageClass.Magic, 0);
+                    hitMods.ArmorPenetration += ArmorPen;
+                    NPC.HitInfo hitInfo = hitMods.ToHitInfo(TickDamage, false, 0f);
                     hitInfo.HideCombatText = true;
                     CombatText.NewText(npc.getRect(), Color.DeepSkyBlue, npc.StrikeNPC(hitInfo));
 

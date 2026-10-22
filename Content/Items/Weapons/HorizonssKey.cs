@@ -37,10 +37,10 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class HorizonssKey : ModItem
     {
         // 装灾厄补回成长曲线(棺体/穿甲/暴击/虚空之触/进度提示),职业定位保持 4.0 召唤。
-        // 栏位占用 2026-09-11 由 8 降到 4,两个时代同值(SamsaraCasketProj 的 minionSlots 读同一个常量)
-        public const int BaseDamage = 50;
-        public const float MinionSlotCost = 4f;
-        // 联动灾厄时全阶段翻倍。所有剑与派生弹幕的伤害都从 GetWeaponDamage(HeldItem) 或 Item.damage 长出来,
+        // 栏位占用 5,SamsaraCasketProj 的 minionSlots 读同一个常量
+        public const int BaseDamage = 25;
+        public const float MinionSlotCost = 5f;
+        // 联动灾厄时全阶段翻倍。所有剑与派生弹幕的伤害都从 GetWeaponDamage(FindKey) 或 Item.damage 长出来,
         // 所以只翻面板这一个源头就够,不需要在 setDamage 和各处 spawn 里各乘一遍
         public const float CalDamageMult = 2f;
         public static int CurrentBaseDamage => CERef.Has ? (int)(BaseDamage * CalDamageMult) : BaseDamage;
@@ -90,6 +90,24 @@ namespace CalamityEntropy.Content.Items.Weapons
             return true;
         }
 
+
+        /// <summary>手持优先,其次背包里的第一把,都没有返回 null</summary>
+        public static Item FindKey(Player player) {
+            int type = ModContent.ItemType<HorizonssKey>();
+            if (player.HeldItem.type == type) {
+                return player.HeldItem;
+            }
+            for (int i = 0; i < 58; i++) {
+                if (player.inventory[i].type == type) {
+                    return player.inventory[i];
+                }
+            }
+            return null;
+        }
+
+        public override void UpdateInventory(Player player) {
+            player.Entropy().sCasketLevel = GetCasketLevel();
+        }
 
         public override void HoldItem(Player player) {
             player.Entropy().sCasketLevel = GetCasketLevel();

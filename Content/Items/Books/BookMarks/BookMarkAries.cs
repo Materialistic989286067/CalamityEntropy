@@ -23,7 +23,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
     }
 
-    /// <summary>白羊座书签(2026-08-31 平衡案重做):攻击时召唤暗影之手伤害敌人(固定基伤20)。</summary>
+    /// <summary>白羊座书签(2026-08-31 平衡案重做):攻击时召唤暗影之手伤害敌人(固定基伤35)。</summary>
     public class AriesBMEffect : EBookProjectileEffect
     {
         public override void OnShoot(EntropyBookHeldProjectile book) {
@@ -32,7 +32,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             NPC target = proj.FindTargetWithinRange(900, false);
             Vector2 pos = target != null ? target.Center : Main.MouseWorld;
             Projectile.NewProjectile(proj.GetSource_FromAI(), pos, Vector2.Zero,
-                ModContent.ProjectileType<AriesShadowHand>(), FixedDamage(owner, 20, proj.DamageType), 2f, proj.owner);
+                ModContent.ProjectileType<AriesShadowHand>(), FixedDamage(owner, 35, proj.DamageType), 2f, proj.owner);
         }
     }
 

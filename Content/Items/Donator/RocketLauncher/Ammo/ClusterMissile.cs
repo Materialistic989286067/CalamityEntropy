@@ -18,7 +18,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
             Item.value = Item.sellPrice(copper: 12);
             Item.rare = ItemRarityID.Orange;
             Item.ammo = BaseMissileProj.AmmoType;
-            Item.damage = 11;
+            Item.damage = 16;
             Item.shoot = ModContent.ProjectileType<ClusterMissileProj>();
             Item.consumable = true;
             Item.DamageType = DamageClass.Ranged;

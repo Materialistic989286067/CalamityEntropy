@@ -38,8 +38,8 @@ namespace CalamityEntropy.Content.Projectiles
                     float d = (mo * 0.024f - 4.5f * 0.024f) * Projectile.GetOwner().direction * ((Projectile.ai[0] % 50 < 25) ? 1 : -1);
                     if (owner.CheckMana(5, true)) {
                         if (Main.myPlayer == Projectile.owner) {
-                            Vector2 vel = Projectile.velocity.RotatedBy(d) * 2f;
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - vel * 2, vel, ModContent.ProjectileType<DivineRadienceBullet>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                            Vector2 vel = Projectile.velocity.RotatedBy(d) * 1f;
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - vel * 4, vel, ModContent.ProjectileType<DivineRadienceBullet>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                         }
                         if (!Main.dedServ) {
                             CEUtils.PlaySound("soulshine", Main.rand.NextFloat(0.8f, 1.2f), Projectile.Center, 8, 0.4f);

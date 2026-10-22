@@ -31,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override void BookUpdate(Projectile projectile, bool s) {
             if (s && projectile.ModProjectile is EntropyBookHeldProjectile book) {
                 if (Main.GameUpdateCount % 50 == 0) {
-                    Projectile.NewProjectile(projectile.GetSource_FromAI(), projectile.Center, projectile.velocity * 0.6f, ModContent.ProjectileType<NovaSlimerProj>(), EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 320, projectile.DamageType), projectile.knockBack, projectile.owner);
+                    Projectile.NewProjectile(projectile.GetSource_FromAI(), projectile.Center, projectile.velocity * 0.6f, ModContent.ProjectileType<NovaSlimerProj>(), EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 220, projectile.DamageType), projectile.knockBack, projectile.owner);
                 }
             }
         }

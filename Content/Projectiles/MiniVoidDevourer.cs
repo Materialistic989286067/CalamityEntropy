@@ -47,7 +47,7 @@ namespace CalamityEntropy.Content.Projectiles
             }
             NPC target = owner.HasMinionAttackTargetNPC && Main.npc[owner.MinionAttackTargetNPC].active
                 ? Main.npc[owner.MinionAttackTargetNPC]
-                : Projectile.FindTargetWithinRange(1100, false);
+                : FindTarget(Projectile, 1100);
             if (target != null && target.active) {
                 Vector2 toTarget = target.Center - Projectile.Center;
                 if (chargeCd <= 0 && toTarget.Length() < 900) {
@@ -81,6 +81,24 @@ namespace CalamityEntropy.Content.Projectiles
                 d.noGravity = true;
                 d.scale = 1.1f;
             }
+        }
+
+        /// <summary>原版 FindTargetWithinRange 会跳过本地无敌帧内的 NPC,命中一次就丢目标并飞回玩家身边</summary>
+        private static NPC FindTarget(Projectile proj, float range) {
+            NPC result = null;
+            float best = range;
+            for (int i = 0; i < Main.maxNPCs; i++) {
+                NPC n = Main.npc[i];
+                if (!n.CanBeChasedBy(proj)) {
+                    continue;
+                }
+                float d = proj.Distance(n.Center);
+                if (d < best) {
+                    best = d;
+                    result = n;
+                }
+            }
+            return result;
         }
 
         private static void ChainFollow(ref Vector2 seg, Vector2 ahead, float dist) {

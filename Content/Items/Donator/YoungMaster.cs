@@ -20,9 +20,8 @@ namespace CalamityEntropy.Content.Items.Donator
         public string DonatorName => "无华";
 
         public override void AddRecipes() {
-            // 灾厄原料按 material-map.md 替换：SaharaSlicers→光辉飞盘
             CreateRecipe()
-                .AddCalOrOwn(CEID.Item_SaharaSlicers, ItemID.LightDisc)
+                .AddIngredient(ItemID.EnchantedBoomerang)
                 .AddIngredient(ItemID.TitaniumBar, 10)
                 .AddIngredient(ItemID.SoulofMight, 15)
                 .AddTile(TileID.MythrilAnvil)
@@ -32,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Donator
         public override void SetDefaults() {
             Item.width = 120;
             Item.height = 120;
-            Item.damage = 125;
+            Item.damage = 115;
             Item.crit = 10;
             Item.noMelee = true;
             Item.noUseGraphic = true;

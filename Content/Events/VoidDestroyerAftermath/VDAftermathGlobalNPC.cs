@@ -20,6 +20,9 @@ namespace CalamityEntropy.Content.Events.VoidDestroyerAftermath
             npc.lifeMax = (int)(npc.lifeMax * boost.Life);
             npc.damage = (int)(npc.damage * boost.Damage);
             npc.defense = (int)(npc.defense * boost.Defense);
+            if (boost.KnockBackResist >= 0f) {
+                npc.knockBackResist = boost.KnockBackResist;
+            }
         }
 
         public override void ModifyNPCLoot(NPC npc, NPCLoot npcLoot) {
@@ -37,7 +40,7 @@ namespace CalamityEntropy.Content.Events.VoidDestroyerAftermath
                     break;
                 case NPCID.ChaosElemental:
                     ReplaceVanilla(npcLoot, ItemID.ApplePie, 5);
-                    ReplaceVanilla(npcLoot, ItemID.RodofDiscord, 40);
+                    ReplaceVanilla(npcLoot, ItemID.RodofDiscord, 100);
                     break;
                 case NPCID.BigMimicHallow:
                     GateVanilla(npcLoot, ItemID.GreaterHealingPotion);

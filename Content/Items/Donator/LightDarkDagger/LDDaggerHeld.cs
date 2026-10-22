@@ -113,6 +113,11 @@ namespace CalamityEntropy.Content.Items.Donator.LightDarkDagger
             float flick = IsHelix ? HelixFlickFrac : FlickFrac;
             float release = IsHelix ? HelixReleaseFrac : ReleaseFrac;
             float offDeg;
+            //释放不依赖甩出段窗口,useTime 变化时也不会漏掉
+            if (!released && p >= release) {
+                released = true;
+                Release(owner);
+            }
             if (p < wind) {
                 float t = MathHelper.SmoothStep(0f, 1f, p / wind);
                 offDeg = MathHelper.Lerp(StartDeg, PullDeg, t);
@@ -126,10 +131,6 @@ namespace CalamityEntropy.Content.Items.Donator.LightDarkDagger
             else if (p < flick) {
                 float t = (p - wind) / (flick - wind);
                 offDeg = MathHelper.Lerp(PullDeg, -EndDeg, t * t);
-                if (!released && p >= release) {
-                    released = true;
-                    Release(owner);
-                }
                 if (!Main.dedServ && knifeInHand >= 0) {
                     //甩出段:刃尖拖出一缕光
                     bool light = Mode != 1;
@@ -167,26 +168,32 @@ namespace CalamityEntropy.Content.Items.Donator.LightDarkDagger
                 return;
             }
             Vector2 hand = HandPos;
-            Vector2 toMouse = (owner.mouseWorld() - hand).SafeNormalize(aim.ToRotationVector2());
+            Vector2 toMouseRaw = owner.mouseWorld() - hand;
+            Vector2 toMouse = toMouseRaw.SafeNormalize(aim.ToRotationVector2());
             if (IsHelix) {
                 SpawnHelix(owner, hand, toMouse);
             }
             else {
-                SpawnVolley(owner, hand, toMouse, Mode == 1);
+                SpawnVolley(owner, hand, toMouse, toMouseRaw.Length(), Mode == 1);
             }
         }
 
-        private void SpawnVolley(Player owner, Vector2 hand, Vector2 dir, bool dark) {
+        private void SpawnVolley(Player owner, Vector2 hand, Vector2 dir, float dist, bool dark) {
             //正向旋转是否朝屏幕上方:据此决定耀光走上半弧、黯影走下半弧
             float upSign = dir.RotatedBy(0.1f).Y < dir.Y ? 1f : -1f;
             float sideSign = dark ? -upSign : upSign;
             int type = dark ? ModContent.ProjectileType<LDKnifeDark>() : ModContent.ProjectileType<LDKnifeLight>();
             float speed = owner.HeldItem.shootSpeed;
+            dist = MathHelper.Clamp(dist, LightDarkDragonDagger.ArcMinDist, LightDarkDragonDagger.ArcMaxDist);
             for (int i = 0; i < LightDarkDragonDagger.VolleyOffsetsDeg.Length; i++) {
                 float off = MathHelper.ToRadians(LightDarkDragonDagger.VolleyOffsetsDeg[i]) * sideSign;
                 Vector2 vel = dir.RotatedBy(off) * speed;
-                //ai[0] = 剩余回转总角(反向并略过冲),ai[1] = 剩余回转帧数
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), hand, vel, type, Projectile.damage, Projectile.knockBack, Projectile.owner, -off * LightDarkDragonDagger.ArcOvershoot, LightDarkDragonDagger.ArcTurnFrames);
+                //对称回摆,沿瞄准线平均推进 sin(off)/off
+                float absOff = Math.Abs(off);
+                float advance = absOff < 0.01f ? 1f : (float)Math.Sin(absOff) / absOff;
+                int frames = Math.Max(LightDarkDragonDagger.ArcMinFrames, (int)Math.Round(dist / (speed * advance)));
+                //ai[0] = 剩余回转总角(-2off),ai[1] = 剩余回转帧数
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), hand, vel, type, Projectile.damage, Projectile.knockBack, Projectile.owner, -2f * off, frames);
             }
         }
 

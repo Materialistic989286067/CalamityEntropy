@@ -14,7 +14,7 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
             Item.width = 48;
             Item.height = 42;
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
-            Item.defense = 35;
+            Item.defense = 26;
             Item.rare = ModContent.RarityType<NihilityBlue>();
         }
 

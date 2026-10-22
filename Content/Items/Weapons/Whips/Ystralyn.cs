@@ -12,7 +12,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
 {
     public class Ystralyn : ModItem
     {
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DragonWhipDebuff.TagDamage);
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(WyrmWhipDebuff.TagDamage);
         public static int PhantomDamage = 1600;
         public override void SetDefaults() {
             Item.DefaultToWhip(ModContent.ProjectileType<YstralynProj>(), 900, 2, 4, 27);

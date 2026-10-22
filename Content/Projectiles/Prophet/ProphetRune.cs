@@ -1,5 +1,6 @@
 ﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.NPCs.Prophet.Core;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -48,7 +49,7 @@ namespace CalamityEntropy.Content.Projectiles.Prophet
             lastPos = Projectile.Center;
         }
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
-            target.AddBuff(ModContent.BuffType<SoulDisorder>(), 8 * 60);
+            target.AddDebuffFixed(ModContent.BuffType<SoulDisorder>(), ProphetDirector.SoulDisorderFrames);
         }
         public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.End();

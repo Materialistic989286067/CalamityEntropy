@@ -60,7 +60,7 @@ namespace CalamityEntropy.Content.Items.Accessories.Cards
                 .AddIngredient<TemperanceCard>()
                 .AddIngredient<EnduranceCard>()
                 .AddIngredient<ThreadOfFate>()
-                .AddCalOrOwn(CEID.Item_CoreofCalamity, 1, ItemID.LunarBar, 5)
+                .AddCalOrOwn(CEID.Item_CoreofCalamity, 1, ItemID.ChlorophyteBar, 5)
                 .AddTile(TileID.Bookcases)
                 .Register();
         }

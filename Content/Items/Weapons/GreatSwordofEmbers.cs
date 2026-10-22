@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.Items.Weapons
     {
         public int ProjectileType => Item.shoot;
         public override void SetDefaults() {
-            Item.damage = 146;
+            Item.damage = 132;
             Item.DamageType = DamageClass.Melee;
             Item.width = 70;
             Item.height = 72;

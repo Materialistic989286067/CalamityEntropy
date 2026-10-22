@@ -11,7 +11,7 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
         public override void SetDefaults() {
             Item.width = 44;
             Item.height = 44;
-            Item.damage = 20;
+            Item.damage = 25;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 20;

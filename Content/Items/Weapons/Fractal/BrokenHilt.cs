@@ -11,7 +11,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
     public class BrokenHilt : ModItem
     {
         public override void SetDefaults() {
-            Item.damage = 18;
+            Item.damage = 21;
             Item.DamageType = DamageClass.Melee;
             Item.width = 48;
             Item.height = 60;
@@ -42,9 +42,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient(ItemID.WoodenSword)
-                .AddIngredient(ItemID.RichMahoganySword)
-                .AddIngredient(ItemID.BorealWoodSword)
-                .AddIngredient(ItemID.PalmWoodSword)
+                .AddIngredient(ItemID.CactusSword)
+                .AddRecipeGroup(CERecipeGroups.IronBar, 8)
                 .AddTile(TileID.WorkBenches)
                 .Register();
         }

@@ -25,6 +25,7 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.extraUpdates = 1;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
+            Projectile.ArmorPenetration = 8;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }

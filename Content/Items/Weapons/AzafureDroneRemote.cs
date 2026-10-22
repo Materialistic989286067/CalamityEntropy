@@ -30,7 +30,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             tooltips.IntegrateHotkey(CEKeybinds.CommandMinions);
         }
         public override void SetDefaults() {
-            Item.damage = 20;
+            Item.damage = 16;
             Item.DamageType = DamageClass.Summon;
             Item.width = 22;
             Item.height = 30;

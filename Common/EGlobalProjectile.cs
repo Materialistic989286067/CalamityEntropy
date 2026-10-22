@@ -379,7 +379,7 @@ namespace CalamityEntropy.Common
 
                         if (plr.HasBuff(ModContent.BuffType<SoyMilkBuff>())) {
                             if (!CELists.SoyMilkProjectileBlacklist.Contains(projectile.type) && !(projectile.ModProjectile is EntropyBookHeldProjectile))
-                                projectile.MaxUpdates = projectile.MaxUpdates * 3;
+                                projectile.MaxUpdates = projectile.MaxUpdates * SoyMilkBuff.SpeedMult;
                         }
                     }
 
@@ -891,6 +891,17 @@ namespace CalamityEntropy.Common
             return Math.Min(maxDmgMul, (float)(1 / Math.Log(ratio + 1)));
         }
         public override void ModifyHitNPC(Projectile projectile, NPC target, ref NPC.HitModifiers modifiers) {
+            if (projectile.friendly && projectile.owner >= 0 && projectile.owner < Main.maxPlayers) {
+                Player shooter = Main.player[projectile.owner];
+                if (shooter.active) {
+                    if (shooter.HasBuff<SoyMilkBuff>()) {
+                        modifiers.SourceDamage *= SoyMilkBuff.ProjDamageMult;
+                    }
+                    if (shooter.HasBuff<TwistedTwinBuff>()) {
+                        modifiers.SourceDamage *= TwistedTwinBuff.ProjDamageMult;
+                    }
+                }
+            }
             if (IlmeranEnhanced) {
                 modifiers.SourceDamage *= IlmeranAsylum.DMGMult + 1;
             }
@@ -1146,8 +1157,6 @@ namespace CalamityEntropy.Common
             }
             hittingTarget = -1;
             if (ProminenceArrow || projectile.ModProjectile is ProminenceSplitShot) {
-                // 自研移植的圣火 DoT（debuff-map：PortsDoT 同短名）+ 原版破晓，与脱钩前双 debuff 行为一致
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 300);
                 target.AddBuff(BuffID.Daybreak, 300);
             }
             // 潜行系统退役：玛瑞薇姆套装原「潜伏攻击命中水爆」效果暂停用，新机制后续按映射表实装

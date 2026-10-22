@@ -47,7 +47,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
-            target.AddBuff(ModContent.BuffType<VoidVirus>(), 160);
+            target.AddDebuffFixed(ModContent.BuffType<VoidVirus>(), 300);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {

@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
     public class ChaoticCell : ModNPC
     {
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
-            target.AddBuff(ModContent.BuffType<VoidVirus>(), 360);
+            target.AddDebuffFixed(ModContent.BuffType<VoidVirus>(), 300);
         }
         public override void SetStaticDefaults() {
             Main.npcFrameCount[NPC.type] = 1;

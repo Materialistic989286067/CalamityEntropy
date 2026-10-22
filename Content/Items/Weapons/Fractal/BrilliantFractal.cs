@@ -16,11 +16,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
     public class BrilliantFractal : ModItem
     {
         public override void SetDefaults() {
-            Item.damage = 65;
+            Item.damage = 60;
             Item.DamageType = DamageClass.Melee;
             Item.width = 48;
             Item.height = 60;
-            Item.useTime = Item.useAnimation = 26;
+            Item.useTime = Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 6;
             Item.value = Item.buyPrice(gold: 20);

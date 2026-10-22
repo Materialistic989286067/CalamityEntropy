@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Content.Buffs.PortsDoT;
+﻿using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Items.Donator;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
@@ -16,7 +17,28 @@ namespace CalamityEntropy.Content.Items.Accessories
     public class CelestialChronometer : ModItem, IDonatorItem
     {
         public string DonatorName => "丰川祥子";
-        // 2026-08-31 平衡案重做:8防,+75生命,神话护身符的-25%药水冷却,-33%减益持续,
+        public const float DamagingDebuffReduce = 0.33f;
+
+        /// <summary>持续扣血的减益:原版玩家 DoT 减益、本模组 DotBuff 与生命压制</summary>
+        public static bool IsDamagingDebuff(int buffType) {
+            switch (buffType) {
+                case BuffID.Poisoned:
+                case BuffID.Venom:
+                case BuffID.OnFire:
+                case BuffID.OnFire3:
+                case BuffID.Frostburn:
+                case BuffID.Frostburn2:
+                case BuffID.CursedInferno:
+                case BuffID.Burning:
+                case BuffID.Suffocation:
+                case BuffID.Electrified:
+                case BuffID.TheTongue:
+                    return true;
+            }
+            ModBuff buff = BuffLoader.GetBuff(buffType);
+            return buff is LifeOppress || (buff is DotBuff dot && dot.DamagePlayerPerSec > 0);
+        }
+        // 2026-08-31 平衡案重做:8防,+75生命,神话护身符的-25%药水冷却,-33%伤害性减益持续,
         // 大幅自然再生(6hp/s)且直接回血(1hp/s),走过草地长出草药(shift右键开关),站在草药上+20防御。
         public override void SetDefaults() {
             Item.width = 40;
@@ -74,8 +96,8 @@ namespace CalamityEntropy.Content.Items.Accessories
             player.statLifeMax2 += 75;
             //这里套用神话护身符,治疗药水冷却减少 25%,生命再生沿用护身符
             player.pStone = true;
-            //饰品把减益持续时间减少 33%,和净化卡走同一条通道
-            player.Entropy().DebuffTime -= 0.33f;
+            //只缩短伤害性减益,由 AddBuff 钩子结算
+            player.GetModPlayer<CelestialChronometerPlayer>().damagingDebuffTime -= DamagingDebuffReduce;
             //玩家的自然再生加 6 点每秒,并每秒直接回 1 点血
             player.lifeRegen += 12;
             player.Entropy().lifeRegenPerSec += 1;
@@ -214,6 +236,16 @@ namespace CalamityEntropy.Content.Items.Accessories
                 tooltips.Insert(insertAt + offset, new TooltipLine(Mod, "TooltipCal" + offset, line));
                 offset++;
             }
+        }
+    }
+
+    /// <summary>伤害性减益的时长倍率,由 CEPlayerHooks.AddBuffHook 读取</summary>
+    public class CelestialChronometerPlayer : ModPlayer
+    {
+        public float damagingDebuffTime = 1f;
+
+        public override void ResetEffects() {
+            damagingDebuffTime = 1f;
         }
     }
 }

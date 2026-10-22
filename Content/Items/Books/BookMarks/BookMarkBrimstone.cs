@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Common;
+using CalamityEntropy.Content.Projectiles;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -23,9 +24,9 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     {
         public override void OnProjectileSpawn(Projectile projectile, bool ownerClient) {
             if (!(projectile.ModProjectile is BrimstoneVortex)) {
-                if (ownerClient && ((projectile.ModProjectile is EBookBaseProjectile eb && eb.mainProj) || Main.rand.NextBool(6)) && Main.rand.NextBool(projectile.HasEBookEffect<APlusBMEffect>() ? 2 : 3)) {
+                if (ownerClient && ((projectile.ModProjectile is EBookBaseProjectile eb && eb.mainProj) || Main.rand.NextBool(6)) && Main.rand.NextBool(projectile.HasEBookEffect<APlusBMEffect>() ? 2 : 3) && CECooldowns.CheckBMProc("Spawn_" + RegisterName())) {
                     Vector2 pos = projectile.Center - projectile.velocity.normalize() * 190 + CEUtils.randomVec(128);
-                    int p = Projectile.NewProjectile(projectile.GetSource_FromThis(), pos, (Main.MouseWorld - pos).normalize() * 32, ModContent.ProjectileType<BrimstoneVortex>(), EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 90, projectile.DamageType), projectile.knockBack, projectile.owner);
+                    int p = Projectile.NewProjectile(projectile.GetSource_FromThis(), pos, (Main.MouseWorld - pos).normalize() * 32, ModContent.ProjectileType<BrimstoneVortex>(), EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 24, projectile.DamageType), projectile.knockBack, projectile.owner);
                     (p.ToProj().ModProjectile as EBookBaseProjectile).homing = (projectile.ModProjectile as EBookBaseProjectile).homing;
                     (p.ToProj().ModProjectile as EBookBaseProjectile).ProjectileEffects = (projectile.ModProjectile as EBookBaseProjectile).ProjectileEffects;
 

@@ -15,9 +15,9 @@ namespace CalamityEntropy.Content.Items.Books
     {
         public override void SetDefaults() {
             base.SetDefaults();
-            Item.damage = 38;
+            Item.damage = 32;
             Item.useAnimation = Item.useTime = 24;
-            Item.mana = 13;
+            Item.mana = 19;
             Item.rare = ItemRarityID.Red;
         }
         [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/DS")]
@@ -44,7 +44,7 @@ namespace CalamityEntropy.Content.Items.Books
         public override int frameChange => 3;
         public override EBookStatModifer getBaseModifer() {
             var m = base.getBaseModifer();
-            m.Homing = 0.5f;
+            m.Homing = 0.2f;
             m.HomingRange = 0.625f;
             m.armorPenetration += 16;
             return m;

@@ -24,10 +24,10 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void SetDefaults() {
             Item.width = 78;
             Item.height = 78;
-            Item.damage = 9;
+            Item.damage = 20;
             Item.DamageType = DamageClass.Melee;
-            Item.useTime = 32;
-            Item.useAnimation = 32;
+            Item.useTime = 50;
+            Item.useAnimation = 50;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -36,7 +36,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.UseSound = null;
             Item.autoReuse = true;
-            Item.shootSpeed = 48f;
+            Item.shootSpeed = 36f;
             Item.shoot = ModContent.ProjectileType<AzafureAirReaperThrow>();
         }
         public override bool CanUseItem(Player player) {

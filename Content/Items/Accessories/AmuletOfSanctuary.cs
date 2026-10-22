@@ -17,10 +17,10 @@ namespace CalamityEntropy.Content.Items.Accessories
         public static string ID => "SanctuaryAmulet";
         public override void UpdateAccessory(Player player, bool hideVisual) {
             player.Entropy().addEquip(ID);
-            player.GetDamage(DamageClass.Summon) += 0.08f;
+            player.GetDamage(DamageClass.Summon) += 0.05f;
         }
         public static int GetDefence(int slots) {
-            return int.Min(2 * slots, 12);
+            return int.Min(2 * slots, 6);
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips) {
             tooltips.Replace("[A]", GetDefence(Main.LocalPlayer.maxMinions));

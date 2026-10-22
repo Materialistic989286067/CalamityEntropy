@@ -31,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
         }
 
         public override void SetDefaults() {
-            Item.damage = 250;
+            Item.damage = 73;
             Item.DamageType = DamageClass.Summon;
             Item.width = 50;
             Item.height = 44;

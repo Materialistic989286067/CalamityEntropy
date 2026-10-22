@@ -28,6 +28,7 @@ namespace CalamityEntropy.Content.Projectiles
         [VaultLoaden("CalamityEntropy/Content/Projectiles/POP/circle")]
         internal static Asset<Texture2D> CircleTex;
         public int usingTime = 0;
+        public const int MaxChargeTicks = 490;  //蓄力数量封顶,约 8 秒,旧曲线此刻升到 4 个冰锥
         public int counter = 0;
         public float a1 = 0;
         public float a2 = 0;
@@ -110,7 +111,7 @@ namespace CalamityEntropy.Content.Projectiles
                         if (usingTime % Math.Max(1, 65 - player.Entropy().WeaponBoost * 20) == 0 && usingTime > 120) {
                             Vector2 ofs;
                             float ag = (float)(Main.rand.NextDouble() * Math.PI * 2);
-                            int projCount = 1 + (int)Math.Sqrt((usingTime + 500) / 110);
+                            int projCount = 1 + (int)Math.Sqrt((Math.Min(usingTime, MaxChargeTicks) + 500) / 110);
                             for (int i = 0; i < projCount; i++) {
                                 ofs = Main.screenPosition + Main.MouseScreen + ag.ToRotationVector2() * 450 + new Vector2(0, -40);
                                 int p = Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + Projectile.rotation.ToRotationVector2() * 80 + new Vector2(Main.rand.Next(-17, 18), Main.rand.Next(-17, 18)), Vector2.Zero, ModContent.ProjectileType<Icicle>(), Projectile.damage, Projectile.knockBack * 3f, Projectile.owner, ofs.X, ofs.Y);

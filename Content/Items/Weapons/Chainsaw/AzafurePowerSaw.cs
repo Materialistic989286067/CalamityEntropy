@@ -15,7 +15,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
     public class AzafurePowerSaw : ModItem, IAzafureEnhancable
     {
         public override void SetDefaults() {
-            Item.damage = 9;
+            Item.damage = 12;
             Item.DamageType = DamageClass.Melee;
             Item.width = 42;
             Item.height = 42;

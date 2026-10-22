@@ -29,7 +29,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                     jj = 360f / Main.rand.Next(Main.rand.Next(3, 8), 8);
                 }
                 for (float j = 0; j < 354f; j += jj) {
-                    int p = Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<ProphecyRuneBM>(), EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 50, projectile.DamageType), projectile.knockBack, projectile.owner, MathHelper.ToRadians(j), 0, Main.rand.Next(1, 12));
+                    int p = Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<ProphecyRuneBM>(), EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 200, projectile.DamageType), projectile.knockBack, projectile.owner, MathHelper.ToRadians(j), 0, Main.rand.Next(1, 12));
                 }
             }
         }

@@ -36,7 +36,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.autoReuse = true;
             Item.scale = 1f;
             Item.DamageType = DamageClass.Melee;
-            Item.damage = 10;
+            Item.damage = 7;
             Item.knockBack = 5;
             Item.crit = 6;
             Item.shoot = ModContent.ProjectileType<AzureRapierHeld>();
@@ -67,9 +67,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
 
         public override void AddRecipes() {
-            CreateRecipe().AddCalOrOwn(CEID.Item_PearlShard, ItemID.WhitePearl, 4)
+            CreateRecipe().AddCalOrOwn(CEID.Item_PearlShard, ItemID.WhitePearl, 5)
                 .AddCalOrOwn(CEID.Item_SeaPrism, ItemID.Coral, 6)
-                .AddCalOrOwn(CEID.Item_PrismShard, ItemID.CrystalShard, 10)
+                .AddIngredient(ItemID.Sapphire, 10)
                 .AddTile(TileID.Anvils)
                 .Register();
         }

@@ -82,7 +82,6 @@ namespace CalamityEntropy.Common
         public int slimeGodMaxLife = 0;
         public Vector2 LastPlayerPos;
         public Vector2 LastPlayerVel;
-        public static int AcropolisDontSpawn = 0;
 
         public override void OnLocalizationsLoaded() {
             // tML 没有模组显示名的本地化入口:Mod.DisplayName 的 setter 是 internal,只在读 build.txt 时写一次。
@@ -453,8 +452,6 @@ namespace CalamityEntropy.Common
         }
 
         public override void PostUpdatePlayers() {
-            if (AcropolisDontSpawn > 0)
-                AcropolisDontSpawn--;
             CECooldowns.Update();
             EBookUI.update();
             if (CalamityEntropy.noMusTime > 0) {

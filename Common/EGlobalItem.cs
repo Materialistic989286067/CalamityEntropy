@@ -105,6 +105,39 @@ namespace CalamityEntropy.Common
                 entity.damage = 32;
                 entity.shootSpeed *= 1.25f;
             }
+            switch (entity.type) {
+                case ItemID.SDMG:
+                    entity.damage = 100;
+                    break;
+                case ItemID.Celeb2:
+                    entity.useTime = 10;
+                    entity.useAnimation = 10;
+                    break;
+                case ItemID.RainbowCrystalStaff:
+                    entity.damage = 84;
+                    break;
+                case ItemID.MoonlordTurretStaff:
+                    entity.damage = 64;
+                    break;
+                case ItemID.LastPrism:
+                    entity.damage = 72;
+                    break;
+                case ItemID.ImpStaff:
+                    entity.damage = 21;
+                    break;
+                case ItemID.MaceWhip:
+                    entity.damage = 145;
+                    break;
+                case ItemID.RainbowWhip:
+                    entity.damage = 140;
+                    break;
+                case ItemID.ScytheWhip:
+                    entity.damage = 85;
+                    break;
+                case ItemID.SolarEruption:
+                    entity.damage = 120;
+                    break;
+            }
         }
         public static bool GetOverrideName(Item item, string origName, out string NewName) {
             if (item.ModItem != null && item.ModItem is BasePrefixItem pitem) {

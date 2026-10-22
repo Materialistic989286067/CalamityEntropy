@@ -401,7 +401,8 @@ namespace CalamityEntropy.Content.Items.Donator
         }
 
         public override bool PreDraw(ref Color lightColor) {
-            Texture2D circle = CEExtraAssets.Circle;
+            //Circle 贴图不透明,会画成方块
+            Texture2D circle = CEExtraAssets.SmallGreyscaleCircle;
             Texture2D glow = CEExtraAssets.Glow2;
             Vector2 c = Projectile.Center - Main.screenPosition;
             float a = Projectile.Opacity;
@@ -409,7 +410,7 @@ namespace CalamityEntropy.Content.Items.Donator
             float pulse = 1f + 0.02f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 4f);
             //幕体:非预乘深色圆盘,像一块被抠掉的夜空
             Main.spriteBatch.UseBlendState(BlendState.NonPremultiplied);
-            Main.spriteBatch.Draw(circle, c, null, NightPalette.VeilFill * (0.78f * a), 0f, circle.Size() / 2f, diameter / circle.Width * pulse, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(circle, c, null, NightPalette.VeilFill * (0.78f * a), 0f, circle.Size() / 2f, diameter / circle.Width * 1.11f * pulse, SpriteEffects.None, 0f);
             //幕沿:加法紫晕与两圈反向缓转的星辉
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Main.spriteBatch.Draw(glow, c, null, NightPalette.Deep * (0.55f * a), 0f, glow.Size() / 2f, diameter / glow.Width * 1.25f * pulse, SpriteEffects.None, 0f);

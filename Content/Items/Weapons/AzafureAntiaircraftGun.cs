@@ -23,7 +23,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             AmmoID.Sets.SpecificLauncherAmmoProjectileFallback[Type] = ItemID.RocketLauncher;
         }
         public override void SetDefaults() {
-            Item.damage = 1250;
+            Item.damage = 900;
             Item.crit = 10;
             Item.DamageType = DamageClass.Ranged;
             Item.width = 80;
@@ -130,7 +130,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                     .Configure(1, true, PRTDrawModeEnum.AdditiveBlend, Projectile.rotation);
 
                 CEUtils.PlaySound("AAGShot", 1, Projectile.Center);
-                CEUtils.SetShake(Projectile.Center - Projectile.rotation.ToRotationVector2() * 16, 36);
+                CEUtils.SetShake(Projectile.Center - Projectile.rotation.ToRotationVector2() * 16, 27);
                 for (int i = 0; i < 16; i++) {
                     Vector2 top = Projectile.Center + Projectile.velocity.normalize() * 130;
                     Vector2 sparkVelocity2 = Projectile.rotation.ToRotationVector2().RotateRandom(0.3f) * Main.rand.NextFloat(16f, 36f);

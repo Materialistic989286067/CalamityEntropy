@@ -27,7 +27,7 @@ namespace CalamityEntropy.Content.Items
         }
 
         public override bool CanUseItem(Player player) {
-            return !NPC.AnyNPCs(ModContent.NPCType<TheProphet>()) && player.ZoneDungeon && !CECal.IsBossRushActive;
+            return !NPC.AnyNPCs(ModContent.NPCType<TheProphet>()) && !CECal.IsBossRushActive;
         }
 
         public override bool? UseItem(Player player) {

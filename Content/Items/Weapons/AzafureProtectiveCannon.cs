@@ -20,7 +20,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             ItemID.Sets.LockOnIgnoresCollision[Item.type] = true;
         }
         public override void SetDefaults() {
-            Item.damage = 80;
+            Item.damage = 70;
             Item.DamageType = DamageClass.Summon;
             Item.width = 44;
             Item.height = 38;

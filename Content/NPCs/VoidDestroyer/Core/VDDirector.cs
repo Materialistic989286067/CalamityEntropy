@@ -159,23 +159,25 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
 
         //==================== 伤害档(普通档基值)====================
         //弹幕 damage 字段就存这里的数,命中时原版再乘 1 / 2 / 3,字段里不能先带难度(按 NPC.defDamage 折算会把难度乘两次)
-        //弹幕档 82 / 164 / 246,体术与小激光档 106 / 212 / 318,核弹与大激光档 140 / 280 / 420(普通 / 专家 / 大师)
+        //弹幕档 46 / 92 / 138,体术档 106 / 212 / 318,小激光档(含红射线锁定、叉子、丛林陆龟)60 / 120 / 180,核弹与大激光档 75 / 150 / 225(普通 / 专家 / 大师)
 
-        public const int DmgBullet = 82;
+        public const int DmgBullet = 46;
         public const int DmgBody = BaseDamage;
-        public const int DmgLaser = 106;
-        public const int DmgHeavy = 140;
+        public const int DmgLaser = 60;
+        public const int DmgHeavy = 75;
 
         public const int DmgVoidBolt = DmgBullet;
         public const int DmgCoreLaser = DmgBullet;
         public const int DmgMissile = DmgBullet;
-        public const int DmgTrident = DmgBullet;
+        public const int DmgTrident = DmgLaser;
         public const int DmgStinger = DmgBullet;
         public const int DmgSnowflake = DmgBullet;
         public const int DmgGateRing = DmgBullet;
         /// <summary>幻影舰低于真身接触一档(幻影是读破绽的代价,不是真身)</summary>
         public const int DmgPhantomShip = DmgBullet;
         public const int DmgHoloBeast = DmgBody;
+        /// <summary>丛林陆龟单列,小白龙仍走 DmgHoloBeast</summary>
+        public const int DmgHoloTortoise = DmgLaser;
         public const int DmgSporeLaser = DmgLaser;
         public const int DmgRedRay = DmgLaser;
         public const int DmgRiftSeam = DmgLaser;
@@ -184,6 +186,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         /// <summary>只有核弹与主炮吃到这一档</summary>
         public const int DmgNuke = DmgHeavy;
         public const int DmgAnnihilationBeam = DmgHeavy;
+
+        /// <summary>棱形虚空弹(VDVoidBolt)的飞行速度倍率:弧形包抄与火焰回转的转弯角速度同乘,弧线半径不变,炸弹与螺旋弹不吃</summary>
+        public const float VoidBoltSpeedMult = 2f;
 
         //==================== 弧形火球(斜上逼近 + 三轮包抄)====================
 
@@ -204,7 +209,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         /// <summary>轮间隔:P3 36 帧,其余 44</summary>
         public static int ArcVolleyInterval(int phase) => phase >= 3 ? 36 : 44;
         public const int ArcVolleys = 3;
-        public const float ArcBoltSpeed = 9f;
+        public const float ArcBoltSpeed = 9f * VoidBoltSpeedMult;
         /// <summary>中弹直射,两侧弧弹朝出手时的锁定点包抄(张角,度);P2 起再加一对 50° 的外弧,P3 再加 70°</summary>
         public const float ArcInnerDeg = 25f;
         public const float ArcOuterDeg = 50f;
@@ -230,7 +235,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public static int MissileRingCount(int phase) => phase >= 2 ? 8 : 6;
         public const float MissileRingRadius = 40f;
         /// <summary>导弹全程匀速,不加速</summary>
-        public const float MissileRingSpeed = 8f;
+        public const float MissileRingSpeed = 8f * 2f;
         /// <summary>导弹径向飞出 15 格后转头,只追这么多帧就改直飞:躲过一次就甩掉了</summary>
         public const int MissileHomingFrames = 40;
         /// <summary>核弹在末轮后 40 帧出手;出手前 6 帧粒子静默</summary>
@@ -261,7 +266,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public const int PhantomBrakeFrames = 10;
         /// <summary>P2 起沿冲刺路径留慢速虚空弹的间隔,弹不加速</summary>
         public const int PhantomTrailInterval = 10;
-        public const float PhantomTrailSpeed = 2f;
+        public const float PhantomTrailSpeed = 2f * VoidBoltSpeedMult;
         public const int PhantomEndFade = 8;
         /// <summary>接触伤害的速度门槛(冲刺段才开窗)</summary>
         public const float PhantomContactSpeed = 20f;
@@ -282,8 +287,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         /// <summary>每轮弹数区间(上界不含):P1 5~7,P2 起 7~9</summary>
         public static int FlameCountMin(int phase) => phase >= 2 ? 7 : 5;
         public static int FlameCountMax(int phase) => phase >= 2 ? 10 : 8;
-        public const float FlameSpeedMin = 6f;
-        public const float FlameSpeedMax = 9f;
+        public const float FlameSpeedMin = 6f * VoidBoltSpeedMult;
+        public const float FlameSpeedMax = 9f * VoidBoltSpeedMult;
         public const float FlameSpread = 1.05f;
         public const int FlameRiseDelay = 20;
         /// <summary>P2 起喷口逐轮左右交替偏移,两轮火幕错开,站在原地会被下一轮正好盖住</summary>
@@ -345,7 +350,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public static int TeleportFireBolts(int phase) => phase >= 3 ? 5 : 3;
         public const float TeleportFireSpreadDeg = 15f;
         /// <summary>扇形弹匀速直飞,不加速</summary>
-        public const float TeleportFireBoltSpeed = 7f;
+        public const float TeleportFireBoltSpeed = 7f * VoidBoltSpeedMult;
         /// <summary>每角 60 帧:射完还能看见它停在角上</summary>
         public const int TeleportFireCornerFrames = 60;
         /// <summary>末角后收招拍</summary>
@@ -392,7 +397,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         /// <summary>三叉戟扇面张角(度),对准玩家预测点:P1/P2 36°、P3 44°;第二排错半格补缝</summary>
         public static float RedHellFanDeg(int phase) => phase >= 3 ? 44f : 36f;
         /// <summary>三叉戟匀速直飞,不加速</summary>
-        public const float RedHellTridentSpeed = 9f;
+        public const float RedHellTridentSpeed = 9f * 1.66f;
         public const float RedHellTridentLead = 12f;
         public static readonly Vector2 RedHellHoverOffset = new Vector2(0f, -480f);
         public const float RedHellHoldStiffness = 0.1f;
@@ -424,8 +429,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         /// <summary>陆龟在玩家左右 720px(屏内)现身,待机 36 帧(接触档)画出整条水平航道;航道 y 锁在现身那一刻,冲刺不再上下修正</summary>
         public const int TortoiseAppearFrames = WindupContact;
         public const float TortoiseStartOffset = 720f;
-        /// <summary>横冲 32px/帧、50 帧,走 1600px:约 22 帧撞到玩家所在处,再冲出屏幕另一侧</summary>
-        public const float TortoiseDashSpeed = 32f;
+        /// <summary>横冲 32 × 1.33 ≈ 42.6px/帧、50 帧,走约 2100px:约 17 帧撞到玩家所在处,再冲出屏幕另一侧</summary>
+        public const float TortoiseDashSpeed = 32f * 1.33f;
         public const int TortoiseDashFrames = 50;
         /// <summary>航道宽度:陆龟判定盒 128 再加一点</summary>
         public const float TortoiseLaneWidth = 140f;
@@ -474,8 +479,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public const float RiftWidth = 28f;
         /// <summary>猛合时每侧喷弹数与两档初速:偶数位快、奇数位慢,一排喷弹分成前后两层</summary>
         public const int RiftBoltsPerSide = 4;
-        public const float RiftBoltSpeed = 7f;
-        public const float RiftBoltSlowSpeed = 4.5f;
+        public const float RiftBoltSpeed = 7f * VoidBoltSpeedMult;
+        public const float RiftBoltSlowSpeed = 4.5f * VoidBoltSpeedMult;
         /// <summary>缝数:P1 两道过预测点,P2 三道米字,P3 六边形笼 + 中心一刀</summary>
         public static int RiftSeams(int phase) => phase >= 3 ? 7 : phase >= 2 ? 3 : 2;
         /// <summary>P3 六边形笼半径(边线到玩家)</summary>
@@ -518,11 +523,11 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public const int GateWindup = WindupBarrage;
         /// <summary>环数 P1 4 / P2 5 / P3 6</summary>
         public static int GateRings(int phase) => phase >= 3 ? 6 : phase >= 2 ? 5 : 4;
-        /// <summary>环与环间隔 32 帧:同屏两个环,前一个过身下一个才开始收</summary>
+        /// <summary>环与环间隔 32 帧:收拢减半后同屏约三四个环,每 32 帧仍有一环到身</summary>
         public const int GateInterval = 32;
-        /// <summary>环出现先在起始半径停 12 帧亮出缺口(预告),再用 56 帧从 640 收到 24 后消散</summary>
+        /// <summary>环出现先在起始半径停 12 帧亮出缺口(预告),再用 112 帧从 640 收到 24 后消散(收拢速度在 56 帧的基础上再减半)</summary>
         public const int GatePreviewFrames = 12;
-        public const int GateCloseFrames = 56;
+        public const int GateCloseFrames = 56 * 2;
         public const float GateStartRadius = 640f;
         public const float GateEndRadius = 24f;
         /// <summary>环带判定半宽</summary>
@@ -572,10 +577,10 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public const float SingSpiralGrowth = 2.2f;
         public const float SingArmDrift = 0.012f;
         public const int SingCollapseFrames = 20;
-        /// <summary>环爆 16 发,两档速度交替(8 / 5),一快一慢两层环,弹匀速</summary>
+        /// <summary>环爆 16 发,两档速度交替(16 / 10),一快一慢两层环,弹匀速</summary>
         public const int SingBurstCount = 16;
-        public const float SingBurstSpeed = 8f;
-        public const float SingBurstSlowSpeed = 5f;
+        public const float SingBurstSpeed = 8f * VoidBoltSpeedMult;
+        public const float SingBurstSlowSpeed = 5f * VoidBoltSpeedMult;
         public const float SingLensStrength = 0.09f;
         public const float SingLensRadius = 520f;
         public static readonly Vector2 SingHoverOffset = new Vector2(380f, -300f);
@@ -621,7 +626,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public const float CannonBeamLength = 4000f;
         public const float CannonRecoil = 8f;
         public const int CannonRainInterval = 20;
-        public const float CannonRainSpeed = 6f;
+        public const float CannonRainSpeed = 6f * VoidBoltSpeedMult;
         /// <summary>过热 75 帧:本体下沉冒烟、无接触、减伤清零,这是整场最大的输出窗</summary>
         public const int CannonOverheatFrames = 75;
         public const float CannonOverheatSink = 2.5f;

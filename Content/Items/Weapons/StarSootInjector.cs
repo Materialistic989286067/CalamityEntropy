@@ -11,15 +11,13 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class StarSootInjector : ModItem
     {
         public override void SetDefaults() {
-            // 弹药线接通：useAmmo 指向星辉鳞尘（ammo=自身、consumable=true 已在材料侧补齐）；
-            // 鳞尘 shoot=0，发射物与伤害仍取本武器（PickAmmo 回落武器 shoot，弹药加伤为 0）
-            Item.DefaultToRangedWeapon(ModContent.ProjectileType<StarSootSmoke>(), ModContent.ItemType<StarlitScaleDust>(), singleShotTime: 16, shotVelocity: 18, hasAutoReuse: true);
+            Item.DefaultToRangedWeapon(ModContent.ProjectileType<StarSootSmoke>(), AmmoID.None, singleShotTime: 16, shotVelocity: 18, hasAutoReuse: true);
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 12;
+            Item.mana = 9;
             Item.width = 152;
             Item.height = 48;
             Item.useTime = 7;
-            Item.damage = 32;
+            Item.damage = 42;
             Item.knockBack = 4f;
             Item.crit = 10;
             Item.UseSound = SoundID.Item34;

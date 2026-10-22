@@ -39,7 +39,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.shoot = ModContent.ProjectileType<ErebodrepanonHeld>();
             Item.shootSpeed = 16f;
             Item.autoReuse = true;
-            Item.scale *= 0.66f;
+            Item.scale *= 0.73f;
         }
         public int UseCount = 0;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {

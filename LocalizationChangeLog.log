@@ -1162,7 +1162,7 @@
 [Mods.CalamityEntropy.CWRQuest.ShadowDecks.*] - added // 卡组 3/3:同时持有堕化与灵魂卡组
 [Mods.CalamityEntropy.CWRQuest.ArmorPrefix.*] - added // 器物 1/4:给护甲附熵灾前缀。配置关掉前缀系统时该节点不解锁
 [Mods.CalamityEntropy.CWRQuest.ChargeReady.*] - added // 器物 2/4:手持蓄势就绪的武器
-[Mods.CalamityEntropy.CWRQuest.AzafureMiner.*] - added // 器物 3/4:放下一台阿萨福勒数字型采矿机
+[Mods.CalamityEntropy.CWRQuest.AzafureMiner.*] - added // 器物 3/4:放下一台地狱工业数字型采矿机
 [Mods.CalamityEntropy.CWRQuest.Lottery.*] - added // 器物 4/4:抽奖盒子召出抽奖机
 [Mods.CalamityEntropy.CWRQuest.SoulEssence.*] - added // 终末:持有 30 份幽渊魂髓
 [Mods.CalamityEntropy.CWRQuest.WyrmGuest.*] - added // 终末:妖龙酱入住
@@ -1341,3 +1341,77 @@
 [Mods.CalamityEntropy.CWRQuest.SoulEssence.Summary] - changed
 [Mods.CalamityEntropy.CWRQuest.SoulEssence.Objective] - changed
 [Mods.CalamityEntropy.CWRQuest.SoulEssence.Detail] - changed
+[Mods.CalamityEntropy.Items.*.DisplayName] - changed // 「阿萨福勒」「阿扎弗」前缀统一改为「地狱工业」(如阿萨福勒防空炮→地狱工业防空炮,阿扎弗电路→地狱工业电路)
+[Mods.CalamityEntropy.Items.*.Tooltip] - changed // 同上,Tooltip 与说明里的「阿萨福勒」一并改为「地狱工业」(支援遥控、战争卫星密钥、电路、镀层等)
+[Mods.CalamityEntropy.Items.AcropolisRelic.DisplayName] - changed // 阿萨福勒卫城机甲圣物→地狱卫城机甲圣物
+[Mods.CalamityEntropy.Items.AcropolisTrophy.DisplayName] - changed // 阿萨福勒卫城机甲纪念章→地狱卫城机甲纪念章
+[Mods.CalamityEntropy.Projectiles.*.DisplayName] - changed // 同上,弹幕与召唤物改名(地狱工业无人机、治疗塔、城防炮、盾构机、战争卫星、轻机枪子弹等)
+[Mods.CalamityEntropy.Buffs.*.Description] - changed // 地狱工业轰炸无人机、地狱工业齿轮蜂的增益描述
+[Mods.CalamityEntropy.NPCs.AcropolisMachine.DisplayName] - changed // Boss 阿萨福勒卫城机甲→地狱卫城机甲(含 BossChecklist EntryName 与图鉴条目)
+[Mods.CalamityEntropy.Keybinds.AcropolisMechTransformation.DisplayName] - changed // 激活阿萨福勒卫城重甲机甲模式→激活地狱工业卫城重甲机甲模式
+[Mods.CalamityEntropy.*.LoreAcropolis.Lore] - changed // 背景故事里的「阿萨福勒」改为「地狱工业」;顶层 Acropolis、AzafureSet*/指标再分配模块等说明里的同名替换同理
+[Mods.CalamityEntropy.CWRQuest.AzafureMiner.*] - changed // 任务文案里的数字型采矿机名称随之改名
+[Mods.CalamityEntropy.Items.SignalBlocker.DisplayName] - changed // 信号屏蔽器→地狱信号增幅器
+[Mods.CalamityEntropy.Items.SignalBlocker.Tooltip] - changed // 改为在地狱召唤地狱卫城机甲
+[Mods.CalamityEntropy.NPCs.AcropolisMachine.BossChecklistIntegration.SpawnInfo] - changed // 自然生成改为地狱使用地狱信号增幅器召唤
+[Mods.CalamityEntropy.CWRQuest.AcropolisMachine.Summary] - changed // 自然生成改为召唤
+[Mods.CalamityEntropy.CWRQuest.AcropolisMachine.Detail] - changed // 召唤方式与合成配方
+[Mods.CalamityEntropy.Acropolis] - changed // 图鉴描述改为古代文明遗留的战争机器
+[Mods.CalamityEntropy.LuminarisBestiary] - changed // 图鉴描述改为"隐匿于夜空中的巨型昆虫,将星光储存在体内发起攻击,喜欢星星口味的蜜露"
+[Mods.CalamityEntropy.Items.ProphecyToken.Tooltip] - changed // 去掉只能在地牢使用与地牢外狂暴,改为可在任意地点使用
+[Mods.CalamityEntropy.NPCs.TheProphet.BossChecklistIntegration.SpawnInfo] - changed // 召唤条件由「在地牢使用」改为「在任意地点使用」
+[Mods.CalamityEntropy.CWRQuest.TheProphet.Detail] - changed // 预言信物不再限制地牢,改为可在任意地点使用
+[Mods.CalamityEntropy.Items.AmuletOfHealing.Tooltip] - changed // 召唤伤害8%→5%,生命再生上限3/s→2/s
+[Mods.CalamityEntropy.Items.AmuletOfSanctuary.Tooltip] - changed // 召唤伤害8%→5%,防御上限12点→6点
+[Mods.CalamityEntropy.Items.ShadowMantle.Tooltip] - changed // 斩击基础伤害25→40
+[Mods.CalamityEntropy.Items.ShadowPact.Tooltip] - changed // 暗影爆基础伤害16→25(伤害加成6%→10%由 [A] 占位符自动带出,去除防御力)
+[Mods.CalamityEntropy.Items.WorshipRelic.Tooltip] - changed // 最前新增「伤害和暴击率增加5%」,圣光箭概率1/4→1/2,基础伤害180→150
+[Mods.CalamityEntropy.Items.NihilityShell.Tooltip] - changed // 暴击伤害增加18%→15%,能量甲壳抵挡伤害20%→15%
+[Mods.CalamityEntropy.Items.CelestialChronometer.Tooltip] - changed // 「减益持续时间减少33%」限定为持续扣血的减益(如着火、中毒)
+[Mods.CalamityEntropy.Items.OdinsRefuge.Tooltip] - changed // 「15%伤害减免」改为最终受到的伤害降低15%,在防御与伤害减免之后结算(不再走免伤字段)
+[Mods.CalamityEntropy.Items.ThreadOfFate.HoldShiftForDetails] - changed // 九张神谕卡片的获取方式改为当前真实来源
+[Mods.CalamityEntropy.Items.ThreadOfAbyss.HoldShiftForDetails] - changed // 九张幻影卡片的获取方式改为当前真实来源
+[Mods.CalamityEntropy.Items.CursedThread.HoldShiftForDetails] - changed // 九张灵魂卡片的获取方式改为当前真实来源
+[Mods.CalamityEntropy.Items.Leyla.Tooltip] - changed // 去掉与物品自带防御重复的「+6 防御」一行
+[Mods.CalamityEntropy.Items.CelestialRing.Tooltip] - changed // 重写为「全方面大幅度提升你的属性/最大召唤栏数目增加1个/“天堂的力量”」
+[Mods.CalamityEntropy.Items.SmolderingBreastplate.Tooltip] - changed // 删2/s生命再生,改为免疫击退;伤害减免8%→3%
+[Mods.CalamityEntropy.Items.SmolderingHelmet.Tooltip] - changed // 伤害8%→9%,暴击率5%→9%
+[Mods.CalamityEntropy.VoidEaterBonus] - changed // 套装奖励伤害和暴击率14%→10%
+[Mods.CalamityEntropy.Items.VoidFaquirEvokerHelm.Tooltip] - changed // 召唤栏+1→+2,删去+100最大魔力值
+[Mods.CalamityEntropy.helmvfe] - changed // 唤灵盔套装奖励召唤伤害32%→40%
+[Mods.CalamityEntropy.Items.MariviniumBodyArmor.Tooltip] - changed // 暴击率5%→15%
+[Mods.CalamityEntropy.AzafureSet2] - changed // 耐力条护甲上限24→20(与代码一致)
+[Mods.CalamityEntropy.SunblazeMeleeSetBonus] - changed // 暖洋洋范围25格→45格
+[Mods.CalamityEntropy.StarmoonMagicSetBonus] - changed // 十字星爆基础魔法伤害1800→900
+[Mods.CalamityEntropy.StarmoonRangedSetBonus] - changed // 星光锁定持续时间1.5秒→5秒
+[Mods.CalamityEntropy.Items.WelkinFractal.Tooltip] - changed // 三发追踪分形弹改为一道无限穿透的分形射线(面板150%),羽毛无视8点护甲
+[Mods.CalamityEntropy.Items.Voidshade.Tooltip] - changed // 右键突刺补充使用后冷却3秒的说明
+[Mods.CalamityEntropy.VoidshadeDashCD] - added // 虚影薄锋右键突刺冷却条名称
+[Mods.CalamityEntropy.Items.RailPulseBow.Tooltip] - changed // 新增一行:蓄力满层时射出的箭矢必然暴击
+[Mods.CalamityEntropy.Items.AshesBow.Tooltip] - changed // 新增一行:火焰射线最多穿透 5 个敌人
+[Mods.CalamityEntropy.Items.Prominence.Tooltip] - changed // 命中减益由神圣之火改为破晓
+[Mods.CalamityEntropy.Items.ScorchingShoot.Tooltip] - changed // 烈日子弹新增造成3秒烈阳灼烧(替换原龙焰减益)
+[Mods.CalamityEntropy.Items.KevinsNurglePot.Tooltip] - changed // 新增一行:每个敌怪身上最多同时沾着10坨粘液,已满时新的粘液不再粘附
+[Mods.CalamityEntropy.Items.FriendBox.Tooltip] - changed // 「所有造成的伤害减少为原本的1/5」→「纠缠双子存在时,你的弹幕造成的伤害降低80%」
+[Mods.CalamityEntropy.Items.SoyMilk.Tooltip] - changed // 「大幅提升射速,同时让你造成的伤害×0.3」→「攻击速度翻倍,但造成的伤害大幅降低」
+[Mods.CalamityEntropy.Buffs.SoyMilkBuff.Description] - changed // 「大幅增加攻速,伤害减少70%」→「攻击速度翻倍,但造成的伤害大幅降低」
+[Mods.CalamityEntropy.Buffs.TwistedTwinBuff.ItemTooltip] - changed // 「20% 伤害」→「弹幕伤害降低80%」
+[Mods.CalamityEntropy.Items.LushGrassclassics.Tooltip] - changed // 新增说明:每次攻击仅对最先命中的5个敌人施加穿骨毒素
+[Mods.CalamityEntropy.Items.SpectralWhispers.Tooltip] - changed // 新增一行:无视目标10点护甲
+[Mods.CalamityEntropy.Items.BloodCodex.Tooltip] - changed // 新增一行:无视目标10点护甲
+[Mods.CalamityEntropy.Buffs.BonePiercingToxin.ItemTooltip] - changed // 每秒伤害 24→10
+[Mods.CalamityEntropy.Items.BookMarkCorrupt.Tooltip] - changed // 护甲穿透+6→+3,新增+3%伤害
+[Mods.CalamityEntropy.Items.BookMarkSagittarius.Tooltip] - changed // 新增+12%伤害
+[Mods.CalamityEntropy.Items.BookMarkAerialite.Tooltip] - changed // 新增攻击期间+10%飞行速度
+[Mods.CalamityEntropy.Items.BookMarkRoyal.Tooltip] - changed // 绿宝石一次冲刺每击中一个目标伤害降低20%,最多降低80%
+[Mods.CalamityEntropy.Items.BookMarkIce.Tooltip] - changed // 每次攻击最多发射一把凌冽神剑
+[Mods.CalamityEntropy.Items.BookMarkLibra.Tooltip] - changed // 只保留+8%伤害与+8%暴击率,新增持书期间+4防御力,移除射速/弹速/穿透/护甲穿透与补差加成
+[Mods.CalamityEntropy.Items.BookMarkVoid.Tooltip] - changed // 虚空爆炸由概率触发改为每秒固定触发一次
+[Mods.CalamityEntropy.Items.HorizonssKey.Tooltip] - changed // 「占用4个仆从栏」改「占用5个仆从栏」,新增「召唤后无需手持,物品留在背包中即可保留」一行,右键指定目标改为「手持时」
+[Mods.CalamityEntropy.Items.MindCorruptor.Tooltip] - changed // 新增一行:暗影斩切拥有12点护甲穿透
+[Mods.CalamityEntropy.Items.JailerWhip.Tooltip] - changed // 新增一行:血爆对血肉墙和毁灭者只造成60%的伤害
+[Mods.CalamityEntropy.PostMoonLordRodHarmony] - added // 和谐杖提示:月亮领主或月后 Boss 在场时无法使用
+[Mods.CalamityEntropy.PostMoonLordRodDiscord] - added // 混沌传送杖提示:月后 Boss 在场时混乱状态 6 秒→11 秒,期间无法再次传送
+[Mods.CalamityEntropy.GolemFirstKillDrop] - added // 掉落条件说明:首次击败石巨人必定掉落锯刃镐
+[Mods.CalamityEntropy.Configs.ServerConfig.BaseMobilityBoost.Label] - added
+[Mods.CalamityEntropy.Configs.ServerConfig.BaseMobilityBoost.Tooltip] - added

@@ -25,6 +25,7 @@ Items: {
 			Left click swings the pot with both hands, splashing corrosive slime
 			Slime stuck to enemies deals damage once per second and inflicts Poisoned for 10 seconds
 			Slime puddles on tiles damage passing enemies every 0.5 seconds for 5 seconds
+			Each enemy can have at most 10 globs stuck to it; once full, new globs no longer stick
 			Hold right click to aim the pot and heat it with fire magic
 			After 1.5 seconds the slime boils and spits a scalding glob every 0.4 seconds, costing 6 mana each
 			Scalding slime sticks for 5 seconds, dealing damage once per second and inflicting Poisoned and Venom
@@ -194,7 +195,7 @@ Items: {
 			DisplayName: Боевые машины Акрополиса
 			Lore:
 				'''
-				Эти машины были созданы Азафуром как боевые роботы для охраны города.
+				Эти машины были созданы Адской промышленностью как боевые роботы для охраны города.
 				Особая металлическая оболочка позволила им пережить ту битву.
 				Хотя прошло много времени, они по-прежнему выполняют программу, заданную при создании: уничтожать всех незваных гостей.
 				Время сделало их медлительнее, но благодаря высокой точности они всё ещё могут перезапускаться, используя тепло окружающей среды.
@@ -397,7 +398,7 @@ Items: {
 
 	SoyMilk: {
 		DisplayName: Соевое молоко
-		Tooltip: Больше скорость атаки, но меньше урона
+		Tooltip: Скорость атаки удваивается, но наносимый урон сильно снижается
 	}
 
 	DarkArts: {
@@ -471,38 +472,29 @@ Items: {
 		DisplayName: Нить судьбы
 		Tooltip:
 			'''
-			Может быть использовано для создания Колоды Оракула.
-			Нужны эти карты:
-			Аура: Золотой ящик，Железный ящик: 10%
-			Великолепие: В продаже у НПС Торговца
-			Сущность: Дроп Гигантского моллюска
-			Вдохновение: Сундук/Ящик в пустыне: 30%
-			Метрополис: Создаётся на книжном шкафу
-			Мудрость: Дроп Скелетрона
-			Сияние: Использование хрустального шара для создания
-			Умеренность: дроп Скелетрона Прайма
-			Выносливость: Сундук бездны: 33% (Конфликтует с режимом Инфернума)
+			Используется для создания [i:CalamityEntropy/OracleDeck][c/87CEFA:Колоды Оракула]
+			[c/87CEFA:Удерживайте левый Shift, чтобы увидеть требования колоды]
 			'''
 		HoldShiftForDetails:
 			'''
-			[i: CalamityEntropy / AuraCard] [c/87CEFA: Карты - "Свет"]
-			Получено из золотых ящиков / железных ящиков / секретных серебряных ящиков
-			[i: CalamityEntropy / BrillianceCard] [c/87CEFA: Карты - "Блестящий"]
-			Продается бизнесменом
-			[i: CalamityEntropy / EntityCard] [c/87CEFA: Карты - « сущность»]
-			Падение гигантского моллюска.
-			[i: CalamityEntropy / InspirationCard] [c/87CEFA: Карты - "Просвещение"]
-			Получено из песчаниковых ящиков / оазисных ящиков / фантомов
-			[i: CalamityEntropy / Metropoliscard] [c/87CEFA: Карты - "Город"]
-			Из Дьявольского праха (5), Хаос эссенции (3) синтезированы
-			[i: CalamityEntropy / WisdomCard] [c/87CEFA: Карты - « Мудрость»]
-			Падение Короля Черепа.
-			[i: CalamityEntropy / RadianceCard] [c/87CEFA: Карты - « Свет»]
-			Из опавшей звездной пыли (5), сущности дневного света (5), души света (3) синтез
-			[i: CalamityEntropy / TemperanceCard] [c/87CEFA: Карты - « кекс»]
-			Упал механический череп.
-			[i: CalamityEntropy / EnduranceCard] [c/87CEFA: Карты - "Настойчивость"]
-			Получено из ящика сокровищ бездны / ящика источника
+			[i:CalamityEntropy/AuraCard][c/87CEFA:Карта -『Аура』]
+			Можно найти в золотых сундуках и железных ящиках или создать из железных ящиков
+			[i:CalamityEntropy/BrillianceCard][c/87CEFA:Карта -『Великолепие』]
+			Продаётся торговцем
+			[i:CalamityEntropy/EntityCard][c/87CEFA:Карта -『Сущность』]
+			Выпадает из Короля слизней
+			[i:CalamityEntropy/InspirationCard][c/87CEFA:Карта -『Вдохновение』]
+			Можно найти в ящиках оазиса или создать из ящиков оазиса
+			[i:CalamityEntropy/MetropolisCard][c/87CEFA:Карта -『Метрополис』]
+			Создаётся из янтаря и прочных окаменелостей
+			[i:CalamityEntropy/WisdomCard][c/87CEFA:Карта -『Мудрость』]
+			Выпадает из Скелетрона
+			[i:CalamityEntropy/RadianceCard][c/87CEFA:Карта -『Сияние』]
+			Создаётся из душ света, пыльцы пикси и упавших звёзд
+			[i:CalamityEntropy/TemperanceCard][c/87CEFA:Карта -『Умеренность』]
+			Выпадает из Близнецов
+			[i:CalamityEntropy/EnduranceCard][c/87CEFA:Карта -『Выносливость』]
+			Можно найти в теневых сундуках и обсидиановых ящиках с замком
 			'''
 	}
 
@@ -569,7 +561,7 @@ Items: {
 			Даёт иммунитет к отбрасыванию
 			Позволяет безопасно ходить по огненным блокам
 			Даёт эффект блока Святой мантии
-			Вы и союзники получаете на 15% меньше урона (не складывается)
+			Вы и союзники получаете на 15% меньше итогового урона после учёта защиты и снижения урона (не складывается)
 			Враги чаще выбирают вас целью
 			'''
 		ToggleEffectOn: "[c/00ff00: Включено ожерелье паники]"
@@ -664,7 +656,12 @@ Items: {
 
 	VoidFaquirEvokerHelm: {
 		DisplayName: Шлем Пустотного Факира-Призывателя
-		Tooltip: Увеличивает урон призывателя на +80%
+		Tooltip:
+			'''
+			+40% к урону призывателя
+			+2 к максимальному количеству прислужников
+			+80 к максимальному здоровью
+			'''
 	}
 
 	VoidFaquirLurkerMask: {
@@ -726,7 +723,7 @@ Items: {
 
 	RailPulseBow: {
 		DisplayName: Лук с рельсовым импульсом
-		Tooltip: ""
+		Tooltip: Стрелы, выпущенные при полной зарядке, всегда наносят критический удар
 	}
 
 	JailerWhip: {
@@ -773,13 +770,9 @@ Items: {
 		DisplayName: Небесное кольцо
 		Tooltip:
 			'''
-			+15% урона
-			+2 к регенерации здоровья в секунду
-			+2 максимальное количество прислужников
-			+75% к отбрасыванию прислужников
-			+5% к шансу критического удара
-			+5% к скорости передвижения
-			+5% к скорости атаки ближнего боя
+			Значительно улучшает все ваши характеристики
+			Увеличивает максимум прислужников на 1
+			«Сила небес»
 			'''
 	}
 
@@ -832,8 +825,9 @@ Items: {
 		DisplayName: Ключ горизонтов
 		Tooltip:
 			'''
-			Призывает прислужника-ковчег, чьи мечи атакуют ближайших врагов (занимает 4 слота прислужников)
-			ПКМ по врагу, чтобы указать мечам цель
+			Призывает прислужника-ковчег, чьи мечи атакуют ближайших врагов (занимает 5 слотов прислужников)
+			После призыва предмет не нужно держать в руках: пока он остаётся в инвентаре, ковчег и мечи сохраняются и продолжают атаковать
+			ПКМ по врагу с предметом в руках, чтобы указать мечам цель
 			[c/d9bd1b:Сила этого оружия увеличивается по мере прохождения игры]
 			[c/d9bd1b:Подвержен бонусу урона всех классов]
 			'''
@@ -989,38 +983,29 @@ Items: {
 		DisplayName: Нить бездны
 		Tooltip:
 			'''
-			Используется для создания Испорченной колоды
-			Требуются следующие карты:
-			Недоумение: дроп Близнецов
-			Тусклость: дроп гоблина колдуна
-			Смятение: продаётся Дриадой
-			Опустошение: продаётся разбойником
-			Дурак: лут с Эйдолиста
-			Жертва: 6 ядер хаоса + 2 многолетних слитка
-			Жадность: рыбалка в биоме Астральной инфекции
-			Слабость: лут с Бога слизней
-			Ничего: лут с Эйдолонского змея
+			Используется для создания [i:CalamityEntropy/TaintedDeck][c/FF6347:Испорченной колоды]
+			[c/FF6347:Удерживайте левый Shift, чтобы увидеть требования колоды]
 			'''
 		HoldShiftForDetails:
 			'''
-			[i: CalamityEntropy / Perplexed] [c/FF6347: Карты - « Ошибка»]
-			Упал из глаз Близнецов.
-			[i: CalamityEntropy / Tarnish] [c/FF6347: Карты - "Тёмно"]
-			Падение Колдуна Гоблина.
-			[i: CalamityEntropy / Confuse] [c/FF6347: Карты - « запутанные»]
-			Продается Демонами.
-			[i: CalamityEntropy / Barren] [c/FF6347: Карты - "Пустота"]
-			Продается ворами.
-			[i: CalamityEntropy / Fool] [c/FF6347: Карточка - "Дурак"]
-			Упал волшебник
-			[i: CalamityEntropy / Sacrifice] [c/FF6347: Карточка - "Жертвоприношение"]
-			Синтез из хаотического ядра (6) и вечного слитка (2)
-			[i: CalamityEntropy / GreedCard] [c/FF6347: Карты - « Жадность»]
-			Рыбалка из Звездной чумы.
-			[i: CalamityEntropy / Frail] [c/FF6347: Карты - « слабые»]
-			Падение бога Слейма.
-			[i: CalamityEntropy / Nothing] [c/FF6347: Карты - "ничто"]
-			Падение дракона - призрака.
+			[i:CalamityEntropy/Perplexed][c/FF6347:Карта -『Недоумение』]
+			Выпадает из Близнецов
+			[i:CalamityEntropy/Tarnish][c/FF6347:Карта -『Тусклость』]
+			Выпадает из гоблина-колдуна
+			[i:CalamityEntropy/Confuse][c/FF6347:Карта -『Смятение』]
+			Продаётся дриадой
+			[i:CalamityEntropy/Barren][c/FF6347:Карта -『Бесплодие』]
+			Продаётся портным
+			[i:CalamityEntropy/Fool][c/FF6347:Карта -『Дурак』]
+			Выпадает из кровавого наутилуса
+			[i:CalamityEntropy/Sacrifice][c/FF6347:Карта -『Жертва』]
+			Создаётся из душ ночи и эктоплазмы
+			[i:CalamityEntropy/GreedCard][c/FF6347:Карта -『Жадность』]
+			Можно получить рыбалкой в злых биомах
+			[i:CalamityEntropy/Frail][c/FF6347:Карта -『Хрупкость』]
+			Выпадает из циклопа-оленя
+			[i:CalamityEntropy/Nothing][c/FF6347:Карта -『Ничего』]
+			Выпадает из Лунного лорда
 			'''
 	}
 
@@ -1173,9 +1158,9 @@ Items: {
 		DisplayName: Пустотная оболочка
 		Tooltip:
 			'''
-			Критические удары наносят на 12% больше урона
+			Критические удары наносят на 15% больше урона
 			Вероятность получения энергетической оболочки во время критического удара
-			Энергетическая оболочка может снизить получаемый урон на 16% один раз.
+			Энергетическая оболочка может снизить получаемый урон на 15% один раз.
 			Вы можете получить не более трёх зарядов
 			'''
 	}
@@ -1348,7 +1333,7 @@ Items: {
 		DisplayName: Нагрудник Маривиния
 		Tooltip:
 			'''
-			+15% к урону, +5% к шансу критического удара
+			+15% к урону, +15% к шансу критического удара
 			Теперь ты можешь дышать в бездне
 			'''
 	}
@@ -1393,6 +1378,7 @@ Items: {
 			'''
 			При попадании во врага, вызывает перья падающие с неба
 			+50% к скорости стрельбы
+			Во время атаки +10% к скорости полёта
 			'''
 	}
 
@@ -1408,7 +1394,11 @@ Items: {
 
 	BookMarkIce: {
 		DisplayName: Закладка - Лёд
-		Tooltip: При стрельбе выстрелите ледяным мечом сзади и пронзите врага
+		Tooltip:
+			'''
+			При стрельбе выстрелите ледяным мечом сзади и пронзите врага
+			За одну атаку выпускается не более одного ледяного меча
+			'''
 	}
 
 	InfiniteBook: {
@@ -1476,7 +1466,7 @@ Items: {
 
 	BookMarkVoid: {
 		DisplayName: Закладка - Пустота
-		Tooltip: Снаряд, попавший во врага, имеет вероятность вызвать пустотный взрыв
+		Tooltip: Попадание по врагу накладывает «Касание бездны» и раз в секунду вызывает пустотный взрыв
 	}
 
 	BookMarkAuric: {
@@ -1508,7 +1498,8 @@ Items: {
 		Tooltip:
 			'''
 			Шанс вызвать Теневые Щупальца при ударе по врагу
-			+6 к пробиванию защиты
+			+3 к пробиванию защиты
+			+3% к урону
 			'''
 	}
 
@@ -1578,8 +1569,10 @@ Items: {
 		DisplayName: Закладка - Стрелец
 		Tooltip:
 			'''
-			+6% к урону
-			+26% к скорости атаки
+			+33% к скорости снарядов
+			+12% к урону
+			Удваивает частоту появления врагов, пока книга в руках
+			Выпадает из Скелетрона
 			'''
 	}
 
@@ -1605,13 +1598,9 @@ Items: {
 		DisplayName: Закладка - Весы
 		Tooltip:
 			'''
-			+10% к урону
-			+4% к скорости атаки
-			+10% к шансу критического удара
-			+5% к скорости снарядов
-			+1 к пробивной способности
-			+4 к пробиваанию защиты
-			Дополнительно увеличивает урон или скорость атаки на 4% в зависимости от того, какое значение меньше
+			+8% к урону
+			+8% к шансу критического удара
+			+4 к защите, пока книга в руках
 			'''
 	}
 
@@ -1696,6 +1685,7 @@ Items: {
 			Призвает 3 самоцвета
 			Рубиновый самоцвет будет стрелять во врагов
 			Изумрудный самоцвет будет бросаться на врагов
+			Каждая цель, пораженная за один рывок, снижает урон на 20%, но не более чем на 80%
 			Сапфировый самоцвет даст игрокам поблизости баффы
 			'''
 	}
@@ -1740,7 +1730,7 @@ Items: {
 		Tooltip:
 			'''
 			Запустите три дополнительные стрелы на солнечных батареях и одновременно нанесите большое количество ударов с близкого расстояния.
-			Попадание во врага вызывает дебафф "святого огня"
+			Попадание по врагу накладывает [cebuff:Daybreak]
 			'''
 	}
 
@@ -1756,7 +1746,7 @@ Items: {
 	}
 
 	AzafureBatteringRam: {
-		DisplayName: Таран Азафура
+		DisplayName: Таран Адской промышленности
 		Tooltip:
 			'''
 			Заряжается, прежде чем броситься вперед.
@@ -1775,7 +1765,7 @@ Items: {
 	}
 
 	AzafureChargeShield: {
-		DisplayName: Зарядный щит Азафура
+		DisplayName: Зарядный щит Адской промышленности
 		Tooltip:
 			'''
 			Дважды нажмите направление или клавишу рывка, чтобы потратить 1 заряд на длинный рывок в 16 блоков
@@ -1790,7 +1780,7 @@ Items: {
 		Tooltip:
 			'''
 			Призывает Пророка
-			Можно использовать только в темнице
+			Можно использовать в любом месте
 			'''
 	}
 
@@ -2129,7 +2119,7 @@ Items: {
 	}
 
 	AzafureMiner: {
-		DisplayName: Шахтёр Азафура
+		DisplayName: Шахтёр Адской промышленности
 		Tooltip: ""
 	}
 
@@ -2187,38 +2177,29 @@ Items: {
 		DisplayName: Проклятая нить
 		Tooltip:
 			'''
-			Используется для создания Колоды души
-			Требуются следующие материалы:
-			Реквием: выпадает с Духов Темницы
-			Шёпот: выпадает с Крабулона
-			Очищение: выпадает с Освящённых Мимиков
-			Мрак: находится в ящиках Злого Биома
-			Обида: создаётся из 12 мерцающих Эктоплазм
-			Indigo: Индиго: находится в сундуках Небесного Оборудования или Небесных Ящиках
-			Скорбь: выпадает с босса Голема
-			Печаль: редкий дроп с врагов Подземного Злого Биома
-			Разрыв Души: выпадает с Паладинов
+			Используется для создания [i:CalamityEntropy/SoulDeck][c/ADFF2F:Колоды души]
+			[c/ADFF2F:Удерживайте левый Shift, чтобы увидеть требования колоды]
 			'''
 		HoldShiftForDetails:
 			'''
-			[i: CalamityEntropy / RequiemCard] [c/ADFFFFF: Карты - « Песня души»]
-			Упал призрак из подземелья.
-			[i: CalamityEntropy / WisperCard] [c/ADFFFFF: Карты - "Шепот"]
-			Упал от бактериального краба.
-			[i: CalamityEntropy / Purification Card] [c/ADFFFFF: Карты - « очищение»]
-			Упал из священного сундука.
-			[i: CalamityEntropy / ObscureCard] [c/ADFFFFF: Карты - "Мрак"]
-			Взято из любого зловещего топографического ящика.
-			[i: CalamityEntropy / GrudgeCard] [c/ADFFFFF: Карты - "Жалобы"]
-			Превращается из духовного газа (12) в мерцающий свет
-			[i: CalamityEntropy / IndigoCard] [c/ADFFFFF: Карты - "Индиго"]
-			Получено из Sky Box / Sky Box
-			[i: CalamityEntropy / MourningCard] [c/ADFFFF 2F: Карты - « Печаль»]
-			Упал каменный гигант
-			[i: CalamityEntropy / BitternessCard] [c/ADFFFF 2F: Карты - "Жалобы"]
-			Упал от злого подземного врага.
-			[i: CalamityEntropy / DevouringCard] [c/ADFFFFF: Карты - "Фаг"]
-			Падение святого рыцаря.
+			[i:CalamityEntropy/RequiemCard][c/ADFF2F:Карта -『Реквием』]
+			Выпадает из духов подземелья
+			[i:CalamityEntropy/WisperCard][c/ADFF2F:Карта -『Шёпот』]
+			Выпадает из Глаза Ктулху
+			[i:CalamityEntropy/PurificationCard][c/ADFF2F:Карта -『Очищение』]
+			Выпадает из святых мимиков
+			[i:CalamityEntropy/ObscureCard][c/ADFF2F:Карта -『Мрак』]
+			Можно получить из особых ящиков злых биомов
+			[i:CalamityEntropy/GrudgeCard][c/ADFF2F:Карта -『Обида』]
+			Получается, если бросить 12 эктоплазмы в Мерцание
+			[i:CalamityEntropy/IndigoCard][c/ADFF2F:Карта -『Индиго』]
+			Можно получить из сундуков на небесных островах
+			[i:CalamityEntropy/MourningCard][c/ADFF2F:Карта -『Скорбь』]
+			Выпадает из Голема
+			[i:CalamityEntropy/BitternessCard][c/ADFF2F:Карта -『Горе』]
+			Выпадает из мимиков порчи и багровых мимиков
+			[i:CalamityEntropy/DevouringCard][c/ADFF2F:Карта -『Душераздирание』]
+			Выпадает из паладинов
 			'''
 	}
 
@@ -2311,7 +2292,7 @@ Items: {
 	}
 
 	AzafureAntiaircraftGun: {
-		DisplayName: зенитная установка & lt; & lt; Асафор & gt; & gt;
+		DisplayName: зенитная установка Адской промышленности
 		Tooltip: ""
 	}
 
@@ -2344,12 +2325,12 @@ Items: {
 	}
 
 	AzafureTeslaGun: {
-		DisplayName: пушка Асафора
+		DisplayName: пушка Адской промышленности
 		Tooltip: Электромагнитный шар, который бьет током близлежащих врагов.
 	}
 
 	AzafurePioneerCannon: {
-		DisplayName: & lt; & lt; Асафор геральд & gt; & gt;
+		DisplayName: Герольд Адской промышленности
 		Tooltip:
 			'''
 			Длинное нажатие левой кнопки мыши для зарядки боеприпасов, до 5 патронов
@@ -2423,7 +2404,8 @@ Items: {
 		DisplayName: Дневные жертвоприношения
 		Tooltip:
 			'''
-			При попадании с шансом 1/4 призывает святую стрелу с базовым уроном 180
+			Увеличивает урон и шанс критического удара на 5%
+			При попадании с шансом 1/2 призывает святую стрелу с базовым уроном 150
 			У этого эффекта внутренняя перезарядка 0.5 секунды
 			Поднимает запас заряда приманки до 2 ячеек, позволяя бросить две приманки подряд
 			'''
@@ -2551,12 +2533,12 @@ Items: {
 	}
 
 	AcropolisRelic: {
-		DisplayName: Акрополь Асафор
+		DisplayName: Адский Акрополь
 		Tooltip: ""
 	}
 
 	AcropolisTrophy: {
-		DisplayName: Медаль Асафора Акрополя
+		DisplayName: Медаль Адского Акрополя
 		Tooltip: ""
 	}
 
@@ -2571,7 +2553,7 @@ Items: {
 			'''
 			+75 к максимальному здоровью
 			Даёт эффект Амулета мифов, сокращая перезарядку лечебных зелий на 25%
-			Длительность дебаффов сокращена на 33%
+			Длительность дебаффов, наносящих урон со временем (например, горения и отравления), сокращена на 33%
 			Сильно повышает естественную регенерацию здоровья (6/с) и восстанавливает 1 здоровье в секунду
 			При ходьбе по траве под ногами вырастают травы, Shift + ПКМ переключает
 			+20 к защите, пока вы стоите на травах
@@ -2588,7 +2570,7 @@ Items: {
 		DisplayName: Месть Кейда
 		Tooltip:
 			'''
-			Каждые шесть выстрелов из огнеупорных солнечных пуль с высокой степенью поражения, что приводит к снижению маркеров смерти
+			Каждые шесть выстрелов из огнеупорных солнечных пуль с высокой степенью поражения, что приводит к снижению маркеров смерти, а также накладывает [cebuff:CalamityEntropy/SunblazeBurn] на 3 секунды
 			Слишком много способов справиться с человеком, которого нужно убить
 			'''
 	}
@@ -2686,7 +2668,7 @@ Items: {
 	}
 
 	AzafureDetectionEquipment: {
-		DisplayName: Двигатель Асафора
+		DisplayName: Двигатель Адской промышленности
 		Tooltip:
 			'''
 			Получить небольшой толчок
@@ -2766,7 +2748,11 @@ Items: {
 
 	LushGrassclassics: {
 		DisplayName: Юнь
-		Tooltip: Стреляйте из лозы, которая может причинить много вреда.
+		Tooltip:
+			'''
+			Стреляйте из лозы, которая может причинить много вреда.
+			Каждая атака накладывает [cebuff:CalamityEntropy/BonePiercingToxin] только на первых 5 пораженных врагов
+			'''
 	}
 
 	MiracleWreckage: {
@@ -2789,12 +2775,12 @@ Items: {
 	}
 
 	AzafureFurnace: {
-		DisplayName: Электроплавильная печь Асафора
+		DisplayName: Электроплавильная печь Адской промышленности
 		Tooltip: Отпустите отслеженный энергетический шар, и он взорвется после удара.
 	}
 
 	AzafurePulseWand: {
-		DisplayName: Пульс Асафора
+		DisplayName: Пульс Адской промышленности
 		Tooltip:
 			'''
 			Нажмите левую кнопку мыши, чтобы сканировать окружающие цели и отметить до 6 целей
@@ -2819,7 +2805,7 @@ Items: {
 	}
 
 	AzafureRailgun: {
-		DisplayName: Орбитальная пушка Асафора
+		DisplayName: Орбитальная пушка Адской промышленности
 		Tooltip:
 			'''
 			Накопите силы и запустите мощную электромагнитную бомбу.
@@ -2828,12 +2814,12 @@ Items: {
 	}
 
 	AzafureDroneRemote: {
-		DisplayName: Пульт дистанционного управления беспилотным летательным аппаратом & lt; & lt; Асафор & gt; & gt;
+		DisplayName: Пульт дистанционного управления беспилотным летательным аппаратом Адской промышленности
 		Tooltip: Вызовите беспилотник, который запускает ракеты по врагу.
 	}
 
 	AzafureHealingTowerRemote: {
-		DisplayName: Дистанционное управление башней Асафора
+		DisplayName: Дистанционное управление башней Адской промышленности
 		Tooltip:
 			'''
 			Развертывание терапевтической башни для восстановления ценности жизни близлежащих игроков и использование лазера для атаки близлежащих вражеских монстров в свободное время
@@ -2863,12 +2849,12 @@ Items: {
 		Tooltip:
 			'''
 			Измените свои атрибуты в зависимости от того, что в вашем кармане.
-			Его полное название - модуль « перераспределение показателей» Асафлора.
+			Его полное название - модуль « перераспределение показателей» Адской промышленности.
 			'''
 	}
 
 	AzafureProtectiveCannon: {
-		DisplayName: Аппаратура ПВО Асафора
+		DisplayName: Аппаратура ПВО Адской промышленности
 		Tooltip:
 			'''
 			Удар по целевому положению с фиксированной точкой, нанесение повреждений в диапазоне
@@ -2877,7 +2863,7 @@ Items: {
 	}
 
 	AzafureTBMTerminal: {
-		DisplayName: терминал щита Асафора
+		DisplayName: терминал щита Адской промышленности
 		Tooltip:
 			'''
 			Управляя щитом, слишком далеко от игрока становится трудно управлять.
@@ -2924,17 +2910,17 @@ Items: {
 	}
 
 	AzafureDrill: {
-		DisplayName: Переносное сверло & lt; & lt; Асафор & gt; & gt;
+		DisplayName: Переносное сверло Адской промышленности
 		Tooltip: ""
 	}
 
 	AzafurePowerSaw: {
-		DisplayName: силовая пила Асафора
+		DisplayName: силовая пила Адской промышленности
 		Tooltip: ""
 	}
 
 	AzafureElectrocauteryWand: {
-		DisplayName: жезл Асафора
+		DisplayName: жезл Адской промышленности
 		Tooltip:
 			'''
 			заряженная импульсная бомба
@@ -3006,7 +2992,7 @@ Items: {
 	}
 
 	AzafureHeavyArmor: {
-		DisplayName: Тяжелый доспех Асафора
+		DisplayName: Тяжелый доспех Адской промышленности
 		Tooltip: ""
 	}
 
@@ -3016,7 +3002,7 @@ Items: {
 	}
 
 	AzafureHeavyLeggings: {
-		DisplayName: Тяжелый ноготь Асафора
+		DisplayName: Тяжелый ноготь Адской промышленности
 		Tooltip: ""
 	}
 
@@ -3041,12 +3027,12 @@ Items: {
 	}
 
 	AzafureEKatana: {
-		DisplayName: Электронож Асафора
+		DisplayName: Электронож Адской промышленности
 		Tooltip: '''"Электрические брызги"'''
 	}
 
 	AzafureCogfly: {
-		DisplayName: Асафорская зубчатая пчела
+		DisplayName: Зубчатая пчела Адской промышленности
 		Tooltip: Вызовите пчелу, которая автоматически атакует врага.
 	}
 
@@ -3126,7 +3112,7 @@ Items: {
 	}
 
 	AzafureTacticalRadio: {
-		DisplayName: Тактическая радиостанция Асафора
+		DisplayName: Тактическая радиостанция Адской промышленности
 		Tooltip: Развертывание ракетной пусковой установки для обнаружения ближайшей цели и наведения на нее ракет
 	}
 
@@ -3141,7 +3127,7 @@ Items: {
 	}
 
 	AzafureCylinder: {
-		DisplayName: бочка Асафора
+		DisplayName: бочка Адской промышленности
 		Tooltip:
 			'''
 			Выпустите заряженный металлический шар и взорвите его рядом с врагом.
@@ -3240,7 +3226,7 @@ Items: {
 	}
 
 	AzafurePeaceKey: {
-		DisplayName: Ключ мира Асафора
+		DisplayName: Ключ мира Адской промышленности
 		Tooltip:
 			'''
 			Вызовите ядерную пусковую установку, которая отправит "Посланника мира" на близлежащие цели.
@@ -3249,7 +3235,7 @@ Items: {
 	}
 
 	AzafureDriverCore: {
-		DisplayName: ядро привода Асафора
+		DisplayName: ядро привода Адской промышленности
 		Tooltip:
 			'''
 			Предоставляет вам [S] щит.
@@ -3380,17 +3366,17 @@ Items: {
 	}
 
 	AzafureSteamKnightArmor: {
-		DisplayName: Одежда Парового рыцаря Асафора
+		DisplayName: Одежда Парового рыцаря Адской промышленности
 		Tooltip: ""
 	}
 
 	AzafureSteamKnightHelmet: {
-		DisplayName: Шлем Парового рыцаря Асафора
+		DisplayName: Шлем Парового рыцаря Адской промышленности
 		Tooltip: ""
 	}
 
 	AzafureSteamKnightLeggings: {
-		DisplayName: Асафор Паровой рыцарь
+		DisplayName: Паровой рыцарь Адской промышленности
 		Tooltip: ""
 	}
 
@@ -3443,7 +3429,7 @@ Items: {
 	}
 
 	AcropolisHeavyArmor: {
-		DisplayName: Акрополь Асафор
+		DisplayName: Адский Акрополь
 		Tooltip:
 			'''
 			+ 8% Штурм
@@ -3461,7 +3447,7 @@ Items: {
 	}
 
 	AcropolisHeavyLegArmor: {
-		DisplayName: Акрополь Асафора
+		DisplayName: Адский Акрополь
 		Tooltip:
 			'''
 			+ 15% Скорость сдвига
@@ -3531,8 +3517,8 @@ Items: {
 		DisplayName: Защитники исцеления.
 		Tooltip:
 			'''
-			+ 8% Вызвать вред
-			Каждое место на панели вызова, увеличение 0,5 / с регенерации жизни, до 3 / с
+			+ 5% Вызвать вред
+			Каждое место на панели вызова, увеличение 0,5 / с регенерации жизни, до 2 / с
 			'''
 	}
 
@@ -3540,8 +3526,8 @@ Items: {
 		DisplayName: Убежище
 		Tooltip:
 			'''
-			+ 8% Вызвать вред
-			На каждой строке вызова добавьте 2 пункта защиты, максимум 12 пунктов.
+			+ 5% Вызвать вред
+			На каждой строке вызова добавьте 2 пункта защиты, максимум 6 пунктов.
 			'''
 	}
 
@@ -3583,6 +3569,7 @@ Items: {
 			'''
 			Запускайте кровь с перевернутой страницы, и есть вероятность, что вы вернете ценность жизни, когда попадете туда.
 			После смерти злодея произошел взрыв крови.
+			Игнорировать броню 10.
 			'''
 	}
 
@@ -3593,7 +3580,11 @@ Items: {
 
 	SpectralWhispers: {
 		DisplayName: Секреты языка душ
-		Tooltip: Запускайте шепот, который прилипает к врагам и предметам и взрывается.
+		Tooltip:
+			'''
+			Запускайте шепот, который прилипает к врагам и предметам и взрывается.
+			Игнорировать броню 10.
+			'''
 	}
 
 	BookmarkBloodthirsty: {
@@ -3664,8 +3655,8 @@ Items: {
 	}
 
 	SignalBlocker: {
-		DisplayName: Сигнальный экран
-		Tooltip: Отмечено как коллекция, чтобы предотвратить естественное создание доспехов в Акрополе.
+		DisplayName: Адский усилитель сигнала
+		Tooltip: Призывает Адский Акрополь. Используется только в аду
 	}
 
 	Filthless: {
@@ -3680,7 +3671,7 @@ Items: {
 	}
 
 	AzafureMissile: {
-		DisplayName: & lt; & lt; Асафор & gt; & gt; (ракета)
+		DisplayName: Ракета Адской промышленности
 		Tooltip:
 			'''
 			Увеличить на 2% количество прилипающих снарядов. Цель повреждена.
@@ -3771,7 +3762,6 @@ Items: {
 		DisplayName: Лайла!
 		Tooltip:
 			'''
-			+6 к защите
 			+40 к максимальному здоровью
 			+2/с регенерации здоровья
 			Даёт бафф «Мёд» вам и союзникам поблизости
@@ -3805,6 +3795,7 @@ Items: {
 			'''
 			Для одновременной зарядки выстрела требуется 3 секунды.
 			Отпустите левую кнопку мыши, когда зарядка будет закончена.
+			Огненный луч пробивает не более 5 врагов.
 			'''
 	}
 
@@ -3812,8 +3803,8 @@ Items: {
 		DisplayName: Огненная броня.
 		Tooltip:
 			'''
-			+ 2 / с Возрождение жизни
-			+ 8% Уменьшение вреда
+			Иммунитет к отбрасыванию
+			+ 3% Уменьшение вреда
 			Иммунная магма и пожарная травма
 			'''
 	}
@@ -3827,8 +3818,8 @@ Items: {
 		DisplayName: Шлем из пепла.
 		Tooltip:
 			'''
-			+ 8% Вред
-			+ 5% Штурм
+			+ 9% Вред
+			+ 9% Штурм
 			'''
 	}
 
@@ -3880,8 +3871,8 @@ Items: {
 	}
 
 	AzafureSupportRemote: {
-		DisplayName: Дистанционное управление с поддержкой Асафора.
-		Tooltip: Вызовите мини - истребитель Асафор и выпустите бронебойный снаряд по врагу.
+		DisplayName: Дистанционное управление с поддержкой Адской промышленности.
+		Tooltip: Вызовите мини - истребитель Адской промышленности и выпустите бронебойный снаряд по врагу.
 	}
 
 	AerialiteMissile: {
@@ -3924,7 +3915,7 @@ Items: {
 	}
 
 	AzafurePhonograph: {
-		DisplayName: Фонограф Асафора
+		DisplayName: Фонограф Адской промышленности
 		Tooltip: Показать песню "Акрополь"
 	}
 
@@ -3960,7 +3951,7 @@ Items: {
 	}
 
 	AzafureImperialGuardMachineGun: {
-		// DisplayName: Azafure Imperial Guard Machine Gun
+		// DisplayName: Hell Industrial Imperial Guard Machine Gun
 		/* Tooltip:
 			'''
 			Left Click with [i:CalamityEntropy/HellIndustrialComponents] Brimstone Industrial Components in your inventory to load [AMMOMAX] ammunition
@@ -3969,12 +3960,12 @@ Items: {
 	}
 
 	AzafureExhaustGasInjector: {
-		// DisplayName: Azafure Exhaust Gas Injector
+		// DisplayName: Hell Industrial Exhaust Gas Injector
 		// Tooltip: Fires a constrant stream of corrosive exhaust gas
 	}
 
 	AzafureStandardShotgun: {
-		// DisplayName: Azafure Standard Shotgun
+		// DisplayName: Hell Industrial Standard Shotgun
 		// Tooltip: Fire a spread of shotgun rounds that inflict [cebuff:CalamityEntropy/MechanicalTrauma]
 	}
 
@@ -4107,7 +4098,7 @@ Items: {
 	}
 
 	AzafureMicroBeacon: {
-		// DisplayName: Azafure Micro Beacon
+		// DisplayName: Hell Industrial Micro Beacon
 		/* Tooltip:
 			'''
 			{$BaitCommonTooltip1}
@@ -4228,12 +4219,12 @@ Items: {
 	}
 
 	AzafureWarSatelliteAuthorizationKey: {
-		// DisplayName: Azafure War Satellite Authorization Key
+		// DisplayName: Hell Industrial War Satellite Authorization Key
 		/* Tooltip:
 			'''
 			{$BaitCommonTooltip1}
 			{$BaitCommonTooltip2}
-			Call Azafure War satellite to strike target
+			Call Hell Industrial War satellite to strike target
 			''' */
 	}
 
@@ -4247,7 +4238,7 @@ Items: {
 	}
 
 	AzafureTwinSaw: {
-		// DisplayName: Azafure Twin Saw
+		// DisplayName: Hell Industrial Twin Saw
 		// Tooltip: Waving up and down, then bringing the two saws together and spraying sparks forward
 	}
 
@@ -4257,19 +4248,19 @@ Items: {
 	}
 
 	AzafureCircuitry: {
-		// DisplayName: Azafure Circuitry
+		// DisplayName: Hell Industrial Circuitry
 		/* Tooltip:
 			'''
-			The core wiring of Azafure machinery, its fine traces still hot to the touch
+			The core wiring of Hell Industrial machinery, its fine traces still hot to the touch
 			Has a chance to be extracted from Hell Industrial Components in an Extractinator
 			''' */
 	}
 
 	AzafurePlating: {
-		// DisplayName: Azafure Plating
+		// DisplayName: Hell Industrial Plating
 		/* Tooltip:
 			'''
-			A heat-resistant slice of Azafure armor, bullet scars still on its edge
+			A heat-resistant slice of Hell Industrial armor, bullet scars still on its edge
 			Has a chance to be extracted from Hell Industrial Components in an Extractinator
 			''' */
 	}
@@ -4450,7 +4441,7 @@ Items: {
 	}
 
 	AzafureAirReaper: {
-		DisplayName: Серп Асафора
+		DisplayName: Серп Адской промышленности
 		Tooltip:
 			'''
 			Выбросил серп, попал и прилип к цели, причинив несколько повреждений.
@@ -4459,7 +4450,7 @@ Items: {
 	}
 
 	AzafureLightMachineGun: {
-		DisplayName: Легкие пулеметы & lt; & lt; Асафор & gt; & gt;
+		DisplayName: Легкие пулеметы Адской промышленности
 		Tooltip:
 			'''
 			Лазер быстрого излучения
@@ -4469,7 +4460,7 @@ Items: {
 	}
 
 	AzafureSurgeRod: {
-		DisplayName: пайка Асафора
+		DisplayName: пайка Адской промышленности
 		Tooltip:
 			'''
 			Попал в цель и через некоторое время ударил молнией по другим близлежащим целям.
@@ -4588,7 +4579,7 @@ Items: {
 	}
 
 	AzafureSwirlblade: {
-		DisplayName: Azafure Swirlblade
+		DisplayName: Hell Industrial Swirlblade
 		Tooltip:
 			'''
 			Летит некоторое время или при попадании во врага
@@ -4732,7 +4723,7 @@ ChaoticSetBonus:
 	'''
 VoidEaterBonus:
 	'''
-	Увеличение на 14 процентов числа травм и случаев насилия
+	Увеличение на 10 процентов числа травм и случаев насилия
 	Добавьте 2 максимальных позиции слуг и 100 максимальных магических значений.
 	При попадании в цель было выпущено несколько лазеров с трехсекундным охлаждением.
 	Проецируйте щит с точкой [SHIELD].
@@ -4797,7 +4788,7 @@ SunblazeMeleeSetBonus:
 	'''
 	На 10% увеличивает урон и шанс критического удара в ближнем бою
 	На 20% увеличивает скорость атаки в ближнем бою, регенерация здоровья +2,5 в секунду
-	Игроки в радиусе 25 блоков (включая вас) получают [cebuff:CalamityEntropy/CozyWarmth], регенерация здоровья +2 в секунду
+	Игроки в радиусе 45 блоков (включая вас) получают [cebuff:CalamityEntropy/CozyWarmth], регенерация здоровья +2 в секунду
 	'''
 SunblazeSummonSetBonus:
 	'''
@@ -4811,7 +4802,7 @@ StarmoonMagicSetBonus:
 	'''
 	На 13% увеличивает магический урон и шанс критического удара
 	Магические критические удары создают на цели Звёздный крестовый взрыв, не чаще раза в 3 секунды
-	Звёздный крестовый взрыв наносит 1800 базового магического урона и, угасая, восстанавливает вам 8 здоровья
+	Звёздный крестовый взрыв наносит 900 базового магического урона и, угасая, восстанавливает вам 8 здоровья
 	'''
 StarmoonRangedSetBonus:
 	'''
@@ -4819,7 +4810,7 @@ StarmoonRangedSetBonus:
 	Выпущенные вами стрелы не падают
 	Ракеты, гранаты и другие взрывные снаряды дальнего боя, выпущенные вами, не ранят вас
 	Ближайший враг в пределах 100 блоков получает лунную метку
-	Попадание по отмеченному врагу атаками дальнего боя даёт [cebuff:CalamityEntropy/StarlightLock] на 1,5 секунды
+	Попадание по отмеченному врагу атаками дальнего боя даёт [cebuff:CalamityEntropy/StarlightLock] на 5 секунд
 	'''
 
 VDAftermath: {
@@ -5256,7 +5247,7 @@ Projectiles: {
 	IlmeranVortex.DisplayName: Ирмеранский водоворот
 	StarSootSmoke.DisplayName: Галлюциногенная пыль
 	Starblight.DisplayName: Фантастический вектор
-	AzAAGunHoldout.DisplayName: зенитная установка & lt; & lt; Асафор & gt; & gt;
+	AzAAGunHoldout.DisplayName: зенитная установка Адской промышленности
 	AntiaircraftShell.DisplayName: гильза
 	AzAGShot.DisplayName: Пули для зенитных орудий
 	RockBulletShot.DisplayName: Каменные пули
@@ -5318,24 +5309,24 @@ Projectiles: {
 	MiracleShoot.DisplayName: клинок чуда
 	MiracleWreckageHeld.DisplayName: Обломки чудес
 	Theostring.DisplayName: теократический пояс
-	AzafureFurnaceEnergyBall.DisplayName: Энергетический шар Асафора
-	AzafureFurnaceHoldout.DisplayName: Электроплавильная печь Асафора
+	AzafureFurnaceEnergyBall.DisplayName: Энергетический шар Адской промышленности
+	AzafureFurnaceHoldout.DisplayName: Электроплавильная печь Адской промышленности
 	FurnaceBlast.DisplayName: импульс плавильной печи
-	AzafurePulseWandHeld.DisplayName: Пульс Асафора
+	AzafurePulseWandHeld.DisplayName: Пульс Адской промышленности
 	TeslaLightningRed.DisplayName: молния
 	SandBullet.DisplayName: Песчаная бомба
-	AzafureSurgeRodHeldEffect.DisplayName: пайка Асафора
-	AzafureSurgeRodThrow.DisplayName: пайка Асафора
+	AzafureSurgeRodHeldEffect.DisplayName: пайка Адской промышленности
+	AzafureSurgeRodThrow.DisplayName: пайка Адской промышленности
 	StarlightMothMinion.DisplayName: Мертвые звёзды
 	LuminarisMinionAstralShoot.DisplayName: Мертвые звёзды
-	AzafureRailgunHeld.DisplayName: Орбитальная пушка Асафора
+	AzafureRailgunHeld.DisplayName: Орбитальная пушка Адской промышленности
 	RailgunChargeShot.DisplayName: Орбитальный артиллерийский аккумулятор
 	RailgunSmallShot.DisplayName: Орбитальный снаряд
-	AzafureDroneMinion.DisplayName: Беспилотник Асафор
+	AzafureDroneMinion.DisplayName: Беспилотник Адской промышленности
 	AzafureDroneBullet.DisplayName: БЛА ракета - беспилотник
-	AzafureHealingTowerSentry.DisplayName: Башня Асафора
-	AzafureProtectiveCannonShot.DisplayName: Башня Асафора
-	ATBMProjectile.DisplayName: щит Асафора
+	AzafureHealingTowerSentry.DisplayName: Башня Адской промышленности
+	AzafureProtectiveCannonShot.DisplayName: Башня Адской промышленности
+	ATBMProjectile.DisplayName: щит Адской промышленности
 	TlipocasScytheHeld.DisplayName: Серп Трипоки.
 	TSSlash.DisplayName: Удар!
 	TlipocasScytheThrow.DisplayName: Серп Трипоки.
@@ -5349,22 +5340,22 @@ Projectiles: {
 	MalignBullet.DisplayName: Дьявол (ракета)
 	MalignLightning.DisplayName: Волшебная дуга
 	MalignLaser.DisplayName: Волшебный лазер
-	AzafurePowerSawProj.DisplayName: силовая пила Асафора
+	AzafurePowerSawProj.DisplayName: силовая пила Адской промышленности
 	AzafureElectrocauteryWandHeld.DisplayName: Ручной патронный занавес
 	AzafureElectrocauteryWandBomb.DisplayName: Электромагнитная бомба
 	Snowgrave.DisplayName: Снежные похороны
 	DedicatedOracleSlashProj.DisplayName: Смотреть глазами
-	ALMGLaser.DisplayName: Пули & lt; & lt; Асафор & gt; & gt;
-	AzafureLightMachineGunHeld.DisplayName: Легкие пулеметы & lt; & lt; Асафор & gt; & gt;
-	AzafureLightMachineGunStealth.DisplayName: Пулемет & lt; & lt; Асафор & gt; & gt;
+	ALMGLaser.DisplayName: Пули Адской промышленности
+	AzafureLightMachineGunHeld.DisplayName: Легкие пулеметы Адской промышленности
+	AzafureLightMachineGunStealth.DisplayName: Пулемет Адской промышленности
 	ALMGShell.DisplayName: гильза
 	PickingSwarm.DisplayName: Концентрация пчел
 	BMHammerProjectile.DisplayName: Молот
 	CrossBorderPursuitProj.DisplayName: Злые глаза
 	CBPSmash.DisplayName: Трещина
 	BMSwordProjectile.DisplayName: Волшебный меч
-	AzafureEKatanaSlash.DisplayName: Электронож Асафора
-	AzafureCogflyMinion.DisplayName: Асафорская зубчатая пчела
+	AzafureEKatanaSlash.DisplayName: Электронож Адской промышленности
+	AzafureCogflyMinion.DisplayName: Зубчатая пчела Адской промышленности
 	GungnirThrow.DisplayName: Гангниль
 	Sorensen.DisplayName: Соренсен
 	FetalDreamSlash.DisplayName: Удар!
@@ -5375,9 +5366,9 @@ Projectiles: {
 	AzafureRadioMissile.DisplayName: ракета
 	MissileSilo.DisplayName: Ракетный колодец
 	SentryRemoverHeld.DisplayName: Устройство для демонтажа Sentinel
-	AzafureAirReaperThrow.DisplayName: Серп Асафора
+	AzafureAirReaperThrow.DisplayName: Серп Адской промышленности
 	FairyBMMinion.DisplayName: Волшебные духи
-	AzafureCylinderHeld.DisplayName: бочка Асафора
+	AzafureCylinderHeld.DisplayName: бочка Адской промышленности
 	MetalBall.DisplayName: Золотой шар
 	AzafureMagicBlast.DisplayName: Металлосферические магнитные бури
 	Stinger.DisplayName: Наркотики
@@ -5456,7 +5447,7 @@ Projectiles: {
 	AzureVortex.DisplayName: Тихий водоворот
 	FilthlessMissile.DisplayName: ракета - отстойник
 	FilthlessShootAlt.DisplayName: ракета - отстойник
-	AzafureMissileProj.DisplayName: & lt; & lt; Асафор & gt; & gt; (ракета)
+	AzafureMissileProj.DisplayName: Ракета Адской промышленности
 	DivineShield.DisplayName: Святой щит
 	CrystalSpikePop.DisplayName: Магический шип
 	CrystalSpikeThrow.DisplayName: Магический шип
@@ -5530,9 +5521,9 @@ Projectiles: {
 	// FutureKnifeSpin.DisplayName: Future Knife Spin
 	// RuneSongHeld.DisplayName: Rune Song Held
 	// RuneBolt.DisplayName: Rune Bolt
-	// AzafureImperialGuardMachineGunHeld.DisplayName: Azafure Imperial Guard Machine Gun Held
+	// AzafureImperialGuardMachineGunHeld.DisplayName: Hell Industrial Imperial Guard Machine Gun Held
 	// ImperialGuardShot.DisplayName: Imperial Guard Shot
-	// AzafureExhaustGasInjectorHeld.DisplayName: Azafure Exhaust Gas Injector Held
+	// AzafureExhaustGasInjectorHeld.DisplayName: Hell Industrial Exhaust Gas Injector Held
 	// ExhaustGas.DisplayName: Exhaust Gas
 	// MewMewBombThrow.DisplayName: Mew Mew Bomb Throw
 	// KinanitionSpawn.DisplayName: Kinanition Spawn
@@ -5545,9 +5536,9 @@ Projectiles: {
 	// BrillianceSwirlbladeProj.DisplayName: Brilliance Swirlblade Proj
 	// FlamingSwirlbladeFlame.DisplayName: Flaming Swirlblade Flame
 	// FlamingSwirlbladeProj.DisplayName: Flaming Swirlblade Proj
-	// AzafureSwirlbladeProj.DisplayName: Azafure Swirlblade Proj
-	// AzafureSwirlbladeSaw.DisplayName: Azafure Swirlblade Saw
-	// AzafureSwirlbladeMissile.DisplayName: Azafure Swirlblade Missile
+	// AzafureSwirlbladeProj.DisplayName: Hell Industrial Swirlblade Proj
+	// AzafureSwirlbladeSaw.DisplayName: Hell Industrial Swirlblade Saw
+	// AzafureSwirlbladeMissile.DisplayName: Hell Industrial Swirlblade Missile
 	// GlacierSwirlbladeProj.DisplayName: Glacier Swirlblade Proj
 	// GlacierSwirlbladeSaw.DisplayName: Glacier Swirlblade Saw
 	// RunicSwirlbladeBullet.DisplayName: Runic Swirlblade Bullet
@@ -5572,8 +5563,8 @@ Projectiles: {
 	// WaterBulletSpawner.DisplayName: Water Bullet Spawner
 	// AntlionShellProjectile.DisplayName: Antlion Shell Projectile
 	// DesertNuisanceFriendly.DisplayName: Desert Nuisance Friendly
-	// AzafureAssaultDrone.DisplayName: Azafure Assault Drone
-	// AzafureMicroBeaconProjectile.DisplayName: Azafure Micro Beacon Projectile
+	// AzafureAssaultDrone.DisplayName: Hell Industrial Assault Drone
+	// AzafureMicroBeaconProjectile.DisplayName: Hell Industrial Micro Beacon Projectile
 	// BeaconDroneShoot.DisplayName: Beacon Drone Shoot
 	// DeliciousAcornProjectile.DisplayName: Delicious Acorn Projectile
 	// SquirrerMinion.DisplayName: Squirrer Minion
@@ -5603,7 +5594,7 @@ Projectiles: {
 	// SacredStoneSummon.DisplayName: Sacred Stone Summon
 	// BottledFissureProjectile.DisplayName: Bottled Fissure Projectile
 	// VoidEater.DisplayName: Void Eater
-	// AzafureWarSatelliteAuthorizationKeyProjectile.DisplayName: Azafure War Satellite Authorization Key Projectile
+	// AzafureWarSatelliteAuthorizationKeyProjectile.DisplayName: Hell Industrial War Satellite Authorization Key Projectile
 	// SateliteLaser.DisplayName: Satelite Laser
 	// WarSatellite.DisplayName: War Satellite
 	// ArbitratorStealthImpact.DisplayName: Arbitrator Stealth Impact
@@ -5611,8 +5602,8 @@ Projectiles: {
 	// TheDeadCutSlash.DisplayName: The Dead Cut Slash
 	// FooveriaHeld.DisplayName: Fooveria Held
 	// FooveriaIceShard.DisplayName: Fooveria Ice Shard
-	// AzafureTwinSawHeld.DisplayName: Azafure Twin Saw Held
-	// AzafureSawSpark.DisplayName: Azafure Saw Spark
+	// AzafureTwinSawHeld.DisplayName: Hell Industrial Twin Saw Held
+	// AzafureSawSpark.DisplayName: Hell Industrial Saw Spark
 	// VFChargeFXProj.DisplayName: V F Charge F X Proj
 	// VoidFaquirEnergyBallMelee.DisplayName: Void Faquir Energy Ball Melee
 	// PartySparkle.DisplayName: Party Sparkle
@@ -5760,7 +5751,7 @@ Buffs: {
 
 	SoyMilkBuff: {
 		DisplayName: Соевое молоко
-		Description: Больше скорость атаки, меньше урона
+		Description: Скорость атаки удваивается, но наносимый урон сильно снижается
 	}
 
 	StealthState: {
@@ -6003,7 +5994,7 @@ Buffs: {
 
 	AzafureDrone: {
 		DisplayName: Адский промышленный дрон.
-		Description: Атакует Асафора, и никто не будет сражаться за тебя.
+		Description: Беспилотник Адской промышленности будет сражаться за тебя.
 	}
 
 	VoidEmpowerment: {
@@ -6023,7 +6014,7 @@ Buffs: {
 
 	CogflyBuff: {
 		DisplayName: Зубчатые пчелы
-		Description: Асафулла будет сражаться за тебя.
+		Description: Зубчатая пчела Адской промышленности будет сражаться за тебя.
 	}
 
 	ChaosTyrant: {
@@ -6076,7 +6067,7 @@ Buffs: {
 	BonePiercingToxin: {
 		DisplayName: Остеотоксины
 		Description: Вы чувствуете боль в сердце.
-		// ItemTooltip: Typeless - 24 DPS
+		// ItemTooltip: Typeless - 10 DPS
 	}
 
 	FlamingBlood: {
@@ -6397,7 +6388,7 @@ NPCs: {
 
 		BossChecklistIntegration: {
 			EntryName: Пророк
-			SpawnInfo: Используй [i:CalamityEntropy/ProphecyToken] в темнице, чтобы призвать.
+			SpawnInfo: Используй [i:CalamityEntropy/ProphecyToken] в любом месте, чтобы призвать.
 			DespawnMessage: Пророк был повержен
 		}
 	}
@@ -6415,11 +6406,11 @@ NPCs: {
 	}
 
 	AcropolisMachine: {
-		DisplayName: Акрополь Асафор
+		DisplayName: Адский Акрополь
 
 		BossChecklistIntegration: {
-			EntryName: Акрополь Асафор
-			SpawnInfo: Небольшая вероятность возникновения вулканических скал
+			EntryName: Адский Акрополь
+			SpawnInfo: Используйте [i:CalamityEntropy/SignalBlocker] в аду, чтобы призвать.
 			DespawnMessage: ""
 		}
 	}
@@ -6546,6 +6537,7 @@ CdDS: Перезарядка Божественного Щита
 CdAntivoid: охлаждение с обратным спринтом
 AbyssalStorm: Буря в бездне
 // YoungMasterDashCD: Dash Cooldown
+VoidshadeDashCD: Перезарядка выпада Тени бездны
 CruiserBestiary:
 	'''
 	Верховный хищник, рожденный из пустоты, напоминающий того Пожирателя Богов, с которым ты когда-то сталкивался.
@@ -6573,7 +6565,7 @@ ProphetBestiary:
 	Жалкая, разбитая душа, обезумевшая от ужасной правды, скрытой за нашествием пустоты.
 	Связанная древними текстами, она бесконечно повторяет бессмысленные крики и шепоты, отчаянно — но тщетно — пытаясь передать увиденное.
 	'''
-LuminarisBestiary: Огромная бабочка, зараженная звездой, существует для распространения чумы.
+LuminarisBestiary: Гигантское насекомое, скрывающееся в ночном небе. Оно накапливает звёздный свет в своём теле и использует его для атак. Особенно любит сладкую росу со вкусом звёзд.
 ApsychosBestiary:
 	'''
 	Живые существа, блуждающие глубоко в магме, имеют раковины, состоящие из пород земной коры.
@@ -6698,6 +6690,11 @@ Configs: {
 			// Label: Enable Armor Prefix
 			// Tooltip: Close this will disable all prefix items' recipes and generation in world
 		}
+
+		BaseMobilityBoost: {
+			Label: Повышенная базовая мобильность
+			Tooltip: При включении все игроки получают +25% к скорости передвижения. Если не экипированы другие аксессуары рывка или стандартное снаряжение с рывком, двойное нажатие клавиши направления или клавиша рывка совершает рывок вперёд примерно на 6 блоков, после чего действует перезарядка 0,75 секунды
+		}
 	}
 }
 
@@ -6732,7 +6729,7 @@ helmvfl:
 	'''
 helmvfe:
 	'''
-	+32% к урону призывателя
+	+40% к урону призывателя
 	+4 к максимальному количеству прислужников
 	Призывает миниатюрного Пожирателя Пустоты, который сражается за вас
 	'''
@@ -6984,7 +6981,7 @@ Owner: Владелец:
 ShadowDashCD: Теневое внезапное охлаждение
 ShadeCloakDashCD: Shadow Dash Cooldown
 RPDonorName: Холодный уровень
-Acropolis: Атакующие машины Asaffoler, которые использовались в крупномасштабных войнах
+Acropolis: Боевая машина, оставленная древней цивилизацией и когда-то служившая для защиты от исполинов из глубин магмы.
 OblivionThretherCooldown: Внезапное охлаждение винтовой пилы
 LilyDeath0: "{0} Поглощен грязью"
 LilyDeath1: "{0} Хранитель сломан."
@@ -7079,6 +7076,9 @@ NowLV: Текущий уровень
 AnyOrichalcumBar: Скрытые слитки серебра или меди
 AnyEvilBar: Алые слитки или колючие слитки
 IronBar: Железо или свинцовые слитки
+PostMoonLordRodHarmony: Нельзя использовать, пока присутствует Лунный лорд или любой босс после него
+PostMoonLordRodDiscord: Пока присутствует Лунный лорд или любой босс после него, состояние хаоса длится 11 секунд, и в этом состоянии нельзя телепортироваться повторно
+GolemFirstKillDrop: Гарантированно выпадает при первом убийстве Голема
 AnyFairy: Любые феи.
 Gems: Любые драгоценные камни
 Butterflies: Любая бабочка
@@ -7104,7 +7104,7 @@ AzafureSet2:
 	'''
 	При ношении этого доспеха вся экипировка Asaffoler будет частично усилена.
 	Замените адреналин на полоски выносливости.
-	Ремень на выносливость даст вам до 24 очков брони и 20% скидку на повреждение.
+	Ремень на выносливость даст вам до 20 очков брони и 20% скидку на повреждение.
 	При повреждении выносливость вычитается из величины травмы, а выносливость уменьшается, что временно снижает вашу защиту и снижение травматизма.
 	Устойчивость медленно возвращается через 5 секунд после удара.
 	Когда выносливость опустеет, она выйдет из строя и займет некоторое время, чтобы снова включить ее.
@@ -7306,13 +7306,12 @@ SusiesBraceletCal:
 CWRQuest: {
 	AcropolisMachine: {
 		// Title: Groan of Rusted Iron
-		// Summary: Defeat the Azafure Acropolis Machine that wanders the Underworld
-		// Objective: Defeat the Azafure Acropolis Machine
+		// Summary: Summon and defeat the Hell Acropolis Machine in the Underworld
+		// Objective: Defeat the Hell Acropolis Machine
 		/* Detail:
 			'''
-			It spawns naturally in the Underworld and will not attack you on its own
-			Bring it below 98% life and the fight begins
-			There is no summoning item for this one, you have to go find it
+			Use the Hell Signal Amplifier in the Underworld to summon it, and the fight begins at once
+			The Hell Signal Amplifier is crafted at an anvil from 20 iron or lead bars, 10 obsidian and 1 lava bucket
 			''' */
 	}
 
@@ -7345,7 +7344,7 @@ CWRQuest: {
 		/* Detail:
 			'''
 			Craft a Prophecy Token at a Mythril Anvil from Books, Souls of Light and Ectoplasm
-			It only works inside the Dungeon
+			Once crafted, it can be used anywhere
 			''' */
 	}
 
@@ -7484,7 +7483,7 @@ CWRQuest: {
 	AzafureMiner: {
 		// Title: Automated Vein
 		// Summary: Let a machine do the mining
-		// Objective: Place an Azafure Digital Mining Machine in the world
+		// Objective: Place a Hell Industrial Digital Mining Machine in the world
 		/* Detail:
 			'''
 			Crafted at a Heavy Work Bench or a Mythril Anvil, the recipe needs Hell Industrial Components

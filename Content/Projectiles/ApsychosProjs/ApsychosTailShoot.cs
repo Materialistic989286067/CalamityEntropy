@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.Projectiles.ApsychosProjs
             Projectile.MaxUpdates = 8;
         }
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
-            target.AddBuff(BuffID.OnFire3, 180);
+            target.AddDebuffFixed(BuffID.OnFire, 180);
         }
         public override void AI() {
             oldPos.Add(Projectile.Center);

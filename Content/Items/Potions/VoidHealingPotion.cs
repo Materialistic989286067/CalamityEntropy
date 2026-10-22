@@ -18,16 +18,16 @@ namespace CalamityEntropy.Content.Items.Potions
         }
 
         public override void SetDefaults() {
-            Item.DefaultToHealingPotion(24, 32, 350);
+            Item.DefaultToHealingPotion(24, 32, 300);
             Item.value = Item.sellPrice(gold: 1);
             Item.rare = ModContent.RarityType<NihilityBlue>();
         }
 
         public override void AddRecipes() {
-            CreateRecipe(4)
-                .AddIngredient(ItemID.SuperHealingPotion, 4)
-                .AddIngredient(ItemID.LunarBar)
-                .AddTile(TileID.Bottles)
+            CreateRecipe(5)
+                .AddIngredient(ItemID.BottledWater, 5)
+                .AddIngredient<BlazingSunlight>(2)
+                .AddTile(TileID.AlchemyTable)
                 .DisableDecraft()
                 .Register();
         }

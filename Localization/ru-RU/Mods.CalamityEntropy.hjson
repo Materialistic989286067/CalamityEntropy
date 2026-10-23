@@ -5726,7 +5726,7 @@ Buffs: {
 	TwistedTwinBuff: {
 		DisplayName: Искажённый близнец
 		Description: ""
-		// ItemTooltip: 20% increased damage
+		// ItemTooltip: Projectile damage reduced by 80%
 	}
 
 	Rainstorm: {

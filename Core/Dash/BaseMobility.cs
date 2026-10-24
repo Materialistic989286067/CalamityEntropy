@@ -8,9 +8,9 @@ namespace CalamityEntropy.Core.Dash
     {
         public override string ID => "BaseMobilityDash";
         public override int Priority => -100;
-        public override int Duration => 9;
-        public override float Distance => 6 * 16f;
-        public override int Cooldown => 45;
+        public override int Duration => 4;
+        public override float Distance => 1 * 16f;
+        public override int Cooldown => 60;
         public override float Curve => 1.6f;
     }
 

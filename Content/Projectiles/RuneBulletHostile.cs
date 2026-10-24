@@ -1,4 +1,6 @@
 ﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.NPCs.Prophet.Core;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
@@ -78,6 +80,9 @@ namespace CalamityEntropy.Content.Projectiles
                 //GlowSpark旧PRT/EParticle,Configure尾参统一签名那套
                 PRTLoader.NewParticle<PRT_GlowSpark>(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(2, 7), Color.LightBlue, Main.rand.NextFloat(0.06f, 0.1f)).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0);
             }
+        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) {
+            target.AddDebuffFixed(ModContent.BuffType<SoulDisorder>(), ProphetDirector.SoulDisorderFrames);
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             base.OnHitNPC(target, hit, damageDone);

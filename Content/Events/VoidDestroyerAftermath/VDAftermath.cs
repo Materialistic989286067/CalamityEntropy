@@ -36,8 +36,9 @@ namespace CalamityEntropy.Content.Events.VoidDestroyerAftermath
             AddHallow(NPCID.Pixie, hallow, 3, 1, 1);
             AddHallow(NPCID.LightMummy, hallow, 3, 1, 1);
             AddHallow(NPCID.RainbowSlime, hallow, 1, 1, 3);
-            AddHallow(NPCID.IlluminantSlime, hallow, 3, 1, 1);
-            AddHallow(NPCID.IlluminantBat, hallow, 3, 1, 1);
+            VDStatBoost illuminant = new(1.66f, 20f);
+            AddHallow(NPCID.IlluminantSlime, illuminant, 3, 1, 1);
+            AddHallow(NPCID.IlluminantBat, illuminant, 3, 1, 1);
             AddHallow(NPCID.DesertGhoulHallow, hallow, 3, 1, 1);
             AddHallow(NPCID.PigronHallow, hallow, 1, 2, 3);
             //神圣之地特殊敌怪
@@ -55,11 +56,12 @@ namespace CalamityEntropy.Content.Events.VoidDestroyerAftermath
 
             //地牢花后骷髅
             VDStatBoost dungeonLate = new(2f, 12f);
+            VDStatBoost armoredBones = new(1.6f, 12f);
             foreach (int type in new int[] {
                 NPCID.BlueArmoredBones, NPCID.BlueArmoredBonesMace, NPCID.BlueArmoredBonesNoPants, NPCID.BlueArmoredBonesSword,
                 NPCID.RustyArmoredBonesAxe, NPCID.RustyArmoredBonesFlail, NPCID.RustyArmoredBonesSword, NPCID.RustyArmoredBonesSwordNoArmor,
                 NPCID.HellArmoredBones, NPCID.HellArmoredBonesSpikeShield, NPCID.HellArmoredBonesMace, NPCID.HellArmoredBonesSword }) {
-                AddDungeon(type, dungeonLate, 3, 1, 1);
+                AddDungeon(type, armoredBones, 3, 1, 1);
             }
 
             //地牢花后法师单位
@@ -91,8 +93,8 @@ namespace CalamityEntropy.Content.Events.VoidDestroyerAftermath
 
         /// <summary>首次击败虚空驱逐舰时在聊天栏播报三行,只在服务端或单人调用</summary>
         public static void Announce() {
-            Broadcast("Sun", new Color(255, 96, 64));
-            Broadcast("StarMoon", new Color(96, 150, 255));
+            Broadcast("Sun", new Color(255, 220, 60));
+            Broadcast("StarMoon", new Color(80, 160, 255));
             Broadcast("Beast", new Color(180, 96, 255));
         }
 

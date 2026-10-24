@@ -56,10 +56,10 @@ namespace CalamityEntropy.Content.NPCs.Prophet.Core
         public const int Phase2LifeDivisor = 2;
 
         /// <summary>防御力,不随难度变化</summary>
-        public const int Defense = 20;
+        public const int Defense = 30;
 
-        /// <summary>弹幕命中附带的灵魂紊乱时长(帧),经 AddDebuffFixed 钉住,不随世界难度放大</summary>
-        public const int SoulDisorderFrames = 5 * 60;
+        /// <summary>弹幕与本体接触命中附带的灵魂紊乱时长(帧),经 AddDebuffFixed 钉住,不随世界难度放大</summary>
+        public const int SoulDisorderFrames = 6 * 60;
 
         //==================== 减伤 ====================
 

@@ -502,8 +502,10 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 if (d > along1 || d > span) {
                     break;
                 }
-                Vector2 pos = new Vector2(startX + dir * d, head.Y + 24f);
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), pos, new Vector2(0f, VDDirector.SkyFlakeFall), type, damage, 0f, Main.myPlayer);
+                Vector2 pos = new Vector2(startX + dir * d + Main.rand.NextFloat(-VDDirector.SkyFlakeJitterX, VDDirector.SkyFlakeJitterX), head.Y + 24f + Main.rand.NextFloat(-VDDirector.SkyFlakeJitterY, VDDirector.SkyFlakeJitterY));
+                Vector2 vel = new Vector2(Main.rand.NextFloat(-VDDirector.SkyFlakeDrift, VDDirector.SkyFlakeDrift), VDDirector.SkyFlakeFall);
+                //ai[0] 取贴图帧,服务端一次掷定
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), pos, vel, type, damage, 0f, Main.myPlayer, Main.rand.Next(VDHoloSnowflake.FrameCount));
             }
         }
 
@@ -564,21 +566,40 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         }
     }
 
-    /// <summary>全息雪花:小白龙横越时从龙身落下,匀速直落,不摆不加速;弹幕档伤害</summary>
+    /// <summary>
+    /// 全息雪花:小白龙横越时从龙身落下,初速慢、逐帧加速,带横向漂移;弹幕档伤害。
+    /// ai[0] 贴图帧(原版雪花贴图 3 帧竖排),判定圆半径取该帧可见半宽 × 绘制缩放
+    /// </summary>
     public class VDHoloSnowflake : VDHostileProjectile
     {
+        public const int FrameCount = 3;
+        private const float DrawScale = 1.6f;
+        //各帧可见半宽(贴图像素):帧 0/1 约 22px 宽,帧 2 约 18px
+        private static readonly float[] FrameHalf = { 11f, 11f, 9f };
+
         public override string Texture => "CalamityEntropy/Assets/Extra/Empty";
-        public override int DefaultTimeLeft => VDDirector.SkyFlakeFallFrames + 60;
+        public override int DefaultTimeLeft => VDDirector.SkyFlakeFallFrames + VDDirector.SkyFlakeLinger;
+
+        private int FlakeFrame => Math.Clamp((int)Projectile.ai[0], 0, FrameCount - 1);
+        private float HitRadius => FrameHalf[FlakeFrame] * DrawScale;
 
         public override void SetExtraDefaults() {
-            Projectile.width = 28;
-            Projectile.height = 28;
+            Projectile.width = 36;
+            Projectile.height = 36;
         }
 
         public override void AI() {
             Projectile.localAI[1]++;
             Projectile.rotation += 0.06f;
+            Projectile.velocity.Y += VDDirector.SkyFlakeAccel;
             Lighting.AddLight(Projectile.Center, VDHologramDraw.SkyBlue.ToVector3() * 0.35f);
+        }
+
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
+            Vector2 c = Projectile.Center;
+            Vector2 closest = new Vector2(MathHelper.Clamp(c.X, targetHitbox.Left, targetHitbox.Right), MathHelper.Clamp(c.Y, targetHitbox.Top, targetHitbox.Bottom));
+            float r = HitRadius;
+            return Vector2.DistanceSquared(c, closest) <= r * r;
         }
 
         public override bool PreDraw(ref Color lightColor) {
@@ -593,7 +614,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Texture2D glow = CEUtils.getExtraTex("Glow");
             Main.spriteBatch.Draw(glow, pos, null, VDHologramDraw.SkyBlue * (0.35f * opacity), 0f, glow.Size() / 2f, 0.22f, SpriteEffects.None, 0f);
             CEUtils.ReSetToEndShader();
-            VDHologramDraw.Draw(tex, pos, null, VDHologramDraw.SkyBlue, opacity, Projectile.rotation, tex.Size() / 2f, 1.6f, SpriteEffects.None);
+            Rectangle src = tex.Frame(1, FrameCount, 0, FlakeFrame);
+            VDHologramDraw.Draw(tex, pos, src, VDHologramDraw.SkyBlue, opacity, Projectile.rotation, src.Size() / 2f, DrawScale, SpriteEffects.None);
             return false;
         }
     }

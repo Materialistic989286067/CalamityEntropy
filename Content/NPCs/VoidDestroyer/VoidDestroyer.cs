@@ -154,8 +154,10 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             NPC.value = Item.buyPrice(gold: 15);
             NPC.Entropy().VoidTouchDR = VDDirector.VoidTouchDR;
             if (!Main.dedServ) {
-                //暂无专属曲目,先挂巡游者主题占位
-                Music = MusicLoader.GetMusicSlot(Mod, "Assets/Sounds/Music/CruiserBoss");
+                //曲目缺失时回退巡游者主题
+                Music = MusicLoader.MusicExists(Mod, "Assets/Sounds/Music/VoidDestroyerBoss")
+                    ? MusicLoader.GetMusicSlot(Mod, "Assets/Sounds/Music/VoidDestroyerBoss")
+                    : MusicLoader.GetMusicSlot(Mod, "Assets/Sounds/Music/CruiserBoss");
             }
             SpawnModBiomes = new int[] { ModContent.GetInstance<VoidDummyBoime>().Type };
         }
@@ -553,7 +555,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
 
         #region 限制圈
         /// <summary>
-        /// 半径 200 格,圆心随本体,但只在本体处于判定带内时跟随:退入深处时本体的世界坐标是为表观位置算出来的、可能飞得很远,
+        /// 半径 80 格,圆心随本体,但只在本体处于判定带内时跟随:退入深处时本体的世界坐标是为表观位置算出来的、可能飞得很远,
         /// 圈心跟过去会把玩家拉走。全端同算(声明深度与位置都是同步量),只处理本地玩家:玩家速度归其自身客户端所有,服务端不碰
         /// </summary>
         private void UpdateArena() {

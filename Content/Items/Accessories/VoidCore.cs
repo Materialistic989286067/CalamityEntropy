@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         public const int DashImmuneFrames = 12;
         public const int DashDuration = 20;
         public const float DashDistance = 25 * 16f;
-        public const int DashCooldown = 30;
+        public const int DashCooldown = 60;
         /// <summary>每次冲刺首次撞击敌怪时释放一道虚空斩的基础伤害。</summary>
         public const int VoidSlashDamage = 750;
         public static int MaxShield = 60;

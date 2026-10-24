@@ -17,8 +17,8 @@ namespace CalamityEntropy.Content.Items
         }
 
         public override void SetDefaults() {
-            Item.width = 46;
-            Item.height = 30;
+            Item.width = 32;
+            Item.height = 32;
             Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.LightRed;

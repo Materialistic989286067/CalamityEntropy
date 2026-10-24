@@ -18,7 +18,7 @@ namespace CalamityEntropy.Content.Projectiles
             base.SetDefaults();
             Projectile.MaxUpdates = 10;
             this.segments = 36;
-            this.rangeMult = 1.8f;
+            this.rangeMult = 1.98f;
         }
         public Vector2 lastTop = Vector2.Zero;
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {

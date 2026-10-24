@@ -116,8 +116,8 @@ namespace CalamityEntropy.Core.Integrations
                     "CalamityEntropy/Assets/BCL/LuminarisBossCheckList", 1f,
                     Actor: LuminarisPortraitActor.Instance),
 
-                //先知:教徒 17 之后,天界柱 17.01 之前
-                new BossEntry("TheProphet", "TheProphet", 17.005f,
+                //先知:光之女皇 15 与双足翼龙 16 之后,教徒 17 之前
+                new BossEntry("TheProphet", "TheProphet", 16.5f,
                     () => EDownedBosses.downedProphet,
                     ModContent.NPCType<TheProphet>(),
                     ModContent.ItemType<ProphecyToken>(),
@@ -155,8 +155,8 @@ namespace CalamityEntropy.Core.Integrations
                     "CalamityEntropy/Assets/BCL/Cruiser", 0.7f,
                     Actor: CruiserPortraitActor.Instance),
 
-                //虚空驱逐舰:月后 T2 空位,介于虚无双子 19.3 与巡游者 22.1 之间
-                new BossEntry("VoidDestroyer", "VoidDestroyer", 20.8f,
+                //虚空驱逐舰:月亮领主 18 之后,虚无双子 19.3 之前
+                new BossEntry("VoidDestroyer", "VoidDestroyer", 18.65f,
                     () => EDownedBosses.downedVoidDestroyer,
                     ModContent.NPCType<VoidDestroyer>(),
                     ModContent.ItemType<VoidTransmitter>(),

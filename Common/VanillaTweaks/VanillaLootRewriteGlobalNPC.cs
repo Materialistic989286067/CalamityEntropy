@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Chat;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.Localization;
@@ -7,10 +8,10 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Common.VanillaTweaks
 {
-    /// <summary>肉山魂、月亮领主碎片与夜明矿翻倍、石巨人首杀锯刃镐、克眼首杀排血月</summary>
+    /// <summary>肉山魂、月亮领主碎片与夜明矿翻倍、石巨人首杀锯刃镐、克眼首杀排血月、月亮领主首杀播报</summary>
     public class VanillaLootRewriteGlobalNPC : GlobalNPC
     {
-        public const int WallOfFleshSouls = 15;
+        public const int WallOfFleshSouls = 12;
         public const int MoonLordFragments = 20;
 
         public override bool AppliesToEntity(NPC entity, bool lateInstantiation) {
@@ -41,6 +42,22 @@ namespace CalamityEntropy.Common.VanillaTweaks
             //此时 downedBoss1 尚未置位
             if (npc.type == NPCID.EyeofCthulhu && !NPC.downedBoss1) {
                 EyeBloodMoonSystem.Arm();
+            }
+            //downedMoonlord 同样尚未置位
+            if (npc.type == NPCID.MoonLordCore && !NPC.downedMoonlord) {
+                AnnounceMoonLordFirstKill();
+            }
+        }
+
+        /// <summary>OnKill 只在单人与服务端触发,联机时由服务端统一广播</summary>
+        private static void AnnounceMoonLordFirstKill() {
+            LocalizedText text = CalamityEntropy.Instance.GetLocalization("MoonLordFirstKillMessage");
+            Color color = new Color(200, 160, 255);
+            if (Main.netMode == NetmodeID.SinglePlayer) {
+                Main.NewText(text.Value, color);
+            }
+            else if (Main.netMode == NetmodeID.Server) {
+                ChatHelper.BroadcastChatMessage(text.ToNetworkText(), color);
             }
         }
 

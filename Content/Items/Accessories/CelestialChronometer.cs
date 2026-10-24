@@ -19,7 +19,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         public string DonatorName => "丰川祥子";
         public const float DamagingDebuffReduce = 0.33f;
 
-        /// <summary>持续扣血的减益:原版玩家 DoT 减益、本模组 DotBuff 与生命压制</summary>
+        /// <summary>持续扣血的减益:原版玩家 DoT 减益、本模组 DotBuff、生命压制与两个虚空 Boss 减益</summary>
         public static bool IsDamagingDebuff(int buffType) {
             switch (buffType) {
                 case BuffID.Poisoned:
@@ -36,7 +36,7 @@ namespace CalamityEntropy.Content.Items.Accessories
                     return true;
             }
             ModBuff buff = BuffLoader.GetBuff(buffType);
-            return buff is LifeOppress || (buff is DotBuff dot && dot.DamagePlayerPerSec > 0);
+            return buff is LifeOppress || buff is VoidTouch || buff is VoidVirus || (buff is DotBuff dot && dot.DamagePlayerPerSec > 0);
         }
         // 2026-08-31 平衡案重做:8防,+75生命,神话护身符的-25%药水冷却,-33%伤害性减益持续,
         // 大幅自然再生(6hp/s)且直接回血(1hp/s),走过草地长出草药(shift右键开关),站在草药上+20防御。

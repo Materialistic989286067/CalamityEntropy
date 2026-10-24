@@ -214,6 +214,13 @@ namespace CalamityEntropy.Core.Dash
                 return true;
             }
 
+            //热键已绑定就不再认双击
+            if (DashHotkeyBound()) {
+                tapX = 0;
+                tapY = 0;
+                return false;
+            }
+
             if (justRight) {
                 if (tapX > 0) {
                     direction = Vector2.UnitX;
@@ -251,6 +258,22 @@ namespace CalamityEntropy.Core.Dash
                 tapY = -TapWindow;
             }
             return false;
+        }
+
+        /// <summary>DashHotkeyBound 为真时冲刺键绑了按键,本模组的冲刺只认热键,不认双击</summary>
+        public static bool DashHotkeyBound() {
+            ModKeybind key = EModPlayer.DashHotkey;
+            if (key == null || Main.dedServ)
+                return false;
+            try {
+                InputMode mode = PlayerInput.CurrentInputMode;
+                if (mode == InputMode.Mouse || mode == InputMode.KeyboardUI)
+                    mode = InputMode.Keyboard;
+                return key.GetAssignedKeys(mode).Count > 0;
+            }
+            catch {
+                return false;
+            }
         }
 
         private int ResolveHotkeyHorizontal() {

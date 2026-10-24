@@ -1188,7 +1188,6 @@ DeckEnd:
             if (CEID.Item_YharonBag > 0 && item.type == CEID.Item_YharonBag) {
                 itemLoot.Add(ItemDropRule.ByCondition(new FlowingLightDonorCondition(), ModContent.ItemType<FlowingLight>()));
                 itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAuric>(), 4));
-                itemLoot.Add(new CommonDrop(ModContent.ItemType<Vitalfeather>(), 4, 1, 1, 1));
             }
             if (CEID.Item_BrimstoneElementalBag > 0 && item.type == CEID.Item_BrimstoneElementalBag) {
                 itemLoot.Add(new CommonDrop(ModContent.ItemType<BookMarkBrimstone>(), 2, 1, 1, 1));

@@ -1415,3 +1415,23 @@
 [Mods.CalamityEntropy.GolemFirstKillDrop] - added // 掉落条件说明:首次击败石巨人必定掉落锯刃镐
 [Mods.CalamityEntropy.Configs.ServerConfig.BaseMobilityBoost.Label] - added
 [Mods.CalamityEntropy.Configs.ServerConfig.BaseMobilityBoost.Tooltip] - added
+[Mods.CalamityEntropy.Configs.ServerConfig.BaseMobilityBoost.Tooltip] - changed // 基础冲刺距离约6格→1格,冷却0.75秒→1秒,新增「冲刺键绑定后不再响应双击」说明
+[Mods.CalamityEntropy.Items.AzafureChargeShield.Tooltip] - changed // 冲刺冷却0.5秒→1秒
+[Mods.CalamityEntropy.Items.AzafureDriverCore.Tooltip] - changed // 冲刺冷却0.5秒→1秒
+[Mods.CalamityEntropy.Items.VoidCore.Tooltip] - changed // 冲刺冷却0.5秒→1秒
+[Mods.CalamityEntropy.Items.CelestialChronometer.Tooltip] - changed // 去掉全部括号,减益描述改为「着火、中毒等持续扣血的减益,持续时间减少33%」,自然再生改为每秒增加6点,草药开关改逗号分句
+[Mods.CalamityEntropy.VitalfeatherObt] - changed // 获取方式:月亮领主掉落→击败虚空驱逐舰后由神圣宝箱怪33%概率掉落
+[Mods.CalamityEntropy.VitalfeatherObtCal] - removed // 犽戎掉落来源移除,统一为虚空驱逐舰后的神圣宝箱怪
+[Mods.CalamityEntropy.PostMoonLordRodHarmony] - changed // 和谐传送杖提示改为紫色警告:当强大的异界敌人在场时,它的力量会被压制
+[Mods.CalamityEntropy.VDAftermath.Sun] - changed // 播报改为「烈阳怒焰在神圣地熊熊燃烧」,黄色
+[Mods.CalamityEntropy.VDAftermath.StarMoon] - changed // 播报改为「星月之灵在地牢中闪烁微光」,蓝色
+[Mods.CalamityEntropy.MoonLordFirstKillMessage] - added // 首次击败月亮领主时的播报,淡紫色
+[Mods.CalamityEntropy.TSA1BSolo] - added // 特莉波卡的镰刀单开锁定形态:突进无敌文案,不带击败门槛
+[Mods.CalamityEntropy.TSA2BSolo] - added // 单开锁定形态:传送斩击文案,冷却固定20秒
+[Mods.CalamityEntropy.TSA3Solo] - added // 单开锁定形态:镰刀跟随鼠标,大招治疗固定10点
+[Mods.CalamityEntropy.TSA4Solo] - added // 单开锁定形态:虚空赋能固定15秒,+20%伤害
+[Mods.CalamityEntropy.TSA5Solo] - added // 单开锁定形态:影子与垂直斩击,去掉治疗量增至10的成长句
+[Mods.CalamityEntropy.LegendaryAbility.TlipocasScytheLegend.Ability.TScytheA2BSolo] - added // Alt 页单开版:传送斩击冷却20秒
+[Mods.CalamityEntropy.LegendaryAbility.TlipocasScytheLegend.Ability.TScytheA3Solo] - added // Alt 页单开版:跟随鼠标,大招治疗10点
+[Mods.CalamityEntropy.LegendaryAbility.TlipocasScytheLegend.Ability.TScytheA4Solo] - added // Alt 页单开版:虚空赋能15秒
+[Mods.CalamityEntropy.LegendaryAbility.TlipocasScytheLegend.Ability.TScytheA5Solo] - added // Alt 页单开版:传送斩击影子与突刺额外斩击

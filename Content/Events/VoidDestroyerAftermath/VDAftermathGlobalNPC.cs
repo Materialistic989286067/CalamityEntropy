@@ -1,5 +1,6 @@
 using CalamityEntropy.Content.Items.Potions;
 using CalamityEntropy.Content.Items.Weapons.Bait;
+using CalamityEntropy.Content.Items.Weapons.Whips;
 using CalamityEntropy.Core.CalamityRef;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,6 +48,7 @@ namespace CalamityEntropy.Content.Events.VoidDestroyerAftermath
                     GateVanilla(npcLoot, ItemID.GreaterManaPotion);
                     npcLoot.Add(PostRule(ModContent.ItemType<VoidHealingPotion>(), 1, 5, 10));
                     npcLoot.Add(PostRule(ModContent.ItemType<VoidManaPotion>(), 1, 5, 15));
+                    npcLoot.Add(PostRule(ModContent.ItemType<Vitalfeather>(), 100, 1, 1, 33));
                     //装灾厄时圣火流石仍由亵渎天神出,这里加门免得双来源
                     if (!CERef.Has) {
                         npcLoot.Add(PostRule(ModContent.ItemType<SacredStone>(), 3, 1, 1));

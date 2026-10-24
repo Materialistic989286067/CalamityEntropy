@@ -1337,6 +1337,7 @@ Items: {
 			{$CommonItemTooltip.SummonTagDamage}
 			{$CommonItemTooltip.Whips}
 			Struck enemies are inflicted with [cebuff:CalamityEntropy/Dragonfire] and erupt homing flames on minion hit
+			[OBT]
 			'''
 	}
 
@@ -1922,7 +1923,7 @@ Items: {
 			'''
 			Double tap a direction or press the dash key to spend 1 energy on a long dash of 16 tiles
 			The dash passes through enemies, dealing 50 damage and granting 12 frames of invincibility on impact
-			Dashing again takes 0.5 seconds after the dash ends
+			Dashing again takes 1 second after the dash ends
 			Energy will build over time
 			'''
 	}
@@ -2799,8 +2800,8 @@ Items: {
 			'''
 			+75 maximum life
 			Grants the effect of the Charm of Myths, reducing healing potion cooldown by 25%
-			Damage-over-time debuffs (such as On Fire! and Poisoned) last 33% shorter
-			Greatly increases natural life regeneration (6/s) and directly restores 1 life every second
+			Damage-over-time debuffs like On Fire! and Poisoned last 33% shorter
+			Increases natural life regeneration by 6 per second and directly restores 1 life every second
 			Grows herbs beneath your feet as you walk on grass, shift right click to toggle
 			+20 defense while standing on herbs
 			$A dream of millet over rippling rice, sweet flag wine toasting years of peace
@@ -3514,7 +3515,7 @@ Items: {
 			Getting hit resets the timer
 			Double tap a direction or press the dash key to spend 1 energy on a long dash of 20 tiles
 			The dash passes through enemies, dealing 80 damage and granting 12 frames of invincibility on impact
-			Dashing again takes 0.5 seconds after the dash ends
+			Dashing again takes 1 second after the dash ends
 			Energy will build over time
 			'''
 	}
@@ -3693,7 +3694,7 @@ Items: {
 			Double tap a direction or press the dash key to perform a long dash of 25 tiles
 			The dash passes through enemies, dealing 200 damage and granting 12 frames of invincibility on impact
 			The first enemy struck in each dash also takes a Void Slash dealing 750 damage
-			Dashing again takes 0.5 seconds after the dash ends
+			Dashing again takes 1 second after the dash ends
 			'''
 	}
 
@@ -5165,8 +5166,8 @@ StarmoonRangedSetBonus:
 	'''
 
 VDAftermath: {
-	Sun: The radiance of the Sun Goddess carries an ominous omen
-	StarMoon: The wisdom of the Starmoon Sage foretells a dark future
+	Sun: The raging flames of the blazing sun burn fiercely across the Hallow
+	StarMoon: The spirits of the stars and moon glimmer faintly in the Dungeon
 	Beast: Beasts from another world are stirring
 	DropPost: After the Void Destroyer has been defeated
 	DropPre: Before the Void Destroyer has been defeated
@@ -7000,7 +7001,7 @@ Configs: {
 
 		BaseMobilityBoost: {
 			Label: Boost Base Mobility
-			Tooltip: When enabled, all players gain +25% movement speed. If no other dash accessory or vanilla dash gear is equipped, double-tap a direction key or press the Dash key to dash forward about 6 tiles, then wait 0.75 seconds before dashing again
+			Tooltip: When enabled, all players gain +25% movement speed. If no other dash accessory or vanilla dash gear is equipped, double-tap a direction key or press the Dash key to dash forward 1 tile, then wait 1 second before dashing again. Once a key is bound to the Dash key, dashing no longer responds to double-tapping
 		}
 	}
 }
@@ -7374,6 +7375,27 @@ TSA9: The closer the distance to the target, the higher the damage dealt, with a
 PressShiftForMoreInfo: Press shift for more info...
 TSU9: Need to kill Cruiser
 TSU9Cal: Need to kill Supreme Calamitas
+TSA1BSolo: Gain invincible time while dashing and deal damage to the targets you come into contact with
+TSA2BSolo:
+	'''
+	While the scythe is thrown, press Left Click to teleport to it and launch a larger slash
+	This skill has a 20 second cooldown
+	'''
+TSA3Solo:
+	'''
+	After throwing, press Right Click again to let the scythe follow your cursor for a while
+	Ultimate hits will heal you for 10 life
+	'''
+TSA4Solo:
+	'''
+	Teleport slash will empower your weapon with void for 15 seconds
+	Gain 20% increased damage while empowered
+	'''
+TSA5Solo:
+	'''
+	Leave a shadow when performing a teleport strike, the shadow will also make a wide slash
+	Slash dash will generate an additional slash perpendicular to the original
+	'''
 AchievementBookmarkInsertName: Good reading habits
 AchievementBookmarkInsertDesc: Insert any bookmark into a customizable spellbook
 LMDialog1: Howdy, my friend.
@@ -7397,9 +7419,10 @@ NowLV: Level
 AnyOrichalcumBar: Any Orichalcum Bar
 AnyEvilBar: Any Evil Bar
 IronBar: Iron Bar
-PostMoonLordRodHarmony: Cannot be used while the Moon Lord or a post-Moon Lord boss is present
+PostMoonLordRodHarmony: Its power is suppressed while a powerful otherworldly enemy is present
 PostMoonLordRodDiscord: While the Moon Lord or a post-Moon Lord boss is present, the Chaos State lasts 11 seconds and you cannot teleport again during it
 GolemFirstKillDrop: Always drops the first time the Golem is defeated
+MoonLordFirstKillMessage: The power from another world stirs...
 AnyFairy: Any Fairy
 Gems: Gems
 Butterflies: Butterflies
@@ -7573,8 +7596,7 @@ LoreUnderworldDesc: Grants {1} seconds of immunity to lava
 LoreBloodMoonDesc: Grants {1}% increased light
 LoreAwakeningDesc: Slightly increase movement speed and jump height
 PassedBossRush: After clearing Boss Rush
-VitalfeatherObt: Dropped by the Moon Lord
-VitalfeatherObtCal: Dropped by Yharon
+VitalfeatherObt: Dropped by Hallowed Mimics with a 33% chance after the Void Destroyer has been defeated
 BookMarkBrimstoneObt: Dropped by Red Devils
 BookMarkBrimstoneObtCal: Dropped by the Brimstone Elemental
 BookMarkProfanedObt: Dropped by the Lunatic Cultist

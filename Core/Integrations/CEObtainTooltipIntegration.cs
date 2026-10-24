@@ -4,6 +4,7 @@ using CalamityEntropy.Content.Items.Accessories.EvilCards;
 using CalamityEntropy.Content.Items.Accessories.SoulCards;
 using CalamityEntropy.Content.Items.Books.BookMarks;
 using CalamityEntropy.Content.Items.Weapons;
+using CalamityEntropy.Content.Items.Weapons.Whips;
 using CalamityEntropy.Core.CalamityRef;
 using Terraria.ModLoader;
 
@@ -27,6 +28,7 @@ namespace CalamityEntropy.Core.Integrations
             AddSource(mot, "AbyssalPiercerObt", ModContent.ItemType<AbyssalPiercer>());
             AddSource(mot, "VDAftermath.HallowDrop", ModContent.ItemType<BlazingSunlight>());
             AddSource(mot, "VDAftermath.DungeonDrop", ModContent.ItemType<WraithSoulEssence>());
+            AddSource(mot, "VitalfeatherObt", ModContent.ItemType<Vitalfeather>());
             //贪婪卡 MOT 来源按 CERef.Has 分发,无灾厄不得出现星辉
             AddSource(mot, CERef.Has ? "AstralFishing" : "EvilFishing", ModContent.ItemType<GreedCard>());
         }

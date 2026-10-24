@@ -31,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
             Item.width = 90;
             Item.height = 42;
             Item.DamageType = DamageClass.Ranged;
-            Item.damage = 325;
+            Item.damage = 300;
             Item.knockBack = 4f;
             var snd = CEUtils.GetSound("howlingShoot");
             snd.PitchRange = (-0.5f, -0.4f);

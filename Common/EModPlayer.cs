@@ -743,7 +743,7 @@ namespace CalamityEntropy.Common
         #region 自研玩家设施(脱离灾厄): 键位/鼠标世界坐标/冲刺ID
         /// <summary>盔甲套装技能键(默认Y),替代灾厄 CalamityKeybinds.ArmorSetBonusHotKey。</summary>
         public static ModKeybind ArmorSetBonusHotKey;
-        /// <summary>冲刺键(默认F),替代灾厄 CalamityKeybinds.DashHotkey。双击方向键仍然有效。</summary>
+        /// <summary>冲刺键(默认F),替代灾厄 CalamityKeybinds.DashHotkey。绑了任何键后冲刺饰品不再响应双击,见 CEDashPlayer.DashHotkeyBound。</summary>
         public static ModKeybind DashHotkey;
         /// <summary>饰品主动技能键(默认V),替代灾厄 FindAccessory().GetDynamicModHotkey()。</summary>
         public static ModKeybind AccessoryAbilityHotKey;

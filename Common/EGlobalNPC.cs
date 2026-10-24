@@ -48,10 +48,6 @@ namespace CalamityEntropy.Common
         //这些字段只在客户端绘制钩子里读取,专用服务器上始终是 null
         [VaultLoaden("CalamityEntropy/Assets/Extra/AbyssalCircle")]
         internal static Asset<Texture2D> AbyssalCircleTex;
-        [VaultLoaden("CalamityEntropy/Assets/Extra/SoulDiscorderColorMap")]
-        internal static Asset<Texture2D> SoulDiscorderColorMapTex;
-        [VaultLoaden("CalamityEntropy/Assets/Effects/SoulDiscorder", AssetMode.EffectValue, "EnchantedPass")]
-        internal static Effect SoulDiscorderShader;
         [VaultLoaden("CalamityEntropy/Assets/Effects/HeatDeath", AssetMode.EffectValue, "EnchantedPass")]
         internal static Effect HeatDeathShader;
         public int VoidTouchTime = 0;
@@ -860,7 +856,6 @@ namespace CalamityEntropy.Common
             if (CEID.NPC_Yharon > 0 && npc.type == CEID.NPC_Yharon) {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<BookMarkAuric>(), 4));
                 npcLoot.Add(ItemDropRule.ByCondition(new PreMoonLordCondition(), ModContent.ItemType<FlowingLight>()));
-                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<Vitalfeather>(), 4));
             }
             if (CEID.NPC_SupremeCalamitas > 0 && npc.type == CEID.NPC_SupremeCalamitas) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<TheFilthyContractWithMammon>(), 3));
@@ -929,15 +924,6 @@ namespace CalamityEntropy.Common
             // 原挂靠灾厄血条体系的 Boss 头顶 debuff 图标列表已整体退役（含灾厄全局实例读取与灾厄贴图）
             needExitShader = false;
             List<Effect> shaders = new List<Effect>();
-            if (npc.HasBuff<SoulDisorder>()) {
-                Effect shader = SoulDiscorderShader;
-                shader.Parameters["strength"].SetValue(1);
-                shader.Parameters["f1"].SetValue((float)npc.frame.Y / npc.getTexture().Height);
-                shader.Parameters["f2"].SetValue((float)(npc.frame.Y + npc.frame.Height) / npc.getTexture().Height);
-                shader.Parameters["offset"].SetValue(Main.GlobalTimeWrappedHourly);
-                shader.Parameters["colorMap"].SetValue(SoulDiscorderColorMapTex.Value);
-                shaders.Add(shader);
-            }
             if (npc.HasBuff<HeatDeath>()) {
                 if (hdStrength < 1) {
                     hdStrength += 0.01f;
@@ -1031,14 +1017,6 @@ namespace CalamityEntropy.Common
                         cef.modifyHitAction = onhit;
                         cef.DamageMulToWoFAndDestroyer = 0.6f;
                     }
-                }
-            }
-            if (npc.type == NPCID.WallofFlesh) {
-                for (int i = 0; i < 32; i++) {
-                    float rot;
-                    rot = CEUtils.randomRot();
-                    Main.item[Item.NewItem(npc.GetSource_Death(), npc.Center + rot.ToRotationVector2() * 128, new Item(ItemID.SoulofLight, 2))].velocity = rot.ToRotationVector2() * Main.rand.NextFloat(2, 32);
-                    Main.item[Item.NewItem(npc.GetSource_Death(), npc.Center + rot.ToRotationVector2() * 128, new Item(ItemID.SoulofNight, 2))].velocity = rot.ToRotationVector2() * Main.rand.NextFloat(2, 32);
                 }
             }
             if ((Main.player[Player.FindClosest(npc.Center, 1000000, 1000000)].ZoneCrimson || Main.player[Player.FindClosest(npc.Center, 1000000, 1000000)].ZoneCorrupt) && Main.player[Player.FindClosest(npc.Center, 1000000, 1000000)].Center.Y > Main.worldSurface + 256) {

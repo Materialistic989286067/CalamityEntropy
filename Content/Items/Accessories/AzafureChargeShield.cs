@@ -21,7 +21,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         public const int DashImmuneFrames = 12;
         public const int DashDuration = 20;
         public const float DashDistance = 16 * 16f;
-        public const int DashCooldown = 30;
+        public const int DashCooldown = 60;
         public float charge = 0;
         public float maxCharge = 3.6f;
 
@@ -78,7 +78,7 @@ namespace CalamityEntropy.Content.Items.Accessories
     {
         public override bool HitsEnemies => true;
         public override int Duration => 20;
-        public override int Cooldown => 30;
+        public override int Cooldown => 60;
         /// <summary>长冲刺:曲线放缓一点,让速度撑满大半程再收尾,而不是一闪就滑行。</summary>
         public override float Curve => 1.6f;
 

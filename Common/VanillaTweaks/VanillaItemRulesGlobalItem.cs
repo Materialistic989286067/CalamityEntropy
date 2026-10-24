@@ -28,6 +28,9 @@ namespace CalamityEntropy.Common.VanillaTweaks
                 return;
             }
             TooltipLine line = new TooltipLine(Mod, "PostMoonLordRule", Language.GetTextValue(key));
+            if (item.type == ItemID.RodOfHarmony) {
+                line.OverrideColor = new Color(180, 110, 255);
+            }
             int last = tooltips.FindLastIndex(tip => tip.Mod == "Terraria" && tip.Name.StartsWith("Tooltip"));
             if (last < 0) {
                 tooltips.Add(line);

@@ -10,12 +10,13 @@ using Terraria.ID;
 namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 {
     /// <summary>
-    /// 径向飞出约 15 格后转头追踪,只追 MissileHomingFrames 帧就改直飞(躲过一次就甩掉),全程匀速;命中即炸。
+    /// 径向飞出约 8 格后转头追踪,只追 MissileHomingFrames 帧就改直飞(躲过一次就甩掉),全程匀速;命中即炸。
     /// ai[0] 目标玩家,localAI[0] 累计飞行距离,localAI[2] 已追踪帧数;弹幕档伤害
     /// </summary>
     public class VDHomingMissile : VDDepthProjectile
     {
-        public const float RetargetDistance = 15f * 16f;
+        /// <summary>转头前的直飞距离 8 格:弹在舰体旁就开始弯向玩家,不会一出手就压到脸上</summary>
+        public const float RetargetDistance = 8f * 16f;
         /// <summary>贴图 24×44,画大 1.15 倍</summary>
         public const float BodyScale = 1.15f;
         public static readonly Color GlowColor = new Color(210, 90, 255);

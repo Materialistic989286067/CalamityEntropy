@@ -27,7 +27,7 @@ namespace CalamityEntropy.Content.Items.Donator
         public override void SetDefaults() {
             Item.width = 136;
             Item.height = 52;
-            Item.damage = 1200;
+            Item.damage = 1100;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 46;
             Item.useAnimation = 46;

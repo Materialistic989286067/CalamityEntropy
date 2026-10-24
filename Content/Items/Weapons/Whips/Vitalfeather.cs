@@ -1,11 +1,9 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityEntropy.Core.CalamityRef;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -34,18 +32,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) {
-            //获取途径按有没有装灾厄来分,装上灾厄时掉落改到犽戎和犽戎的宝藏袋
-            tooltips.Replace("[OBT]", Mod.GetLocalization(CERef.Has ? "VitalfeatherObtCal" : "VitalfeatherObt").Value);
-        }
-    }
-
-    /// <summary>2026-08-31 平衡案:沐生之羽改为月亮领主掉落(25%)。</summary>
-    public class VitalfeatherDropGNPC : GlobalNPC
-    {
-        public override void ModifyNPCLoot(NPC npc, NPCLoot npcLoot) {
-            if (!CERef.Has && npc.type == NPCID.MoonLordCore) {
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Vitalfeather>(), 4));
-            }
+            //掉落规则在 VDAftermathGlobalNPC
+            tooltips.Replace("[OBT]", Mod.GetLocalization("VitalfeatherObt").Value);
         }
     }
 }

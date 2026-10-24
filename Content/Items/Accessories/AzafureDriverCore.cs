@@ -18,7 +18,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         public const int DashImmuneFrames = 12;
         public const int DashDuration = 20;
         public const float DashDistance = 20 * 16f;
-        public const int DashCooldown = 30;
+        public const int DashCooldown = 60;
         public float charge = 0;
         public float maxCharge = 5f;
         public static int RechargeTime = 20 * 60;

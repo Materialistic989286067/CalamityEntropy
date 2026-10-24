@@ -1,5 +1,4 @@
 using CalamityEntropy.Content.Items;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,10 +10,51 @@ namespace CalamityEntropy.Common.VanillaTweaks
     {
         public const string GoldBarGroup = "CalamityEntropy:AnyGoldBar";
 
-        //没有 buff 也没有治疗量的饮用型药水
-        private static readonly int[] UtilityPotions = {
-            ItemID.RecallPotion, ItemID.TeleportationPotion, ItemID.WormholePotion,
-            ItemID.PotionOfReturn, ItemID.GenderChangePotion
+        //水瓶+星辉鳞尘配方白名单,Dust 为鳞尘数
+        private static readonly (int Type, int Dust)[] DustPotions = {
+            (ItemID.RestorationPotion, 2),
+            (ItemID.ObsidianSkinPotion, 1),
+            (ItemID.RegenerationPotion, 1),
+            (ItemID.GillsPotion, 1),
+            (ItemID.SwiftnessPotion, 1),
+            (ItemID.IronskinPotion, 1),
+            (ItemID.MagicPowerPotion, 2),
+            (ItemID.ManaRegenerationPotion, 2),
+            (ItemID.FeatherfallPotion, 1),
+            (ItemID.SpelunkerPotion, 1),
+            (ItemID.ShinePotion, 1),
+            (ItemID.NightOwlPotion, 1),
+            (ItemID.InvisibilityPotion, 1),
+            (ItemID.BattlePotion, 1),
+            (ItemID.ThornsPotion, 1),
+            (ItemID.ArcheryPotion, 1),
+            (ItemID.WaterWalkingPotion, 1),
+            (ItemID.GravitationPotion, 1),
+            (ItemID.HunterPotion, 1),
+            (ItemID.HeartreachPotion, 2),
+            (ItemID.CalmingPotion, 1),
+            (ItemID.BuilderPotion, 1),
+            (ItemID.MiningPotion, 1),
+            (ItemID.TitanPotion, 2),
+            (ItemID.FlipperPotion, 1),
+            (ItemID.SummoningPotion, 2),
+            (ItemID.TrapsightPotion, 1),
+            (ItemID.AmmoReservationPotion, 2),
+            (ItemID.RagePotion, 2),
+            (ItemID.WrathPotion, 2),
+            (ItemID.LifeforcePotion, 2),
+            (ItemID.EndurancePotion, 2),
+            (ItemID.InfernoPotion, 2),
+            (ItemID.WarmthPotion, 1),
+            (ItemID.RecallPotion, 1),
+            (ItemID.TeleportationPotion, 2),
+            (ItemID.FishingPotion, 1),
+            (ItemID.CratePotion, 1),
+            (ItemID.SonarPotion, 1),
+            (ItemID.WormholePotion, 1),
+            (ItemID.PotionOfReturn, 2),
+            (ItemID.BiomeSightPotion, 2),
+            (ItemID.LuckPotion, 2),
         };
 
         public override void AddRecipeGroups() {
@@ -26,8 +66,8 @@ namespace CalamityEntropy.Common.VanillaTweaks
             AddPotionRecipes();
 
             Recipe.Create(ItemID.LifeFruit)
-                .AddIngredient(ItemID.ChlorophyteBar)
-                .AddIngredient<StarlitScaleDust>(2)
+                .AddIngredient<StarlitScaleDust>(10)
+                .AddIngredient(ItemID.ChlorophyteBar, 5)
                 .AddTile(TileID.CookingPots)
                 .Register();
 
@@ -53,35 +93,13 @@ namespace CalamityEntropy.Common.VanillaTweaks
         }
 
         private static void AddPotionRecipes() {
-            for (int type = 1; type < ItemID.Count; type++) {
-                Item sample = ContentSamples.ItemsByType.TryGetValue(type, out Item found) ? found : new Item(type);
-                if (!IsVanillaPotion(sample)) {
-                    continue;
-                }
+            foreach ((int type, int dust) in DustPotions) {
                 Recipe.Create(type)
                     .AddIngredient(ItemID.BottledWater)
-                    .AddIngredient<StarlitScaleDust>()
+                    .AddIngredient<StarlitScaleDust>(dust)
                     .AddTile(TileID.AlchemyTable)
                     .Register();
             }
-        }
-
-        /// <summary>可堆叠的饮用型消耗品,带 buff 或治疗量,另加不带二者的传送类药水;排除食物、水瓶与投掷型</summary>
-        private static bool IsVanillaPotion(Item item) {
-            int type = item.type;
-            if (type == ItemID.BottledWater) {
-                return false;
-            }
-            if (Array.IndexOf(UtilityPotions, type) >= 0) {
-                return true;
-            }
-            if (!item.consumable || item.maxStack <= 1 || ItemID.Sets.IsFood[type] || item.createTile >= 0 || item.createWall >= 0) {
-                return false;
-            }
-            if (item.useStyle != ItemUseStyleID.DrinkLiquid) {
-                return false;
-            }
-            return (item.buffType > 0 && item.buffTime > 0) || item.healLife > 0 || item.healMana > 0;
         }
     }
 }

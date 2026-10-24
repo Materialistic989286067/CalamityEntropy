@@ -10,10 +10,10 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
     {
         //==================== 基础数值 ====================
 
-        /// <summary>血量普通 / 专家 / 大师 = 214000 / 428000 / 642000</summary>
-        public const int BaseLife = 214000;
-        /// <summary>接触伤害普通 / 专家 / 大师 = 106 / 212 / 318</summary>
-        public const int BaseDamage = 106;
+        /// <summary>血量普通 / 专家 / 大师 = 248000 / 496000 / 744000</summary>
+        public const int BaseLife = 248000;
+        /// <summary>接触伤害普通 / 专家 / 大师 = 126 / 252 / 378</summary>
+        public const int BaseDamage = 126;
         public const int BaseDefense = 80;
         public const float DRPhase12 = 0.12f;
         public const float DRPhase3 = 0.25f;
@@ -30,8 +30,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
 
         //==================== 场地与闪现 ====================
 
-        /// <summary>限制圈半径:200 格,圆心随本体</summary>
-        public const float ArenaRadius = 200f * 16f;
+        /// <summary>限制圈半径:80 格,圆心随本体</summary>
+        public const float ArenaRadius = 80f * 16f;
         /// <summary>出圈回拉基础力与每 400px 超出量的增量;沿拉回方向的速度封顶 28</summary>
         public const float ArenaPullBase = 0.35f;
         public const float ArenaPullPer400 = 1f;
@@ -159,12 +159,13 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
 
         //==================== 伤害档(普通档基值)====================
         //弹幕 damage 字段就存这里的数,命中时原版再乘 1 / 2 / 3,字段里不能先带难度(按 NPC.defDamage 折算会把难度乘两次)
-        //弹幕档 46 / 92 / 138,体术档 106 / 212 / 318,小激光档(含红射线锁定、叉子、丛林陆龟)60 / 120 / 180,核弹与大激光档 75 / 150 / 225(普通 / 专家 / 大师)
+        //弹幕档 48 / 96 / 144,小激光档(含红射线锁定、叉子、丛林陆龟)63 / 126 / 189,核弹与大激光档 80 / 160 / 240(普通 / 专家 / 大师)
+        //本体接触见 BaseDamage 126 / 252 / 378,小白龙与支援舱走 DmgBody 106 / 212 / 318,不随本体接触涨
 
-        public const int DmgBullet = 46;
-        public const int DmgBody = BaseDamage;
-        public const int DmgLaser = 60;
-        public const int DmgHeavy = 75;
+        public const int DmgBullet = 48;
+        public const int DmgBody = 106;
+        public const int DmgLaser = 63;
+        public const int DmgHeavy = 80;
 
         public const int DmgVoidBolt = DmgBullet;
         public const int DmgCoreLaser = DmgBullet;
@@ -233,10 +234,11 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public static int MissileVolleys(int phase) => 3;
         public static int MissileVolleyInterval(int phase) => phase >= 2 ? 100 : 110;
         public static int MissileRingCount(int phase) => phase >= 2 ? 8 : 6;
-        public const float MissileRingRadius = 40f;
+        /// <summary>导弹环起点离本体中心 16px:贴着舰体生成,先在舰体周围展开</summary>
+        public const float MissileRingRadius = 16f;
         /// <summary>导弹全程匀速,不加速</summary>
         public const float MissileRingSpeed = 8f * 2f;
-        /// <summary>导弹径向飞出 15 格后转头,只追这么多帧就改直飞:躲过一次就甩掉了</summary>
+        /// <summary>导弹径向飞出 8 格后转头,只追这么多帧就改直飞:躲过一次就甩掉了</summary>
         public const int MissileHomingFrames = 40;
         /// <summary>核弹在末轮后 40 帧出手;出手前 6 帧粒子静默</summary>
         public const int MissileNukeDelay = 40;
@@ -449,11 +451,19 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         /// <summary>两程起点间隔:前一程的龙身在这段时间里飞出屏外,第二程从另一侧进</summary>
         public const int SkyPassStride = 130;
         public const int SkyPasses = 2;
-        /// <summary>龙头每越过一个格点放一朵雪花,格点间距 150、第二程错半格;雪花匀速下落,不摆不加速</summary>
-        public const float SkyFlakeSpacing = 150f;
-        public const float SkyFlakeFall = 6.5f;
-        /// <summary>从龙下落到玩家高度的帧数,末程落完才收招</summary>
-        public const int SkyFlakeFallFrames = (int)(SkyPassHeight / SkyFlakeFall) + 1;
+        /// <summary>龙头每越过一个格点放一朵雪花,格点间距 180、第二程错半格</summary>
+        public const float SkyFlakeSpacing = 180f;
+        /// <summary>雪花初始下落速度 3,每帧加速 0.03:落到玩家高度约 153 帧,到底时约 7.6</summary>
+        public const float SkyFlakeFall = 3f;
+        public const float SkyFlakeAccel = 0.03f;
+        /// <summary>散布:出手点横向 ±45px、纵向 ±40px 随机,横向漂移速度 ±1.1px/帧</summary>
+        public const float SkyFlakeJitterX = 45f;
+        public const float SkyFlakeJitterY = 40f;
+        public const float SkyFlakeDrift = 1.1f;
+        /// <summary>从龙下落到玩家高度的帧数(按初速与加速度积分),末程落完才收招</summary>
+        public static readonly int SkyFlakeFallFrames = (int)System.Math.Ceiling((-SkyFlakeFall + System.Math.Sqrt(SkyFlakeFall * SkyFlakeFall + 2f * SkyFlakeAccel * SkyPassHeight)) / SkyFlakeAccel) + 1;
+        /// <summary>到玩家高度之后再留 100 帧,雪花总寿命约 253 帧</summary>
+        public const int SkyFlakeLinger = 100;
         public const int SkyTail = 30;
         /// <summary>本体待机悬停点:玩家一侧斜上方,够不着也不挡视线</summary>
         public static readonly Vector2 SkyIdleOffset = new Vector2(460f, -200f);
@@ -523,11 +533,11 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public const int GateWindup = WindupBarrage;
         /// <summary>环数 P1 4 / P2 5 / P3 6</summary>
         public static int GateRings(int phase) => phase >= 3 ? 6 : phase >= 2 ? 5 : 4;
-        /// <summary>环与环间隔 32 帧:收拢减半后同屏约三四个环,每 32 帧仍有一环到身</summary>
-        public const int GateInterval = 32;
-        /// <summary>环出现先在起始半径停 12 帧亮出缺口(预告),再用 112 帧从 640 收到 24 后消散(收拢速度在 56 帧的基础上再减半)</summary>
+        /// <summary>环与环间隔 40 帧(原 32):同屏约三个半环,P3 六环整招约 395 帧,在单招上限内</summary>
+        public const int GateInterval = 40;
+        /// <summary>环出现先在起始半径停 12 帧亮出缺口(预告),再用 132 帧从 640 收到 24 后消散,约 4.7px/帧</summary>
         public const int GatePreviewFrames = 12;
-        public const int GateCloseFrames = 56 * 2;
+        public const int GateCloseFrames = 132;
         public const float GateStartRadius = 640f;
         public const float GateEndRadius = 24f;
         /// <summary>环带判定半宽</summary>
@@ -566,9 +576,10 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public const int SingLockLead = 8;
         public const int SingActiveFrames = 150;
         /// <summary>牵引加速度(px/帧²)与朝奇点方向的速度封顶:翼/坐骑能逃</summary>
-        public static float SingPullAccel(int phase) => phase >= 3 ? 0.55f : 0.45f;
+        public static float SingPullAccel(int phase) => phase >= 3 ? 0.72f : 0.58f;
         public const float SingPullMaxSpeed = 7f;
-        public const float SingPullRadius = 900f;
+        /// <summary>牵引半径 1100,速度封顶 7 不变,翼 / 坐骑仍能逃</summary>
+        public const float SingPullRadius = 1100f;
         public const float SingCoreRadius = 34f;
         public const float SingDiskRadius = 140f;
         public const int SingOrbitBoltInterval = 20;
@@ -619,9 +630,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         /// <summary>汇聚粒子在 72% 处硬切成静默:尖叫前的吸气</summary>
         public const float CannonSilenceAt = 0.72f;
         public const int CannonSweepFrames = 150;
-        /// <summary>扫射 150°:从玩家对侧偏离正下方 75° 起扫,一半时间(75 帧)走到正下方,扫到玩家一侧 75° 收</summary>
-        public const float CannonSweepDegrees = 150f;
-        public const float CannonStartOffsetDeg = 75f;
+        /// <summary>扫射 180°:从玩家对侧水平线起扫,一半时间(75 帧)走到正下方,扫到玩家一侧水平线收;角速度 1.2°/帧</summary>
+        public const float CannonSweepDegrees = 180f;
+        public const float CannonStartOffsetDeg = CannonSweepDegrees / 2f;
         public const float CannonBeamWidth = 160f;
         public const float CannonBeamLength = 4000f;
         public const float CannonRecoil = 8f;
@@ -849,7 +860,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         /// <summary>星球圆心(屏幕 UV,上方偏右;反重力时 y 翻到下侧)与半径(屏高单位)</summary>
         public static readonly Vector2 SkyPlanetCenter = new Vector2(0.74f, 0.30f);
         public const float SkyPlanetRadius = 0.22f;
-        /// <summary>星球随镜头的视差(屏高单位 / 世界像素 ÷ 屏高):整个 200 格场地跑满也只挪 0.12 屏</summary>
+        /// <summary>星球随镜头的视差(屏高单位 / 世界像素 ÷ 屏高):整个 80 格场地跑满也只挪约 0.05 屏</summary>
         public const float SkyPlanetParallax = 0.02f;
         /// <summary>星球自转(圈 / 秒):50 秒一圈,1080p 下盘心表面约 30px/s,看得出在转又不抢戏(实机反馈 2026-09-18:原先近乎静止像贴图)</summary>
         public const float SkyPlanetSpin = 1f / 50f;

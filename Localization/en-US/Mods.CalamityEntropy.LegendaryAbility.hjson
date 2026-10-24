@@ -36,6 +36,26 @@ TlipocasScytheLegend: {
 		TScytheA7: Resist a fatal injury and restore your health to half of your maximum health.Need 5 min to cooling
 		TScytheA8: Attacks inflict void touch
 		TScytheA9: The closer the distance to the target, the higher the damage dealt, with a maximum additional damage of 25%
+		TScytheA2BSolo:
+			'''
+			Press Left Click while the scythe is thrown to teleport to it and launch a larger slash
+			This skill has a 20 second cooldown time
+			'''
+		TScytheA3Solo:
+			'''
+			When thrown out, press Right Click to let the scythe follow your cursor
+			Ultimate hits will heal you for 10 life
+			'''
+		TScytheA4Solo:
+			'''
+			Teleport slash will empower your weapon with void for 15 seconds
+			Gain 20% increased damage while empowered
+			'''
+		TScytheA5Solo:
+			'''
+			Leave a shadow when performing a teleport strike, the shadow will attack alongside you
+			Slash dash will generate an additional slash perpendicular to the original
+			'''
 	}
 
 	Downed: {

@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Common;
+using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Accessories.SoulCards;
@@ -105,7 +106,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             NPC.aiStyle = -1;
             NPC.width = 80;
             NPC.height = 80;
-            NPC.damage = 68;
+            NPC.damage = 75;
             DamageReduction = ProphetDirector.BaseDamageReduction;
             NPC.lifeMax = 55000;
             NPC.defense = ProphetDirector.Defense;
@@ -141,6 +142,10 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             }
             //只有两支冲锋招带接触伤害
             return CurrentStateIndex == ProphetStateIndex.Dash || CurrentStateIndex == ProphetStateIndex.AltRuneCharge;
+        }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo) {
+            target.AddDebuffFixed(ModContent.BuffType<SoulDisorder>(), ProphetDirector.SoulDisorderFrames);
         }
 
         public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers) {

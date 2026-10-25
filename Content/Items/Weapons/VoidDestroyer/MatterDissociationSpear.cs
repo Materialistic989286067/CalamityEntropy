@@ -33,7 +33,7 @@ namespace CalamityEntropy.Content.Items.Weapons.VoidDestroyer
         public override void SetDefaults() {
             Item.width = 64;
             Item.height = 64;
-            Item.damage = 600;
+            Item.damage = 360;
             Item.DamageType = DamageClass.Melee;
             Item.useTime = StabUseTime;
             Item.useAnimation = StabUseTime;

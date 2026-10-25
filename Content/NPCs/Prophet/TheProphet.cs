@@ -110,13 +110,6 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             DamageReduction = ProphetDirector.BaseDamageReduction;
             NPC.lifeMax = 55000;
             NPC.defense = ProphetDirector.Defense;
-            //装灾厄读死亡/复仇,缺席仍走大师/专家兜底
-            if (CECal.IsDeathMode) {
-                NPC.damage += 4;
-            }
-            else if (CECal.IsRevengeance) {
-                NPC.damage += 2;
-            }
             var snd = CEUtils.GetSound("prophet_hurt", maxIns: 1);
             var snd2 = CEUtils.GetSound("prophet_death");
             NPC.HitSound = snd;

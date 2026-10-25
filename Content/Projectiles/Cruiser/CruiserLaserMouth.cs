@@ -15,7 +15,7 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
     {
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
             if (ownern?.ModNPC is NihilityActeriophage) {
-                target.AddDebuffFixed(ModContent.BuffType<VoidVirus>(), 300);
+                target.AddDebuffFixed(ModContent.BuffType<VoidVirus>(), 270);
             }
             else {
                 target.AddDebuffFixed(ModContent.BuffType<VoidTouch>(), 270);
